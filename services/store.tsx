@@ -19,10 +19,10 @@ const StoreContext = React.createContext<
 function storeReducer(state: IStoreState, action: IStoreAction): IStoreState {
   switch (action.type) {
     case StoreAction.LOGIN: {
-      return { loggedIn: true };
+      return { ...state, loggedIn: true };
     }
     case StoreAction.LOGOUT: {
-      return { loggedIn: false };
+      return { ...state, loggedIn: false };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

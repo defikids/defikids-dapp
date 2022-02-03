@@ -1,8 +1,26 @@
-html,
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  min-height: 100vh;
+}
+
 body {
-  padding: 0;
-  margin: 0;
+  padding: 8vh 0;
   font-family: "IBM Plex Sans", sans-serif;
+  font-size: 14px;
+  max-width: 1116px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+}
+
+#__next {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 a {

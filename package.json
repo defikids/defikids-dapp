@@ -18,7 +18,9 @@
     "react-dom": "17.0.2",
     "react-toastify": "^8.1.1",
     "tailwindcss": "^3.0.18",
-    "web3modal": "^1.9.5"
+    "web3modal": "^1.9.5",
+    "@superfluid-finance/js-sdk": "^0.5.8",
+    "@superfluid-finance/sdk-core": "^0.2.0"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
@@ -32,7 +34,8 @@
     "ethers": "^5.5.4",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.3",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "typechain": "^3.0.0"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",

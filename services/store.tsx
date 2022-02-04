@@ -1,14 +1,6 @@
 import { ethers } from "ethers";
 import React from "react";
-
-import HOST_ABI from "../artifacts/contracts/Host.sol/Host.json";
-const CONTRACT_ADDRESS = "0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396";
-
-export enum UserType {
-  PARENT = 1,
-  CHILD = 2,
-  UNREGISTERED = 3,
-}
+import HostContract, { UserType } from "./contract";
 
 export enum StoreAction {
   LOGIN,
@@ -23,6 +15,7 @@ interface IStoreState {
   wallet?: string;
   provider?: ethers.providers.Web3Provider;
   userType?: UserType;
+  contract?: HostContract;
 }
 type IStoreDispatch = (action: IStoreAction) => void;
 
@@ -69,16 +62,14 @@ async function loginUser(
   provider: ethers.providers.Web3Provider,
   dispatch: IStoreDispatch
 ) {
-  const accounts = await provider.send("eth_requestAccounts", []);
-  const wallet = accounts[0];
-  const signer = provider.getSigner(wallet);
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, HOST_ABI.abi, signer);
-  let result = await contract.getUserType(wallet);
-  const userType = parseInt(result._hex, 16);
+  console.log("provider", provider);
+  const contract = await HostContract.fromProvider(provider);
+  const userType = await contract.getUserType();
+  const wallet = contract.getWallet();
 
   dispatch({
     type: StoreAction.LOGIN,
-    payload: { wallet, provider, userType },
+    payload: { provider, userType, contract, wallet },
   });
 }
 

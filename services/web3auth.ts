@@ -4,9 +4,8 @@ import {
   CONNECTED_EVENT_DATA,
   CustomChainConfig,
 } from "@web3auth/base";
-import { ADAPTER_EVENTS, DEFAULT_INFURA_ID } from "@web3auth/base";
+import { ADAPTER_EVENTS } from "@web3auth/base";
 import { LOGIN_MODAL_EVENTS } from "@web3auth/ui";
-import { WalletConnectV1Adapter } from "@web3auth/wallet-connect-v1-adapter";
 
 function subscribeAuthEvents(
   web3auth: Web3Auth,

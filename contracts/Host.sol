@@ -22,7 +22,8 @@ contract Host {
 
     // Parent address => childId => childAddress
     // Used when creating a new child
-    mapping(address => mapping(uint8 => address)) private member_Family;
+    // mapping(address => mapping(uint8 => address)) private member_Family;
+    mapping(address => mapping(uint8 => Child)) private member_Family;
 
     // Parent address => bool
     mapping(address => bool) private isParent;
@@ -38,7 +39,7 @@ contract Host {
     struct Child {
         address _address; // the address of the child
         string username; // an identifier for the child
-        Access access; // locked or unlocked
+        Access access; // locked(0) or unlocked(1)
     }
 
     struct Family {
@@ -59,15 +60,31 @@ contract Host {
         bool isActive; // shows the state of the current timelock.
     }
 
+
+    /** 
+     * @notice - This function is used to determine the type of user
+     * 1 = parent. 2 = child. 3 = neither
+     * @param _user - The address of the user.
+     */
+    function getUserType(address _user) external view returns(uint256){
+        if(isParent[_user]){
+            return 1;
+        }else if (isChild[_user]){
+            return 2;
+        }else{
+            return 3;
+        }
+    }
+
     /**
      * @notice - This function is used to determine if the user is a member of a family.
      */
-    function fetchChildren() public view returns (address[] memory) {
+    function fetchChildren() public view returns (Child[] memory) {
         require(isParent[msg.sender], "Only a parent can make this request");
 
         //determine how many children the user has
         uint8 numOfChildren = parent_Family[msg.sender].numOfChildren;
-        address[] memory children = new address[](numOfChildren);
+        Child[] memory children = new Child[](numOfChildren);
         for (uint8 i = 0; i < numOfChildren; i++) {
             children[i] = member_Family[msg.sender][i + 1];
         }
@@ -120,7 +137,8 @@ contract Host {
         isChild[_child] = true;
         child_Parent[_child] = msg.sender;
         child_AccountDetails[_child] = child;
-        member_Family[msg.sender][childId] = _child;
+        // member_Family[msg.sender][childId] = _child;
+        member_Family[msg.sender][childId] = child;
     }
 
     /**

@@ -7,9 +7,6 @@ const Login = dynamic(() => import("../components/login"), {
 });
 
 export default function Home() {
-  const {
-    state: { userType },
-  } = useStore();
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
       <h1 className="text-hero text-blue-dark text-center mb-[8vh]">
@@ -25,7 +22,7 @@ export default function Home() {
           confidently
         </UnderlineText>
       </h1>
-      {!userType ? <Login /> : <p>Parent or Child</p>}
+      <Login />
     </div>
   );
 }

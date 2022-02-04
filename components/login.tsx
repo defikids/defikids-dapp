@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Auth from "../services/web3auth";
 import Button from "./button";
-import { loginUser, StoreAction, useStore } from "../services/store";
+import { loginUser, StoreAction, UserType, useStore } from "../services/store";
 
 const Login: React.FC = () => {
   const store = useStore();
@@ -44,7 +44,9 @@ const Login: React.FC = () => {
   return store.state.loggedIn ? (
     <>
       <Button onClick={handleLogoutClick}>Logout</Button>
-      <p className="mt-2">Wallet: {store.state.wallet}</p>
+      <p className="mt-2">
+        Wallet: {store.state.wallet} {UserType[store.state.userType]}
+      </p>
     </>
   ) : (
     <Button onClick={handleConnectWallet}>Connect your wallet</Button>

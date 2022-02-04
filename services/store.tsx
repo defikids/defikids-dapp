@@ -4,7 +4,7 @@ import React from "react";
 import HOST_ABI from "../artifacts/contracts/Host.sol/Host.json";
 const CONTRACT_ADDRESS = "0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396";
 
-enum UserType {
+export enum UserType {
   PARENT = 1,
   CHILD = 2,
   UNREGISTERED = 3,
@@ -35,6 +35,7 @@ function storeReducer(state: IStoreState, action: IStoreAction): IStoreState {
     case StoreAction.LOGIN: {
       return {
         ...state,
+        loggedIn: true,
         ...action.payload,
       };
     }

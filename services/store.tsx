@@ -1,4 +1,14 @@
+import { ethers } from "ethers";
 import React from "react";
+
+import HOST_ABI from "../artifacts/contracts/Host.sol/Host.json";
+const CONTRACT_ADDRESS = "0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396";
+
+enum UserType {
+  PARENT = 1,
+  CHILD = 2,
+  UNREGISTERED = 3,
+}
 
 export enum StoreAction {
   LOGIN,
@@ -6,11 +16,13 @@ export enum StoreAction {
 }
 export interface IStoreAction {
   type: StoreAction;
-  payload?: any;
+  payload?: Partial<IStoreState>;
 }
 interface IStoreState {
   loggedIn: boolean;
   wallet?: string;
+  provider?: ethers.providers.Web3Provider;
+  userType?: UserType;
 }
 type IStoreDispatch = (action: IStoreAction) => void;
 
@@ -21,7 +33,10 @@ const StoreContext = React.createContext<
 function storeReducer(state: IStoreState, action: IStoreAction): IStoreState {
   switch (action.type) {
     case StoreAction.LOGIN: {
-      return { ...state, loggedIn: true, wallet: action.payload.wallet };
+      return {
+        ...state,
+        ...action.payload,
+      };
     }
     case StoreAction.LOGOUT: {
       return { loggedIn: false };
@@ -49,4 +64,21 @@ function useStore() {
   return context;
 }
 
-export { StoreProvider, useStore };
+async function loginUser(
+  provider: ethers.providers.Web3Provider,
+  dispatch: IStoreDispatch
+) {
+  const accounts = await provider.send("eth_requestAccounts", []);
+  const wallet = accounts[0];
+  const signer = provider.getSigner(wallet);
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, HOST_ABI.abi, signer);
+  let result = await contract.getUserType(wallet);
+  const userType = parseInt(result._hex, 16);
+
+  dispatch({
+    type: StoreAction.LOGIN,
+    payload: { wallet, provider, userType },
+  });
+}
+
+export { StoreProvider, useStore, loginUser };

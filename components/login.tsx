@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import Web3Auth from "../services/web3auth";
 import Button from "./button";
-import { StoreAction, useStore } from "../services/store";
+import { loginUser, StoreAction, useStore } from "../services/store";
 
 const Login: React.FC = () => {
   const store = useStore();
@@ -16,11 +16,8 @@ const Login: React.FC = () => {
       const provider = new ethers.providers.Web3Provider(
         Web3Auth.web3auth.provider
       );
-      const accounts = await provider.send("eth_requestAccounts", []);
-      const wallet = accounts[0];
-      store.dispatch({ type: StoreAction.LOGIN, payload: { wallet } });
+      loginUser(provider, store.dispatch);
     } catch (error) {
-      console.error(error);
       handleLogoutClick();
     }
   };

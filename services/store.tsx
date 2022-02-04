@@ -1,28 +1,30 @@
 import React from "react";
 
-enum StoreAction {
+export enum StoreAction {
   LOGIN,
   LOGOUT,
 }
-interface IStoreAction {
+export interface IStoreAction {
   type: StoreAction;
+  payload?: any;
 }
 interface IStoreState {
   loggedIn: boolean;
+  wallet?: string;
 }
 type IStoreDispatch = (action: IStoreAction) => void;
 
 const StoreContext = React.createContext<
-  { state: IStoreState; dispatch: IStoreDispatch } | undefined
+  { state: IStoreState; dispatch?: IStoreDispatch } | undefined
 >(undefined);
 
 function storeReducer(state: IStoreState, action: IStoreAction): IStoreState {
   switch (action.type) {
     case StoreAction.LOGIN: {
-      return { ...state, loggedIn: true };
+      return { ...state, loggedIn: true, wallet: action.payload.wallet };
     }
     case StoreAction.LOGOUT: {
-      return { ...state, loggedIn: false };
+      return { loggedIn: false };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

@@ -22,7 +22,7 @@ const Button: React.FC<IProps> = ({
     <button
       {...props}
       className={twMerge(
-        "bg-orange text-white text-lg font-medium br-90 rounded-full px-6 py-3 hover:shadow-lg transition",
+        "bg-orange text-white text-lg font-medium br-90 rounded-full px-6 py-3 hover:shadow-[_0_0px_10px_rgba(0,0,0,0.1)] transition",
         style,
         disabled ? "opacity-40 pointer-events-none" : "",
         className

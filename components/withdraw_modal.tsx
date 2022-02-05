@@ -25,7 +25,7 @@ const WithdrawModal: React.FC<IProps> = ({
   const {
     state: { provider, wallet },
   } = useStore();
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState(false);
 
   const handleTransfer = async (amount: number) => {
@@ -62,7 +62,7 @@ const WithdrawModal: React.FC<IProps> = ({
               aria-label="amount"
               type="number"
               style={{ width: "100%", borderRadius: 12 }}
-              value={amount}
+              value={amount ?? ""}
               onChange={(value) =>
                 setAmount(
                   Math.min(parseFloat(value.currentTarget.value), balance)

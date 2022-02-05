@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       spacing: {
-        modal: "709px",
+        modal: "734px",
       },
       height: {
         130: "130px",
@@ -21,6 +21,10 @@ module.exports = {
         oil: "#457B9D",
         medium: "#A8DADC",
         light: "#BCF8EC",
+      },
+      grey: {
+        light: "#E3E3E3",
+        medium: "#A6A6A6",
       },
       beije: "#F1FAEE",
       white: "#FFFFFF",

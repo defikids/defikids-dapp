@@ -48,6 +48,10 @@ class HostContract {
   async fetchChildren() {
     return this.contract.fetchChildren();
   }
+
+  async addMember(wallet: string, username: string) {
+    return this.contract.addMember(wallet, username);
+  }
 }
 
 export default HostContract;

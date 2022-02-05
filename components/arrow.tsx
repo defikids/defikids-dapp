@@ -25,7 +25,7 @@ const Arrow: React.FC<IProps> = ({
       break;
   }
   return (
-    <div style={{ transform: `rotate(${rotate}deg)` }}>
+    <div className="flex" style={{ transform: `rotate(${rotate}deg)` }}>
       <Image
         {...props}
         src="/arrow.svg"

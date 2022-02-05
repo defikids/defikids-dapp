@@ -16,7 +16,7 @@ const Button: React.FC<IProps> = ({
     size === "lg"
       ? "p-6 h-130 rounded-md flex items-end text-base pb-3"
       : size === "sm"
-      ? "px-2 py-1"
+      ? "px-3 py-2 text-sm"
       : "";
   return (
     <button

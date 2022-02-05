@@ -35,3 +35,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.progress {
+  background-color: #bcf8ec;
+  height: 8px;
+}
+
+.progress .progress-bar {
+  background-color: #fe5f55;
+}

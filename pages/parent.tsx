@@ -1,19 +1,18 @@
 import Image from "next/image";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Button from "../components/button";
 import { useStore } from "../services/store";
 import getUSDCXBalance from "../services/usdcx_contract";
 import { downgradeToken, upgradeToken } from "../hooks/useSFCore";
 import { ethers } from "ethers";
-import Modal from "react-bootstrap/Modal";
 import AddChildModal from "../components/add_child_modal";
+import Plus from "../components/plus";
 import Arrow from "../components/arrow";
+import Child from "../components/child";
 
 const Parent: React.FC = () => {
-  const router = useRouter();
   const {
-    state: { contract, userType, provider, wallet },
+    state: { contract, provider, wallet },
   } = useStore();
   const [children, setChildren] = useState([]);
 
@@ -117,18 +116,27 @@ const Parent: React.FC = () => {
       </div>
       <div className="mt-16">
         <p className="text-sm mb-8">YOUR KIDS</p>
-        {children.length === 0 && (
-          <Button
-            className="text-sm w-full rounded-md text-right"
-            onClick={() => setShowAddChild(true)}
-          >
-            Add a new kid
-          </Button>
-        )}
+        <div className="flex items-start">
+          {children.map((c) => (
+            <Child key={c[0]} address={c[0]} name={c[1]} access={c[2]} />
+          ))}
+        </div>
+        <Button
+          className="text-sm w-full rounded-md flex justify-end mt-4"
+          onClick={() => setShowAddChild(true)}
+        >
+          <div className="flex items-center">
+            <Plus />
+            <span className="ml-6 font-medium text-base">
+              {children.length === 0 ? "Add a new kid" : "Add more kids"}
+            </span>
+          </div>
+        </Button>
       </div>
       <AddChildModal
         show={showAddChild}
         onClose={() => setShowAddChild(false)}
+        onAdd={() => fetchChildren()}
       />
     </div>
   );

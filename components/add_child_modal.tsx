@@ -3,15 +3,32 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
+import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 
-const AddChildModal: React.FC<{ show: boolean; onClose: () => void }> = ({
-  show,
-  onClose,
-}) => {
+interface IProps {
+  show: boolean;
+  onClose: () => void;
+  onAdd: () => void;
+}
+
+const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
   const [name, setName] = useState("");
   const [wallet, setWallet] = useState("");
+  const [loading, setLoading] = useState(false);
+  const {
+    state: { contract },
+  } = useStore();
+
+  const handleAddChild = async (wallet, name) => {
+    setLoading(true);
+    await contract.addMember(wallet, name);
+    setLoading(false);
+    onClose();
+    onAdd();
+  };
+
   return (
     <Modal show={show} onHide={onClose} dialogClassName="w-modal" size="lg">
       <Modal.Header closeButton className="mb-7 border-0 px-12 pt-12">
@@ -41,7 +58,12 @@ const AddChildModal: React.FC<{ show: boolean; onClose: () => void }> = ({
             />
           </InputGroup>
         </div>
-        <Button size="lg" onClick={onClose} disabled={!name || !wallet}>
+        <Button
+          className={loading && "animate-pulse pointer-events-none"}
+          size="lg"
+          onClick={() => handleAddChild(wallet, name)}
+          disabled={!name || !wallet}
+        >
           <div className="flex items-center">
             <span className="mr-6">Add new kid</span>
             <Arrow dir="right" />

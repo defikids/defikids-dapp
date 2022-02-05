@@ -3,7 +3,7 @@
 This is the readme. Let's get this hack going!
 
 Host Contract: 0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396
-Staking Contract: 0x38a87F28C220D1b652f584025221a52D0960ECe6
+Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
 
 ## The staking process
 

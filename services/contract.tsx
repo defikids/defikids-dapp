@@ -44,6 +44,10 @@ class HostContract {
   async createParent() {
     return this.contract.createParent();
   }
+
+  async fetchChildren() {
+    return this.contract.fetchChildren();
+  }
 }
 
 export default HostContract;

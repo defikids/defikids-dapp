@@ -105,7 +105,7 @@ export const downgradeToken = async (amount, provider, address) => {
   // Return the transaction receipt
   usdcDowngradeReceipt = `https://mumbai.polygonscan.com/tx/${usdcDowngradeReceipt.hash}`;
 
-  //   return { usdcApproveReceipt, usdcUpgradeReceipt };
+  // return { usdcApproveReceipt, usdcUpgradeReceipt };
   const newBalances = await getUSDCBalances(provider, address);
   return { newBalances };
 };

@@ -6,12 +6,29 @@ import { useStore } from "../services/store";
 import getUSDCXBalance from "../services/usdcx_contract";
 import { downgradeToken, upgradeToken } from "../hooks/useSFCore";
 import { ethers } from "ethers";
+import Modal from "react-bootstrap/Modal";
+import AddChildModal from "../components/add_child_modal";
+import Arrow from "../components/arrow";
 
 const Parent: React.FC = () => {
   const router = useRouter();
   const {
     state: { contract, userType, provider, wallet },
   } = useStore();
+  const [children, setChildren] = useState([]);
+
+  const fetchChildren = async () => {
+    const children = await contract.fetchChildren();
+    setChildren(children);
+  };
+
+  useEffect(() => {
+    if (!contract) {
+      return;
+    }
+
+    fetchChildren();
+  }, [contract]);
 
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -33,10 +50,6 @@ const Parent: React.FC = () => {
     setLoading(true);
     const result = await upgradeToken(5, provider, wallet);
     setLoading(false);
-    console.log(
-      parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance)),
-      parseFloat(ethers.utils.formatEther(result.newBalances.USDCBalance))
-    );
     setBalance(
       parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
     );
@@ -46,14 +59,12 @@ const Parent: React.FC = () => {
     setLoading(true);
     const result = await downgradeToken(5, provider, wallet);
     setLoading(false);
-    console.log(
-      parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance)),
-      parseFloat(ethers.utils.formatEther(result.newBalances.USDCBalance))
-    );
     setBalance(
       parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
     );
   };
+
+  const [showAddChild, setShowAddChild] = useState(false);
 
   return (
     <div>
@@ -77,25 +88,48 @@ const Parent: React.FC = () => {
         </div>
         <div className="flex" style={{ height: 130 }}>
           <Button
-            className={`mr-6 flex items-end pb-6 rounded-full ${
+            size="lg"
+            className={`mr-6 rounded-full ${
               loading && "animate-pulse pointer-events-none"
             }`}
             style={{ borderRadius: 8 }}
             onClick={handleTopUp}
           >
-            Top up account
+            <div className="flex items-center">
+              <span className="mr-6">Top up account</span>
+              <Arrow dir="up" />
+            </div>
           </Button>
           <Button
-            className={`bg-blue-light mr-6 flex items-end pb-6 ${
+            size="lg"
+            className={`bg-blue-light mr-6 ${
               loading && "animate-pulse pointer-events-none"
             }`}
             style={{ borderRadius: 8 }}
             onClick={handleWithdraw}
           >
-            Withdraw funds
+            <div className="flex items-center">
+              <span className="mr-6">Withdraw funds</span>
+              <Arrow dir="down" />
+            </div>
           </Button>
         </div>
       </div>
+      <div className="mt-16">
+        <p className="text-sm mb-8">YOUR KIDS</p>
+        {children.length === 0 && (
+          <Button
+            className="text-sm w-full rounded-md text-right"
+            onClick={() => setShowAddChild(true)}
+          >
+            Add a new kid
+          </Button>
+        )}
+      </div>
+      <AddChildModal
+        show={showAddChild}
+        onClose={() => setShowAddChild(false)}
+      />
     </div>
   );
 };

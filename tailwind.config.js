@@ -6,7 +6,14 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        modal: "709px",
+      },
+      height: {
+        130: "130px",
+      },
+    },
     colors: {
       orange: "#FE5F55",
       blue: {

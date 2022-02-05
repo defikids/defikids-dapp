@@ -35,7 +35,7 @@ const Child: React.FC<IProps> = ({ address, name, access }) => {
         <Button className="rounded-0 bg-white border-r-2 border-grey-light">
           <div
             className="flex items-center text-blue-dark"
-            style={{ padding: "0 1.5px" }}
+            style={{ padding: "0 2px" }}
           >
             <Plus width={12} height={12} />
             <span className="ml-1 font-normal text-base">Add more funds</span>
@@ -83,7 +83,7 @@ const Child: React.FC<IProps> = ({ address, name, access }) => {
             style={{ maxHeight: 300 }}
           >
             {allocations.map((a) => (
-              <Allocation {...a} />
+              <Allocation key={a.name} {...a} />
             ))}
           </div>
         </div>

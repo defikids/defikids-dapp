@@ -9,6 +9,8 @@ import AddChildModal from "../components/add_child_modal";
 import Plus from "../components/plus";
 import Arrow from "../components/arrow";
 import Child from "../components/child";
+import TopUpModal from "../components/topup_modal";
+import WithdrawModal from "../components/withdraw_modal";
 
 const Parent: React.FC = () => {
   const {
@@ -45,25 +47,9 @@ const Parent: React.FC = () => {
     updateBalance();
   }, [provider]);
 
-  const handleTopUp = async () => {
-    setLoading(true);
-    const result = await upgradeToken(5, provider, wallet);
-    setLoading(false);
-    setBalance(
-      parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
-    );
-  };
-
-  const handleWithdraw = async () => {
-    setLoading(true);
-    const result = await downgradeToken(5, provider, wallet);
-    setLoading(false);
-    setBalance(
-      parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
-    );
-  };
-
   const [showAddChild, setShowAddChild] = useState(false);
+  const [showTopUp, setShowTopUp] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
 
   return (
     <div>
@@ -92,7 +78,7 @@ const Parent: React.FC = () => {
               loading && "animate-pulse pointer-events-none"
             }`}
             style={{ borderRadius: 8 }}
-            onClick={handleTopUp}
+            onClick={() => setShowTopUp(true)}
           >
             <div className="flex items-center">
               <span className="mr-6">Top up account</span>
@@ -105,7 +91,7 @@ const Parent: React.FC = () => {
               loading && "animate-pulse pointer-events-none"
             }`}
             style={{ borderRadius: 8 }}
-            onClick={handleWithdraw}
+            onClick={() => setShowWithdraw(true)}
           >
             <div className="flex items-center">
               <span className="mr-6">Withdraw funds</span>
@@ -137,6 +123,17 @@ const Parent: React.FC = () => {
         show={showAddChild}
         onClose={() => setShowAddChild(false)}
         onAdd={() => fetchChildren()}
+      />
+      <TopUpModal
+        show={showTopUp}
+        onClose={() => setShowTopUp(false)}
+        onTransfer={setBalance}
+      />
+      <WithdrawModal
+        show={showWithdraw}
+        onClose={() => setShowWithdraw(false)}
+        onTransfer={setBalance}
+        balance={balance}
       />
     </div>
   );

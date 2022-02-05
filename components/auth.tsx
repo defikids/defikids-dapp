@@ -57,17 +57,24 @@ const Auth: React.FC = () => {
   }, [store.state.userType]);
 
   useEffect(() => {
-    if (window.ethereum) {
+    const provider = store.state.provider;
+    if (!store.state.provider) {
       return;
     }
 
-    window.ethereum.on("chainChanged", async () => {
+    provider.on("network", (newNetwork, oldNetwork) => {
+      if (oldNetwork) {
+        logout();
+        window.location.reload();
+      }
+    });
+
+    provider.on("chainChanged", async () => {
       logout();
       window.location.reload();
     });
 
-    window.ethereum.on("accountsChanged", async () => {
-      console.log("account changed");
+    provider.on("accountsChanged", async () => {
       logout();
       window.location.reload();
     });

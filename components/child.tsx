@@ -8,9 +8,10 @@ interface IProps {
   address: string;
   name: string;
   access: 0 | 1;
+  onTransfer: () => void;
 }
 
-const Child: React.FC<IProps> = ({ address, name, access }) => {
+const Child: React.FC<IProps> = ({ address, name, access, onTransfer }) => {
   const allocations = [
     { name: "Playstation 5", value: 180, total: 230 },
     { name: "New Science Book", value: 11, total: 40 },
@@ -32,7 +33,10 @@ const Child: React.FC<IProps> = ({ address, name, access }) => {
         </div>
       </div>
       <div className="border-t-2 border-b-2 border-grey-light flex">
-        <Button className="rounded-0 bg-white border-r-2 border-grey-light">
+        <Button
+          className="rounded-0 bg-white border-r-2 border-grey-light"
+          onClick={onTransfer}
+        >
           <div
             className="flex items-center text-blue-dark"
             style={{ padding: "0 2px" }}

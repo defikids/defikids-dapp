@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Button from "../components/button";
 import { useStore } from "../services/store";
-import getUSDCXBalance from "../services/usdcx_contract";
+import { getUSDCXBalance } from "../services/usdcx_contract";
 import { downgradeToken, upgradeToken } from "../hooks/useSFCore";
 import { ethers } from "ethers";
 import AddChildModal from "../components/add_child_modal";
@@ -11,6 +11,7 @@ import Arrow from "../components/arrow";
 import Child from "../components/child";
 import TopUpModal from "../components/topup_modal";
 import WithdrawModal from "../components/withdraw_modal";
+import TransferModal from "../components/transfer_modal";
 
 const Parent: React.FC = () => {
   const {
@@ -32,12 +33,13 @@ const Parent: React.FC = () => {
   }, [contract]);
 
   const [balance, setBalance] = useState(0);
-  const [loading, setLoading] = useState(false);
 
   const updateBalance = () => {
-    getUSDCXBalance(provider, wallet).then((value) =>
-      setBalance(parseFloat(value))
-    );
+    console.log("update");
+    getUSDCXBalance(provider, wallet).then((value) => {
+      console.log("new balance", value);
+      setBalance(parseFloat(value));
+    });
   };
 
   useEffect(() => {
@@ -50,6 +52,8 @@ const Parent: React.FC = () => {
   const [showAddChild, setShowAddChild] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [transferChild, setTransferChild] =
+    useState<{ name: string; address: string }>();
 
   return (
     <div>
@@ -74,9 +78,7 @@ const Parent: React.FC = () => {
         <div className="flex" style={{ height: 130 }}>
           <Button
             size="lg"
-            className={`mr-6 rounded-full ${
-              loading && "animate-pulse pointer-events-none"
-            }`}
+            className={`mr-6 rounded-full`}
             style={{ borderRadius: 8 }}
             onClick={() => setShowTopUp(true)}
           >
@@ -87,9 +89,7 @@ const Parent: React.FC = () => {
           </Button>
           <Button
             size="lg"
-            className={`bg-blue-light mr-6 ${
-              loading && "animate-pulse pointer-events-none"
-            }`}
+            className={`bg-blue-light mr-6`}
             style={{ borderRadius: 8 }}
             onClick={() => setShowWithdraw(true)}
           >
@@ -104,7 +104,13 @@ const Parent: React.FC = () => {
         <p className="text-sm mb-8">YOUR KIDS</p>
         <div className="flex items-start">
           {children.map((c) => (
-            <Child key={c[0]} address={c[0]} name={c[1]} access={c[2]} />
+            <Child
+              key={c[0]}
+              address={c[0]}
+              name={c[1]}
+              access={c[2]}
+              onTransfer={() => setTransferChild({ name: c[1], address: c[0] })}
+            />
           ))}
         </div>
         <Button
@@ -134,6 +140,13 @@ const Parent: React.FC = () => {
         onClose={() => setShowWithdraw(false)}
         onTransfer={setBalance}
         balance={balance}
+      />
+      <TransferModal
+        show={!!transferChild}
+        onClose={() => setTransferChild(undefined)}
+        onTransfer={updateBalance}
+        balance={balance}
+        child={transferChild}
       />
     </div>
   );

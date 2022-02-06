@@ -1,19 +1,18 @@
 import { sequence } from "0xsequence";
 
-let wallet: sequence.provider.Wallet;
+const wallet = new sequence.Wallet("mumbai");
 
 const init = (
-  handleLogin: (details: sequence.provider.ConnectDetails) => void,
+  handleLogin: (accounts: string[], wallet: sequence.provider.Wallet) => void,
   handleLogout: () => void
 ) => {
-  wallet = new sequence.Wallet("mumbai");
-
   wallet.on("message", (message) => {
     console.log("wallet event (message):", message);
   });
 
   wallet.on("accountsChanged", (p) => {
     console.log("wallet event (accountsChanged):", p);
+    handleLogin(p, wallet);
   });
 
   wallet.on("chainChanged", (p) => {
@@ -22,7 +21,6 @@ const init = (
 
   wallet.on("connect", (p) => {
     console.log("wallet event (connect):", p);
-    handleLogin(p);
   });
 
   wallet.on("disconnect", (p) => {
@@ -37,6 +35,8 @@ const init = (
   wallet.on("close", (p) => {
     console.log("wallet event (close):", p);
   });
+
+  return wallet;
 };
 
 const connectWallet = async (authorize: boolean = false) => {

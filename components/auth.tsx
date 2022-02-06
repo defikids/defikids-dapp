@@ -21,30 +21,33 @@ const Auth: React.FC = () => {
     }
   };
 
-  const handleLoginSequence = async (data) => {
+  const handleLoginSequence = async (accounts: string[], wallet) => {
     try {
-      // const provider = new ethers.providers.JsonRpcProvider(
-      //   Sequence.wallet.getProvider()
-      // );
-      // loginUser(provider, store.dispatch);
+      wallet.saveSession();
+      const account = accounts.shift();
+      const authProvider = await wallet.getProvider();
+      const provider = new ethers.providers.Web3Provider(authProvider);
+      loginUser(provider, () => logout(true), store.dispatch, account);
     } catch (error) {
-      logout();
+      console.error(error);
+      logout(true);
     }
   };
 
-  const handleSequenceLogout = async () => {
-    Sequence.wallet.disconnect();
-  };
-  const logout = () => {
+  const logout = (isSequence: boolean = false) => {
     try {
       Web3Auth.logout();
     } catch (error) {
       console.error(error);
     }
     try {
-      Sequence.wallet.disconnect();
+      console.log("ola", Sequence.wallet);
+      Sequence.wallet?.disconnect();
     } catch (error) {
       console.error(error);
+    }
+    if (isSequence) {
+      handleLogout();
     }
   };
 
@@ -56,7 +59,13 @@ const Auth: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        Sequence.init(handleLoginSequence, handleLogout);
+        const wallet = Sequence.init(handleLoginSequence, handleLogout);
+        const session = wallet.getSession();
+        if (session) {
+          handleLoginSequence([session.accountAddress], wallet);
+          return;
+        }
+
         await Web3Auth.initializeModal(handleLogin, handleLogout);
       } catch (error) {
         console.error(error);
@@ -66,6 +75,10 @@ const Auth: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (!store.state.loggedIn) {
+      router.push("/");
+    }
+
     switch (store.state.userType) {
       case UserType.UNREGISTERED:
         router.push("/register");

@@ -12,17 +12,11 @@ const Login: React.FC = () => {
   };
 
   const handleConnectSequence = async () => {
-    const test = await Sequence.connectWallet(true);
-    console.log(test.session);
-  };
-
-  const handleLogoutClick = () => {
-    Web3Auth.logout();
+    Sequence.connectWallet(true);
   };
 
   return store.state.loggedIn ? (
     <>
-      <Button onClick={handleLogoutClick}>Logout</Button>
       <p className="mt-2">Wallet: {store.state.wallet}</p>
     </>
   ) : (

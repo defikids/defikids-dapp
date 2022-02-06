@@ -73,9 +73,10 @@ function useStore() {
 async function loginUser(
   provider: ethers.providers.Web3Provider,
   logout: () => void,
-  dispatch: IStoreDispatch
+  dispatch: IStoreDispatch,
+  address?: string
 ) {
-  const contract = await HostContract.fromProvider(provider);
+  const contract = await HostContract.fromProvider(provider, address);
   const userType = await contract.getUserType();
   const wallet = contract.getWallet();
 

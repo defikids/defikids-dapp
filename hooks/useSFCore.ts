@@ -4,7 +4,7 @@ import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 import { USDC_ABI } from "../abis/USDC";
 import { USDCX_ABI } from "../abis/USDCx";
-import { useStore } from "../services/store";
+import { CONTRACT_ADDRESS } from "../services/usdcx_contract";
 
 const fUSDC_contract_address = "0xbe49ac1EadAc65dccf204D4Df81d650B50122aB2";
 const fUSDCx_contract_address = "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7";
@@ -22,7 +22,10 @@ export const getUSDCBalances = async (provider, address) => {
   // Get the current value of the token
   const USDCBalance = await USDC.balanceOf(address);
   const USDCxBalance = await USDCx.balanceOf(address);
-  return { USDCBalance, USDCxBalance };
+  return {
+    USDCBalance: ethers.utils.formatEther(USDCBalance),
+    USDCxBalance: ethers.utils.formatEther(USDCxBalance),
+  };
 };
 
 export const upgradeToken = async (amount, provider, address) => {
@@ -54,13 +57,11 @@ export const upgradeToken = async (amount, provider, address) => {
   usdcApproveReceipt = `https://mumbai.polygonscan.com/tx/${usdcApproveReceipt.transactionHash}`;
 
   // Create a contract instance of the Superfluid token that we can interact with
-  const usdcx = await sf.loadSuperToken(
-    "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7"
-  );
+  const usdcx = await sf.loadSuperToken(CONTRACT_ADDRESS);
 
   // Upgrade the USDC token to USDCx
   const usdcUpgrade = usdcx.upgrade({
-    amount: convertedAmount,
+    amount: convertedAmount.toString(),
   });
 
   // Wait for the transaction to be mined
@@ -68,7 +69,7 @@ export const upgradeToken = async (amount, provider, address) => {
   await usdcUpgradeReceipt.wait();
 
   // Return the transaction receipt
-  usdcUpgradeReceipt = `https://mumbai.polygonscan.com/tx/${usdcUpgradeReceipt.hash}`;
+  // usdcUpgradeReceipt = `https://mumbai.polygonscan.com/tx/${usdcUpgradeReceipt.hash}`;
 
   //   return { usdcApproveReceipt, usdcUpgradeReceipt };
   const newBalances = await getUSDCBalances(provider, address);
@@ -89,13 +90,11 @@ export const downgradeToken = async (amount, provider, address) => {
   const convertedAmount = ethers.utils.parseEther(amount.toString());
 
   // Create a contract instance that we can interact with
-  const usdcx = await sf.loadSuperToken(
-    "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7"
-  );
+  const usdcx = await sf.loadSuperToken(CONTRACT_ADDRESS);
 
   // Downgrade the USDCx token to USDC
   const usdcDowngrade = await usdcx.downgrade({
-    amount: convertedAmount,
+    amount: convertedAmount.toString(),
   });
 
   // Wait for the transaction to be mined
@@ -103,27 +102,28 @@ export const downgradeToken = async (amount, provider, address) => {
   await usdcDowngradeReceipt.wait();
 
   // Return the transaction receipt
-  usdcDowngradeReceipt = `https://mumbai.polygonscan.com/tx/${usdcDowngradeReceipt.hash}`;
+  // usdcDowngradeReceipt = `https://mumbai.polygonscan.com/tx/${usdcDowngradeReceipt.hash}`;
 
   // return { usdcApproveReceipt, usdcUpgradeReceipt };
   const newBalances = await getUSDCBalances(provider, address);
   return { newBalances };
 };
 
-export const createFlow = async (sender, recipient, flowRate) => {
+export const createFlow = async (
+  provider,
+  sender,
+  recipient,
+  flowRate: string
+) => {
   const sf = await Framework.create({
+    // networkName: "kovan",
     networkName: "mumbai",
     provider: customHttpProvider,
   });
-
-  // Signing the transaction
-  const web3Modal = new Web3Modal();
-  const connection = await web3Modal.connect();
-  const provider = new ethers.providers.Web3Provider(connection);
-  const signer = provider.getSigner();
+  const signer = provider.getSigner(sender);
 
   // Create a contract instance that we can interact with
-  const usdcx = "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7";
+  const usdcx = CONTRACT_ADDRESS;
 
   try {
     const createFlowOperation = sf.cfaV1.createFlow({
@@ -134,12 +134,15 @@ export const createFlow = async (sender, recipient, flowRate) => {
       // userData?: string
     });
 
-    const usdcCreateFlowReceipt = await createFlowOperation.exec(signer);
+    let usdcCreateFlowReceipt = await createFlowOperation.exec(signer);
+    await usdcCreateFlowReceipt.wait();
 
-    // Return the transaction receipt
-    usdcCreateFlowReceipt = `https://mumbai.polygonscan.com/tx/${usdcCreateFlowReceipt.hash}`;
+    // transaction receipt
+    // usdcCreateFlowReceipt = `https://mumbai.polygonscan.com/tx/${usdcCreateFlowReceipt.hash}`;
 
-    return { usdcCreateFlowReceipt };
+    // return updated balances
+    const newBalances = await getUSDCBalances(provider, sender);
+    return { newBalances };
   } catch (error) {
     console.log(
       "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"
@@ -148,20 +151,17 @@ export const createFlow = async (sender, recipient, flowRate) => {
   }
 };
 
-export const updateFlow = async (sender, recipient, flowRate) => {
+export const updateFlow = async (provider, sender, recipient, flowRate) => {
   const sf = await Framework.create({
     networkName: "mumbai",
     provider: customHttpProvider,
   });
 
   // Signing the transaction
-  const web3Modal = new Web3Modal();
-  const connection = await web3Modal.connect();
-  const provider = new ethers.providers.Web3Provider(connection);
-  const signer = provider.getSigner();
+  const signer = provider.getSigner(sender);
 
   // Create a contract instance that we can interact with
-  const usdcx = "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7";
+  const usdcx = CONTRACT_ADDRESS;
 
   try {
     const updateFlowOperation = sf.cfaV1.updateFlow({
@@ -172,12 +172,15 @@ export const updateFlow = async (sender, recipient, flowRate) => {
       // userData?: string
     });
 
-    const usdcUpdateFlowReceipt = await updateFlowOperation.exec(signer);
+    let usdcUpdateFlowReceipt = await updateFlowOperation.exec(signer);
+    await usdcUpdateFlowReceipt.wait();
 
-    // Return the transaction receipt
-    usdcUpdateFlowReceipt = `https://mumbai.polygonscan.com/tx/${usdcUpdateFlowReceipt.hash}`;
+    // the transaction receipt
+    // usdcUpdateFlowReceipt = `https://mumbai.polygonscan.com/tx/${usdcUpdateFlowReceipt.hash}`;
 
-    return { usdcUpdateFlowReceipt };
+    // return updated balances
+    const newBalances = await getUSDCBalances(provider, sender);
+    return { newBalances };
   } catch (error) {
     console.log(
       "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"
@@ -209,12 +212,15 @@ export const deleteFlow = async (sender, recipient) => {
       // userData?: string
     });
 
-    const usdcDeleteFlowReceipt = await deleteFlowOperation.exec(signer);
+    let usdcDeleteFlowReceipt = await deleteFlowOperation.exec(signer);
+    await usdcDeleteFlowReceipt.wait();
 
-    // Return the transaction receipt
-    usdcDeleteFlowReceipt = `https://mumbai.polygonscan.com/tx/${usdcDeleteFlowReceipt.hash}`;
+    // the transaction receipt
+    // usdcDeleteFlowReceipt = `https://mumbai.polygonscan.com/tx/${usdcDeleteFlowReceipt.hash}`;
 
-    return { usdcDeleteFlowReceipt };
+    // return updated balances
+    const newBalances = await getUSDCBalances(provider, sender);
+    return { newBalances };
   } catch (error) {
     console.log(
       "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"

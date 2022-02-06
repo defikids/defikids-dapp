@@ -10,6 +10,12 @@ export enum UserType {
   UNREGISTERED = 3,
 }
 
+export interface IChild {
+  name: string;
+  address: string;
+  access: 0 | 1;
+}
+
 class HostContract {
   private contract: Host;
   private wallet: string;

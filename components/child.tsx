@@ -1,17 +1,22 @@
 import Image from "next/image";
 import React from "react";
+import { IChild } from "../services/contract";
 import Allocation from "./allocation";
 import Button from "./button";
 import Plus from "./plus";
 
-interface IProps {
-  address: string;
-  name: string;
-  access: 0 | 1;
+interface IProps extends IChild {
   onTransfer: () => void;
+  onStream: () => void;
 }
 
-const Child: React.FC<IProps> = ({ address, name, access, onTransfer }) => {
+const Child: React.FC<IProps> = ({
+  address,
+  name,
+  access,
+  onTransfer,
+  onStream,
+}) => {
   const allocations = [
     { name: "Playstation 5", value: 180, total: 230 },
     { name: "New Science Book", value: 11, total: 40 },
@@ -45,7 +50,10 @@ const Child: React.FC<IProps> = ({ address, name, access, onTransfer }) => {
             <span className="ml-1 font-normal text-base">Add more funds</span>
           </div>
         </Button>
-        <Button className="rounded-0 bg-white border-r-2 border-grey-light">
+        <Button
+          className="rounded-0 bg-white border-r-2 border-grey-light"
+          onClick={onStream}
+        >
           <div className="flex items-center text-blue-dark">
             <Plus width={12} height={12} />
             <span className="ml-1 font-normal text-base">

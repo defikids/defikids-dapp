@@ -57,6 +57,7 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
               onChange={(value) => setWallet(value.currentTarget.value)}
             />
           </InputGroup>
+          {/* TODO add allowWithdraw toggle */}
         </div>
         <Button
           className={loading && "animate-pulse pointer-events-none"}

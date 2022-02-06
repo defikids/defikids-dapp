@@ -3,8 +3,6 @@ import React, { useEffect, useState } from "react";
 import Button from "../components/button";
 import { useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
-import { downgradeToken, upgradeToken } from "../hooks/useSFCore";
-import { ethers } from "ethers";
 import AddChildModal from "../components/add_child_modal";
 import Plus from "../components/plus";
 import Arrow from "../components/arrow";
@@ -12,6 +10,15 @@ import Child from "../components/child";
 import TopUpModal from "../components/topup_modal";
 import WithdrawModal from "../components/withdraw_modal";
 import TransferModal from "../components/transfer_modal";
+import StreamModal from "../components/stream_modal";
+import { IChild } from "../services/contract";
+import AnimatedNumber from "../components/animated_number";
+import { flowDetails } from "../hooks/useSuperFluid";
+import { ethers } from "ethers";
+
+const FETCH_BALANCE_INTERVAL = 25000; // correct balance value X milliseconds
+const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecting a change
+const FETCH_RETRY_TIMEOUT = 1000; // timeout between fetches when expecting a change
 
 const Parent: React.FC = () => {
   const {
@@ -19,9 +26,21 @@ const Parent: React.FC = () => {
   } = useStore();
   const [children, setChildren] = useState([]);
 
-  const fetchChildren = async () => {
-    const children = await contract.fetchChildren();
-    setChildren(children);
+  const fetchChildren = async (retry = false, retries = 0) => {
+    setChildrenLoading(true);
+    const newChildren = await contract.fetchChildren();
+    if (
+      retry &&
+      retries < MAX_FETCH_RETRIES &&
+      children.length === newChildren.length
+    ) {
+      return setTimeout(
+        () => fetchChildren(true, retries + 1),
+        FETCH_RETRY_TIMEOUT
+      );
+    }
+    setChildrenLoading(false);
+    setChildren(newChildren);
   };
 
   useEffect(() => {
@@ -32,28 +51,39 @@ const Parent: React.FC = () => {
     fetchChildren();
   }, [contract]);
 
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState<number>();
+  const [netFlow, setNetFlow] = useState<number>(0);
+  const [childrenLoading, setChildrenLoading] = useState(false);
 
   const updateBalance = () => {
-    console.log("update");
     getUSDCXBalance(provider, wallet).then((value) => {
-      console.log("new balance", value);
       setBalance(parseFloat(value));
     });
+  };
+
+  const updateNetFlow = async () => {
+    const result = await flowDetails(wallet);
+    setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
   };
 
   useEffect(() => {
     if (!provider) {
       return;
     }
+    const id = setInterval(() => {
+      updateBalance();
+    }, FETCH_BALANCE_INTERVAL);
+
     updateBalance();
+    updateNetFlow();
+    return () => clearInterval(id);
   }, [provider]);
 
   const [showAddChild, setShowAddChild] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
-  const [transferChild, setTransferChild] =
-    useState<{ name: string; address: string }>();
+  const [transferChild, setTransferChild] = useState<Omit<IChild, "access">>();
+  const [streamChild, setStreamChild] = useState<Omit<IChild, "access">>();
 
   return (
     <div>
@@ -64,9 +94,9 @@ const Parent: React.FC = () => {
       <div className="bg-blue-dark px-6 py-8 rounded-xl text-white flex justify-between items-end stretch">
         <div className="flex flex-col items-start">
           <p className="text-sm mb-1">AVAILABLE FUNDS</p>
-          <h1 className="text-xxl mb-6">
-            {balance}
-            <span className="text-base"> USDx</span>
+          <h1 className={`text-xxl mb-6 flex items-end`}>
+            {balance ? <AnimatedNumber value={balance} rate={netFlow} /> : 0}
+            <span className="text-base ml-2"> USDx</span>
           </h1>
           <Image
             src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=018"
@@ -100,7 +130,7 @@ const Parent: React.FC = () => {
           </Button>
         </div>
       </div>
-      <div className="mt-16">
+      <div className={`mt-16 ${childrenLoading && "animate-pulse"}`}>
         <p className="text-sm mb-8">YOUR KIDS</p>
         <div className="flex items-start">
           {children.map((c) => (
@@ -110,6 +140,7 @@ const Parent: React.FC = () => {
               name={c[1]}
               access={c[2]}
               onTransfer={() => setTransferChild({ name: c[1], address: c[0] })}
+              onStream={() => setStreamChild({ name: c[1], address: c[0] })}
             />
           ))}
         </div>
@@ -133,20 +164,27 @@ const Parent: React.FC = () => {
       <TopUpModal
         show={showTopUp}
         onClose={() => setShowTopUp(false)}
-        onTransfer={setBalance}
+        onTransfer={() => updateBalance()}
       />
       <WithdrawModal
         show={showWithdraw}
         onClose={() => setShowWithdraw(false)}
-        onTransfer={setBalance}
-        balance={balance}
+        onTransfer={() => updateBalance()}
+        balance={Math.floor(balance)}
       />
       <TransferModal
         show={!!transferChild}
         onClose={() => setTransferChild(undefined)}
-        onTransfer={updateBalance}
-        balance={balance}
+        onTransfer={() => updateBalance()}
+        balance={Math.floor(balance)}
         child={transferChild}
+      />
+      <StreamModal
+        show={!!streamChild}
+        onClose={() => setStreamChild(undefined)}
+        onTransfer={() => updateBalance()}
+        balance={Math.floor(balance)}
+        child={streamChild}
       />
     </div>
   );

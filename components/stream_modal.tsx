@@ -1,26 +1,46 @@
-import { ethers } from "ethers";
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import { downgradeToken } from "../hooks/useSFCore";
+import { transferUSDCX } from "../services/usdcx_contract";
 import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
+import { createFlow } from "../hooks/useSFCore";
+import { ethers } from "ethers";
 
 interface IProps {
   show: boolean;
   onClose: () => void;
-  onTransfer: (newBalance: number) => void;
+  onTransfer: () => void;
   balance: number;
+  child: { name: string; address: string };
 }
 
-const WithdrawModal: React.FC<IProps> = ({
+const ALLOWANCE_DAYS = 30;
+
+function calculateFlowRate(amountInEther) {
+  if (
+    typeof Number(amountInEther) !== "number" ||
+    isNaN(Number(amountInEther)) === true
+  ) {
+    throw new Error("You can only calculate a flowRate based on a number");
+  } else if (typeof Number(amountInEther) === "number") {
+    const monthlyAmount = ethers.utils.parseEther(amountInEther.toString());
+    const calculatedFlowRate = Math.floor(
+      (monthlyAmount as any) / 3600 / 24 / ALLOWANCE_DAYS
+    );
+    return calculatedFlowRate;
+  }
+}
+
+const StreamModal: React.FC<IProps> = ({
   show,
   onClose,
   onTransfer,
   balance,
+  child,
 }) => {
   const {
     state: { provider, wallet },
@@ -28,15 +48,20 @@ const WithdrawModal: React.FC<IProps> = ({
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState(false);
 
-  const handleTransfer = async (amount: number) => {
+  const handleStream = async (value: number, childAddress: string) => {
+    const flowRate = calculateFlowRate(value);
     try {
       setLoading(true);
-      const result = await downgradeToken(amount, provider, wallet);
+      const result = await createFlow(
+        provider,
+        wallet,
+        childAddress,
+        flowRate.toString()
+      );
+      console.log(result);
       setLoading(false);
       onClose();
-      onTransfer(
-        parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
-      );
+      onTransfer();
     } catch (error) {
       setLoading(false);
       console.error(error);
@@ -47,9 +72,9 @@ const WithdrawModal: React.FC<IProps> = ({
     <Modal show={show} onHide={onClose} dialogClassName="w-modal" size="lg">
       <Modal.Header closeButton className="mb-7 border-0 px-12 pt-12">
         <h1 className="text-xl">
-          Withdraw
+          Monthly allowance
           <br />
-          Account
+          for {child ? child.name : ""}
         </h1>
       </Modal.Header>
       <div className="flex px-12 pb-12 justify-between items-center">
@@ -62,7 +87,7 @@ const WithdrawModal: React.FC<IProps> = ({
               aria-label="amount"
               type="number"
               style={{ width: "100%", borderRadius: 12 }}
-              value={amount}
+              value={amount?.toString() ?? ""}
               onChange={(value) =>
                 setAmount(
                   Math.min(parseFloat(value.currentTarget.value), balance)
@@ -74,7 +99,7 @@ const WithdrawModal: React.FC<IProps> = ({
         <Button
           className={loading && "animate-pulse pointer-events-none"}
           size="lg"
-          onClick={() => handleTransfer(amount)}
+          onClick={() => handleStream(amount, child.address)}
           disabled={!amount || isNaN(amount)}
         >
           <div className="flex items-center">
@@ -87,4 +112,4 @@ const WithdrawModal: React.FC<IProps> = ({
   );
 };
 
-export default WithdrawModal;
+export default StreamModal;

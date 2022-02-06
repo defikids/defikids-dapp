@@ -162,7 +162,7 @@ const Child: React.FC = () => {
           <div className="ml-6">
             <div className="mb-2 flex items-center">
               <h3 className="text-blue-dark text-lg mr-3">Peter</h3>
-              <Button className="bg-blue-light " size="sm">
+              <Button className="bg-[#47a1b5]" size="sm">
                 Withdraws allowed
               </Button>
             </div>

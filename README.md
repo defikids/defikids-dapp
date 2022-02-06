@@ -57,7 +57,7 @@ Technologies
 
 3. The child can view the remaining duration at anytime
 4. The child can only withdraw their initial stake once the duration has elapsed.
-5. The reward is calculated at 5% of the inital times the duration.
+5. The reward is calculated at 5% of the initial funds times the duration.
 6. The reward is Allocate tokens.
 
 ## Contracts

@@ -21,6 +21,7 @@ interface IStoreState {
   userType?: UserType;
   contract?: HostContract;
   stakeContract?: StakeContract;
+  logout?: () => void;
 }
 type IStoreDispatch = (action: IStoreAction) => void;
 
@@ -71,6 +72,7 @@ function useStore() {
 
 async function loginUser(
   provider: ethers.providers.Web3Provider,
+  logout: () => void,
   dispatch: IStoreDispatch
 ) {
   const contract = await HostContract.fromProvider(provider);
@@ -79,7 +81,7 @@ async function loginUser(
 
   dispatch({
     type: StoreAction.LOGIN,
-    payload: { provider, userType, contract, wallet },
+    payload: { provider, userType, contract, wallet, logout },
   });
 }
 

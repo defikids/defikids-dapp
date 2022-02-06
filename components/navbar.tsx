@@ -4,7 +4,7 @@ import { useStore } from "../services/store";
 
 const Navbar: React.FC = () => {
   const {
-    state: { wallet, loggedIn },
+    state: { wallet, loggedIn, logout },
   } = useStore();
 
   const [auth, setAuth] = useState(false);
@@ -14,8 +14,7 @@ const Navbar: React.FC = () => {
   }, []);
 
   const handleLogoutClick = async () => {
-    const Web3Auth = (await import("../services/web3auth")).default;
-    Web3Auth.logout();
+    logout();
   };
 
   return (

@@ -15,7 +15,7 @@ const Auth: React.FC = () => {
       const provider = new ethers.providers.Web3Provider(
         Web3Auth.web3auth.provider
       );
-      loginUser(provider, store.dispatch);
+      loginUser(provider, logout, store.dispatch);
     } catch (error) {
       logout();
     }

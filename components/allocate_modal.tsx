@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -15,6 +15,8 @@ interface IProps {
   onClose: () => void;
   onAllocate: (stake: IStake) => void;
   balance: number;
+  update?: { name: string; amount: number; duration: number };
+  onUpdate?: (stake: IStake) => void;
 }
 
 const StakingDurationsString = {
@@ -28,6 +30,8 @@ const AllocateModal: React.FC<IProps> = ({
   onClose,
   onAllocate,
   balance,
+  update,
+  onUpdate,
 }) => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState<number>();
@@ -36,6 +40,13 @@ const AllocateModal: React.FC<IProps> = ({
   const {
     state: { stakeContract },
   } = useStore();
+
+  useEffect(() => {
+    if (update) {
+      setName(update.name);
+      setDuration(update.duration);
+    }
+  }, [update]);
 
   const handleAllocate = async (
     name: string,
@@ -47,15 +58,19 @@ const AllocateModal: React.FC<IProps> = ({
     await new Promise((resolve) => setTimeout(resolve, 500));
     setLoading(false);
     onClose();
-    onAllocate({
+    const callback = update ? onUpdate : onAllocate;
+    callback({
       name,
       amount,
       duration,
       reward: StakeContract.calculateReward(amount, duration),
     });
+    setName("");
+    setAmount(undefined);
+    setDuration(undefined);
   };
 
-  const stakeOptions = () => {
+  const stakeOptions = (disabled: boolean) => {
     const options = [];
     const backgrounds = ["#47a1b5", "blue-oil", "blue-dark"];
     for (const option in IStakeDuration) {
@@ -71,7 +86,7 @@ const AllocateModal: React.FC<IProps> = ({
           key={option}
           className={`px-3 py-3 rounded-md text-white bg-${background} hover:cursor-pointer hover:shadow hover:opacity-100 opacity-${
             selected ? 100 : duration === undefined ? 80 : 40
-          } transition`}
+          } transition ${disabled && "pointer-events-none"}`}
           style={background.startsWith("#") ? { background } : {}}
           onClick={() => setDuration(optionDuration)}
         >
@@ -107,7 +122,8 @@ const AllocateModal: React.FC<IProps> = ({
           <InputGroup className="flex flex-col">
             <Form.Label htmlFor="name">Name</Form.Label>
             <FormControl
-              placeholder="What are you saving for?"
+              disabled={!!update}
+              placeholder={!update ? "What are you saving for?" : name}
               aria-label="name"
               style={{ width: "100%", borderRadius: 12 }}
               onChange={(value) => setName(value.currentTarget.value)}
@@ -131,7 +147,9 @@ const AllocateModal: React.FC<IProps> = ({
           </InputGroup>
           <div className="mt-6">
             <p>Allocate for:</p>
-            <div className="flex justify-between mt-2">{stakeOptions()}</div>
+            <div className="flex justify-between mt-2">
+              {stakeOptions(!!update)}
+            </div>
           </div>
         </div>
         <Button

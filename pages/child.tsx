@@ -107,6 +107,7 @@ const Child: React.FC = () => {
   }, [provider]);
 
   const [showAllocate, setShowAllocate] = useState(false);
+  const [updateAllocation, setUpdateAllocation] = useState<IStake>();
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
@@ -200,13 +201,23 @@ const Child: React.FC = () => {
               style={{ maxHeight: 300 }}
             >
               {stakes.map((a) => (
-                <Allocation
+                <div
+                  className="flex items-center hover:cursor-pointer"
                   key={a.name}
-                  name={a.name}
-                  value={a.amount}
-                  duration={0}
-                  durationTotal={a.duration}
-                />
+                  onClick={() => setUpdateAllocation({ ...a })}
+                >
+                  <Allocation
+                    className="flex-1"
+                    key={a.name}
+                    name={a.name}
+                    value={a.amount}
+                    duration={0}
+                    durationTotal={a.duration}
+                  />
+                  <Button className="ml-4 bg-blue-oil mt-3 text-base" size="sm">
+                    Add funds
+                  </Button>
+                </div>
               ))}
             </div>
           </div>
@@ -224,12 +235,25 @@ const Child: React.FC = () => {
         </div>
       </Button>
       <AllocateModal
-        show={showAllocate}
-        onClose={() => setShowAllocate(false)}
-        onAllocate={(stake) => {
-          setStakes([stake]);
+        show={showAllocate || !!updateAllocation}
+        onClose={() => {
+          setShowAllocate(false);
+          setUpdateAllocation(undefined);
         }}
-        balance={Math.floor(balance)}
+        onAllocate={(stake) => {
+          setStakes([...stakes, stake]);
+        }}
+        update={updateAllocation}
+        onUpdate={(stake) => {
+          const newStakes = [...stakes];
+          const i = newStakes.findIndex((s) => s.name === stake.name);
+          const newStake = { ...stakes[i] };
+          newStake.amount += stake.amount;
+          newStake.reward += stake.reward;
+          newStakes[i] = newStake;
+          setStakes(newStakes);
+        }}
+        balance={Math.floor(availableFunds)}
       />
       <TopUpModal
         show={showTopUp}
@@ -240,7 +264,7 @@ const Child: React.FC = () => {
         show={showWithdraw}
         onClose={() => setShowWithdraw(false)}
         onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
+        balance={Math.floor(availableFunds)}
       />
     </div>
   );

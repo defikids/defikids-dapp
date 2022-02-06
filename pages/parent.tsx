@@ -15,6 +15,7 @@ import { IChild } from "../services/contract";
 import AnimatedNumber from "../components/animated_number";
 import { flowDetails } from "../hooks/useSuperFluid";
 import { ethers } from "ethers";
+import TransferAllModal from "../components/transfer_all_modal";
 
 const FETCH_BALANCE_INTERVAL = 25000; // correct balance value X milliseconds
 const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecting a change
@@ -82,6 +83,7 @@ const Parent: React.FC = () => {
   const [showAddChild, setShowAddChild] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showTransferAll, setShowTransferAll] = useState(false);
   const [transferChild, setTransferChild] = useState<Omit<IChild, "access">>();
   const [streamChild, setStreamChild] = useState<Omit<IChild, "access">>();
 
@@ -131,7 +133,16 @@ const Parent: React.FC = () => {
         </div>
       </div>
       <div className={`mt-16 ${childrenLoading && "animate-pulse"}`}>
-        <p className="text-md mb-8">YOUR KIDS</p>
+        <div className="mb-8 flex items-center">
+          <p className="text-md">YOUR KIDS</p>
+          <Button
+            size="sm"
+            className="bg-blue-oil ml-4"
+            onClick={() => setShowTransferAll(true)}
+          >
+            Transfer to all kids
+          </Button>
+        </div>
         <div className="flex items-start">
           {children.map((c) => (
             <Child
@@ -169,6 +180,12 @@ const Parent: React.FC = () => {
       <WithdrawModal
         show={showWithdraw}
         onClose={() => setShowWithdraw(false)}
+        onTransfer={() => updateBalance()}
+        balance={Math.floor(balance)}
+      />
+      <TransferAllModal
+        show={showTransferAll}
+        onClose={() => setShowTransferAll(false)}
         onTransfer={() => updateBalance()}
         balance={Math.floor(balance)}
       />

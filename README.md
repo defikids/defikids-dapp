@@ -18,4 +18,4 @@ Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
 3. The child can view the remaining duration at anytime
 4. The child can only withdraw their initial stake once the duration has elapsed.
 5. The reward is calculated at 5% of the inital times the duration.
-6. The reward is Alloacte tokens.
+6. The reward is Allocate tokens.

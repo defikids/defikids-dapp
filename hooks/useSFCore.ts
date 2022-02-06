@@ -189,17 +189,14 @@ export const updateFlow = async (provider, sender, recipient, flowRate) => {
   }
 };
 
-export const deleteFlow = async (sender, recipient) => {
+export const deleteFlow = async (provider, sender, recipient) => {
   const sf = await Framework.create({
     networkName: "mumbai",
     provider: customHttpProvider,
   });
 
   // Signing the transaction
-  const web3Modal = new Web3Modal();
-  const connection = await web3Modal.connect();
-  const provider = new ethers.providers.Web3Provider(connection);
-  const signer = provider.getSigner();
+  const signer = provider.getSigner(sender);
 
   // Create a contract instance that we can interact with
   const usdcx = "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7";

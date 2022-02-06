@@ -21,7 +21,11 @@ const Auth: React.FC = () => {
   };
 
   const logout = () => {
-    Web3Auth.logout();
+    try {
+      Web3Auth.logout();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleLogout = () => {
@@ -52,6 +56,7 @@ const Auth: React.FC = () => {
         router.push("/child");
         break;
       default:
+        logout();
         return;
     }
   }, [store.state.userType]);

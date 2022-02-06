@@ -1,5 +1,6 @@
 import { Web3Auth } from "@web3auth/web3auth";
 import {
+  ADAPTER_STATUS,
   CHAIN_NAMESPACES,
   CONNECTED_EVENT_DATA,
   CustomChainConfig,
@@ -64,7 +65,9 @@ export function getUserInfo() {
 }
 
 export function logout() {
-  return web3auth.logout();
+  if (web3auth.status === ADAPTER_STATUS.CONNECTED) {
+    return web3auth.logout({ cleanup: true });
+  }
 }
 
 export default { initializeModal, connect, getUserInfo, logout, web3auth };

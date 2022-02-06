@@ -10,6 +10,13 @@ interface IProps extends IChild {
   onStream: () => void;
 }
 
+export const MOCK_ALLOCATIONS = [
+  { name: "Playstation 5", value: 180, total: 230 },
+  { name: "New Science Book", value: 11, total: 40 },
+  { name: "College fund", value: 120, total: 5000 },
+  { name: "Drone", value: 10, total: 200 },
+];
+
 const Child: React.FC<IProps> = ({
   address,
   name,
@@ -17,12 +24,7 @@ const Child: React.FC<IProps> = ({
   onTransfer,
   onStream,
 }) => {
-  const allocations = [
-    { name: "Playstation 5", value: 180, total: 230 },
-    { name: "New Science Book", value: 11, total: 40 },
-    { name: "College fund", value: 120, total: 5000 },
-    { name: "Drone", value: 10, total: 200 },
-  ];
+  const allocations = MOCK_ALLOCATIONS;
   return (
     <div className="rounded-lg border-2 border-grey-light">
       <div className="p-6 flex">
@@ -39,7 +41,7 @@ const Child: React.FC<IProps> = ({
       </div>
       <div className="border-t-2 border-b-2 border-grey-light flex">
         <Button
-          className="rounded-0 bg-white border-r-2 border-grey-light"
+          className="rounded-0 bg-white border-r-2 border-grey-light shadow-[_0_0px_10px_rgba(0,0,0,0.1)]"
           onClick={onTransfer}
         >
           <div
@@ -51,7 +53,7 @@ const Child: React.FC<IProps> = ({
           </div>
         </Button>
         <Button
-          className="rounded-0 bg-white border-r-2 border-grey-light"
+          className="rounded-0 bg-white border-r-2 border-grey-light shadow-[_0_0px_10px_rgba(0,0,0,0.1)]"
           onClick={onStream}
         >
           <div className="flex items-center text-blue-dark">
@@ -61,7 +63,7 @@ const Child: React.FC<IProps> = ({
             </span>
           </div>
         </Button>
-        <Button className="rounded-0 bg-white flex-1">
+        <Button className="rounded-0 bg-white flex-1 shadow-[_0_0px_10px_rgba(0,0,0,0.1)]">
           <span className="text-blue-dark block" style={{ marginTop: -12 }}>
             ...
           </span>

@@ -121,7 +121,7 @@ const Parent: React.FC = () => {
           </Button>
           <Button
             size="lg"
-            className={`bg-blue-[#47a1b5] mr-6`}
+            className={`bg-[#47a1b5] mr-6`}
             style={{ borderRadius: 8 }}
             onClick={() => setShowWithdraw(true)}
           >

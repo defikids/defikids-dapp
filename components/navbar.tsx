@@ -27,15 +27,11 @@ const Navbar: React.FC = () => {
         {loggedIn && auth && (
           <div className="flex items-center">
             <p className="mr-4 pt-0.5">Wallet: {wallet}</p>
-            <a
-              className="bg-white text-blue-dark text-md"
-              onClick={handleLogoutClick}
-            >
+            <a className="text-blue-dark text-md" onClick={handleLogoutClick}>
               Logout
             </a>
           </div>
         )}
-        <p className="text-md cursor-pointer ml-8">Contact us</p>
       </div>
     </div>
   );

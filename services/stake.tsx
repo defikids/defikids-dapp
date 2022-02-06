@@ -13,10 +13,12 @@ export interface IStake {
 }
 
 export enum IStakeDuration {
-  DAY = 1,
-  WEEK = 2,
-  FORTNIGHT = 3,
+  DAY = 0,
+  WEEK = 1,
+  FORTNIGHT = 2,
 }
+
+export const REWARD_RATE = 0.05;
 
 class StakeContract {
   private contract: AllocateStakingToken;
@@ -49,6 +51,27 @@ class StakeContract {
 
   async createStake(amount: number, duration: IStakeDuration) {
     return this.contract.createStake(amount, duration);
+  }
+
+  static calculateDays(duration: IStakeDuration) {
+    let days = 0;
+    switch (duration) {
+      case IStakeDuration.DAY:
+        days = 1;
+        break;
+      case IStakeDuration.WEEK:
+        days = 7;
+        break;
+      case IStakeDuration.FORTNIGHT:
+        days = 14;
+        break;
+    }
+    return days;
+  }
+
+  static calculateReward(amount: number, duration: IStakeDuration) {
+    const days = this.calculateDays(duration);
+    return parseFloat((days * REWARD_RATE * amount).toFixed(2));
   }
 }
 

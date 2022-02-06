@@ -1,64 +1,82 @@
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../components/button";
-import { useStore } from "../services/store";
+import { StoreAction, useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
-import AddChildModal from "../components/add_child_modal";
 import Plus from "../components/plus";
 import Arrow from "../components/arrow";
 import TopUpModal from "../components/topup_modal";
 import WithdrawModal from "../components/withdraw_modal";
-import TransferModal from "../components/transfer_modal";
-import StreamModal from "../components/stream_modal";
-import { IChild } from "../services/contract";
 import AnimatedNumber from "../components/animated_number";
 import { flowDetails } from "../hooks/useSuperFluid";
 import { ethers } from "ethers";
-import StakeContract, { IStake } from "../services/stake";
-import { MOCK_ALLOCATIONS } from "../components/child";
+import StakeContract from "../services/stake";
+import AllocateModal from "../components/allocate_modal";
+import Allocation from "../components/allocation";
+import Logo from "../components/logo";
 
 const FETCH_BALANCE_INTERVAL = 25000; // correct balance value X milliseconds
 const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecting a change
 const FETCH_RETRY_TIMEOUT = 1000; // timeout between fetches when expecting a change
 
+export interface IStake {
+  amount: number;
+  duration: number;
+  name: string;
+  reward: number;
+}
+
 const Child: React.FC = () => {
   const {
-    state: { provider, wallet },
+    dispatch,
+    state: { provider, wallet, stakeContract },
   } = useStore();
-  const [stakes, setStakes] = useState<IStake[]>();
-  const [stakeContract, setStakeContract] = useState<StakeContract>();
+  const [stakes, setStakes] = useState<IStake[]>([
+    // { name: "Playstation 5", amount: 10, duration: 2, reward: 7 },
+  ]);
 
-  useEffect(() => {
-    if (provider) {
-      StakeContract.fromProvider(provider).then(setStakeContract);
+  const initStakeContract = async () => {
+    if (!provider) {
+      return;
     }
-  }, [provider]);
-
-  const fetchStakes = async (retry = false, retries = 0) => {
-    setStakesLoading(true);
-    const newStakes = await stakeContract.fetchStakes();
-    console.log("ola", newStakes);
-    if (
-      retry &&
-      retries < MAX_FETCH_RETRIES &&
-      newStakes.length === newStakes.length
-    ) {
-      return setTimeout(
-        () => fetchStakes(true, retries + 1),
-        FETCH_RETRY_TIMEOUT
-      );
-    }
-    setStakesLoading(false);
-    setStakes(newStakes);
+    const stakeContract = await StakeContract.fromProvider(provider);
+    dispatch({
+      type: StoreAction.STAKE_CONTRACT,
+      payload: stakeContract as any,
+    });
   };
 
   useEffect(() => {
-    if (!stakeContract) {
-      return;
+    if (provider) {
+      initStakeContract();
     }
+  }, [provider]);
 
-    fetchStakes();
-  }, [stakeContract]);
+  // const fetchStakes = async (retry = false, retries = 0) => {
+  //   setStakesLoading(true);
+  //   const newStakes = await stakeContract.fetchStakes();
+  //   console.log("ola", newStakes);
+  //   if (
+  //     retry &&
+  //     retries < MAX_FETCH_RETRIES &&
+  //     newStakes.length === newStakes.length
+  //   ) {
+  //     return setTimeout(
+  //       () => fetchStakes(true, retries + 1),
+  //       FETCH_RETRY_TIMEOUT
+  //     );
+  //   }
+  //   setStakesLoading(false);
+  //   setStakes(newStakes);
+  // };
+
+  // useEffect(() => {
+  //   if (!stakeContract) {
+  //     return;
+  //   }
+
+  //   fetchStakes();
+  // }, [stakeContract]);
 
   const [balance, setBalance] = useState<number>();
   const [netFlow, setNetFlow] = useState<number>(0);
@@ -88,18 +106,17 @@ const Child: React.FC = () => {
     return () => clearInterval(id);
   }, [provider]);
 
-  const [showAddChild, setShowAddChild] = useState(false);
+  const [showAllocate, setShowAllocate] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
-  const [transferChild, setTransferChild] = useState<Omit<IChild, "access">>();
-  const [streamChild, setStreamChild] = useState<Omit<IChild, "access">>();
+
+  const investedFunds = stakes.reduce((acc, stake) => (acc += stake.amount), 0);
+  const availableFunds = (balance ?? 0) - investedFunds;
+  const totalRewards = stakes.reduce((acc, stake) => (acc += stake.reward), 0);
 
   return (
     <div>
-      <h1 className="text-xxl text-blue-dark mb-[5vh] ">
-        Welcome to your
-        <br /> child account,
-      </h1>
+      <h1 className="text-xxl text-blue-dark mb-[5vh] ">Welcome Peter,</h1>
       <div className="bg-blue-oil px-6 py-8 rounded-xl text-white flex justify-between items-end stretch">
         <div className="flex flex-col items-start">
           <p className="text-sm mb-1">AVAILABLE FUNDS</p>
@@ -139,25 +156,80 @@ const Child: React.FC = () => {
           </Button>
         </div>
       </div>
-      <div className={`mt-16 ${stakesLoading && "animate-pulse"}`}>
-        <p className="text-sm mb-8">YOUR KIDS</p>
-        <div className="flex items-start"></div>
-        <Button
-          className="text-sm w-full rounded-md flex justify-end mt-4"
-          onClick={() => setShowAddChild(true)}
-        >
-          <div className="flex items-center">
-            <Plus />
-            <span className="ml-6 font-medium text-base">
-              Allocate your funds
-            </span>
+      <div className="rounded-lg border-2 border-grey-light mt-6">
+        <div className="p-6 flex">
+          <Image src="/placeholder_child.jpg" width={64} height={64} />
+          <div className="ml-6">
+            <div className="mb-2 flex items-center">
+              <h3 className="text-blue-dark text-lg mr-3">Peter</h3>
+              <Button className="bg-blue-light " size="sm">
+                Withdraws allowed
+              </Button>
+            </div>
+            <p className="text-grey-medium">{wallet}</p>
           </div>
-        </Button>
+        </div>
+        <div className="flex border-t-2 border-grey-light">
+          <div className="flex flex-col text-blue-dark">
+            <div className="flex-1 p-4 border-b-2 border-grey-light">
+              <p className="text-s mb-1">AVAILABLE FUNDS</p>
+              <h3 className="text-lg">
+                {Math.floor(availableFunds)}{" "}
+                <span className="text-base"> USDx</span>
+              </h3>
+            </div>
+            <div className="flex-1 p-4 border-b-2 border-grey-light">
+              <p className="text-s mb-1">INVESTED FUNDS</p>
+              <h3 className="text-lg">
+                {Math.floor(investedFunds)}{" "}
+                <span className="text-base"> USDx</span>
+              </h3>
+            </div>
+            <div className="flex-1 p-4">
+              <p className="text-s mb-1">TOTAL REWARDS</p>
+              <h3 className="text-lg flex">
+                <span className="mr-1">{totalRewards.toFixed(2)} </span>
+                <Logo variant="blue" />
+              </h3>
+            </div>
+          </div>
+          <div className="border-l-2 border-grey-light p-4 pb-0 flex flex-col flex-1">
+            <p className="text-s">YOUR ALLOCATIONS</p>
+            <div
+              className="flex-1 overflow-auto flex flex-col pb-3"
+              style={{ maxHeight: 300 }}
+            >
+              {stakes.map((a) => (
+                <Allocation
+                  key={a.name}
+                  name={a.name}
+                  value={a.amount}
+                  duration={0}
+                  durationTotal={a.duration}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-      <AddChildModal
-        show={showAddChild}
-        onClose={() => setShowAddChild(false)}
-        onAdd={() => fetchStakes()}
+      <Button
+        className="text-sm w-full rounded-md flex justify-end mt-4"
+        onClick={() => setShowAllocate(true)}
+      >
+        <div className="flex items-center">
+          <Plus />
+          <span className="ml-6 font-medium text-base">
+            Allocate your funds
+          </span>
+        </div>
+      </Button>
+      <AllocateModal
+        show={showAllocate}
+        onClose={() => setShowAllocate(false)}
+        onAllocate={(stake) => {
+          setStakes([stake]);
+        }}
+        balance={Math.floor(balance)}
       />
       <TopUpModal
         show={showTopUp}
@@ -169,20 +241,6 @@ const Child: React.FC = () => {
         onClose={() => setShowWithdraw(false)}
         onTransfer={() => updateBalance()}
         balance={Math.floor(balance)}
-      />
-      <TransferModal
-        show={!!transferChild}
-        onClose={() => setTransferChild(undefined)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-        child={transferChild}
-      />
-      <StreamModal
-        show={!!streamChild}
-        onClose={() => setStreamChild(undefined)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-        child={streamChild}
       />
     </div>
   );

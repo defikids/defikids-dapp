@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import Page from "../components/page";
 import { StoreProvider } from "../services/store";
 import dynamic from "next/dynamic";
+import Footer from "../components/footer";
 
 const Auth = dynamic(() => import("../components/auth"), {
   ssr: false,
@@ -19,6 +20,7 @@ function MyApp({ Component, pageProps }) {
         <Auth />
         <Component {...pageProps} />
       </Page>
+      <Footer />
     </StoreProvider>
   );
 }

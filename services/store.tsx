@@ -1,21 +1,26 @@
 import { ethers } from "ethers";
 import React from "react";
 import HostContract, { UserType } from "./contract";
+import StakeContract from "./stake";
 
 export enum StoreAction {
   LOGIN,
   LOGOUT,
+  STAKE_CONTRACT,
 }
+
 export interface IStoreAction {
   type: StoreAction;
   payload?: Partial<IStoreState>;
 }
+
 interface IStoreState {
   loggedIn: boolean;
   wallet?: string;
   provider?: ethers.providers.Web3Provider;
   userType?: UserType;
   contract?: HostContract;
+  stakeContract?: StakeContract;
 }
 type IStoreDispatch = (action: IStoreAction) => void;
 
@@ -34,6 +39,12 @@ function storeReducer(state: IStoreState, action: IStoreAction): IStoreState {
     }
     case StoreAction.LOGOUT: {
       return { loggedIn: false };
+    }
+    case StoreAction.STAKE_CONTRACT: {
+      return {
+        ...state,
+        stakeContract: action.payload as any as StakeContract,
+      };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -62,7 +73,6 @@ async function loginUser(
   provider: ethers.providers.Web3Provider,
   dispatch: IStoreDispatch
 ) {
-  console.log("provider", provider);
   const contract = await HostContract.fromProvider(provider);
   const userType = await contract.getUserType();
   const wallet = contract.getWallet();

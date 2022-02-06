@@ -131,7 +131,7 @@ const Parent: React.FC = () => {
         </div>
       </div>
       <div className={`mt-16 ${childrenLoading && "animate-pulse"}`}>
-        <p className="text-sm mb-8">YOUR KIDS</p>
+        <p className="text-md mb-8">YOUR KIDS</p>
         <div className="flex items-start">
           {children.map((c) => (
             <Child

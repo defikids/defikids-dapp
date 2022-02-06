@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { IChild } from "../services/contract";
+import { IStakeDuration } from "../services/stake";
 import Allocation from "./allocation";
 import Button from "./button";
 import Plus from "./plus";
@@ -11,10 +12,30 @@ interface IProps extends IChild {
 }
 
 export const MOCK_ALLOCATIONS = [
-  { name: "Playstation 5", value: 180, total: 230 },
-  { name: "New Science Book", value: 11, total: 40 },
-  { name: "College fund", value: 120, total: 5000 },
-  { name: "Drone", value: 10, total: 200 },
+  {
+    name: "Playstation 5",
+    value: 180,
+    duration: 10,
+    durationTotal: IStakeDuration.FORTNIGHT,
+  },
+  {
+    name: "New Science Book",
+    value: 25,
+    duration: 4,
+    durationTotal: IStakeDuration.WEEK,
+  },
+  {
+    name: "College fund",
+    value: 120,
+    duration: 2,
+    durationTotal: IStakeDuration.FORTNIGHT,
+  },
+  {
+    name: "Drone",
+    value: 200,
+    duration: 1,
+    durationTotal: IStakeDuration.FORTNIGHT,
+  },
 ];
 
 const Child: React.FC<IProps> = ({

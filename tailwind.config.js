@@ -19,7 +19,6 @@ module.exports = {
       blue: {
         dark: "#1D3557",
         oil: "#457B9D",
-        medium: "#A8DADC",
         light: "#BCF8EC",
       },
       grey: {

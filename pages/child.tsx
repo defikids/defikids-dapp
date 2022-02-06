@@ -39,7 +39,7 @@ const Child: React.FC = () => {
     if (!provider) {
       return;
     }
-    const stakeContract = await StakeContract.fromProvider(provider);
+    const stakeContract = await StakeContract.fromProvider(provider, wallet);
     dispatch({
       type: StoreAction.STAKE_CONTRACT,
       payload: stakeContract as any,

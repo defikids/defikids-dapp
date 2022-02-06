@@ -33,9 +33,15 @@ class StakeContract {
     return this.wallet;
   }
 
-  static async fromProvider(provider: ethers.providers.Web3Provider) {
-    const accounts = await provider.send("eth_requestAccounts", []);
-    const wallet = accounts[0];
+  static async fromProvider(
+    provider: ethers.providers.Web3Provider,
+    address?: string
+  ) {
+    let wallet = address;
+    if (!address) {
+      const accounts = await provider.send("eth_requestAccounts", []);
+      wallet = accounts[0];
+    }
     const signer = provider.getSigner(wallet);
     const contract = new ethers.Contract(
       CONTRACT_ADDRESS,

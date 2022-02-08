@@ -6,6 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
+import Toggle from "./toggle";
 
 interface IProps {
   show: boolean;
@@ -16,6 +17,7 @@ interface IProps {
 const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
   const [name, setName] = useState("");
   const [wallet, setWallet] = useState("");
+  const [withdraw, setWithdraw] = useState(false);
   const [loading, setLoading] = useState(false);
   const {
     state: { contract },
@@ -23,10 +25,17 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
 
   const handleAddChild = async (wallet, name) => {
     setLoading(true);
-    await contract.addMember(wallet, name);
-    setLoading(false);
-    onClose();
-    onAdd();
+    try {
+      await contract.addMember(wallet, name);
+      if (withdraw) {
+        await contract.changeAccess(wallet);
+      }
+      onAdd();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+      onClose();
+    }
   };
 
   return (
@@ -57,7 +66,20 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
               onChange={(value) => setWallet(value.currentTarget.value)}
             />
           </InputGroup>
-          {/* TODO add allowWithdraw toggle */}
+          <InputGroup className="flex flex-col mt-6">
+            <Form.Label htmlFor="withdraw">
+              Do you allow withdraws from this son?
+            </Form.Label>
+            <Toggle
+              value={withdraw}
+              onValueChange={setWithdraw}
+              className="self-start"
+            >
+              <p className="text-grey-medium ml-2 pr-4">
+                {withdraw ? "Yes, allow" : "No, don’t allow"}
+              </p>
+            </Toggle>
+          </InputGroup>
         </div>
         <Button
           className={loading && "animate-pulse pointer-events-none"}

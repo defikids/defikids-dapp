@@ -75,9 +75,15 @@ class StakeContract {
     return days;
   }
 
-  static calculateReward(amount: number, duration: IStakeDuration) {
+  static calculateAllocateReward(amount: number, duration: IStakeDuration) {
     const days = this.calculateDays(duration);
     return parseFloat((days * REWARD_RATE * amount).toFixed(2));
+  }
+
+  static calculateUSDCReward(amount: number, duration: IStakeDuration) {
+    const days = this.calculateDays(duration);
+    console.log((days * REWARD_RATE * amount) / 365);
+    return parseFloat(((days * REWARD_RATE * amount) / 365).toFixed(2));
   }
 }
 

@@ -22,7 +22,7 @@ function subscribeAuthEvents(
   web3auth.on(ADAPTER_EVENTS.DISCONNECTED, onLogout);
 
   web3auth.on(ADAPTER_EVENTS.ERRORED, (error) => {
-    console.log("someerror or user have cancelled login request", error);
+    console.log("some error or user have cancelled login request", error);
   });
 
   web3auth.on(LOGIN_MODAL_EVENTS.MODAL_VISIBILITY, (isVisible) => {

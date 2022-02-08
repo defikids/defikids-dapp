@@ -64,6 +64,10 @@ class HostContract {
   async addMember(wallet: string, username: string) {
     return this.contract.addMember(wallet, username);
   }
+
+  async changeAccess(wallet: string) {
+    return this.contract.changeAccess(wallet);
+  }
 }
 
 export default HostContract;

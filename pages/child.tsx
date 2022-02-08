@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Button from "../components/button";
 import { StoreAction, useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
@@ -31,9 +31,7 @@ const Child: React.FC = () => {
     dispatch,
     state: { provider, wallet, stakeContract },
   } = useStore();
-  const [stakes, setStakes] = useState<IStake[]>([
-    // { name: "Playstation 5", amount: 10, duration: 2, reward: 7 },
-  ]);
+  const [stakes, setStakes] = useState<IStake[]>([]);
 
   const initStakeContract = async () => {
     if (!provider) {
@@ -111,9 +109,17 @@ const Child: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
-  const investedFunds = stakes.reduce((acc, stake) => (acc += stake.amount), 0);
-  const availableFunds = (balance ?? 0) - investedFunds;
-  const totalRewards = stakes.reduce((acc, stake) => (acc += stake.reward), 0);
+  const { investedFunds, availableFunds, totalRewards } = useMemo(() => {
+    const investedFunds = stakes.reduce(
+      (acc, stake) => (acc += stake.amount),
+      0
+    );
+    return {
+      investedFunds,
+      availableFunds: (balance ?? 0) - investedFunds,
+      totalRewards: stakes.reduce((acc, stake) => (acc += stake.reward), 0),
+    };
+  }, [stakes, balance]);
 
   return (
     <div>
@@ -122,7 +128,11 @@ const Child: React.FC = () => {
         <div className="flex flex-col items-start">
           <p className="text-sm mb-1">AVAILABLE FUNDS</p>
           <h1 className={`text-xxl mb-6 flex items-end`}>
-            {balance ? <AnimatedNumber value={balance} rate={netFlow} /> : 0}
+            {balance ? (
+              <AnimatedNumber value={balance - investedFunds} rate={netFlow} />
+            ) : (
+              0
+            )}
             <span className="text-base ml-2"> USDx</span>
           </h1>
           <Image
@@ -194,10 +204,10 @@ const Child: React.FC = () => {
               </h3>
             </div>
           </div>
-          <div className="border-l-2 border-grey-light p-4 pb-0 flex flex-col flex-1">
+          <div className="border-l-2 border-grey-light pl-4 py-4 pb-0 flex flex-col flex-1">
             <p className="text-s">YOUR ALLOCATIONS</p>
             <div
-              className="flex-1 overflow-auto flex flex-col pb-3"
+              className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
               style={{ maxHeight: 300 }}
             >
               {stakes.map((a) => (

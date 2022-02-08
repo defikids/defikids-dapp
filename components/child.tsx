@@ -111,10 +111,10 @@ const Child: React.FC<IProps> = ({
             </h3>
           </div>
         </div>
-        <div className="border-l-2 border-grey-light p-4 pb-0 flex flex-col flex-1">
+        <div className="border-l-2 border-grey-light pl-4 py-4 pb-0 flex flex-col flex-1">
           <p className="text-s">INVESTED FUNDS</p>
           <div
-            className="flex-1 overflow-auto flex flex-col pb-3"
+            className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
             style={{ maxHeight: 300 }}
           >
             {allocations.map((a) => (

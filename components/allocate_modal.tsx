@@ -25,6 +25,8 @@ const StakingDurationsString = {
   [IStakeDuration.FORTNIGHT]: "2 Weeks",
 };
 
+const USDCX_YIELD = 0.05;
+
 const AllocateModal: React.FC<IProps> = ({
   show,
   onClose,
@@ -63,7 +65,7 @@ const AllocateModal: React.FC<IProps> = ({
       name,
       amount,
       duration,
-      reward: StakeContract.calculateReward(amount, duration),
+      reward: StakeContract.calculateAllocateReward(amount, duration),
     });
     setName("");
     setAmount(undefined);
@@ -90,18 +92,32 @@ const AllocateModal: React.FC<IProps> = ({
           style={background.startsWith("#") ? { background } : {}}
           onClick={() => setDuration(optionDuration)}
         >
-          <h3 className="text-md font-medium">
+          <h3 className="text-lg font-medium">
             {StakingDurationsString[option]}
           </h3>
-          <p className="text-s mt-3 mb-1">Reward</p>
-          <h3 className="text-md flex items-center" style={{ minWidth: 90 }}>
-            {!amount
-              ? 0
-              : StakeContract.calculateReward(amount, optionDuration)}
-            <span className="flex ml-1">
-              <Logo />
-            </span>
-          </h3>
+          <p className="text-md mt-4 mb-2 font-medium pr-1">Rewards:</p>
+          <div>
+            <h3
+              className="text-md flex items-end mb-1 justify-start"
+              style={{ minWidth: 90 }}
+            >
+              {!amount
+                ? 0
+                : StakeContract.calculateUSDCReward(amount, optionDuration)}
+              <span className="flex ml-1">USDCx</span>
+            </h3>
+            <h3
+              className="text-md flex items-center justify-start"
+              style={{ minWidth: 90 }}
+            >
+              {!amount
+                ? 0
+                : StakeContract.calculateAllocateReward(amount, optionDuration)}
+              <span className="flex ml-1">
+                <Logo />
+              </span>
+            </h3>
+          </div>
         </div>
       );
     }

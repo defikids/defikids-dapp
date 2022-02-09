@@ -32,7 +32,7 @@ function subscribeAuthEvents(
 
 const polygonMumbaiConfig: CustomChainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  rpcTarget: "https://rpc-mumbai.maticvigil.com",
+  rpcTarget: "https://polygon-mumbai.infura.io/v3/4625d8a5e77f4c678b39423652c6f6cd",
   blockExplorer: "https://mumbai-explorer.matic.today",
   chainId: "0x13881",
   displayName: "Polygon Mumbai Testnet",

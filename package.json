@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "allocate",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,9 +12,7 @@
     "@openzeppelin/contracts": "^4.4.2",
     "@superfluid-finance/js-sdk": "^0.5.8",
     "@superfluid-finance/sdk-core": "^0.2.0",
-    "@web3auth/base": "^0.2.2",
-    "@web3auth/ui": "^0.2.2",
-    "@web3auth/web3auth": "^0.2.2",
+    "@web3auth/web3auth": "^0.2.4",
     "0xsequence": "^0.36.1",
     "hardhat": "^2.8.3",
     "next": "12.0.10",

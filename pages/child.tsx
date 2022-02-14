@@ -123,7 +123,7 @@ const Child: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-xxl text-blue-dark mb-[5vh] ">Welcome Peter,</h1>
+      <h1 className="text-xxl text-blue-dark mb-[5vh] ">Welcome Peter</h1>
       <div className="bg-blue-oil px-6 py-8 rounded-xl text-white flex justify-between items-end stretch">
         <div className="flex flex-col items-start">
           <p className="text-sm mb-1">AVAILABLE FUNDS</p>

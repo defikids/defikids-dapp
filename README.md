@@ -66,7 +66,7 @@ Technologies
 
 
 #### https://defikids.io
-#### Follow us on Twitter @defikids_
+#### Follow us on Twitter <a href="https://twitter.com/defikids_">@defikids_</a> 
 
 #### Contact Us: https://defikidsproject@gmail.com
 

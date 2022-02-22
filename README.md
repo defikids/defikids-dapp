@@ -1,4 +1,4 @@
-# Allocate
+# Defi Kids(Allocate)
 
 It is a platform to teach kids how to grow their allowance through the use of de-fi tools. It's designed for kids, managed by parents.
 

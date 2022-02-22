@@ -65,8 +65,8 @@ Technologies
 - Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
 
 
-#### https://defikids.io
+#### Check out our app<a href="https://defikids.io"> defikids.io</a>
 #### Follow us on Twitter <a href="https://twitter.com/defikids_">@defikids_</a> 
 
-#### Contact Us: https://defikidsproject@gmail.com
+#### <a href="https://defikidsproject@gmail.com">📬 Contact Us</a> 
 

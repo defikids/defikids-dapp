@@ -64,7 +64,7 @@ Technologies
 - Host Contract: 0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396
 - Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
 
-#### 📲Social Media: https://twitter.com/defikids_
+#### Follow us on Twitter @defikids_
 
-#### 📫Contact: https://defikidsproject@gmail.com
+#### Contact Us: https://defikidsproject@gmail.com
 

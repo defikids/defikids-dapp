@@ -1,4 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
+require("dotenv").config();
+
+const PROJECT_ID = process.env;
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -17,5 +20,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
+  mumbai: {
+    url: `https://polygon-mumbai.infura.io/v3/${process.env.PROJECT_ID}`,
+    accounts: [process.env.PRIVATE_KEY],
+  },
   solidity: "0.8.4",
 };

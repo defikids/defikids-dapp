@@ -32,7 +32,7 @@ function subscribeAuthEvents(
 
 const polygonMumbaiConfig: CustomChainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  rpcTarget: "https://polygon-mumbai.infura.io/v3/4625d8a5e77f4c678b39423652c6f6cd",
+  rpcTarget: "https://polygon-mumbai.infura.io/v3/",
   blockExplorer: "https://mumbai-explorer.matic.today",
   chainId: "0x13881",
   displayName: "Polygon Mumbai Testnet",
@@ -42,8 +42,7 @@ const polygonMumbaiConfig: CustomChainConfig = {
 
 const web3auth = new Web3Auth({
   chainConfig: polygonMumbaiConfig,
-  clientId:
-    "BHsKjc_cnKkg3LS_k1ydp3k4faZag2_5QTUCmhHBZGhixhk5IZRzR-zUeinmgpuKjGH8aJ2t_mG_4A7y5AhjONI",
+  clientId: `BHsKjc_cnKkg3LS_k1ydp3k4faZag2_5QTUCmhHBZGhixhk5IZRzR-zUeinmgpuKjGH8aJ2t_mG_4A7y5AhjONI`,
 });
 
 export const initializeModal = async (

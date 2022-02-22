@@ -1,9 +1,5 @@
 # Defi Kids(Allocate)
 
-## Social Media: Twitter https://twitter.com/defikids_
-
-## Contact us: https://defikidsproject@gmail.com
-
 It is a platform to teach kids how to grow their allowance through the use of de-fi tools. It's designed for kids, managed by parents.
 
 <img src="public/allocate-presentation-cover.png" href="https://allocate.vercel.app" alt="Logo" >
@@ -67,3 +63,8 @@ Technologies
 
 - Host Contract: 0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396
 - Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
+
+#### 📲Social Media: https://twitter.com/defikids_
+
+#### 📫Contact: https://defikidsproject@gmail.com
+

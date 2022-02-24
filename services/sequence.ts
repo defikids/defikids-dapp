@@ -41,7 +41,7 @@ const init = (
 
 const connectWallet = async (authorize: boolean = false) => {
   return await wallet.connect({
-    app: "Allocate",
+    app: "Defi Kids",
     authorize,
   });
 };

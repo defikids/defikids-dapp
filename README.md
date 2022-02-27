@@ -64,6 +64,45 @@ Technologies
 - Host Contract: 0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396
 - Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
 
+<!-- GETTING STARTED -->
+
+## Getting Started
+
+### Prerequisites
+
+- npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/your_username_/Project-Name.git
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. Run Dev Server
+   ```sh
+   npm start
+   ```
+
+<!-- CONTRIBUTING -->
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
 
 #### Check out our app<a href="https://defikids.io"> defikids.io</a>
 #### Follow us on Twitter <a href="https://twitter.com/defikids_">@defikids_</a> 

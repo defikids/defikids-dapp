@@ -13,7 +13,7 @@ interface IProps {
   onClose: () => void;
   onTransfer: () => void;
   balance: number;
-  child: { name: string; address: string };
+  child: { username: string; _address: string };
 }
 
 const TransferModal: React.FC<IProps> = ({
@@ -48,7 +48,7 @@ const TransferModal: React.FC<IProps> = ({
         <h1 className="text-xl">
           Send to
           <br />
-          {child ? child.name : ""}
+          {child ? child.username : ""}
         </h1>
       </Modal.Header>
       <div className="flex px-12 pb-12 justify-between items-center">
@@ -73,7 +73,7 @@ const TransferModal: React.FC<IProps> = ({
         <Button
           className={loading && "animate-pulse pointer-events-none"}
           size="lg"
-          onClick={() => handleTransfer(amount, child.address)}
+          onClick={() => handleTransfer(amount, child._address)}
           disabled={!amount || isNaN(amount)}
         >
           <div className="flex items-center">

@@ -29,7 +29,7 @@ export interface IStake {
 const Child: React.FC = () => {
   const {
     dispatch,
-    state: { provider, wallet, stakeContract },
+    state: { provider, wallet },
   } = useStore();
   const [stakes, setStakes] = useState<IStake[]>([]);
 

@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
+import { approveUSDCX } from "./usdcx_contract";
 
 const CONTRACT_ADDRESS = "0x988E93B04bcB6503bB447f009011B6022091E2f3";
 
@@ -23,10 +24,16 @@ export const REWARD_RATE = 0.05;
 class StakeContract {
   private contract: StakingToken;
   private wallet: string;
+  private provider: ethers.providers.Web3Provider;
 
-  constructor(contract: StakingToken, wallet: string) {
+  constructor(
+    contract: StakingToken,
+    wallet: string,
+    provider: ethers.providers.Web3Provider
+  ) {
     this.contract = contract;
     this.wallet = wallet;
+    this.provider = provider;
   }
 
   getWallet() {
@@ -48,15 +55,21 @@ class StakeContract {
       STAKING_ABI.abi,
       signer
     ) as StakingToken;
-    return new StakeContract(contract, wallet);
+    return new StakeContract(contract, wallet, provider);
   }
 
-  async fetchStakes() {
-    return this.contract.fetchStakes(this.wallet);
+  fetchStakes(address = this.wallet) {
+    return this.contract.fetchStakes(address);
+  }
+
+  fetchStakerDetails(address: string) {
+    return this.contract.fetchStakerDetails(address);
   }
 
   async createStake(amount: number, duration: IStakeDuration, name: string) {
-    return this.contract.createStake(amount, duration, name);
+    const tokens = ethers.utils.parseUnits(amount.toString(), 18);
+    await approveUSDCX(this.provider, this.wallet, amount, CONTRACT_ADDRESS);
+    return this.contract.createStake(tokens, duration, name);
   }
 
   static calculateDays(duration: IStakeDuration) {
@@ -82,7 +95,6 @@ class StakeContract {
 
   static calculateUSDCReward(amount: number, duration: IStakeDuration) {
     const days = this.calculateDays(duration);
-    console.log((days * REWARD_RATE * amount) / 365);
     return parseFloat(((days * REWARD_RATE * amount) / 365).toFixed(2));
   }
 }

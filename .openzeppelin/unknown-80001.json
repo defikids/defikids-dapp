@@ -1,0 +1,132 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x437b7F4f1892E3aeE807ab01cfC5FC34fe05A748",
+    "txHash": "0x853a55db5de750010205554e7304924eb852ccd8341c3b2656b79b6b4c9eeb53"
+  },
+  "proxies": [
+    {
+      "address": "0x200f4540EE4592eeEc7D7B2a1D7B5FB43B1e5aaB",
+      "txHash": "0xaf4d450a62a61661c380a1ea9060fd84936e2e774d7ec543764f3ee5815c77f6",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "87b04f9a2ce26dba2b14297a156d23357564aa46383049da800eae2bb457b6c4": {
+      "address": "0x721474E2f65AAaF80a2C97381DA372042C077C27",
+      "txHash": "0xad35633a66d22532c6cef935efbe5bb49b2486b0b0747c17e3eac5638c85c7cd",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Host",
+            "label": "child_Parent",
+            "type": "t_mapping(t_address,t_address)",
+            "src": "../project:/contracts/Host.sol:13"
+          },
+          {
+            "contract": "Host",
+            "label": "child_AccountDetails",
+            "type": "t_mapping(t_address,t_struct(Child)827_storage)",
+            "src": "../project:/contracts/Host.sol:17"
+          },
+          {
+            "contract": "Host",
+            "label": "parent_Family",
+            "type": "t_mapping(t_address,t_struct(Family)832_storage)",
+            "src": "../project:/contracts/Host.sol:21"
+          },
+          {
+            "contract": "Host",
+            "label": "member_Family",
+            "type": "t_mapping(t_address,t_mapping(t_uint8,t_struct(Child)827_storage))",
+            "src": "../project:/contracts/Host.sol:26"
+          },
+          {
+            "contract": "Host",
+            "label": "isParent",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "../project:/contracts/Host.sol:29"
+          },
+          {
+            "contract": "Host",
+            "label": "isChild",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "../project:/contracts/Host.sol:32"
+          }
+        ],
+        "types": {
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_struct(Child)827_storage)": {
+            "label": "mapping(address => struct Host.Child)"
+          },
+          "t_struct(Child)827_storage": {
+            "label": "struct Host.Child",
+            "members": [
+              {
+                "label": "_address",
+                "type": "t_address"
+              },
+              {
+                "label": "username",
+                "type": "t_string_storage"
+              },
+              {
+                "label": "access",
+                "type": "t_enum(Access)819"
+              }
+            ]
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_enum(Access)819": {
+            "label": "enum Host.Access",
+            "members": [
+              "Locked",
+              "Unlocked"
+            ]
+          },
+          "t_mapping(t_address,t_struct(Family)832_storage)": {
+            "label": "mapping(address => struct Host.Family)"
+          },
+          "t_struct(Family)832_storage": {
+            "label": "struct Host.Family",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address_payable"
+              },
+              {
+                "label": "numOfChildren",
+                "type": "t_uint8"
+              }
+            ]
+          },
+          "t_address_payable": {
+            "label": "address payable"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_mapping(t_address,t_mapping(t_uint8,t_struct(Child)827_storage))": {
+            "label": "mapping(address => mapping(uint8 => struct Host.Child))"
+          },
+          "t_mapping(t_uint8,t_struct(Child)827_storage)": {
+            "label": "mapping(uint8 => struct Host.Child)"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    }
+  }
+}

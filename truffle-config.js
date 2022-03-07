@@ -30,6 +30,8 @@ module.exports = {
     "solidity-coverage",
     "truffle-plugin-verify",
   ],
+
+  contracts_build_directory: "./abis/contracts",
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -60,9 +62,9 @@ module.exports = {
           `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`
         ),
       network_id: 80001,
-      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
+      skipDryRun: false, // Skip dry run before migrations? (default: false for public nets )
       gas: 5000000,
-      gasPrice: 470000000000,
+      gasPrice: 370000000000,
     },
     // Another network with more advanced options...
     // advanced: {
@@ -112,7 +114,7 @@ module.exports = {
   },
 
   api_keys: {
-    polyscan: process.env.POLYSCAN,
+    polygonscan: `${process.env.POLYSCAN}`,
   },
 
   // Truffle DB is currently disabled by default; to enable it, change enabled:

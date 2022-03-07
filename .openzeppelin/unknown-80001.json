@@ -1,57 +1,62 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x437b7F4f1892E3aeE807ab01cfC5FC34fe05A748",
-    "txHash": "0x853a55db5de750010205554e7304924eb852ccd8341c3b2656b79b6b4c9eeb53"
+    "address": "0x325a077a905678c89BC584CE6099171C004Cbe4a",
+    "txHash": "0x5119e532fb1a258ab4fd1ac5a8a387aff189ca4e7c2eafcaa6d880c7b0b10b52"
   },
   "proxies": [
     {
-      "address": "0x200f4540EE4592eeEc7D7B2a1D7B5FB43B1e5aaB",
-      "txHash": "0xaf4d450a62a61661c380a1ea9060fd84936e2e774d7ec543764f3ee5815c77f6",
+      "address": "0xfC09d939b3d622677331e5252FDAEc7Cf8E6c08E",
+      "txHash": "0x22b1a79a5b5ea1642393c65705a87ea2ea904a8d310396e037ab9ba91f55e50f",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x988E93B04bcB6503bB447f009011B6022091E2f3",
+      "txHash": "0x641b9626b81ba9d3a2ebcba9764c44c70f15f79ba26579d01df9ebce090e66c6",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "87b04f9a2ce26dba2b14297a156d23357564aa46383049da800eae2bb457b6c4": {
-      "address": "0x721474E2f65AAaF80a2C97381DA372042C077C27",
-      "txHash": "0xad35633a66d22532c6cef935efbe5bb49b2486b0b0747c17e3eac5638c85c7cd",
+    "99c67d6371acb487ed4f02dc457a522342ea6714e8cb4561018bed8ab0212d08": {
+      "address": "0x8667D3CeA774637dCE84754C19e2818EEf91E57B",
+      "txHash": "0x78d80df2bb67ff91f1a4a05b28ddc332289dc778efff516cca6dd4335bf5d19a",
       "layout": {
         "storage": [
           {
             "contract": "Host",
             "label": "child_Parent",
             "type": "t_mapping(t_address,t_address)",
-            "src": "../project:/contracts/Host.sol:13"
+            "src": "../project:/contracts/Host.sol:7"
           },
           {
             "contract": "Host",
             "label": "child_AccountDetails",
-            "type": "t_mapping(t_address,t_struct(Child)827_storage)",
-            "src": "../project:/contracts/Host.sol:17"
+            "type": "t_mapping(t_address,t_struct(Child)769_storage)",
+            "src": "../project:/contracts/Host.sol:11"
           },
           {
             "contract": "Host",
             "label": "parent_Family",
-            "type": "t_mapping(t_address,t_struct(Family)832_storage)",
-            "src": "../project:/contracts/Host.sol:21"
+            "type": "t_mapping(t_address,t_struct(Family)774_storage)",
+            "src": "../project:/contracts/Host.sol:15"
           },
           {
             "contract": "Host",
             "label": "member_Family",
-            "type": "t_mapping(t_address,t_mapping(t_uint8,t_struct(Child)827_storage))",
-            "src": "../project:/contracts/Host.sol:26"
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(Child)769_storage))",
+            "src": "../project:/contracts/Host.sol:20"
           },
           {
             "contract": "Host",
             "label": "isParent",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "../project:/contracts/Host.sol:29"
+            "src": "../project:/contracts/Host.sol:23"
           },
           {
             "contract": "Host",
             "label": "isChild",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "../project:/contracts/Host.sol:32"
+            "src": "../project:/contracts/Host.sol:26"
           }
         ],
         "types": {
@@ -61,10 +66,10 @@
           "t_address": {
             "label": "address"
           },
-          "t_mapping(t_address,t_struct(Child)827_storage)": {
+          "t_mapping(t_address,t_struct(Child)769_storage)": {
             "label": "mapping(address => struct Host.Child)"
           },
-          "t_struct(Child)827_storage": {
+          "t_struct(Child)769_storage": {
             "label": "struct Host.Child",
             "members": [
               {
@@ -76,25 +81,32 @@
                 "type": "t_string_storage"
               },
               {
-                "label": "access",
-                "type": "t_enum(Access)819"
+                "label": "isLocked",
+                "type": "t_bool"
+              },
+              {
+                "label": "isActive",
+                "type": "t_bool"
+              },
+              {
+                "label": "childId",
+                "type": "t_uint256"
               }
             ]
           },
           "t_string_storage": {
             "label": "string"
           },
-          "t_enum(Access)819": {
-            "label": "enum Host.Access",
-            "members": [
-              "Locked",
-              "Unlocked"
-            ]
+          "t_bool": {
+            "label": "bool"
           },
-          "t_mapping(t_address,t_struct(Family)832_storage)": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_struct(Family)774_storage)": {
             "label": "mapping(address => struct Host.Family)"
           },
-          "t_struct(Family)832_storage": {
+          "t_struct(Family)774_storage": {
             "label": "struct Host.Family",
             "members": [
               {
@@ -103,24 +115,194 @@
               },
               {
                 "label": "numOfChildren",
-                "type": "t_uint8"
+                "type": "t_uint256"
               }
             ]
           },
           "t_address_payable": {
             "label": "address payable"
           },
-          "t_uint8": {
-            "label": "uint8"
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(Child)769_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct Host.Child))"
           },
-          "t_mapping(t_address,t_mapping(t_uint8,t_struct(Child)827_storage))": {
-            "label": "mapping(address => mapping(uint8 => struct Host.Child))"
-          },
-          "t_mapping(t_uint8,t_struct(Child)827_storage)": {
-            "label": "mapping(uint8 => struct Host.Child)"
+          "t_mapping(t_uint256,t_struct(Child)769_storage)": {
+            "label": "mapping(uint256 => struct Host.Child)"
           },
           "t_mapping(t_address,t_bool)": {
             "label": "mapping(address => bool)"
+          }
+        }
+      }
+    },
+    "dd5dd4c9a38b5137ce2435802f7fe2670d68b8850c20862622eba29ea6c4fb49": {
+      "address": "0x72AE93280D590304f43D7B8A1EbeAcBE355e1AFe",
+      "txHash": "0xfc29bfe4373896f50926150d323b1298fcb0aff2b340a220c1329082a47bcb08",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:23"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:28"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:35"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:37"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:39"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:41"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:42"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)45_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:310"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "stakeholders",
+            "type": "t_array(t_address)dyn_storage",
+            "src": "../project:/contracts/StakingToken.sol:10"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "owner",
+            "type": "t_address",
+            "src": "../project:/contracts/StakingToken.sol:11"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "REWARD_RATE",
+            "type": "t_uint256",
+            "src": "../project:/contracts/StakingToken.sol:14"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "address_child",
+            "type": "t_mapping(t_address,t_struct(Child)1146_storage)",
+            "src": "../project:/contracts/StakingToken.sol:15"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "child_stake",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(Stake)1159_storage))",
+            "src": "../project:/contracts/StakingToken.sol:16"
+          }
+        ],
+        "types": {
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_struct(Child)1146_storage)": {
+            "label": "mapping(address => struct StakingToken.Child)"
+          },
+          "t_struct(Child)1146_storage": {
+            "label": "struct StakingToken.Child",
+            "members": [
+              {
+                "label": "totalInvested",
+                "type": "t_uint256"
+              },
+              {
+                "label": "totalRewards",
+                "type": "t_uint256"
+              },
+              {
+                "label": "totalCreatedStakes",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(Stake)1159_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct StakingToken.Stake))"
+          },
+          "t_mapping(t_uint256,t_struct(Stake)1159_storage)": {
+            "label": "mapping(uint256 => struct StakingToken.Stake)"
+          },
+          "t_struct(Stake)1159_storage": {
+            "label": "struct StakingToken.Stake",
+            "members": [
+              {
+                "label": "stakeId",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stakeStartTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stakeEndTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256"
+              },
+              {
+                "label": "itemName",
+                "type": "t_string_storage"
+              }
+            ]
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
           },
           "t_bool": {
             "label": "bool"

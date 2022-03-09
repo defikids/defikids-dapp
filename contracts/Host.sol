@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 pragma solidity ^0.8.0;
 
-interface IERC20 {
-    function transfer(address recipient, uint256 amount)
-        external
-        returns (bool);
-}
-
 contract Host {
     // Child address => parentAddress
     // Used when creating a new child
@@ -106,26 +100,26 @@ contract Host {
      * @notice - This function is used to add a child to the family.
      * @param _child - The address of the child.
      * @param _username - The username of the child.
+     * @param _isLocked - Determines if the child account is locked.
      */
-    function addChild(address _child, string memory _username) public {
+    function addChild(
+        address _child,
+        string memory _username,
+        bool _isLocked
+    ) public {
         require(isParent[msg.sender], "Only a parent can make this request");
         require(!isChild[_child], "Child is already registered to a family");
-        // get the family
-        // Family storage family = locateFamily(msg.sender);
-        // get next id number for the child
+
         uint256 childId = parent_Family[msg.sender].numOfChildren + 1;
 
-        // get the child
-        Child memory child = Child(_child, _username, true, true, childId);
+        Child memory child = Child(_child, _username, _isLocked, true, childId);
 
-        // update child count
         parent_Family[msg.sender].numOfChildren = childId;
 
         // update mappings
         isChild[_child] = true;
         child_Parent[_child] = msg.sender;
         child_AccountDetails[_child] = child;
-        // member_Family[msg.sender][childId] = _child;
         member_Family[msg.sender][childId] = child;
     }
 

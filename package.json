@@ -10,10 +10,14 @@
     "start-test-network": "ganache-cli -q -m 'vacant jealous feature suggest lazy joy critic broken alien anchor unlock palm'",
     "test:host": "run-p -r start-test-network _test:host",
     "_test:host": "truffle test --network test --bail test/Host.test.js",
-    "coverage:host": "truffle run coverage --file='test/Host.test.js'"
+    "test:staking": "run-p -r start-test-network _test:staking",
+    "_test:staking": "truffle test --network test --bail test/Staking.test.js",
+    "coverage:host": "truffle run coverage --file='test/Host.test.js'",
+    "coverage:staking": "truffle run coverage --file='test/Staking.test.js'"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.2",
+    "@openzeppelin/contracts-upgradeable": "4.1.0",
     "@openzeppelin/truffle-upgrades": "^1.13.0",
     "@superfluid-finance/js-sdk": "^0.5.8",
     "@superfluid-finance/sdk-core": "^0.2.0",
@@ -37,6 +41,7 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "@openzeppelin/test-helpers": "^0.5.15",
     "@svgr/webpack": "^6.2.1",
     "@truffle/hdwallet-provider": "^2.0.3",
     "@types/mocha": "^9.1.0",

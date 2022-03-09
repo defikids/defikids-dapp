@@ -38,47 +38,47 @@ contract("Host", ([parent, child1, child2]) => {
     });
 
     it("registers a new child", async () => {
-      await host.addChild(child1, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
       const childIndex = "2";
       const userType = await host.getUserType(child1);
       userType.toString().should.be.equal(childIndex);
     });
 
     it("error if child is already registered", async () => {
-      await host.addChild(child1, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
       await host
-        .addChild(child1, username, { from: parent })
+        .addChild(child1, username, true, { from: parent })
         .should.be.rejectedWith("Child is already registered to a family");
     });
 
     it("error if the user registering the child is not a parent", async () => {
       await host
-        .addChild(child1, "child1", { from: child1 })
+        .addChild(child1, "child1", true, { from: child1 })
         .should.be.rejectedWith("Only a parent can make this request");
     });
 
     it("should return all children", async () => {
-      await host.addChild(child1, username, { from: parent });
-      await host.addChild(child2, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
+      await host.addChild(child2, username, true, { from: parent });
       const children = await host.fetchChildren({ from: parent });
       children.length.should.be.equal(2);
     });
 
     it("should error if a non-parent tries to fetch children", async () => {
-      await host.addChild(child1, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
       await host
         .fetchChildren({ from: child1 })
         .should.be.rejectedWith("Only a parent can make this request");
     });
 
     it("should return the correct child", async () => {
-      await host.addChild(child1, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
       const childProfile = await host.fetchChild(child1, { from: parent });
       childProfile._address.should.be.equal(child1);
     });
 
     it("should change the childs access status", async () => {
-      await host.addChild(child1, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
       const childProfileBefore = await host.fetchChild(child1, {
         from: parent,
       });
@@ -89,7 +89,7 @@ contract("Host", ([parent, child1, child2]) => {
     });
 
     it("should error if a non-parent tries to change the access status", async () => {
-      await host.addChild(child1, username, { from: parent });
+      await host.addChild(child1, username, true, { from: parent });
       const childProfileBefore = await host.fetchChild(child1, {
         from: parent,
       });

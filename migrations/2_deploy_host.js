@@ -1,5 +1,3 @@
-"use strict";
-
 const Host = artifacts.require("Host");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 

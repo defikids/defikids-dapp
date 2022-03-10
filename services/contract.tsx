@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { Host } from "../types/ethers-contracts";
-import HOST_ABI from "../artifacts/contracts/Host.sol/Host.json";
+import HOST_ABI from "../abis/contracts/Host.json";
 
 const CONTRACT_ADDRESS = "0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396";
 
@@ -61,12 +61,12 @@ class HostContract {
     return this.contract.fetchChildren();
   }
 
-  async addMember(wallet: string, username: string) {
-    return this.contract.addMember(wallet, username);
+  async addMember(wallet: string, username: string, isLocked: boolean) {
+    return this.contract.addChild(wallet, username, isLocked);
   }
 
-  async changeAccess(wallet: string) {
-    return this.contract.changeAccess(wallet);
+  async changeAccess(wallet: string, childId: number) {
+    return this.contract.changeAccess(wallet, childId);
   }
 }
 

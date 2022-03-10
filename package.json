@@ -13,7 +13,8 @@
     "test:staking": "run-p -r start-test-network _test:staking",
     "_test:staking": "truffle test --network test --bail test/Staking.test.js",
     "coverage:host": "truffle run coverage --file='test/Host.test.js'",
-    "coverage:staking": "truffle run coverage --file='test/Staking.test.js'"
+    "coverage:staking": "truffle run coverage --file='test/Staking.test.js'",
+    "types:contracts": "typechain --target=ethers-v5 'abis/**/*.json'"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.2",

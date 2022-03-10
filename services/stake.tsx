@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { AllocateStakingToken } from "../types/ethers-contracts";
-import HOST_ABI from "../artifacts/contracts/staking.sol/AllocateStakingToken.json";
+import { StakingToken } from "../types/ethers-contracts";
+import STAKING_ABI from "../abis/contracts/StakingToken.json";
 
 const CONTRACT_ADDRESS = "0xfF3BcC9d56c9733bdb91604df59497C402F99D47";
 
@@ -21,10 +21,10 @@ export enum IStakeDuration {
 export const REWARD_RATE = 0.05;
 
 class StakeContract {
-  private contract: AllocateStakingToken;
+  private contract: StakingToken;
   private wallet: string;
 
-  constructor(contract: AllocateStakingToken, wallet: string) {
+  constructor(contract: StakingToken, wallet: string) {
     this.contract = contract;
     this.wallet = wallet;
   }
@@ -45,9 +45,9 @@ class StakeContract {
     const signer = provider.getSigner(wallet);
     const contract = new ethers.Contract(
       CONTRACT_ADDRESS,
-      HOST_ABI.abi,
+      STAKING_ABI.abi,
       signer
-    ) as AllocateStakingToken;
+    ) as StakingToken;
     return new StakeContract(contract, wallet);
   }
 
@@ -55,8 +55,8 @@ class StakeContract {
     return this.contract.fetchStakes(this.wallet);
   }
 
-  async createStake(amount: number, duration: IStakeDuration) {
-    return this.contract.createStake(amount, duration);
+  async createStake(amount: number, duration: IStakeDuration, name: string) {
+    return this.contract.createStake(amount, duration, name);
   }
 
   static calculateDays(duration: IStakeDuration) {

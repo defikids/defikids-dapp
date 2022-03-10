@@ -26,10 +26,7 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
   const handleAddChild = async (wallet, name) => {
     setLoading(true);
     try {
-      await contract.addMember(wallet, name);
-      if (withdraw) {
-        await contract.changeAccess(wallet);
-      }
+      await contract.addMember(wallet, name, !withdraw);
       onAdd();
     } catch (error) {
     } finally {

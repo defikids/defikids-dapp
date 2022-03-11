@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
 
-const CONTRACT_ADDRESS = "0xfF3BcC9d56c9733bdb91604df59497C402F99D47";
+const CONTRACT_ADDRESS = "0x988E93B04bcB6503bB447f009011B6022091E2f3";
 
 export interface IStake {
   stakeId: number;

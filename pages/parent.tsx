@@ -30,7 +30,7 @@ const Parent: React.FC = () => {
   const fetchChildren = async (retry = false, retries = 0) => {
     setChildrenLoading(true);
     const newChildren = await contract.fetchChildren();
-    console.log("HELLO");
+
     if (
       retry &&
       retries < MAX_FETCH_RETRIES &&
@@ -41,7 +41,7 @@ const Parent: React.FC = () => {
         FETCH_RETRY_TIMEOUT
       );
     }
-    console.log("LOADING DONE");
+
     setChildrenLoading(false);
     setChildren(newChildren);
   };

@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { Host } from "../types/ethers-contracts";
 import HOST_ABI from "../abis/contracts/Host.json";
 
-const CONTRACT_ADDRESS = "0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396";
+const CONTRACT_ADDRESS = "0xfC09d939b3d622677331e5252FDAEc7Cf8E6c08E";
 
 export enum UserType {
   PARENT = 1,
@@ -54,7 +54,7 @@ class HostContract {
   }
 
   async createParent() {
-    return this.contract.createParent();
+    return this.contract.registerParent();
   }
 
   async fetchChildren() {

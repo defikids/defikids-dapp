@@ -1,8 +1,8 @@
-# Defi Kids(Allocate)
+# DefiKids
 
-It is a platform to teach kids how to grow their allowance through the use of de-fi tools. It's designed for kids, managed by parents.
+Is a platform to empower the next generation with the use of de-fi tools. It is designed for kids, managed by parents.
 
-<img src="public/allocate-presentation-cover.png" href="https://defikids.io" alt="Logo" >
+ ![image](https://user-images.githubusercontent.com/66887028/158086466-352639f3-c5c9-46cc-b677-9e266eb3b9c3.png)
 
 ## Description
 
@@ -104,8 +104,8 @@ Contributions are what make the open source community such an amazing place to b
 
 
 
-#### Check out our app<a href="https://defikids.io"> defikids.io</a>
-#### Follow us on Twitter <a href="https://twitter.com/defikids_">@defikids_</a> 
+#### Check out our app: <a href="https://defikids.io"> defikids.io</a>
+#### Follow us on Twitter: <a href="https://twitter.com/defikids_">@defikids_</a> 
 
 #### <a href="https://defikidsproject@gmail.com">📬 Contact Us</a> 
 

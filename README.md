@@ -2,7 +2,7 @@
 
 It is a platform to teach kids how to grow their allowance through the use of de-fi tools. It's designed for kids, managed by parents.
 
-<img src="public/allocate-presentation-cover.png" href="https://allocate.vercel.app" alt="Logo" >
+<img src="public/allocate-presentation-cover.png" href="https://defikids.io" alt="Logo" >
 
 ## Description
 

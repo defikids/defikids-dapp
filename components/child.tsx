@@ -52,7 +52,7 @@ const Child: React.FC<IProps> = ({
   username,
   isLocked,
   details,
-  stakes,
+  stakes = [],
   onTransfer,
   onStream,
 }) => {

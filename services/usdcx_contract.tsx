@@ -28,7 +28,7 @@ export async function approveUSDCX(
   ) as UsdCx;
   const tokens = ethers.utils.parseUnits(amount.toString(), 18);
   const allowance = await contract.allowance(sender, receiver);
-  if (allowance.lte(tokens)) {
+  if (allowance.lt(tokens)) {
     await contract.approve(receiver, tokens.sub(allowance));
   }
   return;
@@ -48,7 +48,7 @@ export async function transferUSDCX(
   ) as UsdCx;
   const tokens = ethers.utils.parseUnits(amount.toString(), 18);
   const allowance = await contract.allowance(sender, receiver);
-  if (allowance.lte(tokens)) {
+  if (allowance.lt(tokens)) {
     await contract.approve(receiver, tokens.sub(allowance));
   }
   const result = await contract.transfer(receiver, tokens);

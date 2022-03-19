@@ -57,7 +57,7 @@ const AllocateModal: React.FC<IProps> = ({
   ) => {
     try {
       setLoading(true);
-      const result = await stakeContract.createStake(amount, duration);
+      const result = await stakeContract.createStake(amount, duration, name);
       // await new Promise((resolve) => setTimeout(resolve, 500));
       setLoading(false);
       console.log(result);

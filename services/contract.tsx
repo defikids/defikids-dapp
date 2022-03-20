@@ -11,9 +11,10 @@ export enum UserType {
 }
 
 export interface IChild {
-  name: string;
-  address: string;
-  access: 0 | 1;
+  username: string;
+  _address: string;
+  isActive: boolean;
+  isLocked: boolean;
 }
 
 class HostContract {

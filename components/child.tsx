@@ -1,12 +1,21 @@
+import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IChild } from "../services/contract";
-import { IStakeDuration } from "../services/stake";
+import { IStake, IStakeDuration } from "../services/stake";
+import { useStore } from "../services/store";
+import { getUSDCXBalance } from "../services/usdcx_contract";
 import Allocation from "./allocation";
 import Button from "./button";
 import Plus from "./plus";
 
 interface IProps extends IChild {
+  details: {
+    totalCreatedStakes: BigNumber;
+    totalInvested: BigNumber;
+    totalRewards: BigNumber;
+  };
+  stakes: IStake[];
   onTransfer: () => void;
   onStream: () => void;
 }
@@ -39,25 +48,46 @@ export const MOCK_ALLOCATIONS = [
 ];
 
 const Child: React.FC<IProps> = ({
-  address,
-  name,
-  access,
+  _address,
+  username,
+  isLocked,
+  details,
+  stakes = [],
   onTransfer,
   onStream,
 }) => {
-  const allocations = MOCK_ALLOCATIONS;
+  const {
+    state: { provider },
+  } = useStore();
+  const [balance, setBalance] = useState(0);
+  useEffect(() => {
+    if (!provider || !_address) {
+      return;
+    }
+    getUSDCXBalance(provider, _address).then((value) => {
+      setBalance(parseFloat(value));
+    });
+  }, [provider, _address]);
+
   return (
     <div className="rounded-lg border-2 border-grey-light">
       <div className="p-6 flex">
-        <Image src="/placeholder_child.jpg" width={64} height={64} />
+        <Image
+          src="/placeholder_child.jpg"
+          width={64}
+          height={64}
+          alt="avatar"
+        />
         <div className="ml-6">
           <div className="mb-2 flex items-center">
-            <h3 className="text-blue-dark text-lg mr-3">{name}</h3>
-            <Button className="bg-[#47a1b5]" size="sm">
-              Withdraws allowed
-            </Button>
+            <h3 className="text-blue-dark text-lg mr-3">{username}</h3>
+            {!isLocked && (
+              <Button className="bg-[#47a1b5]" size="sm">
+                Withdraws allowed
+              </Button>
+            )}
           </div>
-          <p className="text-grey-medium">{address}</p>
+          <p className="text-grey-medium">{_address}</p>
         </div>
       </div>
       <div className="border-t-2 border-b-2 border-grey-light flex">
@@ -95,19 +125,24 @@ const Child: React.FC<IProps> = ({
           <div className="flex-1 p-4 border-b-2 border-grey-light">
             <p className="text-s mb-1">AVAILABLE FUNDS</p>
             <h3 className="text-lg">
-              125 <span className="text-base"> USDx</span>
+              {parseFloat(balance.toFixed(2))}{" "}
+              <span className="text-base"> USDx</span>
             </h3>
           </div>
           <div className="flex-1 p-4 border-b-2 border-grey-light">
             <p className="text-s mb-1">INVESTED FUNDS</p>
             <h3 className="text-lg">
-              100 <span className="text-base"> USDx</span>
+              {parseFloat(
+                ethers.utils.formatEther(details?.totalInvested ?? 0)
+              )}{" "}
+              <span className="text-base">USDx</span>
             </h3>
           </div>
           <div className="flex-1 p-4">
             <p className="text-s mb-1">TOTAL REWARDS</p>
             <h3 className="text-lg">
-              10 <span className="text-base"> USDx</span>
+              {parseFloat(ethers.utils.formatEther(details?.totalRewards ?? 0))}{" "}
+              <span className="text-base">USDx</span>
             </h3>
           </div>
         </div>
@@ -117,8 +152,14 @@ const Child: React.FC<IProps> = ({
             className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
             style={{ maxHeight: 300 }}
           >
-            {allocations.map((a) => (
-              <Allocation key={a.name} {...a} />
+            {stakes.map((s) => (
+              <Allocation
+                key={s.stakeId}
+                name={s.stakeId.toString()}
+                value={s.amount}
+                duration={s.stakeStartTime}
+                durationTotal={s.stakeEndTime}
+              />
             ))}
           </div>
         </div>

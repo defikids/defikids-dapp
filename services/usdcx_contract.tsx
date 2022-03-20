@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
-import { USDCX_ABI } from "../abis/USDCx";
+import USDCX_ABI from "../abis/USDCx.json";
+import { UsdCx } from "../types/ethers-contracts/UsdCx";
 
 export const CONTRACT_ADDRESS = "0x42bb40bF79730451B11f6De1CbA222F17b87Afd7";
 
@@ -13,6 +14,26 @@ export async function getUSDCXBalance(
   return ethers.utils.formatEther(result);
 }
 
+export async function approveUSDCX(
+  provider: ethers.providers.Web3Provider,
+  sender,
+  amount,
+  receiver
+) {
+  const signer = provider.getSigner(sender);
+  const contract = new ethers.Contract(
+    CONTRACT_ADDRESS,
+    USDCX_ABI,
+    signer
+  ) as UsdCx;
+  const tokens = ethers.utils.parseUnits(amount.toString(), 18);
+  const allowance = await contract.allowance(sender, receiver);
+  if (allowance.lt(tokens)) {
+    await contract.approve(receiver, tokens.sub(allowance));
+  }
+  return;
+}
+
 export async function transferUSDCX(
   provider: ethers.providers.Web3Provider,
   sender,
@@ -20,20 +41,18 @@ export async function transferUSDCX(
   receiver
 ) {
   const signer = provider.getSigner(sender);
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, USDCX_ABI, signer);
+  const contract = new ethers.Contract(
+    CONTRACT_ADDRESS,
+    USDCX_ABI,
+    signer
+  ) as UsdCx;
   const tokens = ethers.utils.parseUnits(amount.toString(), 18);
+  const allowance = await contract.allowance(sender, receiver);
+  if (allowance.lt(tokens)) {
+    await contract.approve(receiver, tokens.sub(allowance));
+  }
   const result = await contract.transfer(receiver, tokens);
   return result;
-  // const transaction = {
-  //   from: sender,
-  //   to: receiver,
-  //   value: ethers.utils.parseEther(amount),
-  //   nonce: provider.getTransactionCount(sender, "latest"),
-  //   gasPrice,
-  //   // gasLimit: ethers.utils.hexlify(gas_limit), // 100000
-  // };
-
-  // return signer.sendTransaction(transaction);
 }
 
 export default { getUSDCXBalance, transferUSDCX };

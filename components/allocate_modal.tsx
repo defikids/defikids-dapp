@@ -55,21 +55,27 @@ const AllocateModal: React.FC<IProps> = ({
     amount: number,
     duration: IStakeDuration
   ) => {
-    setLoading(true);
-    // await stakeContract.createStake(amount, duration);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setLoading(false);
-    onClose();
-    const callback = update ? onUpdate : onAllocate;
-    callback({
-      name,
-      amount,
-      duration,
-      reward: StakeContract.calculateAllocateReward(amount, duration),
-    });
-    setName("");
-    setAmount(undefined);
-    setDuration(undefined);
+    try {
+      setLoading(true);
+      const result = await stakeContract.createStake(amount, duration, name);
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      setLoading(false);
+      console.log(result);
+      onClose();
+      const callback = update ? onUpdate : onAllocate;
+      callback({
+        name,
+        amount,
+        duration,
+        reward: StakeContract.calculateAllocateReward(amount, duration),
+      });
+      setName("");
+      setAmount(undefined);
+      setDuration(undefined);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   const stakeOptions = (disabled: boolean) => {

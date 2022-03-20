@@ -41,7 +41,6 @@ const Auth: React.FC = () => {
       console.error(error);
     }
     try {
-      console.log("ola", Sequence.wallet);
       Sequence.wallet?.disconnect();
     } catch (error) {
       console.error(error);

@@ -2,8 +2,8 @@ import { customHttpProvider } from "../config";
 import { Framework } from "@superfluid-finance/sdk-core";
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
-import { USDC_ABI } from "../abis/USDC";
-import { USDCX_ABI } from "../abis/USDCx";
+import USDC_ABI from "../abis/USDC.json";
+import USDCX_ABI from "../abis/USDCx.json";
 import { CONTRACT_ADDRESS } from "../services/usdcx_contract";
 
 const fUSDC_contract_address = "0xbe49ac1EadAc65dccf204D4Df81d650B50122aB2";

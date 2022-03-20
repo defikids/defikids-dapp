@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
-import { approveUSDCX } from "./usdcx_contract";
+import { approveUSDCX, getUSDCXBalance, transferUSDCX } from "./usdcx_contract";
 
-const CONTRACT_ADDRESS = "0x988E93B04bcB6503bB447f009011B6022091E2f3";
+const CONTRACT_ADDRESS = "0x321f33AD5Bb157710c2d65F895a7EFB05bDa496f";
 const VAULT_ADDRESS = "0x9D324D73a6d43A6c66e080E65bF705F4e078495E";
 
 export interface IStake {
@@ -69,7 +69,7 @@ class StakeContract {
 
   async createStake(amount: number, duration: IStakeDuration, name: string) {
     const tokens = ethers.utils.parseUnits(amount.toString(), 18);
-    await approveUSDCX(this.provider, this.wallet, amount, VAULT_ADDRESS);
+    await approveUSDCX(this.provider, this.wallet, amount, CONTRACT_ADDRESS);
     return this.contract.createStake(tokens, duration, name);
   }
 

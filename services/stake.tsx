@@ -3,7 +3,7 @@ import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
 import { approveUSDCX, getUSDCXBalance, transferUSDCX } from "./usdcx_contract";
 
-const CONTRACT_ADDRESS = "0x321f33AD5Bb157710c2d65F895a7EFB05bDa496f";
+const CONTRACT_ADDRESS = "0x66610111c78D3Eec5aFE5484CD7E1800a67673E5";
 const VAULT_ADDRESS = "0x9D324D73a6d43A6c66e080E65bF705F4e078495E";
 
 export interface IStake {

@@ -14,6 +14,11 @@
       "address": "0x988E93B04bcB6503bB447f009011B6022091E2f3",
       "txHash": "0x641b9626b81ba9d3a2ebcba9764c44c70f15f79ba26579d01df9ebce090e66c6",
       "kind": "transparent"
+    },
+    {
+      "address": "0x66610111c78D3Eec5aFE5484CD7E1800a67673E5",
+      "txHash": "0x9b4ef9d0393bf382c79d116acc6ae3a347ff55d35330c7e87388997e8e73b675",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -261,6 +266,182 @@
             "label": "mapping(uint256 => struct StakingToken.Stake)"
           },
           "t_struct(Stake)1159_storage": {
+            "label": "struct StakingToken.Stake",
+            "members": [
+              {
+                "label": "stakeId",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stakeStartTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stakeEndTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256"
+              },
+              {
+                "label": "itemName",
+                "type": "t_string_storage"
+              }
+            ]
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "a34886d88b6b79da32a21bc6d7e3dbf8a657da6b60f840b6ae2af2fde64935dc": {
+      "address": "0x4E0cf52749A1D4Bb95398231AEFf26F2b11f56B2",
+      "txHash": "0xe50e7bbf1ee55b2c9ca6c2386e6ae131b30d8e5acc4c8f77f206b6030d2f6302",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:23"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:28"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:35"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:37"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:39"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:41"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:42"
+          },
+          {
+            "contract": "ERC20Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)45_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:310"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "stakeholders",
+            "type": "t_array(t_address)dyn_storage",
+            "src": "../project:/contracts/StakingToken.sol:18"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "owner",
+            "type": "t_address",
+            "src": "../project:/contracts/StakingToken.sol:19"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "REWARD_RATE",
+            "type": "t_uint256",
+            "src": "../project:/contracts/StakingToken.sol:22"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "address_child",
+            "type": "t_mapping(t_address,t_struct(Child)1156_storage)",
+            "src": "../project:/contracts/StakingToken.sol:23"
+          },
+          {
+            "contract": "StakingToken",
+            "label": "child_stake",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(Stake)1169_storage))",
+            "src": "../project:/contracts/StakingToken.sol:24"
+          }
+        ],
+        "types": {
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_struct(Child)1156_storage)": {
+            "label": "mapping(address => struct StakingToken.Child)"
+          },
+          "t_struct(Child)1156_storage": {
+            "label": "struct StakingToken.Child",
+            "members": [
+              {
+                "label": "totalInvested",
+                "type": "t_uint256"
+              },
+              {
+                "label": "totalRewards",
+                "type": "t_uint256"
+              },
+              {
+                "label": "totalCreatedStakes",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(Stake)1169_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct StakingToken.Stake))"
+          },
+          "t_mapping(t_uint256,t_struct(Stake)1169_storage)": {
+            "label": "mapping(uint256 => struct StakingToken.Stake)"
+          },
+          "t_struct(Stake)1169_storage": {
             "label": "struct StakingToken.Stake",
             "members": [
               {

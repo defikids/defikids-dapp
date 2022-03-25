@@ -4,7 +4,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 interface ISuperfluidToken {
- function transferFrom(address holder, address recipient, uint256 amount) external;
+    function transferFrom(
+        address holder,
+        address recipient,
+        uint256 amount
+    ) external;
 }
 
 /**
@@ -94,7 +98,7 @@ contract StakingToken is ERC20Upgradeable {
             requestedDuration = 14;
         }
         uint256 reward = calculateReward(_stake, requestedDuration);
-        ERC20Upgradeable.transferFrom(owner, _msgSender(), reward); // transferring Allocate tokens
+        _mint(_msgSender(), reward); // transferring Allocate tokens
         // Update total rewards for the user
         address_child[_msgSender()].totalRewards += reward;
 

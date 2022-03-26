@@ -1,18 +1,49 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
-import { approveUSDCX, getUSDCXBalance, transferUSDCX } from "./usdcx_contract";
+import { approveUSDCX } from "./usdcx_contract";
 
 const CONTRACT_ADDRESS = "0x66610111c78D3Eec5aFE5484CD7E1800a67673E5";
-const VAULT_ADDRESS = "0x9D324D73a6d43A6c66e080E65bF705F4e078495E";
+
+export interface IStakerDetails {
+  totalInvested: BigNumber;
+  totalRewards: BigNumber;
+  totalCreatedStakes: BigNumber;
+}
+export interface IContractStake {
+  stakeId: BigNumber;
+  stakeStartTime: BigNumber;
+  stakeEndTime: BigNumber;
+  amount: BigNumber;
+  duration: BigNumber;
+  itemName: string;
+}
 
 export interface IStake {
-  stakeId: number;
-  stakeStartTime: number;
-  stakeEndTime: number;
-  amount: number;
+  id: string;
+  amount: BigNumber;
+  remainingDays: number;
   duration: number;
+  name: string;
 }
+
+const parseStake = function (stake: IContractStake): IStake {
+  console.log("start time:", new Date(stake.stakeStartTime.toNumber() * 1000));
+  const timePassed = Math.abs(
+    new Date().getTime() -
+      new Date(stake.stakeStartTime.toNumber() * 1000).getTime()
+  );
+  const remainingDays =
+    stake.duration.toNumber() - Math.ceil(timePassed / (1000 * 60 * 60 * 24));
+
+  return {
+    id: stake.stakeId.toString(),
+    name: stake.itemName,
+    amount: stake.amount,
+    duration: stake.duration.toNumber(),
+    remainingDays,
+  };
+};
 
 export enum IStakeDuration {
   DAY = 0,
@@ -59,11 +90,12 @@ class StakeContract {
     return new StakeContract(contract, wallet, provider);
   }
 
-  fetchStakes(address = this.wallet) {
-    return this.contract.fetchStakes(address);
+  async fetchStakes(address = this.wallet): Promise<IStake[]> {
+    const stakes = await this.contract.fetchStakes(address);
+    return stakes.map(parseStake);
   }
 
-  fetchStakerDetails(address: string) {
+  fetchStakerDetails(address = this.wallet): Promise<IStakerDetails> {
     return this.contract.fetchStakerDetails(address);
   }
 

@@ -88,13 +88,13 @@ contract StakingToken is ERC20Upgradeable {
         uint256 endTime;
         uint256 requestedDuration;
         if (_duration == 0) {
-            endTime = 864000 + block.timestamp;
+            endTime = 86400 + block.timestamp;
             requestedDuration = 1;
         } else if (_duration == 1) {
             endTime = 604800 + block.timestamp;
             requestedDuration = 7;
         } else {
-            endTime = 12096000 + block.timestamp;
+            endTime = 1209600 + block.timestamp;
             requestedDuration = 14;
         }
         uint256 reward = calculateReward(_stake, requestedDuration);

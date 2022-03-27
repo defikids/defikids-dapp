@@ -44,7 +44,7 @@ contract StakingToken is ERC20Upgradeable {
     ) external initializer {
         __ERC20_init(_name, _symbol);
         owner = _msgSender();
-        REWARD_RATE = 0.05 ether;
+        REWARD_RATE = 500;
         _mint(_msgSender(), _totalSupply);
     }
 
@@ -151,8 +151,6 @@ contract StakingToken is ERC20Upgradeable {
         view
         returns (uint256)
     {
-        uint256 rate = _stake * REWARD_RATE;
-        uint256 reward = rate * requestedDuration;
-        return reward;
+        return _stake * REWARD_RATE * requestedDuration / 1e4;
     }
 }

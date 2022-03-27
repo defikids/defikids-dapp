@@ -153,13 +153,7 @@ const Child: React.FC<IProps> = ({
             style={{ maxHeight: 300 }}
           >
             {stakes.map((s) => (
-              <Allocation
-                key={s.stakeId}
-                name={s.stakeId.toString()}
-                value={s.amount}
-                duration={s.stakeStartTime}
-                durationTotal={s.stakeEndTime}
-              />
+              <Allocation key={s.id} {...s} />
             ))}
           </div>
         </div>

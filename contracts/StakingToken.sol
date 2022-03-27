@@ -44,7 +44,7 @@ contract StakingToken is ERC20Upgradeable {
     ) external initializer {
         __ERC20_init(_name, _symbol);
         owner = _msgSender();
-        REWARD_RATE = 0.05 ether;
+        REWARD_RATE = 500;
         _mint(_msgSender(), _totalSupply);
     }
 
@@ -88,13 +88,13 @@ contract StakingToken is ERC20Upgradeable {
         uint256 endTime;
         uint256 requestedDuration;
         if (_duration == 0) {
-            endTime = 864000 + block.timestamp;
+            endTime = block.timestamp + 1 days;
             requestedDuration = 1;
         } else if (_duration == 1) {
-            endTime = 604800 + block.timestamp;
+            endTime = block.timestamp + 7 days;
             requestedDuration = 7;
         } else {
-            endTime = 12096000 + block.timestamp;
+            endTime = block.timestamp + 14 days;
             requestedDuration = 14;
         }
         uint256 reward = calculateReward(_stake, requestedDuration);
@@ -151,8 +151,6 @@ contract StakingToken is ERC20Upgradeable {
         view
         returns (uint256)
     {
-        uint256 rate = _stake * REWARD_RATE;
-        uint256 reward = rate * requestedDuration;
-        return reward;
+        return _stake * REWARD_RATE * requestedDuration / 1e4;
     }
 }

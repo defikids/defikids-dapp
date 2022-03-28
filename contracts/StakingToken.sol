@@ -151,6 +151,6 @@ contract StakingToken is ERC20Upgradeable {
         view
         returns (uint256)
     {
-        return _stake * REWARD_RATE * requestedDuration / 1e4;
+        return (_stake * REWARD_RATE * requestedDuration) / 1e4;
     }
 }

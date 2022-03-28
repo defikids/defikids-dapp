@@ -3,7 +3,7 @@
 ### Contract Addresses
 
 - Host Proxy: [0xfC09d939b3d622677331e5252FDAEc7Cf8E6c08E]("https://mumbai.polygonscan.com/address/0xfC09d939b3d622677331e5252FDAEc7Cf8E6c08E)
-- Staking Proxy: [0x66610111c78D3Eec5aFE5484CD7E1800a67673E5]("0x66610111c78D3Eec5aFE5484CD7E1800a67673E5")
+- Staking Proxy: [0xbef965924efc5Fc353cC583F139419ef2150BaCf]("0xbef965924efc5Fc353cC583F139419ef2150BaCf")
 
 ### Contract ABI's.
 

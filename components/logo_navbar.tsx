@@ -10,7 +10,7 @@ const LogoNavbar: React.FC<Omit<ImageProps, "src" | "alt">> = ({
     <Image
       {...props}
       src="/logo_navbar.svg"
-      alt="Allocate Logo"
+      alt="DefiKids Logo"
       width={width}
       height={height}
     />

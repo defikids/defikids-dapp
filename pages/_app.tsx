@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <StoreProvider>
       <Head>
-        <title>Allocate</title>
+        <title>DefiKids</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Page>

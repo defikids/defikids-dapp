@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "../components/button";
 import { useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
@@ -16,6 +16,7 @@ import AnimatedNumber from "../components/animated_number";
 import { flowDetails } from "../hooks/useSuperFluid";
 import { ethers } from "ethers";
 import TransferAllModal from "../components/transfer_all_modal";
+import StakeContract from "../services/stake";
 
 const FETCH_BALANCE_INTERVAL = 25000; // correct balance value X milliseconds
 const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecting a change
@@ -25,26 +26,29 @@ const Parent: React.FC = () => {
   const {
     state: { contract, provider, wallet },
   } = useStore();
-  const [children, setChildren] = useState([]);
+  const [children, setChildren] = useState<IChild[]>([]);
+  const [childrenStakes, setChildrenStakes] = useState({});
+  const [stakeContract, setStakeContract] = useState<StakeContract>();
 
-  const fetchChildren = async (retry = false, retries = 0) => {
-    setChildrenLoading(true);
-    const newChildren = await contract.fetchChildren();
-    console.log("HELLO");
-    if (
-      retry &&
-      retries < MAX_FETCH_RETRIES &&
-      children.length === newChildren.length
-    ) {
-      return setTimeout(
-        () => fetchChildren(true, retries + 1),
-        FETCH_RETRY_TIMEOUT
-      );
-    }
-    console.log("LOADING DONE");
-    setChildrenLoading(false);
-    setChildren(newChildren);
-  };
+  const fetchChildren = useCallback(
+    async (retry = false, retries = 0) => {
+      setChildrenLoading(true);
+      const newChildren = await contract.fetchChildren();
+      if (
+        retry &&
+        retries < MAX_FETCH_RETRIES &&
+        children.length === newChildren.length
+      ) {
+        return setTimeout(
+          () => fetchChildren(true, retries + 1),
+          FETCH_RETRY_TIMEOUT
+        );
+      }
+      setChildrenLoading(false);
+      setChildren(newChildren);
+    },
+    [children.length, contract]
+  );
 
   useEffect(() => {
     if (!contract) {
@@ -52,7 +56,37 @@ const Parent: React.FC = () => {
     }
 
     fetchChildren();
-  }, [contract]);
+  }, [contract, fetchChildren]);
+
+  useEffect(() => {
+    if (provider && wallet) {
+      StakeContract.fromProvider(provider, wallet).then((contract) =>
+        setStakeContract(contract)
+      );
+    }
+  }, [provider, wallet]);
+
+  useEffect(() => {
+    if (!stakeContract || !children.length) {
+      setChildrenStakes({});
+      return;
+    }
+    const fetchChildDetails = async () => {
+      const childDetails = {};
+      await Promise.all(
+        children.map(async (child) => {
+          const [details, stakes] = await Promise.all([
+            stakeContract.fetchStakerDetails(child._address),
+            stakeContract.fetchStakes(child._address),
+          ]);
+          childDetails[child._address] = { ...details, stakes };
+        })
+      );
+      console.log(childDetails);
+      setChildrenStakes(childDetails);
+    };
+    fetchChildDetails();
+  }, [stakeContract, children]);
 
   const [balance, setBalance] = useState<number>();
   const [netFlow, setNetFlow] = useState<number>(0);
@@ -86,8 +120,8 @@ const Parent: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [showTransferAll, setShowTransferAll] = useState(false);
-  const [transferChild, setTransferChild] = useState<Omit<IChild, "access">>();
-  const [streamChild, setStreamChild] = useState<Omit<IChild, "access">>();
+  const [transferChild, setTransferChild] = useState<IChild>();
+  const [streamChild, setStreamChild] = useState<IChild>();
 
   return (
     <div>
@@ -147,15 +181,14 @@ const Parent: React.FC = () => {
             Transfer to all kids
           </Button>
         </div>
-        <div className="flex items-start justify-between">
+        <div className="grid grid-cols-2 gap-14">
           {children.map((c) => (
             <Child
-              key={c[0]}
-              address={c[0]}
-              name={c[1]}
-              access={c[2]}
-              onTransfer={() => setTransferChild({ name: c[1], address: c[0] })}
-              onStream={() => setStreamChild({ name: c[1], address: c[0] })}
+              key={c._address}
+              {...c}
+              {...childrenStakes[c._address]}
+              onTransfer={() => setTransferChild(c)}
+              onStream={() => setStreamChild(c)}
             />
           ))}
         </div>

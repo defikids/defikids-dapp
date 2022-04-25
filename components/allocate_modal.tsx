@@ -1,10 +1,10 @@
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import { IStake } from "../pages/child";
-import StakeContract, { IStakeDuration } from "../services/stake";
+import StakeContract, { IStake, IStakeDuration } from "../services/stake";
 import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
@@ -13,10 +13,10 @@ import Logo from "./logo";
 interface IProps {
   show: boolean;
   onClose: () => void;
-  onAllocate: (stake: IStake) => void;
+  onAllocate: (transaction: ethers.ContractReceipt) => void;
   balance: number;
-  update?: { name: string; amount: number; duration: number };
-  onUpdate?: (stake: IStake) => void;
+  update?: IStake;
+  onUpdate?: (transaction: ethers.ContractReceipt) => void;
 }
 
 const StakingDurationsString = {
@@ -55,21 +55,26 @@ const AllocateModal: React.FC<IProps> = ({
     amount: number,
     duration: IStakeDuration
   ) => {
-    setLoading(true);
-    // await stakeContract.createStake(amount, duration);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setLoading(false);
-    onClose();
-    const callback = update ? onUpdate : onAllocate;
-    callback({
-      name,
-      amount,
-      duration,
-      reward: StakeContract.calculateAllocateReward(amount, duration),
-    });
-    setName("");
-    setAmount(undefined);
-    setDuration(undefined);
+    try {
+      setLoading(true);
+      const transaction = await stakeContract.createStake(
+        amount,
+        duration,
+        name
+      );
+      const result = await transaction.wait();
+      setLoading(false);
+      console.log(result);
+      onClose();
+      const callback = update ? onUpdate : onAllocate;
+      callback(result);
+      setName("");
+      setAmount(undefined);
+      setDuration(undefined);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   const stakeOptions = (disabled: boolean) => {

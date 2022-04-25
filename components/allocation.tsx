@@ -1,24 +1,20 @@
+import { BigNumber, ethers } from "ethers";
 import React from "react";
 import { ProgressBar } from "react-bootstrap";
 import { twMerge } from "tailwind-merge";
-import StakeContract, { IStakeDuration } from "../services/stake";
+import StakeContract, { IStake } from "../services/stake";
 
-interface IProps {
-  name: string;
-  value: number;
-  duration: number;
-  durationTotal: IStakeDuration;
+interface IProps extends IStake {
   className?: string;
 }
 
 const Allocation: React.FC<IProps> = ({
   name,
-  value,
+  amount,
   duration,
-  durationTotal,
+  remainingDays,
   className,
 }) => {
-  const totalDays = StakeContract.calculateDays(durationTotal);
   return (
     <div
       className={twMerge(
@@ -28,10 +24,10 @@ const Allocation: React.FC<IProps> = ({
       )}
     >
       <p className="text-blue-dark text-md mb-2 ml-1">{name}</p>
-      <ProgressBar min={0} max={totalDays} now={duration + 1} />
+      <ProgressBar min={0} max={duration} now={duration - remainingDays} />
       <div className="flex justify-between mt-2">
-        <p className="ml-1">{totalDays - duration} days remaining</p>
-        <h4 className="text-md">{value} USDCx</h4>
+        <p className="ml-1">{remainingDays} days remaining</p>
+        <h4 className="text-md">{ethers.utils.formatEther(amount)} USDCx</h4>
       </div>
     </div>
   );

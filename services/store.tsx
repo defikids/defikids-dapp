@@ -76,6 +76,7 @@ async function loginUser(
   dispatch: IStoreDispatch,
   address?: string
 ) {
+  console.log(provider, address);
   const contract = await HostContract.fromProvider(provider, address);
   const userType = await contract.getUserType();
   const wallet = contract.getWallet();

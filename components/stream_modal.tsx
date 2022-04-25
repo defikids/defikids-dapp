@@ -3,7 +3,6 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import { transferUSDCX } from "../services/usdcx_contract";
 import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
@@ -15,7 +14,7 @@ interface IProps {
   onClose: () => void;
   onTransfer: () => void;
   balance: number;
-  child: { name: string; address: string };
+  child: { username: string; _address: string };
 }
 
 const ALLOWANCE_DAYS = 30;
@@ -58,7 +57,6 @@ const StreamModal: React.FC<IProps> = ({
         childAddress,
         flowRate.toString()
       );
-      console.log(result);
       setLoading(false);
       onClose();
       onTransfer();
@@ -74,7 +72,7 @@ const StreamModal: React.FC<IProps> = ({
         <h1 className="text-xl">
           Monthly allowance
           <br />
-          for {child ? child.name : ""}
+          for {child ? child.username : ""}
         </h1>
       </Modal.Header>
       <div className="flex px-12 pb-12 justify-between items-center">
@@ -99,7 +97,7 @@ const StreamModal: React.FC<IProps> = ({
         <Button
           className={loading && "animate-pulse pointer-events-none"}
           size="lg"
-          onClick={() => handleStream(amount, child.address)}
+          onClick={() => handleStream(amount, child._address)}
           disabled={!amount || isNaN(amount)}
         >
           <div className="flex items-center">

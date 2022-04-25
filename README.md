@@ -1,8 +1,6 @@
-# Defi Kids(Allocate)
+# DefiKids
 
-It is a platform to teach kids how to grow their allowance through the use of de-fi tools. It's designed for kids, managed by parents.
-
-<img src="public/defikids-cover.png" href="https://allocate.vercel.app" alt="Logo" >
+A platform to empower the next generation with the use of de-fi tools. It is designed for kids, managed by parents.
 
 ## Description
 
@@ -104,8 +102,8 @@ Contributions are what make the open source community such an amazing place to b
 
 
 
-#### Check out our app<a href="https://defikids.io"> defikids.io</a>
-#### Follow us on Twitter <a href="https://twitter.com/defikids_">@defikids_</a> 
+#### Check out our app: <a href="https://defikids.io"> defikids.io</a>
+#### Follow us on Twitter: <a href="https://twitter.com/defikids_">@defikids_</a> 
 
 #### <a href="https://defikidsproject@gmail.com">📬 Contact Us</a> 
 

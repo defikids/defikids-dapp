@@ -22,7 +22,7 @@
     "@openzeppelin/truffle-upgrades": "^1.13.0",
     "@superfluid-finance/js-sdk": "^0.5.8",
     "@superfluid-finance/sdk-core": "^0.2.0",
-    "@web3auth/web3auth": "^0.2.4",
+    "@web3auth/web3auth": "0.2.4",
     "0xsequence": "^0.36.1",
     "chai-as-promised": "^7.1.1",
     "dotenv": "^16.0.0",

@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
 
         <p className="cursor-pointer ml-8">
           <Link href="https://learncrypto.com/glossary">
-            <a> Crypto Glossery</a>
+            <a> Crypto Glossary</a>
           </Link>
         </p>
         <p className="cursor-pointer ml-8"> DefiKids @ 2022</p>

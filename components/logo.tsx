@@ -3,12 +3,12 @@ import Image, { ImageProps } from "next/image";
 
 const Logo: React.FC<
   Omit<ImageProps, "src" | "alt"> & { variant?: "white" | "blue" }
-> = ({ width = 48, height = 18, variant = "white", ...props }) => {
+> = ({ width = 48, height = 48, variant = "white", ...props }) => {
   return (
     <Image
       {...props}
-      src={variant === "white" ? "/logo.svg" : "/logo_blue.svg"}
-      alt="Allocate Logo"
+      src="/pig_logo.png"
+      alt="DefiKids Logo"
       width={width}
       height={height}
     />

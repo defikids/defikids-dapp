@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { IChild } from "../services/contract";
 import { IStake, IStakeDuration } from "../services/stake";
 import { useStore } from "../services/store";
@@ -68,6 +68,11 @@ const Child: React.FC<IProps> = ({
       setBalance(parseFloat(value));
     });
   }, [provider, _address]);
+
+  const stakesToShow = useMemo(
+    () => stakes.filter((s) => s.remainingDays >= 0),
+    [stakes]
+  );
 
   return (
     <div className="rounded-lg border-2 border-grey-light">
@@ -152,7 +157,7 @@ const Child: React.FC<IProps> = ({
             className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
             style={{ maxHeight: 300 }}
           >
-            {stakes.map((s) => (
+            {stakesToShow.map((s) => (
               <Allocation key={s.id} {...s} />
             ))}
           </div>

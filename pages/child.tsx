@@ -118,6 +118,11 @@ const Child: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
+  const stakesToShow = useMemo(
+    () => stakes.filter((s) => s.remainingDays >= 0),
+    [stakes]
+  );
+
   return (
     <div>
       <h1 className="text-xxl text-blue-dark mb-[5vh] ">Welcome Peter</h1>
@@ -213,7 +218,7 @@ const Child: React.FC = () => {
               className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
               style={{ maxHeight: 300 }}
             >
-              {stakes.map((a) => (
+              {stakesToShow.map((a) => (
                 <div
                   className="flex items-center hover:cursor-pointer"
                   key={a.name}

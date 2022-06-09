@@ -29,6 +29,7 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
       await contract.addMember(wallet, name, !withdraw);
       onAdd();
     } catch (error) {
+      console.log("Error adding child:", error);
     } finally {
       setLoading(false);
       onClose();

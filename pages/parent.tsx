@@ -46,6 +46,7 @@ const Parent: React.FC = () => {
       }
       setChildrenLoading(false);
       setChildren(newChildren);
+      console.log("new", newChildren);
     },
     [children.length, contract]
   );
@@ -82,12 +83,12 @@ const Parent: React.FC = () => {
           childDetails[child._address] = { ...details, stakes };
         })
       );
-      console.log(childDetails);
       setChildrenStakes(childDetails);
     };
     fetchChildDetails();
   }, [stakeContract, children]);
 
+  const [childKey, setChildKey] = useState(0);
   const [balance, setBalance] = useState<number>();
   const [netFlow, setNetFlow] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
@@ -96,6 +97,7 @@ const Parent: React.FC = () => {
     getUSDCXBalance(provider, wallet).then((value) => {
       setBalance(parseFloat(value));
     });
+    setChildKey((key) => key + 1);
   };
 
   const updateNetFlow = async () => {
@@ -184,7 +186,7 @@ const Parent: React.FC = () => {
         <div className="grid grid-cols-2 gap-14">
           {children.map((c) => (
             <Child
-              key={c._address}
+              key={c._address + childKey}
               {...c}
               {...childrenStakes[c._address]}
               onTransfer={() => setTransferChild(c)}

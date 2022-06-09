@@ -32,13 +32,14 @@ const TransferModal: React.FC<IProps> = ({
   const handleTransfer = async (amount: number, childAddress: string) => {
     try {
       setLoading(true);
-      await transferUSDCX(provider, wallet, amount, childAddress);
+      const tx = await transferUSDCX(provider, wallet, amount, childAddress);
+      await tx.wait(2);
       setLoading(false);
       onClose();
       onTransfer();
     } catch (error) {
       setLoading(false);
-      console.error(error);
+      console.error("Error transfering funds", error);
     }
   };
 

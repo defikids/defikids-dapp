@@ -4,7 +4,8 @@ export const ethers = require("ethers");
 export const network = ethers.providers.getNetwork(80001);
 
 // Ethers.js provider initialization
-export const url = "RPC	https://rpc-mumbai.matic.today";
+export const url =
+  "https://polygon-mumbai.g.alchemy.com/v2/ZAX72ViWMKnFEGQDlo6K_X333b1teboA";
 
 export const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 

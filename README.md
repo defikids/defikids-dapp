@@ -104,7 +104,7 @@ Contributions are what make the open source community such an amazing place to l
 
 
 
-#### Check out our app: <a href="https://defikids.io"> defikids.io</a>
+#### Check out our app: <a href="https://defikids-nathantarbert.vercel.app/"> defikids</a>
 #### Follow us on Twitter: <a href="https://twitter.com/defikids_">@defikids_</a> 
 
 #### <a href="https://defikidsproject@gmail.com">📬 Contact Us</a> 

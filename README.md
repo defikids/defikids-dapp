@@ -6,7 +6,7 @@ A platform to empower the next generation with the use of de-fi tools. It is des
 
 ## Description
 
-Crypto doesn't have to be complicated. The Allocate platform is designed to help you and your family learn how to comfortably use crypto in your everyday life. It's designed for kids, managed by parents.
+Crypto doesn't have to be complicated. The DefiKids platform is designed to help you and your family learn how to comfortably use crypto in your everyday life. It's designed for kids, managed by parents.
 
 ## Problem
 

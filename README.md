@@ -29,7 +29,7 @@ How do you teach your children to use crypto safely and confidently.
 Architecture:
 
 - Polygon: All contracts are on Polygon instead of L1.
-- Torus: Used for authentication.
+- Web3Auth: Used for authentication.
 - Sequence: Used for authentication
 - Superfluid: Used to stream funds to children in real-time
 - Next.js for frontend

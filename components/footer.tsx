@@ -19,9 +19,6 @@ const Footer: React.FC = () => {
               width={110}
             />
           </a>
-          <a className="mr-5 flex" href="https://web3auth.io/">
-            <Image src="/web3auth.svg" alt="web3auth" height={20} width={120} />
-          </a>
           <a className="flex" href="https://sequence.info/">
             <Image src="/sequence.svg" alt="sequence" height={20} width={120} />
           </a>

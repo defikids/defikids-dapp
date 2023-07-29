@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Web3Auth from "../services/web3auth";
 import Button from "./button";
 import { useStore } from "../services/store";
 import Sequence from "../services/sequence";
@@ -11,11 +10,6 @@ const Login: React.FC = () => {
   const router = useRouter();
 
   const logout = (isSequence: boolean = false) => {
-    try {
-      Web3Auth.logout();
-    } catch (error) {
-      console.error(error);
-    }
     try {
       Sequence.wallet?.disconnect();
     } catch (error) {
@@ -29,10 +23,6 @@ const Login: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem("@defikids.loggedIn");
     window.location.replace("/");
-  };
-
-  const handleConnectWallet = async () => {
-    Web3Auth.connect();
   };
 
   const handleConnectSequence = async () => {
@@ -68,7 +58,6 @@ const Login: React.FC = () => {
     </>
   ) : (
     <div className="flex flex-col">
-      <Button onClick={handleConnectWallet}>Connect your wallet</Button>
       <Button className="mt-4 bg-blue-dark" onClick={handleConnectSequence}>
         Connect with Sequence
       </Button>

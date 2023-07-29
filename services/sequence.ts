@@ -1,12 +1,16 @@
 import { sequence } from "0xsequence";
 import { ChainId } from "@0xsequence/network";
 import { ConnectOptions } from "@0xsequence/provider";
-import { ETHAuth } from "@0xsequence/ethauth";
 import { ethers } from "ethers";
 import HostContract from "./contract";
 
+type ConnectedUser = {
+  success: boolean;
+  userType?: number;
+  address?: string;
+};
+
 const defaultChainId = ChainId.POLYGON_MUMBAI;
-const DEFAULT_API_URL = "https://api.sequence.app";
 
 sequence.initWallet({ defaultNetwork: defaultChainId });
 const wallet = sequence.getWallet().getProvider();
@@ -16,8 +20,17 @@ const defaultConnectOptions: ConnectOptions = {
   askForEmail: true,
 };
 
-const appendConsoleLine = (message: string, clear = false) => {
-  console.log(message);
+const getUserType = async (connectDetails: any, chainId: any) => {
+  const rpcUrl = connectDetails.networks.find(
+    (n) => n.chainId === Number(chainId)
+  ).rpcUrl;
+
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+
+  const address = connectDetails.accountAddress;
+  const contract = await HostContract.fromProvider(provider, address);
+  const userType = await contract.getUserType();
+  return userType;
 };
 
 const connectWallet = async (authorize: boolean = false) => {
@@ -37,78 +50,23 @@ const connectWallet = async (authorize: boolean = false) => {
   };
 
   try {
-    appendConsoleLine("Connecting");
     const wallet = sequence.getWallet();
-
     const connectDetails = await wallet.connect(connectOptions);
-
-    // Example of how to verify using ETHAuth via Sequence API
-    if (connectOptions.authorize) {
-      let apiUrl = DEFAULT_API_URL;
-
-      const api = new sequence.api.SequenceAPIClient(apiUrl);
-
-      const { isValid } = await api.isValidETHAuthProof({
-        chainId: connectDetails.chainId,
-        walletAddress: connectDetails.session.accountAddress,
-        ethAuthProofString: connectDetails.proof!.proofString,
-      });
-
-      appendConsoleLine(`isValid (API)?: ${isValid}`);
-    }
-
-    // Example of how to verify using ETHAuth directl on the client
-    if (connectOptions.authorize) {
-      const ethAuth = new ETHAuth();
-
-      if (connectDetails.proof) {
-        const decodedProof = await ethAuth.decodeProof(
-          connectDetails.proof.proofString,
-          true
-        );
-
-        const isValid = await wallet.utils.isValidTypedDataSignature(
-          wallet.getAddress(),
-          connectDetails.proof.typedData,
-          decodedProof.signature,
-          ethers.BigNumber.from(connectDetails.chainId).toNumber()
-        );
-
-        appendConsoleLine(
-          `connected using chainId: ${ethers.BigNumber.from(
-            connectDetails.chainId
-          ).toString()}`
-        );
-        appendConsoleLine(`isValid (client)?: ${isValid}`);
-      }
-    }
 
     if (connectDetails.connected) {
       const chainId = connectDetails.chainId;
-      const rpcUrl = connectDetails.session.networks.find(
-        (n) => n.chainId === Number(chainId)
-      ).rpcUrl;
-
-      const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-
-      localStorage.setItem("@defikids.isLoggedIn", "true");
 
       const address = connectDetails.session.accountAddress;
-      const contract = await HostContract.fromProvider(provider, address);
-      const userType = await contract.getUserType();
 
-      localStorage.setItem("@defikids.userType", userType.toString());
+      const userType = await getUserType(connectDetails.session, chainId);
 
-      appendConsoleLine("Wallet connected!");
-      appendConsoleLine(`shared email: ${connectDetails.email}`);
-      return true;
+      return { success: true, userType, address } as ConnectedUser;
     } else {
-      appendConsoleLine("Failed to connect wallet - " + connectDetails.error);
-      return false;
+      return { success: false } as ConnectedUser;
     }
   } catch (e) {
     console.error(e);
   }
 };
 
-export default { connectWallet, wallet };
+export default { connectWallet, wallet, getUserType };

@@ -1,13 +1,10 @@
-import dynamic from "next/dynamic";
 import UnderlineText from "../components/underline_text";
-
-const Login = dynamic(() => import("../components/login"), {
-  ssr: false,
-});
+import Login from "../components/login";
 
 export default function Home() {
   return (
     <>
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style global jsx>{`
         body.bg-white {
           background-color: #f1faee !important;

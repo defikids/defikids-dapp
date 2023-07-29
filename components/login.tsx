@@ -1,21 +1,39 @@
-import React, { useEffect } from "react";
-import Web3Auth from "../services/web3auth";
+import React from "react";
 import Button from "./button";
-import { useStore } from "../services/store";
 import Sequence from "../services/sequence";
 import { useRouter } from "next/router";
 import { UserType } from "../services/contract";
+import { useAuthStore } from "@/store/auth/authStore";
+import { shallow } from "zustand/shallow";
+
+type ConnectedUser = {
+  success: boolean;
+  userType?: number;
+  address?: string;
+};
 
 const Login: React.FC = () => {
-  const store = useStore();
   const router = useRouter();
 
+  const {
+    isLoggedIn,
+    walletAddress,
+    setUserType,
+    setIsLoggedIn,
+    setWalletAddress,
+  } = useAuthStore(
+    (state) => ({
+      isLoggedIn: state.isLoggedIn,
+      userType: state.userType,
+      walletAddress: state.walletAddress,
+      setUserType: state.setUserType,
+      setIsLoggedIn: state.setIsLoggedIn,
+      setWalletAddress: state.setWalletAddress,
+    }),
+    shallow
+  );
+
   const logout = (isSequence: boolean = false) => {
-    try {
-      Web3Auth.logout();
-    } catch (error) {
-      console.error(error);
-    }
     try {
       Sequence.wallet?.disconnect();
     } catch (error) {
@@ -27,23 +45,23 @@ const Login: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("@defikids.loggedIn");
+    setIsLoggedIn(false);
     window.location.replace("/");
   };
 
-  const handleConnectWallet = async () => {
-    Web3Auth.connect();
-  };
-
   const handleConnectSequence = async () => {
-    const success = await Sequence.connectWallet(true);
-    if (success) {
-      const userType = localStorage.getItem("@defikids.userType");
-      const isLoggedIn = localStorage.getItem("@defikids.isLoggedIn");
+    const { success, userType, address } = (await Sequence.connectWallet(
+      true
+    )) as ConnectedUser;
 
+    if (success) {
       if (!Boolean(isLoggedIn)) {
         router.push("/");
       }
+
+      setUserType(userType);
+      setIsLoggedIn(true);
+      setWalletAddress(address);
 
       switch (Number(userType)) {
         case UserType.UNREGISTERED:
@@ -62,13 +80,12 @@ const Login: React.FC = () => {
     }
   };
 
-  return store.state.loggedIn ? (
+  return isLoggedIn ? (
     <>
-      <p className="mt-2">Wallet: {store.state.wallet}</p>
+      <p className="mt-2">Wallet: {walletAddress}</p>
     </>
   ) : (
     <div className="flex flex-col">
-      <Button onClick={handleConnectWallet}>Connect your wallet</Button>
       <Button className="mt-4 bg-blue-dark" onClick={handleConnectSequence}>
         Connect with Sequence
       </Button>

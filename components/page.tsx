@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "./navbar";
-import useAuth from "./auth";
 
 const Page: React.FC = ({ children }) => {
   return (

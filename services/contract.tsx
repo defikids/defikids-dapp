@@ -31,7 +31,7 @@ class HostContract {
   }
 
   static async fromProvider(
-    provider: ethers.providers.Web3Provider,
+    provider: ethers.providers.JsonRpcProvider,
     address?: string
   ) {
     let wallet = address;

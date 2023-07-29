@@ -17,13 +17,16 @@
     "types:contracts": "typechain --target=ethers-v5 'abis/**/*.json'"
   },
   "dependencies": {
+    "@0xsequence/ethauth": "^0.8.1",
+    "@0xsequence/network": "^1.1.1",
+    "@0xsequence/provider": "^1.1.1",
     "@openzeppelin/contracts": "^4.4.2",
     "@openzeppelin/contracts-upgradeable": "4.1.0",
     "@openzeppelin/truffle-upgrades": "^1.13.0",
     "@superfluid-finance/js-sdk": "^0.5.8",
     "@superfluid-finance/sdk-core": "^0.2.0",
     "@web3auth/web3auth": "0.2.4",
-    "0xsequence": "^0.36.1",
+    "0xsequence": "^1.1.0",
     "chai-as-promised": "^7.1.1",
     "dotenv": "^16.0.0",
     "fs": "^0.0.1-security",

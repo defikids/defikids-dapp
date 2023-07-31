@@ -15,11 +15,6 @@ const defaultChainId = ChainId.POLYGON_MUMBAI;
 sequence.initWallet({ defaultNetwork: defaultChainId });
 const wallet = sequence.getWallet().getProvider();
 
-const defaultConnectOptions: ConnectOptions = {
-  app: "Defi Kids",
-  askForEmail: true,
-};
-
 const getUserType = async (connectDetails: any, chainId: any) => {
   const rpcUrl = connectDetails.networks.find(
     (n) => n.chainId === Number(chainId)
@@ -34,6 +29,11 @@ const getUserType = async (connectDetails: any, chainId: any) => {
 };
 
 const connectWallet = async (authorize: boolean = false) => {
+  const defaultConnectOptions: ConnectOptions = {
+    app: "Defi Kids",
+    askForEmail: true,
+  };
+
   let connectOptions = {
     app: "Defi Kids",
     askForEmail: true,

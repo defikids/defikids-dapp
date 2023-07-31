@@ -54,11 +54,10 @@ const Login: React.FC = () => {
       true
     )) as ConnectedUser;
 
+    if (!Boolean(isLoggedIn)) {
+      router.push("/");
+    }
     if (success) {
-      if (!Boolean(isLoggedIn)) {
-        router.push("/");
-      }
-
       setUserType(userType);
       setIsLoggedIn(true);
       setWalletAddress(address);

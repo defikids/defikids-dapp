@@ -29,15 +29,13 @@ const Footer: React.FC = () => {
         <div className="flex items-center">
           <p className="cursor-pointer ml-8">
             <Link href="https://twitter.com/defikids_">
-              <a> Twitter - @defikids_</a>
+              Twitter - @defikids_
             </Link>
           </p>
           {/* <p className="cursor-pointer">FAQ</p> */}
 
           <p className="cursor-pointer ml-8">
-            <Link href="https://learncrypto.com/glossary">
-              <a> Crypto Glossary</a>
-            </Link>
+            <Link href="https://learncrypto.com/glossary">Crypto Glossary</Link>
           </p>
           <p className="cursor-pointer ml-8"> DefiKids @ 2022</p>
         </div>

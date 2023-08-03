@@ -1,17 +1,34 @@
 import { useRouter } from "next/router";
 import React from "react";
 import Button from "../components/button";
-import { useStore } from "../services/store";
+import { shallow } from "zustand/shallow";
+import HostContract from "../services/contract";
+import { useAuthStore } from "@/store/auth/authStore";
+import { toast } from "react-toastify";
+import Sequence from "../services/sequence";
 
 const Register: React.FC = () => {
   const router = useRouter();
-  const {
-    state: { contract },
-  } = useStore();
+
+  const { walletAddress } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
+    }),
+    shallow
+  );
+
   const handleParent = async () => {
-    await contract.createParent();
-    // TODO CHANGE USER TYPE TO PARENT
-    router.push("/parent");
+    try {
+      const signer = Sequence.wallet?.getSigner();
+      const contract = await HostContract.fromProvider(signer, walletAddress);
+      await contract.registerParent();
+      router.push("/parent");
+    } catch (e) {
+      console.log(e);
+      if (e.code === 4001) {
+        toast.error("User rejected transaction");
+      }
+    }
   };
   return (
     <div className="flex flex-1 flex-col items-center justify-center">

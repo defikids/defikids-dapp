@@ -3,10 +3,11 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 import Toggle from "./toggle";
+import { useWeb3User } from "@/hooks/useWeb3User";
+import { useProvider, useSigner } from "wagmi";
 
 interface IProps {
   show: boolean;
@@ -19,9 +20,10 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
   const [wallet, setWallet] = useState("");
   const [withdraw, setWithdraw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const {
-    state: { contract },
-  } = useStore();
+
+  const web3User = useWeb3User();
+  const provider = useProvider();
+  const { data: signer } = useSigner();
 
   const handleAddChild = async (wallet, name) => {
     setLoading(true);

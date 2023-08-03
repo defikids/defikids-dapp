@@ -3,7 +3,7 @@ import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
 import { approveUSDCX } from "./usdcx_contract";
 
-const CONTRACT_ADDRESS = "0xbef965924efc5Fc353cC583F139419ef2150BaCf";
+const STAKING_CONTRACT = "0xbef965924efc5Fc353cC583F139419ef2150BaCf";
 
 export interface IStakerDetails {
   totalInvested: BigNumber;

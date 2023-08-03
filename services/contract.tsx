@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import { Host } from "../types/ethers-contracts";
 import HOST_ABI from "../abis/contracts/Host.json";
-
-const CONTRACT_ADDRESS = "0xfC09d939b3d622677331e5252FDAEc7Cf8E6c08E";
+import { SequenceSigner } from "@0xsequence/provider";
+import { HOST_ADDRESS } from "@/store/contract/contractStore";
 
 export enum UserType {
   PARENT = 1,
@@ -31,21 +31,16 @@ class HostContract {
   }
 
   static async fromProvider(
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.providers.JsonRpcProvider | SequenceSigner,
     address?: string
   ) {
-    let wallet = address;
-    if (!address) {
-      const accounts = await provider.send("eth_requestAccounts", []);
-      wallet = accounts[0];
-    }
-    const signer = provider.getSigner(wallet);
     const contract = new ethers.Contract(
-      CONTRACT_ADDRESS,
+      HOST_ADDRESS,
       HOST_ABI.abi,
-      signer
+      provider
     ) as Host;
-    return new HostContract(contract, wallet);
+
+    return new HostContract(contract, address);
   }
 
   async getUserType(): Promise<UserType> {
@@ -54,7 +49,7 @@ class HostContract {
     return userType;
   }
 
-  async createParent() {
+  async registerParent() {
     return this.contract.registerParent();
   }
 

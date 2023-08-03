@@ -1,5 +1,5 @@
 //build out a list of faq's
-const faq_list = {
+export const faq_list = {
   crypto: [
     {
       question: "Altcoin",

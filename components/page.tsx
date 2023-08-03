@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "./navbar";
-import WalletNavbar from "./wallet_navbar";
+import Navbar from "./Navbar";
+import WalletNavbar from "./WalletNavbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 

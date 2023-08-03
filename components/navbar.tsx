@@ -73,12 +73,6 @@ export default function NavBar() {
     }
   };
 
-  const handleSubmit = (e) => {
-    console.log("submit");
-    e.preventDefault();
-    // onClose();
-  };
-
   const handleConnectSequence = async () => {
     const { success, userType, accountAddress } = (await Sequence.connectWallet(
       true
@@ -95,13 +89,9 @@ export default function NavBar() {
     }
   };
 
-  // const handleWalletClick = () => {
-  //   handleConnectSequence();
-  // };
-
   return (
     <>
-      <Box bg={useColorModeValue("grey.100", "black.900")} p={6}>
+      <Box bg={useColorModeValue("grey.100", "black.900")} px={6} pt={6}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
 

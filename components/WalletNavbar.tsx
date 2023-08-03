@@ -1,58 +1,31 @@
-import React, { useState } from "react";
-import LogoNavbar from "./logo_navbar";
-import { WalletType, useAuthStore } from "@/store/auth/authStore";
+import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
-import Sequence from "../services/sequence";
-// import { disconnect } from "@wagmi/core";
+import Sequence from "@/services/sequence";
 import { UserType } from "@/services/contract";
-import { useAccountModal } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
-import { Settings } from "@0xsequence/provider";
-import Button from "./button";
+import { OpenWalletIntent, Settings } from "@0xsequence/provider";
+import { Badge, Stack, useColorMode } from "@chakra-ui/react";
 
 const WalletNavbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { colorMode } = useColorMode();
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const {
-    walletType,
-    isLoggedIn,
-    walletAddress,
-    setIsLoggedIn,
-    setUserType,
-    setWalletAddress,
-    setWalletType,
-  } = useAuthStore(
+  const { setIsLoggedIn, setUserType, setWalletAddress } = useAuthStore(
     (state) => ({
-      walletType: state.walletType,
       isLoggedIn: state.isLoggedIn,
-      walletAddress: state.walletAddress,
       setIsLoggedIn: state.setIsLoggedIn,
       setUserType: state.setUserType,
       setWalletAddress: state.setWalletAddress,
-      setWalletType: state.setWalletType,
     }),
     shallow
   );
-
-  const openWallet = () => {
-    const wallet = Sequence.wallet;
-    wallet.openWallet();
-  };
 
   const openWalletWithSettings = () => {
     const wallet = Sequence.wallet;
 
     const settings: Settings = {
-      theme: "light",
+      theme: colorMode,
       includedPaymentProviders: ["moonpay", "ramp", "wyre"],
       defaultFundingCurrency: "eth",
-      defaultPurchaseAmount: 400,
-      lockFundingCurrencyToDefault: false,
-      signInOptions: ["email", "google", "apple"],
+      signInOptions: ["email", "google", "apple", "discord", "facebook"],
     };
 
     const intent: OpenWalletIntent = {
@@ -63,8 +36,7 @@ const WalletNavbar: React.FC = () => {
       },
     };
 
-    const path = "wallet/add-funds";
-    // wallet.openWallet();
+    const path = "wallet";
     wallet.openWallet(path, intent);
   };
 
@@ -82,11 +54,6 @@ const WalletNavbar: React.FC = () => {
     window.location.replace("/");
   };
 
-  const trimWalletAddress = (address: string) => {
-    if (!address) return "";
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
   const options = ["Open Wallet", "Close Wallet", "Disconnect"];
 
   const handleSelectOption = (option: string) => {
@@ -94,7 +61,7 @@ const WalletNavbar: React.FC = () => {
 
     switch (option) {
       case "Open Wallet":
-        openWallet();
+        openWalletWithSettings();
         break;
       case "Close Wallet":
         closeWallet();
@@ -111,18 +78,19 @@ const WalletNavbar: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-end text-blue-dark mx-2">
+    <Stack direction="row" justifyContent={"flex-end"} pr={8}>
       {options.map((option, index) => (
-        <Button
+        <Badge
+          variant="subtle"
+          colorScheme="blue"
           key={index}
-          className="mx-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-          role="menuitem"
+          style={{ cursor: "pointer" }}
           onClick={() => handleSelectOption(option)}
         >
           {option}
-        </Button>
+        </Badge>
       ))}
-    </div>
+    </Stack>
   );
 };
 

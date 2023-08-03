@@ -1,7 +1,6 @@
 import { sequence } from "0xsequence";
 import { ChainId } from "@0xsequence/network";
 import { ConnectOptions } from "@0xsequence/provider";
-import { ethers } from "ethers";
 import HostContract from "./contract";
 
 type ConnectedUser = {
@@ -15,15 +14,11 @@ const defaultChainId = ChainId.POLYGON_MUMBAI;
 sequence.initWallet({ defaultNetwork: defaultChainId });
 const wallet = sequence.getWallet().getProvider();
 
-const getUserType = async (connectDetails: any, chainId: any) => {
-  const rpcUrl = connectDetails.networks.find(
-    (n) => n.chainId === Number(chainId)
-  ).rpcUrl;
+const getUserType = async (connectDetails: any) => {
+  const { accountAddress } = connectDetails;
+  const signer = wallet.getSigner();
 
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-
-  const address = connectDetails.accountAddress;
-  const contract = await HostContract.fromProvider(provider, address);
+  const contract = await HostContract.fromProvider(signer, accountAddress);
   const userType = await contract.getUserType();
   return userType;
 };
@@ -54,13 +49,12 @@ const connectWallet = async (authorize: boolean = false) => {
     const connectDetails = await wallet.connect(connectOptions);
 
     if (connectDetails.connected) {
-      const chainId = connectDetails.chainId;
+      const { session } = connectDetails;
+      const { accountAddress } = session;
 
-      const address = connectDetails.session.accountAddress;
+      const userType = await getUserType(session);
 
-      const userType = await getUserType(connectDetails.session, chainId);
-
-      return { success: true, userType, address } as ConnectedUser;
+      return { success: true, userType, accountAddress } as ConnectedUser;
     } else {
       return { success: false } as ConnectedUser;
     }
@@ -69,4 +63,4 @@ const connectWallet = async (authorize: boolean = false) => {
   }
 };
 
-export default { connectWallet, wallet, getUserType };
+export default { connectWallet, wallet };

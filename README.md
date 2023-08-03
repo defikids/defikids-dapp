@@ -106,10 +106,14 @@ Contributions are what make the open source community such an amazing place to l
 
 [![Stargazers repo roster for @NathanTarbert/DefiKids](https://reporoster.com/stars/notext/NathanTarbert/DefiKids)](https://github.com/NathanTarbert/DefiKids/stargazers)
 
+## Community
 
+[Join our Discord Community](https://discord.gg/bDGMYNa8Ng)
+[Twitter](https://twitter.com/defikids_)
 
-#### Check out our app: <a href="https://defikids-nathantarbert.vercel.app/"> defikids</a>
-#### Follow us on Twitter: <a href="https://twitter.com/defikids_">@defikids_</a> 
+## Run the app
+[Check out our app](https://defikids-nathantarbert.vercel.app/)
 
-#### <a href="https://defikidsproject@gmail.com">📬 Contact Us</a> 
+## Contact Us
+[📬 Email](https://defikidsproject@gmail.com)
 

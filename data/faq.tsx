@@ -118,5 +118,3 @@ const faq_list = {
     },
   ],
 };
-
-export default faq_list;

@@ -102,18 +102,21 @@ Contributions are what make the open source community such an amazing place to l
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## Stargazers ⭐ 
+## Stargazers ⭐ Thank you!
 
 [![Stargazers repo roster for @NathanTarbert/DefiKids](https://reporoster.com/stars/notext/NathanTarbert/DefiKids)](https://github.com/NathanTarbert/DefiKids/stargazers)
 
 ## Community
 
-[Join our Discord Community](https://discord.gg/bDGMYNa8Ng)
-[Twitter](https://twitter.com/defikids_)
+Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individuals looking to teach their kids about crypto.
 
-## Run the app
-[Check out our app](https://defikids-nathantarbert.vercel.app/)
+Follow us on [Twitter](https://twitter.com/defikids_)
+
+## Test the app
+
+Check it out [here](https://defikids-nathantarbert.vercel.app/)
 
 ## Contact Us
+
 [📬 Email](https://defikidsproject@gmail.com)
 

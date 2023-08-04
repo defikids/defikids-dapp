@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
 import Button from "../components/button";
-import { StoreAction, useStore } from "../services/store";
+// import { StoreAction, useStore } from "@/services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
 import Plus from "../components/plus";
 import Arrow from "../components/arrow";
@@ -20,10 +20,10 @@ const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecti
 const FETCH_RETRY_TIMEOUT = 1000; // timeout between fetches when expecting a change
 
 const Child: React.FC = () => {
-  const {
-    dispatch,
-    state: { provider, wallet, stakeContract },
-  } = useStore();
+  // const {
+  //   dispatch,
+  //   state: { provider, wallet, stakeContract },
+  // } = useStore();
   const [details, setDetails] = useState<IStakerDetails>({
     totalInvested: BigNumber.from(0),
     totalRewards: BigNumber.from(0),
@@ -35,27 +35,27 @@ const Child: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const initStakeContract = async () => {
-    if (!provider) {
-      return;
-    }
-    const stakeContract = await StakeContract.fromProvider(provider, wallet);
-    dispatch({
-      type: StoreAction.STAKE_CONTRACT,
-      payload: stakeContract as any,
-    });
+    // if (!provider) {
+    //   return;
+    // }
+    // const stakeContract = await StakeContract.fromProvider(provider, wallet);
+    // dispatch({
+    //   type: StoreAction.STAKE_CONTRACT,
+    //   payload: stakeContract as any,
+    // });
   };
 
-  useEffect(() => {
-    if (provider) {
-      initStakeContract();
-    }
-  }, [provider]);
+  // useEffect(() => {
+  // if (provider) {
+  //   initStakeContract();
+  // }
+  // }, [provider]);
 
   const fetchStakes = async () => {
     try {
       setLoading(true);
-      const newStakes = await stakeContract.fetchStakes();
-      setStakes(newStakes);
+      // const newStakes = await stakeContract.fetchStakes();
+      // setStakes(newStakes);
     } catch (error) {
       console.error(error);
     } finally {
@@ -66,7 +66,7 @@ const Child: React.FC = () => {
   async function fetchStakerDetails(loading = true) {
     try {
       loading && setLoading(true);
-      const details = await stakeContract.fetchStakerDetails();
+      // const details = await stakeContract.fetchStakerDetails();
       setDetails(details);
     } catch (error) {
       console.error(error);
@@ -75,42 +75,42 @@ const Child: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    if (!stakeContract) {
-      return;
-    }
+  // useEffect(() => {
+  // if (!stakeContract) {
+  // return;
+  // }
 
-    fetchStakerDetails(false);
-    fetchStakes();
-  }, [stakeContract]);
+  // fetchStakerDetails(false);
+  // fetchStakes();
+  // }, [stakeContract]);
 
   const updateBalance = () => {
-    getUSDCXBalance(provider, wallet).then((value) => {
-      setBalance(parseFloat(value));
-    });
+    // getUSDCXBalance(provider, wallet).then((value) => {
+    // setBalance(parseFloat(value));
+    // });
   };
 
   // update balance flow
   const updateNetFlow = async () => {
-    const result = await flowDetails(wallet);
-    setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
+    // const result = await flowDetails(wallet);
+    // setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
   };
-  useEffect(() => {
-    if (!provider) {
-      return;
-    }
-    const id = setInterval(() => {
-      updateBalance();
-    }, FETCH_BALANCE_INTERVAL);
+  // useEffect(() => {
+  //   if (!provider) {
+  //     return;
+  //   }
+  //   const id = setInterval(() => {
+  //     updateBalance();
+  //   }, FETCH_BALANCE_INTERVAL);
 
-    updateBalance();
-    updateNetFlow();
-    return () => clearInterval(id);
-  }, [provider]);
+  //   updateBalance();
+  //   updateNetFlow();
+  //   return () => clearInterval(id);
+  // }, [provider]);
 
   const handleAllocate = async (transaction: ethers.ContractReceipt) => {
-    fetchStakerDetails(false);
-    fetchStakes();
+    // fetchStakerDetails(false);
+    // fetchStakes();
   };
 
   const [showAllocate, setShowAllocate] = useState(false);
@@ -118,10 +118,10 @@ const Child: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
-  const stakesToShow = useMemo(
-    () => stakes.filter((s) => s.remainingDays >= 0),
-    [stakes]
-  );
+  // const stakesToShow = useMemo(
+  //   () => stakes.filter((s) => s.remainingDays >= 0),
+  //   [stakes]
+  // );
 
   return (
     <div>
@@ -130,7 +130,7 @@ const Child: React.FC = () => {
         <div className="flex flex-col items-start">
           <p className="text-sm mb-1">AVAILABLE FUNDS</p>
           <h1 className={`text-xxl mb-6 flex items-end`}>
-            {balance ? <AnimatedNumber value={balance} rate={netFlow} /> : 0}
+            {/* {balance ? <AnimatedNumber value={balance} rate={netFlow} /> : 0} */}
             <span className="text-base ml-2"> USDx</span>
           </h1>
           <Image
@@ -180,7 +180,7 @@ const Child: React.FC = () => {
                 Withdraws allowed
               </Button>
             </div>
-            <p className="text-grey-medium">{wallet}</p>
+            {/* <p className="text-grey-medium">{wallet}</p> */}
           </div>
         </div>
         <div className="flex border-t-2 border-grey-light">
@@ -218,7 +218,7 @@ const Child: React.FC = () => {
               className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
               style={{ maxHeight: 300 }}
             >
-              {stakesToShow.map((a) => (
+              {/* {stakesToShow.map((a) => (
                 <div
                   className="flex items-center hover:cursor-pointer"
                   key={a.name}
@@ -229,7 +229,7 @@ const Child: React.FC = () => {
                     Add funds
                   </Button>
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

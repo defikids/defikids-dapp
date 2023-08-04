@@ -45,3 +45,5 @@ typechain
 cache
 
 settings.json
+
+tsconfig.tsbuildinfo

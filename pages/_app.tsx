@@ -1,6 +1,6 @@
 // import "../styles/globals.css";
-import Page from "@/components/Page";
-import Auth from "@/components/Auth";
+import Page from "@/components/page";
+import Auth from "@/components/auth";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ChakraProvider, extendTheme, useDisclosure } from "@chakra-ui/react";
@@ -40,9 +40,6 @@ function MyApp({ Component, pageProps }) {
         <Auth onRegisterOpen={onRegisterOpen} />
         <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
         <Component {...pageProps} />
-        {/* </Page> */}
-
-        {/* <NewFooter /> */}
       </ChakraProvider>
     </>
   );

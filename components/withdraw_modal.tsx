@@ -5,7 +5,7 @@ import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import { downgradeToken } from "../hooks/useSFCore";
-import { useStore } from "../services/store";
+// import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 
@@ -22,21 +22,20 @@ const WithdrawModal: React.FC<IProps> = ({
   onTransfer,
   balance,
 }) => {
-  const {
-    state: { provider, wallet },
-  } = useStore();
+  // const {
+  //   state: { provider, wallet },
+  // } = useStore();
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState(false);
 
   const handleTransfer = async (amount: number) => {
     try {
       setLoading(true);
-      const result = await downgradeToken(amount, provider, wallet);
+      // const result = await downgradeToken(amount, provider, wallet);
       setLoading(false);
       onClose();
-      onTransfer(
-        parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
-      );
+      // onTransfer();
+      // parseFloat(ethers.utils.formatEther(result.newBalances.USDCxBalance))
     } catch (error) {
       setLoading(false);
       console.error(error);

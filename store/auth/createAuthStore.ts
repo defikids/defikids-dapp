@@ -3,20 +3,17 @@ import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
 import { UserType } from "../../services/contract";
-import { WalletType } from "./authStore";
 
 type State = {
   walletAddress: "";
   isLoggedIn: boolean;
   userType: UserType;
-  walletType: WalletType;
 };
 
 type Actions = {
   setWalletAddress: (walletAddress: string) => void;
   setIsLoggedIn: (isLoggingIn: boolean) => void;
   setUserType: (userType: UserType) => void;
-  setWalletType: (walletType: WalletType) => void;
 };
 
 type MyStore = State & Actions;
@@ -25,7 +22,6 @@ const initialState: State = {
   walletAddress: "",
   isLoggedIn: false,
   userType: UserType.UNREGISTERED,
-  walletType: null,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -47,11 +43,6 @@ const setters = (set: any) => ({
   setUserType: (userType: UserType) => {
     set((state: { userType: UserType }) => {
       state.userType = userType;
-    }, shallow);
-  },
-  setWalletType: (walletType: WalletType) => {
-    set((state: { walletType: WalletType }) => {
-      state.walletType = walletType;
     }, shallow);
   },
 });

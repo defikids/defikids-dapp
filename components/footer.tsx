@@ -1,5 +1,4 @@
 import {
-  Container,
   IconButton,
   Text,
   Flex,
@@ -10,8 +9,6 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   Avatar,
-  Box,
-  Center,
   Heading,
 } from "@chakra-ui/react";
 import * as React from "react";

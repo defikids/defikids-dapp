@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import { useStore } from "../services/store";
+// import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 import { createFlow } from "../hooks/useSFCore";
@@ -41,9 +41,9 @@ const StreamModal: React.FC<IProps> = ({
   balance,
   child,
 }) => {
-  const {
-    state: { provider, wallet },
-  } = useStore();
+  // const {
+  //   state: { provider, wallet },
+  // } = useStore();
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState(false);
 
@@ -51,12 +51,12 @@ const StreamModal: React.FC<IProps> = ({
     const flowRate = calculateFlowRate(value);
     try {
       setLoading(true);
-      const result = await createFlow(
-        provider,
-        wallet,
-        childAddress,
-        flowRate.toString()
-      );
+      // const result = await createFlow(
+      //   provider,
+      //   wallet,
+      //   childAddress,
+      //   flowRate.toString()
+      // );
       setLoading(false);
       onClose();
       onTransfer();

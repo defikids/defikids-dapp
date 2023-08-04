@@ -7,7 +7,6 @@ import {
   useColorMode,
   Container,
   Heading,
-  useDisclosure,
 } from "@chakra-ui/react";
 import ConnectButton from "@/components/ConnectButton";
 import Image from "next/image";
@@ -122,17 +121,6 @@ export default function NavBar({
           </Flex>
         </Flex>
       </Box>
-
-      {/* <FaqModal
-        isOpen={isFaqOpen}
-        onClose={onFaqClose}
-        // handleSubmit={handleSubmit}
-      />
-      <AboutModal
-        isOpen={isAboutOpen}
-        onClose={onAboutClose}
-        // handleSubmit={handleSubmit}
-      /> */}
     </>
   );
 }

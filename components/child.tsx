@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
 import { IChild } from "../services/contract";
 import { IStake, IStakeDuration } from "../services/stake";
-import { useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
 import Allocation from "./allocation";
 import Button from "./button";
@@ -56,18 +55,18 @@ const Child: React.FC<IProps> = ({
   onTransfer,
   onStream,
 }) => {
-  const {
-    state: { provider },
-  } = useStore();
+  // const {
+  //   state: { provider },
+  // } = useStore();
   const [balance, setBalance] = useState(0);
-  useEffect(() => {
-    if (!provider || !_address) {
-      return;
-    }
-    getUSDCXBalance(provider, _address).then((value) => {
-      setBalance(parseFloat(value));
-    });
-  }, [provider, _address]);
+  // useEffect(() => {
+  //   if (!provider || !_address) {
+  //     return;
+  //   }
+  //   getUSDCXBalance(provider, _address).then((value) => {
+  //     setBalance(parseFloat(value));
+  //   });
+  // }, [provider, _address]);
 
   const stakesToShow = useMemo(
     () => stakes.filter((s) => s.remainingDays >= 0),

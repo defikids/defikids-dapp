@@ -1,27 +1,25 @@
 import { create, StoreApi, UseBoundStore } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { Contract } from "ethers";
+
 import { shallow } from "zustand/shallow";
-import { UserType } from "../../services/contract";
 
 type State = {
-  walletAddress: "";
-  isLoggedIn: boolean;
-  userType: UserType;
+  readOnlyProvider: any;
+  provider: any;
 };
 
 type Actions = {
-  setWalletAddress: (walletAddress: string) => void;
-  setIsLoggedIn: (isLoggingIn: boolean) => void;
-  setUserType: (userType: UserType) => void;
+  setReadOnlyProvider: (readOnlyProvider: any) => void;
+  setProvider: (provider: any) => void;
 };
 
 type MyStore = State & Actions;
 
 const initialState: State = {
-  walletAddress: "",
-  isLoggedIn: false,
-  userType: UserType.UNREGISTERED,
+  readOnlyProvider: null,
+  provider: null,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -30,25 +28,20 @@ type WithSelectors<S> = S extends { getState: () => infer T }
 
 // Setters
 const setters = (set: any) => ({
-  setWalletAddress: (walletAddress: string) => {
-    set((state: { walletAddress: string }) => {
-      state.walletAddress = walletAddress;
+  setReadOnlyProvider: (readOnlyProvider: any) => {
+    set((state: { readOnlyProvider: any }) => {
+      state.readOnlyProvider = readOnlyProvider;
     }, shallow);
   },
-  setIsLoggedIn: (isLoggedIn: boolean) => {
-    set((state: { isLoggedIn: boolean }) => {
-      state.isLoggedIn = isLoggedIn;
-    }, shallow);
-  },
-  setUserType: (userType: UserType) => {
-    set((state: { userType: UserType }) => {
-      state.userType = userType;
+  setProvider: (provider: any) => {
+    set((state: { provider: any }) => {
+      state.provider = provider;
     }, shallow);
   },
 });
 
 // Store
-export const authStore = create<
+export const contractStore = create<
   MyStore,
   [["zustand/devtools", never], ["zustand/immer", never]]
 >(
@@ -73,4 +66,4 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store;
 };
 
-export const createAuthStore = () => createSelectors(authStore);
+export const createContractStore = () => createSelectors(contractStore);

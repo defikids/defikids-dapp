@@ -1,49 +1,294 @@
+import {
+  IconButton,
+  Text,
+  Flex,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverArrow,
+  PopoverCloseButton,
+  Avatar,
+  Heading,
+} from "@chakra-ui/react";
+import * as React from "react";
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Image from "next/image";
-import Link from "next/link";
-import React from "react";
 
-const Footer: React.FC = () => {
+export default function Footer() {
   return (
-    <div className="border-t border-indigo-500 ">
-      <div className="flex justify-center items-center text-blue-dark my-4">
-        {/* <div className="flex items-center"> */}
-        <div className="flex">
-          <a className="mr-3 flex" href="https://polygon.technology/">
-            <Image src="/polygon.svg" alt="polygon" height={60} width={135} />
-          </a>
-          <a className="mr-5 flex" href="https://www.superfluid.finance/">
-            <Image
-              src="/superfluid.svg"
-              alt="superfluid"
-              height={10}
-              width={110}
+    <Flex
+      as="footer" // Use <footer> semantic element
+      alignItems="center"
+      justifyContent="space-between"
+      bg="gray.800"
+      color="white"
+      p={4}
+      position="fixed" // Position the footer at the bottom
+      left={0}
+      bottom={0}
+      right={0}
+      width="100%" // Take up full width
+      style={{ zIndex: 100 }}
+    >
+      {/* Tech Stack */}
+      <Flex>
+        <Image
+          src={"/polygon.svg"}
+          alt="polygon"
+          height={60}
+          width={135}
+          style={{ cursor: "pointer", marginRight: "10px" }}
+          onClick={() => {
+            window.open(
+              "https://polygon.technology/",
+              "_blank",
+              "noopener,noreferrer"
+            );
+          }}
+        />
+        <Image
+          src={"/sequence.svg"}
+          alt="sequence"
+          height={60}
+          width={135}
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            window.open(
+              "https://sequence.info/",
+              "_blank",
+              "noopener,noreferrer"
+            );
+          }}
+        />
+      </Flex>
+
+      {/* Copyright */}
+      {/* <Center> */}
+      {/* <Text fontSize="sm" color="white">
+        &copy; {new Date().getFullYear()} DefiKids Inc. All rights reserved.
+      </Text> */}
+      <Flex direction="column" alignContent="center">
+        <Heading as="h6" size="xs">
+          &copy; {new Date().getFullYear()} DefiKids Inc.
+        </Heading>
+        <Text size="xs" fontSize="10px" align="center">
+          All rights reserved.
+        </Text>
+      </Flex>
+      {/* </Center> */}
+
+      {/* Social Media */}
+      {/* <Container variant="ghost" width={"100%"}> */}
+      <Flex justifyContent={"end"}>
+        {/* LinkedIn */}
+        <Popover>
+          <PopoverTrigger>
+            <IconButton
+              as="a"
+              href="#"
+              aria-label="LinkedIn"
+              icon={<FaLinkedin fontSize="1.25rem" />}
+              mx={2}
             />
-          </a>
-          <a className="flex" href="https://sequence.info/">
-            <Image src="/sequence.svg" alt="sequence" height={20} width={120} />
-          </a>
-        </div>
-      </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
+              <Flex alignItems={"center"}>
+                <FaLinkedin fontSize="1.25rem" />
+                <Text pl={2}>LinkedIn</Text>
+              </Flex>
+            </PopoverHeader>
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(
+                    `https://www.linkedin.com/in/nathan-tarbert/`,
+                    "_blank"
+                  )
+                }
+              >
+                <Avatar
+                  size="md"
+                  name="Nathan Tarbert"
+                  mr={2}
+                  src="https://media.licdn.com/dms/image/C5603AQFXrP0yaGLdfA/profile-displayphoto-shrink_800_800/0/1649446441808?e=1696464000&v=beta&t=qeoOCdqlFl_Rzi_4EFYfq7yd9Vk8Xjd9v9wyOTM2sxw"
+                />{" "}
+                Nathan Tarbert
+              </Flex>
+            </PopoverHeader>
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(
+                    `https://www.linkedin.com/in/jason-schwarz-75b91482/`,
+                    "_blank"
+                  )
+                }
+              >
+                <Avatar
+                  size="md"
+                  name="Jason Schwarz"
+                  mr={2}
+                  src="https://media.licdn.com/dms/image/C4E03AQH3b5e91FbDwg/profile-displayphoto-shrink_800_800/0/1650844151671?e=1696464000&v=beta&t=Ke4oGlypKWPn9MtkJI72WZHzq3E1YkvXIeVfzbL7BMs"
+                />
+                Jason Schwarz
+              </Flex>
+            </PopoverHeader>
+          </PopoverContent>
+        </Popover>
 
-      <div className="flex justify-center text-blue-dark mx-4">
-        <div className="flex items-center">
-          <p className="cursor-pointer ml-8">
-            <Link href="https://twitter.com/defikids_">
-              <a> Twitter - @defikids_</a>
-            </Link>
-          </p>
-          {/* <p className="cursor-pointer">FAQ</p> */}
+        {/* Github */}
+        <Popover>
+          <PopoverTrigger>
+            <IconButton
+              as="a"
+              href="#"
+              aria-label="GitHub"
+              icon={<FaGithub fontSize="1.25rem" />}
+              mx={2}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
+              <Flex alignItems={"center"}>
+                <FaGithub fontSize="1.25rem" />
+                <Text pl={2}>Github</Text>
+              </Flex>
+            </PopoverHeader>
 
-          <p className="cursor-pointer ml-8">
-            <Link href="https://learncrypto.com/glossary">
-              <a> Crypto Glossary</a>
-            </Link>
-          </p>
-          <p className="cursor-pointer ml-8"> DefiKids @ 2022</p>
-        </div>
-      </div>
-    </div>
+            <PopoverHeader>
+              <Flex alignItems={"center"}>
+                <Text pl={2}>Project</Text>
+              </Flex>
+            </PopoverHeader>
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(
+                    `https://github.com/NathanTarbert/DefiKids`,
+                    "_blank"
+                  )
+                }
+              >
+                <Avatar size="md" name="defi-kids" mr={2} src="/pig_logo.png" />{" "}
+                DefiKids
+              </Flex>
+            </PopoverHeader>
+
+            <PopoverHeader>
+              <Flex alignItems={"center"}>
+                <Text pl={2}>Developers</Text>
+              </Flex>
+            </PopoverHeader>
+
+            {/* Github */}
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(`https://github.com/NathanTarbert`, "_blank")
+                }
+              >
+                <Avatar
+                  size="md"
+                  name="BYZAN-SOLUTIONS"
+                  mr={2}
+                  src="https://avatars.githubusercontent.com/u/66887028?v=4"
+                />{" "}
+                NathanTarbert
+              </Flex>
+            </PopoverHeader>
+
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(`https://github.com/passandscore`, "_blank")
+                }
+              >
+                <Avatar
+                  size="md"
+                  name="passandscore"
+                  mr={2}
+                  src="https://avatars.githubusercontent.com/u/71670015?v=4"
+                />
+                passandscore
+              </Flex>
+            </PopoverHeader>
+          </PopoverContent>
+        </Popover>
+
+        {/* Twitter */}
+        <Popover>
+          <PopoverTrigger>
+            <IconButton
+              as="a"
+              href="#"
+              aria-label="Twitter"
+              icon={<FaTwitter fontSize="1.25rem" />}
+              mx={2}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
+              <Flex alignItems={"center"}>
+                <FaTwitter fontSize="1.25rem" />
+                <Text pl={2}>Twitter</Text>
+              </Flex>
+            </PopoverHeader>
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(`https://twitter.com/nathan_tarbert`, "_blank")
+                }
+              >
+                <Avatar
+                  size="md"
+                  name="Nathan Tarbert"
+                  mr={2}
+                  src="https://pbs.twimg.com/profile_images/1512513474051514369/RDyBlAJE_400x400.jpg"
+                />{" "}
+                @nathan_tarbert
+              </Flex>
+            </PopoverHeader>
+            <PopoverHeader>
+              <Flex
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() =>
+                  window.open(`https://twitter.com/passandscore`, "_blank")
+                }
+              >
+                <Avatar
+                  size="md"
+                  name="Jason Schwarz"
+                  mr={2}
+                  src="https://pbs.twimg.com/profile_images/1518377329306783747/Ra6f8mU9_400x400.jpg"
+                />
+                @passandscore
+              </Flex>
+            </PopoverHeader>
+          </PopoverContent>
+        </Popover>
+      </Flex>
+      {/* </Container> */}
+    </Flex>
   );
-};
-
-export default Footer;
+}

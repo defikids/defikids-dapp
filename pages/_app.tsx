@@ -1,23 +1,47 @@
-import Head from "next/head";
-import "../styles/globals.css";
-import Page from "../components/page";
-import { StoreProvider } from "../services/store";
-import Footer from "../components/footer";
-import Auth from "../components/auth";
+// import "../styles/globals.css";
+import Page from "@/components/page";
+import Auth from "@/components/auth";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ChakraProvider, extendTheme, useDisclosure } from "@chakra-ui/react";
+import RegisterModal from "@/components/Modals/RegisterModal";
+
+const config = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
+};
+
+const colors = {
+  brand: {
+    900: "#1a365d",
+    800: "#153e75",
+    700: "#2a69ac",
+  },
+};
+
+export const theme = extendTheme({ config, colors });
 
 function MyApp({ Component, pageProps }) {
+  const {
+    isOpen: isRegisterOpen,
+    onOpen: onRegisterOpen,
+    onClose: onRegisterClose,
+  } = useDisclosure();
+
   return (
-    <StoreProvider>
-      <Head>
-        <title>DefiKids</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <Page>
-        <Auth />
+    <>
+      <ChakraProvider theme={theme}>
+        <Page onRegisterOpen={onRegisterOpen} />
+        <ToastContainer
+          position="top-right"
+          autoClose={false}
+          closeOnClick={true}
+        />
+        <Auth onRegisterOpen={onRegisterOpen} />
+        <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
         <Component {...pageProps} />
-      </Page>
-      <Footer />
-    </StoreProvider>
+      </ChakraProvider>
+    </>
   );
 }
 

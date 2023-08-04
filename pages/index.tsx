@@ -1,31 +1,29 @@
-import UnderlineText from "../components/underline_text";
-import Login from "../components/login";
+import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 
-export default function Home() {
+export default function Main() {
   return (
-    <>
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <style global jsx>{`
-        body.bg-white {
-          background-color: #f1faee !important;
-        }
-      `}</style>
-      <div className="flex flex-1 flex-col items-center justify-center">
-        <h1 className="text-hero text-blue-dark text-center mb-[8vh]">
-          Teach your kids
-          <br /> to use <span className="text-orange">crypto</span>,
-          <br />
-          <UnderlineText className="text-blue-oil" color="bg-orange">
-            safely
-          </UnderlineText>{" "}
-          and
-          <br />
-          <UnderlineText className="text-blue-oil" color="bg-blue-dark">
-            confidently
-          </UnderlineText>
-        </h1>
-        <Login />
-      </div>
-    </>
+    <Flex
+      direction="column"
+      align="center"
+      // justify="center"
+      height="80vh"
+      width="100vw"
+      px={20}
+      py={10}
+    >
+      <Box
+        style={{
+          color: "#7B3FE4",
+          backgroundColor: "black",
+        }}
+      >
+        <Heading size="2xl">
+          Earn, save, stake and invest your allowance.
+        </Heading>
+      </Box>
+      <Text fontSize="2xl" fontWeight="bold">
+        A save and secure platform that allows kids to learn about crypto.
+      </Text>
+    </Flex>
   );
 }

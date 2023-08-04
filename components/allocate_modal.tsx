@@ -5,7 +5,6 @@ import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import StakeContract, { IStake, IStakeDuration } from "../services/stake";
-import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 import Logo from "./logo";
@@ -39,9 +38,9 @@ const AllocateModal: React.FC<IProps> = ({
   const [amount, setAmount] = useState<number>();
   const [duration, setDuration] = useState<IStakeDuration>();
   const [loading, setLoading] = useState(false);
-  const {
-    state: { stakeContract },
-  } = useStore();
+  // const {
+  //   state: { stakeContract },
+  // } = useStore();
 
   useEffect(() => {
     if (update) {
@@ -57,17 +56,17 @@ const AllocateModal: React.FC<IProps> = ({
   ) => {
     try {
       setLoading(true);
-      const transaction = await stakeContract.createStake(
-        amount,
-        duration,
-        name
-      );
-      const result = await transaction.wait();
+      // const transaction = await stakeContract.createStake(
+      //   amount,
+      //   duration,
+      //   name
+      // );
+      // const result = await transaction.wait();
       setLoading(false);
-      console.log(result);
+      // console.log(result);
       onClose();
       const callback = update ? onUpdate : onAllocate;
-      callback(result);
+      // callback(result);
       setName("");
       setAmount(undefined);
       setDuration(undefined);

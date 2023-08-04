@@ -1,5 +1,4 @@
 import React, { ReactHTMLElement } from "react";
-import { twMerge } from "tailwind-merge";
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   value: boolean;
@@ -14,11 +13,7 @@ const Toggle: React.FC<IProps> = ({
   ...props
 }) => {
   return (
-    <div
-      className={twMerge("flex cursor-pointer items-center", className)}
-      {...props}
-      onClick={() => onValueChange(!value)}
-    >
+    <div {...props} onClick={() => onValueChange(!value)}>
       <div className="relative w-24" style={{ width: 24 }}>
         <div
           className="rounded-lg border-1 border-black"

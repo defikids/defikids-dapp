@@ -21,6 +21,8 @@
       "@/styles/*": ["styles/*"],
       "@/data-schema/*": ["data-schema/*"],
       "@/store/*": ["store/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/data/*": ["data/*"],
       "@/*": ["./*"]
     }
   },

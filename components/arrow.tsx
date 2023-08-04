@@ -1,6 +1,5 @@
 import React from "react";
 import Image, { ImageProps } from "next/image";
-import { twMerge } from "tailwind-merge";
 
 interface IProps extends Omit<ImageProps, "src" | "alt"> {
   dir?: "up" | "down" | "left" | "right";

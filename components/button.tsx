@@ -1,5 +1,4 @@
 import React from "react";
-import { twMerge } from "tailwind-merge";
 
 interface IProps extends React.HTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg";
@@ -19,15 +18,16 @@ const Button: React.FC<IProps> = ({
       ? "px-3 py-2 text-sm"
       : "";
   return (
-    <button
-      {...props}
-      className={twMerge(
-        "bg-orange text-white text-lg font-medium br-90 rounded-full px-6 py-3 hover:shadow-lg transition",
-        style,
-        disabled ? "opacity-40 pointer-events-none" : "",
-        className
-      )}
-    />
+    <></>
+    // <button
+    //   {...props}
+    //   className={
+    //     ("bg-orange text-white text-lg font-medium br-90 rounded-full px-6 py-3 hover:shadow-lg transition",
+    //     style,
+    //     disabled ? "opacity-40 pointer-events-none" : "",
+    //     className)
+    //   }
+    // />
   );
 };
 

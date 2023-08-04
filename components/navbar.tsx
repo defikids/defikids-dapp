@@ -1,51 +1,126 @@
 import React from "react";
-import LogoNavbar from "./logo_navbar";
+import {
+  Box,
+  Flex,
+  Button,
+  useColorModeValue,
+  useColorMode,
+  Container,
+  Heading,
+} from "@chakra-ui/react";
+import ConnectButton from "@/components/ConnectButton";
+import Image from "next/image";
+import { BsFillSunFill, BsFillMoonFill } from "react-icons/bs";
+import { BsQuestionCircle } from "react-icons/bs";
+import { AiOutlineInfoCircle } from "react-icons/ai";
+import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
-import Sequence from "../services/sequence";
+import Sequence from "@/services/sequence";
+import { UserType } from "@/services/contract";
 
-const Navbar: React.FC = () => {
-  const { isLoggedIn, walletAddress, setIsLoggedIn } = useAuthStore(
+type ConnectedUser = {
+  success: boolean;
+  userType?: number;
+  accountAddress?: string;
+};
+
+export default function NavBar({
+  onFaqOpen,
+  onAboutOpen,
+  onRegisterOpen,
+}: {
+  onFaqOpen: () => void;
+  onAboutOpen: () => void;
+  onRegisterOpen: () => void;
+}) {
+  const router = useRouter();
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  const {
+    isLoggedIn,
+    userType,
+    walletAddress,
+    setUserType,
+    setIsLoggedIn,
+    setWalletAddress,
+  } = useAuthStore(
     (state) => ({
       isLoggedIn: state.isLoggedIn,
+      userType: state.userType,
       walletAddress: state.walletAddress,
+      setUserType: state.setUserType,
       setIsLoggedIn: state.setIsLoggedIn,
+      setWalletAddress: state.setWalletAddress,
     }),
     shallow
   );
 
-  const handleLogoutClick = async () => {
-    setIsLoggedIn(false);
-    Sequence.wallet?.disconnect();
-    window.location.replace("/");
+  const switchModeIcons = () => {
+    if (colorMode === "light") {
+      return (
+        <Container>
+          <BsFillMoonFill />
+        </Container>
+      );
+    } else {
+      return (
+        <Container>
+          <BsFillSunFill />
+        </Container>
+      );
+    }
   };
 
-  const trimWalletAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  const handleConnectSequence = async () => {
+    const { success, userType, accountAddress } = (await Sequence.connectWallet(
+      true
+    )) as ConnectedUser;
+
+    if (!Boolean(isLoggedIn)) {
+      router.push("/");
+    }
+
+    if (success) {
+      setUserType(userType);
+      setIsLoggedIn(true);
+      setWalletAddress(accountAddress);
+    }
   };
 
   return (
-    <div className="flex justify-between text-blue-dark mx-2">
-      <div className="flex">
-        <LogoNavbar />
-      </div>
-      <div className="flex items-center">
-        {isLoggedIn && (
-          <div className="flex items-center">
-            <p className="mr-4 pt-0.5">
-              Wallet: {trimWalletAddress(walletAddress)}
-            </p>
-            <button
-              className="bg-blue-dark text-white text-md px-4 py-2 rounded"
-              onClick={handleLogoutClick}
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+    <>
+      <Box bg={useColorModeValue("grey.100", "black.900")} px={6} pt={6}>
+        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+          <Flex align="center">
+            <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
+            <Heading size="lg" ml={5}>
+              DefiKids
+            </Heading>
+          </Flex>
+          <Flex justifyContent="flex-end">
+            <Button onClick={onAboutOpen} leftIcon={<AiOutlineInfoCircle />}>
+              About
+            </Button>
+            <Button onClick={onFaqOpen} leftIcon={<BsQuestionCircle />} mx={2}>
+              FAQ
+            </Button>
 
-export default Navbar;
+            {isLoggedIn && userType === UserType.UNREGISTERED && (
+              <Button onClick={onRegisterOpen} mx={2}>
+                Register
+              </Button>
+            )}
+            <ConnectButton
+              handleClick={handleConnectSequence}
+              walletAddress={walletAddress}
+            />
+            {/* <Button mx={2} px={2} onClick={toggleColorMode}>
+              {switchModeIcons()}
+            </Button> */}
+          </Flex>
+        </Flex>
+      </Box>
+    </>
+  );
+}

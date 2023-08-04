@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "../components/button";
-import { useStore } from "../services/store";
+// import { useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
 import AddChildModal from "../components/add_child_modal";
 import Plus from "../components/plus";
@@ -23,49 +23,49 @@ const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecti
 const FETCH_RETRY_TIMEOUT = 1000; // timeout between fetches when expecting a change
 
 const Parent: React.FC = () => {
-  const {
-    state: { contract, provider, wallet },
-  } = useStore();
+  // const {
+  //   state: { contract, provider, wallet },
+  // } = useStore();
   const [children, setChildren] = useState<IChild[]>([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
 
-  const fetchChildren = useCallback(
-    async (retry = false, retries = 0) => {
-      setChildrenLoading(true);
-      const newChildren = await contract.fetchChildren();
-      if (
-        retry &&
-        retries < MAX_FETCH_RETRIES &&
-        children.length === newChildren.length
-      ) {
-        return setTimeout(
-          () => fetchChildren(true, retries + 1),
-          FETCH_RETRY_TIMEOUT
-        );
-      }
-      setChildrenLoading(false);
-      setChildren(newChildren);
-      console.log("new", newChildren);
-    },
-    [children.length, contract]
-  );
+  // const fetchChildren = useCallback(
+  //   async (retry = false, retries = 0) => {
+  //     setChildrenLoading(true);
+  //     const newChildren = await contract.fetchChildren();
+  //     if (
+  //       retry &&
+  //       retries < MAX_FETCH_RETRIES &&
+  //       children.length === newChildren.length
+  //     ) {
+  //       return setTimeout(
+  //         () => fetchChildren(true, retries + 1),
+  //         FETCH_RETRY_TIMEOUT
+  //       );
+  //     }
+  //     setChildrenLoading(false);
+  //     setChildren(newChildren);
+  //     console.log("new", newChildren);
+  //   },
+  //   [children.length, contract]
+  // );
 
-  useEffect(() => {
-    if (!contract) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!contract) {
+  //     return;
+  //   }
 
-    fetchChildren();
-  }, [contract, fetchChildren]);
+  //   fetchChildren();
+  // }, [contract, fetchChildren]);
 
-  useEffect(() => {
-    if (provider && wallet) {
-      StakeContract.fromProvider(provider, wallet).then((contract) =>
-        setStakeContract(contract)
-      );
-    }
-  }, [provider, wallet]);
+  // useEffect(() => {
+  //   if (provider && wallet) {
+  //     StakeContract.fromProvider(provider, wallet).then((contract) =>
+  //       setStakeContract(contract)
+  //     );
+  //   }
+  // }, [provider, wallet]);
 
   useEffect(() => {
     if (!stakeContract || !children.length) {
@@ -94,29 +94,29 @@ const Parent: React.FC = () => {
   const [childrenLoading, setChildrenLoading] = useState(false);
 
   const updateBalance = () => {
-    getUSDCXBalance(provider, wallet).then((value) => {
-      setBalance(parseFloat(value));
-    });
-    setChildKey((key) => key + 1);
+    // getUSDCXBalance(provider, wallet).then((value) => {
+    //   setBalance(parseFloat(value));
+    // });
+    // setChildKey((key) => key + 1);
   };
 
   const updateNetFlow = async () => {
-    const result = await flowDetails(wallet);
-    setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
+    // const result = await flowDetails(wallet);
+    // setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
   };
 
-  useEffect(() => {
-    if (!provider) {
-      return;
-    }
-    const id = setInterval(() => {
-      updateBalance();
-    }, FETCH_BALANCE_INTERVAL);
+  // useEffect(() => {
+  //   if (!provider) {
+  //     return;
+  //   }
+  //   const id = setInterval(() => {
+  //     updateBalance();
+  //   }, FETCH_BALANCE_INTERVAL);
 
-    updateBalance();
-    updateNetFlow();
-    return () => clearInterval(id);
-  }, [provider]);
+  //   updateBalance();
+  //   updateNetFlow();
+  //   return () => clearInterval(id);
+  // }, [provider]);
 
   const [showAddChild, setShowAddChild] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
@@ -206,11 +206,11 @@ const Parent: React.FC = () => {
           </div>
         </Button>
       </div>
-      <AddChildModal
+      {/* <AddChildModal
         show={showAddChild}
         onClose={() => setShowAddChild(false)}
-        onAdd={() => fetchChildren(true)}
-      />
+        // onAdd={() => fetchChildren(true)}
+      /> */}
       <TopUpModal
         show={showTopUp}
         onClose={() => setShowTopUp(false)}

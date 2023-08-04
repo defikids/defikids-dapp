@@ -3,7 +3,6 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 import Toggle from "./toggle";
@@ -19,22 +18,23 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
   const [wallet, setWallet] = useState("");
   const [withdraw, setWithdraw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const {
-    state: { contract },
-  } = useStore();
 
-  const handleAddChild = async (wallet, name) => {
-    setLoading(true);
-    try {
-      await contract.addMember(wallet, name, !withdraw);
-      onAdd();
-    } catch (error) {
-      console.log("Error adding child:", error);
-    } finally {
-      setLoading(false);
-      onClose();
-    }
-  };
+  // const web3User = useWeb3User();
+  // const provider = useProvider();
+  // const { data: signer } = useSigner();
+
+  // const handleAddChild = async (wallet, name) => {
+  //   setLoading(true);
+  //   try {
+  //     await contract.addMember(wallet, name, !withdraw);
+  //     onAdd();
+  //   } catch (error) {
+  //     console.log("Error adding child:", error);
+  //   } finally {
+  //     setLoading(false);
+  //     onClose();
+  //   }
+  // };
 
   return (
     <Modal show={show} onHide={onClose} dialogClassName="w-modal" size="lg">
@@ -82,7 +82,7 @@ const AddChildModal: React.FC<IProps> = ({ show, onClose, onAdd }) => {
         <Button
           className={loading && "animate-pulse pointer-events-none"}
           size="lg"
-          onClick={() => handleAddChild(wallet, name)}
+          // onClick={() => handleAddChild(wallet, name)}
           disabled={!name || !wallet}
         >
           <div className="flex items-center">

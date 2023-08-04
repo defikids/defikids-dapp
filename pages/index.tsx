@@ -1,31 +1,19 @@
-import UnderlineText from "../components/underline_text";
-import Login from "../components/login";
+import { Center, Heading, Stack } from "@chakra-ui/react";
 
 export default function Home() {
   return (
-    <>
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <style global jsx>{`
-        body.bg-white {
-          background-color: #f1faee !important;
-        }
-      `}</style>
-      <div className="flex flex-1 flex-col items-center justify-center">
-        <h1 className="text-hero text-blue-dark text-center mb-[8vh]">
+    <Center p={20} mt={10} flexDirection="column">
+      <Stack spacing={4}>
+        <Heading fontSize="6xl" align="center">
           Teach your kids
-          <br /> to use <span className="text-orange">crypto</span>,
-          <br />
-          <UnderlineText className="text-blue-oil" color="bg-orange">
-            safely
-          </UnderlineText>{" "}
-          and
-          <br />
-          <UnderlineText className="text-blue-oil" color="bg-blue-dark">
-            confidently
-          </UnderlineText>
-        </h1>
-        <Login />
-      </div>
-    </>
+        </Heading>
+        <Heading fontSize="6xl" align="center">
+          to use crypto
+        </Heading>
+        <Heading fontSize="6xl" align="center">
+          safely and confidently
+        </Heading>
+      </Stack>
+    </Center>
   );
 }

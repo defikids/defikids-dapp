@@ -3,6 +3,8 @@ import Navbar from "./Navbar";
 import WalletNavbar from "./WalletNavbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
+import Home from "@/styles/Home.module.css";
+import NewFooter from "./NewFooter";
 
 const Page: React.FC = ({ children }) => {
   const { isLoggedIn } = useAuthStore(
@@ -13,11 +15,14 @@ const Page: React.FC = ({ children }) => {
   );
 
   return (
-    <div>
+    <>
       <Navbar />
       {isLoggedIn && <WalletNavbar />}
-      <div className="py-[8vh] flex flex-1 flex-col">{children}</div>
-    </div>
+      <div className={Home.container}>
+        <div>{children}</div>
+      </div>
+      <NewFooter />
+    </>
   );
 };
 

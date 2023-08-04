@@ -1,6 +1,6 @@
 // import "../styles/globals.css";
 import Page from "../components/page";
-import Footer from "../components/footer";
+import NewFooter from "@/components/NewFooter";
 import Auth from "../components/auth";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,17 +25,18 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <ChakraProvider theme={theme}>
-        <Page>
-          <ToastContainer
-            position="top-right"
-            autoClose={false}
-            closeOnClick={true}
-          />
-          <Auth />
-          <Component {...pageProps} />
-        </Page>
+        <Page />
+        <ToastContainer
+          position="top-right"
+          autoClose={false}
+          closeOnClick={true}
+        />
+        <Auth />
+        <Component {...pageProps} />
+        {/* </Page> */}
+
+        {/* <NewFooter /> */}
       </ChakraProvider>
-      <Footer />
     </>
   );
 }

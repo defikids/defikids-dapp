@@ -7,6 +7,7 @@ import {
   useColorModeValue,
   useColorMode,
   Container,
+  Heading,
 } from "@chakra-ui/react";
 import ConnectButton from "@/components/ConnectButton";
 import Image from "next/image";
@@ -17,6 +18,7 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Sequence from "@/services/sequence";
+import Head from "next/head";
 
 type ConnectedUser = {
   success: boolean;
@@ -93,8 +95,12 @@ export default function NavBar() {
     <>
       <Box bg={useColorModeValue("grey.100", "black.900")} px={6} pt={6}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
-
+          <Flex align="center">
+            <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
+            <Heading size="lg" ml={5}>
+              DefiKids
+            </Heading>
+          </Flex>
           <Flex justifyContent="flex-end">
             <Button leftIcon={<AiOutlineInfoCircle />}>About</Button>
             <Button leftIcon={<BsQuestionCircle />} mx={2}>
@@ -104,9 +110,9 @@ export default function NavBar() {
               handleClick={handleConnectSequence}
               walletAddress={walletAddress}
             />
-            <Button mx={2} px={2} onClick={toggleColorMode}>
+            {/* <Button mx={2} px={2} onClick={toggleColorMode}>
               {switchModeIcons()}
-            </Button>
+            </Button> */}
           </Flex>
         </Flex>
       </Box>

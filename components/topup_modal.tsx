@@ -5,7 +5,7 @@ import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import { upgradeToken } from "../hooks/useSFCore";
-import { useStore } from "../services/store";
+import { useStore } from "@/services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 

@@ -1,9 +1,5 @@
-/* .wrapper {
-  min-height: 60vh;
-} */
-
 .container {
-  background: url("/images/defikids-wallpaper.jpeg");
+  background: url("/images/defikids-wallpaper.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

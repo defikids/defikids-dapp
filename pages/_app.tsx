@@ -1,7 +1,6 @@
 // import "../styles/globals.css";
-import Page from "../components/page";
-import NewFooter from "@/components/NewFooter";
-import Auth from "../components/auth";
+import Page from "@/components/Page";
+import Auth from "@/components/Auth";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";

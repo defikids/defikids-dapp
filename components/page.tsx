@@ -4,7 +4,7 @@ import WalletNavbar from "./WalletNavbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Home from "@/styles/Home.module.css";
-import NewFooter from "./NewFooter";
+import NewFooter from "./Footer";
 
 const Page: React.FC = ({ children }) => {
   const { isLoggedIn } = useAuthStore(

@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Sequence from "@/services/sequence";
+import { UserType } from "@/services/contract";
 
 type ConnectedUser = {
   success: boolean;
@@ -28,15 +29,18 @@ type ConnectedUser = {
 export default function NavBar({
   onFaqOpen,
   onAboutOpen,
+  onRegisterOpen,
 }: {
   onFaqOpen: () => void;
   onAboutOpen: () => void;
+  onRegisterOpen: () => void;
 }) {
   const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
 
   const {
     isLoggedIn,
+    userType,
     walletAddress,
     setUserType,
     setIsLoggedIn,
@@ -85,11 +89,6 @@ export default function NavBar({
     }
   };
 
-  const handleOpenFaq = () => {
-    console.log("handleOpenFaq");
-    onFaqOpen();
-  };
-
   return (
     <>
       <Box bg={useColorModeValue("grey.100", "black.900")} px={6} pt={6}>
@@ -107,6 +106,12 @@ export default function NavBar({
             <Button onClick={onFaqOpen} leftIcon={<BsQuestionCircle />} mx={2}>
               FAQ
             </Button>
+
+            {isLoggedIn && userType === UserType.UNREGISTERED && (
+              <Button onClick={onRegisterOpen} mx={2}>
+                Register
+              </Button>
+            )}
             <ConnectButton
               handleClick={handleConnectSequence}
               walletAddress={walletAddress}

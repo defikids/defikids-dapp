@@ -3,13 +3,11 @@ import { useRouter } from "next/router";
 import HostContract, { UserType } from "../services/contract";
 import Sequence from "../services/sequence";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { sequence } from "0xsequence";
-import { ethers } from "ethers";
 import { toast } from "react-toastify";
 
-const Auth: React.FC = () => {
+const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   const router = useRouter();
 
   const { isLoggedIn, userType, setUserType, setIsLoggedIn, setWalletAddress } =
@@ -48,7 +46,7 @@ const Auth: React.FC = () => {
 
     switch (userType) {
       case UserType.UNREGISTERED:
-        router.push("/register");
+        onRegisterOpen();
         break;
       case UserType.PARENT:
         router.push("/parent");
@@ -57,7 +55,7 @@ const Auth: React.FC = () => {
         router.push("/child");
         break;
       default:
-        logout();
+        // logout();
         return;
     }
   };
@@ -66,7 +64,7 @@ const Auth: React.FC = () => {
     Sequence.wallet?.disconnect();
 
     updateConnectedUser(UserType.UNREGISTERED, "", false);
-    window.location.replace("/");
+    // window.location.replace("/");
   };
 
   const handleLoginSequence = async (session: any, account: string, wallet) => {
@@ -81,7 +79,7 @@ const Auth: React.FC = () => {
 
       updateConnectedUser(userType, accountAddress, true);
 
-      // navigateUser(Number(userType));
+      navigateUser(Number(userType));
     } catch (error) {
       console.error(error);
       logout();
@@ -103,7 +101,7 @@ const Auth: React.FC = () => {
     if (isLoggedIn) {
       switch (Number(userType)) {
         case UserType.UNREGISTERED:
-          router.push("/register");
+          onRegisterOpen();
           break;
         case UserType.PARENT:
           router.push("/parent");
@@ -112,7 +110,7 @@ const Auth: React.FC = () => {
           router.push("/child");
           break;
         default:
-          router.push("/");
+          // router.push("/");
           return;
       }
     }

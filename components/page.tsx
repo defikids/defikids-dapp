@@ -10,7 +10,7 @@ import { useDisclosure } from "@chakra-ui/react";
 import FaqModal from "./Modals/FaqModal";
 import AboutModal from "./Modals/AboutModal";
 
-const Page: React.FC = ({ children }) => {
+const Page = ({ children, onRegisterOpen }) => {
   const { isLoggedIn } = useAuthStore(
     (state) => ({
       isLoggedIn: state.isLoggedIn,
@@ -31,7 +31,11 @@ const Page: React.FC = ({ children }) => {
 
   return (
     <>
-      <Navbar onFaqOpen={onFaqOpen} onAboutOpen={onAboutOpen} />
+      <Navbar
+        onFaqOpen={onFaqOpen}
+        onAboutOpen={onAboutOpen}
+        onRegisterOpen={onRegisterOpen}
+      />
       {isLoggedIn && <WalletNavbar />}
       <div className={Home.container}>
         <div>{children}</div>

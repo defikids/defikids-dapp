@@ -3,11 +3,11 @@ import {
   Box,
   Flex,
   Button,
-  useDisclosure,
   useColorModeValue,
   useColorMode,
   Container,
   Heading,
+  useDisclosure,
 } from "@chakra-ui/react";
 import ConnectButton from "@/components/ConnectButton";
 import Image from "next/image";
@@ -18,7 +18,6 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Sequence from "@/services/sequence";
-import Head from "next/head";
 
 type ConnectedUser = {
   success: boolean;
@@ -26,7 +25,13 @@ type ConnectedUser = {
   accountAddress?: string;
 };
 
-export default function NavBar() {
+export default function NavBar({
+  onFaqOpen,
+  onAboutOpen,
+}: {
+  onFaqOpen: () => void;
+  onAboutOpen: () => void;
+}) {
   const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -47,17 +52,6 @@ export default function NavBar() {
     }),
     shallow
   );
-
-  const {
-    isOpen: isCustomVaultOpen,
-    onOpen: onCustomVaultOpen,
-    onClose: onCustomVaultClose,
-  } = useDisclosure();
-  const {
-    isOpen: isStrategyOpen,
-    onOpen: onStrategyOpen,
-    onClose: onStrategyClose,
-  } = useDisclosure();
 
   const switchModeIcons = () => {
     if (colorMode === "light") {
@@ -91,6 +85,11 @@ export default function NavBar() {
     }
   };
 
+  const handleOpenFaq = () => {
+    console.log("handleOpenFaq");
+    onFaqOpen();
+  };
+
   return (
     <>
       <Box bg={useColorModeValue("grey.100", "black.900")} px={6} pt={6}>
@@ -102,8 +101,10 @@ export default function NavBar() {
             </Heading>
           </Flex>
           <Flex justifyContent="flex-end">
-            <Button leftIcon={<AiOutlineInfoCircle />}>About</Button>
-            <Button leftIcon={<BsQuestionCircle />} mx={2}>
+            <Button onClick={onAboutOpen} leftIcon={<AiOutlineInfoCircle />}>
+              About
+            </Button>
+            <Button onClick={onFaqOpen} leftIcon={<BsQuestionCircle />} mx={2}>
               FAQ
             </Button>
             <ConnectButton
@@ -116,15 +117,16 @@ export default function NavBar() {
           </Flex>
         </Flex>
       </Box>
-      {/* <RegisterVaultModal
-        isOpen={isCustomVaultOpen}
-        onClose={onCustomVaultClose}
-        handleSubmit={handleSubmit}
+
+      {/* <FaqModal
+        isOpen={isFaqOpen}
+        onClose={onFaqClose}
+        // handleSubmit={handleSubmit}
       />
-      <StrategyModal
-        isOpen={isStrategyOpen}
-        onClose={onStrategyClose}
-        handleSubmit={handleSubmit}
+      <AboutModal
+        isOpen={isAboutOpen}
+        onClose={onAboutClose}
+        // handleSubmit={handleSubmit}
       /> */}
     </>
   );

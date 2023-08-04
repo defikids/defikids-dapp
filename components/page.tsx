@@ -1,10 +1,14 @@
 import React from "react";
-import Navbar from "./Navbar";
+import Navbar from "./NavBar";
 import WalletNavbar from "./WalletNavbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Home from "@/styles/Home.module.css";
-import NewFooter from "./Footer";
+import Footer from "./Footer";
+import { Button } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
+import FaqModal from "./Modals/FaqModal";
+import AboutModal from "./Modals/AboutModal";
 
 const Page: React.FC = ({ children }) => {
   const { isLoggedIn } = useAuthStore(
@@ -14,14 +18,28 @@ const Page: React.FC = ({ children }) => {
     shallow
   );
 
+  const {
+    isOpen: isFaqOpen,
+    onOpen: onFaqOpen,
+    onClose: onFaqClose,
+  } = useDisclosure();
+  const {
+    isOpen: isAboutOpen,
+    onOpen: onAboutOpen,
+    onClose: onAboutClose,
+  } = useDisclosure();
+
   return (
     <>
-      <Navbar />
+      <Navbar onFaqOpen={onFaqOpen} onAboutOpen={onAboutOpen} />
       {isLoggedIn && <WalletNavbar />}
       <div className={Home.container}>
         <div>{children}</div>
       </div>
-      <NewFooter />
+      <Footer />
+
+      <FaqModal isOpen={isFaqOpen} onClose={onFaqClose} />
+      <AboutModal isOpen={isAboutOpen} onClose={onAboutClose} />
     </>
   );
 };

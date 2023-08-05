@@ -7,6 +7,8 @@ import {
   useColorMode,
   Container,
   Heading,
+  IconButton,
+  Text,
 } from "@chakra-ui/react";
 import ConnectButton from "@/components/ConnectButton";
 import Image from "next/image";
@@ -29,11 +31,16 @@ export default function NavBar({
   onFaqOpen,
   onAboutOpen,
   onRegisterOpen,
+  handleWalletMenuToggle,
 }: {
   onFaqOpen: () => void;
   onAboutOpen: () => void;
   onRegisterOpen: () => void;
+  handleWalletMenuToggle: () => void;
 }) {
+  //=============================================================================
+  //                               HOOKS
+  //============================================================================
   const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -56,6 +63,14 @@ export default function NavBar({
     shallow
   );
 
+  //=============================================================================
+  //                               STATE
+  //=============================================================================
+
+  //=============================================================================
+  //                             FUNCTIONS
+  //=============================================================================
+
   const switchModeIcons = () => {
     if (colorMode === "light") {
       return (
@@ -73,6 +88,8 @@ export default function NavBar({
   };
 
   const handleConnectSequence = async () => {
+    if (Sequence.wallet?.isConnected()) return;
+
     const { success, userType, accountAddress } = (await Sequence.connectWallet(
       true
     )) as ConnectedUser;
@@ -88,39 +105,69 @@ export default function NavBar({
     }
   };
 
-  return (
-    <>
-      <Box bg={useColorModeValue("grey.100", "black.900")} px={6} pt={6}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Flex align="center">
-            <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
-            <Heading size="lg" ml={5}>
-              DefiKids
-            </Heading>
-          </Flex>
-          <Flex justifyContent="flex-end">
-            <Button onClick={onAboutOpen} leftIcon={<AiOutlineInfoCircle />}>
-              About
-            </Button>
-            <Button onClick={onFaqOpen} leftIcon={<BsQuestionCircle />} mx={2}>
-              FAQ
-            </Button>
+  const trimAddress = (address: string) => {
+    return address.slice(0, 6) + "..." + address.slice(-4);
+  };
 
-            {isLoggedIn && userType === UserType.UNREGISTERED && (
-              <Button onClick={onRegisterOpen} mx={2}>
-                Register
-              </Button>
-            )}
+  return (
+    <Box>
+      <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+        <Flex align="center">
+          <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
+          <Heading size="lg" ml={5}>
+            DefiKids
+          </Heading>
+        </Flex>
+        <Flex justifyContent="flex-end">
+          {/* About Button */}
+          <Button onClick={onAboutOpen} leftIcon={<AiOutlineInfoCircle />}>
+            About
+          </Button>
+
+          {/* FAQ Button */}
+          <Button onClick={onFaqOpen} leftIcon={<BsQuestionCircle />} mx={2}>
+            FAQ
+          </Button>
+
+          {/* Register Button */}
+          {isLoggedIn && userType === UserType.UNREGISTERED && (
+            <Button onClick={onRegisterOpen} mr={6}>
+              Register
+            </Button>
+          )}
+
+          {/* Connect Button */}
+          {!isLoggedIn ? (
             <ConnectButton
               handleClick={handleConnectSequence}
               walletAddress={walletAddress}
             />
-            {/* <Button mx={2} px={2} onClick={toggleColorMode}>
-              {switchModeIcons()}
-            </Button> */}
-          </Flex>
+          ) : (
+            <Flex alignItems="center">
+              <Text size="sm">{trimAddress(walletAddress)}</Text>
+            </Flex>
+          )}
+
+          {/* Wallet Icon */}
+          {isLoggedIn && (
+            <IconButton
+              as="a"
+              href="#"
+              aria-label="Wallet Icon"
+              icon={
+                <Image
+                  src={"/logos/Sequence-Icon.png"}
+                  alt="Wallet Icon"
+                  width="30"
+                  height="25"
+                />
+              }
+              ml={4}
+              onClick={handleWalletMenuToggle}
+            />
+          )}
         </Flex>
-      </Box>
-    </>
+      </Flex>
+    </Box>
   );
 }

@@ -4,7 +4,6 @@ import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import { transferUSDCX } from "../services/usdcx_contract";
-// import { useStore } from "../services/store";
 import Arrow from "./arrow";
 import Button from "./button";
 

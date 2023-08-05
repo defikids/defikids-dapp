@@ -2767,6 +2767,21 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@fontsource-variable/jetbrains-mono@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.npmjs.org/@fontsource-variable/jetbrains-mono/-/jetbrains-mono-5.0.8.tgz#3bff3a96e7dab4c82e247e6e5e88513bff359faf"
+  integrity sha512-Ulwgj9SH7DOnUOJ6cJHVbDJ2TWkvluV+tPNF45Ex1pkN9BPyokc8btiU4h87Sdehw4Sf8ork90RrLRsYIGDH5A==
+
+"@fontsource/permanent-marker@^5.0.7":
+  version "5.0.7"
+  resolved "https://registry.npmjs.org/@fontsource/permanent-marker/-/permanent-marker-5.0.7.tgz#1a8f28c49de01c899dabb454dfd60940ec581687"
+  integrity sha512-h5VwCSxmNfy8eP3Q6dW99VEOziVhRiHXKdWqPqZhN2oZwkH8V/Zgau6bH+IEmnsjIwEj9IcePo9gTlzkaKJk1A==
+
+"@fontsource/slackey@^5.0.7":
+  version "5.0.7"
+  resolved "https://registry.npmjs.org/@fontsource/slackey/-/slackey-5.0.7.tgz#b2d322e3112b104ee433b2386da3e23ab713493d"
+  integrity sha512-MAnp+x0qShP8wiVgPq86P16T5nOUgToAaaIXWxcfkXJRv1H76fX1vPvezUdG+443G2/Quuf6kNG3ryy0H8WDqQ==
+
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.5"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.9.5.tgz#2cbaf9a89460da24b5ca6531b8bbfc23e1df50c7"

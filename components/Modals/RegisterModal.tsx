@@ -15,14 +15,15 @@ import {
   Text,
   CardFooter,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import shallow from "zustand/shallow";
 import Sequence from "@/services/sequence";
 
 const RegisterModal = ({ isOpen, onClose }) => {
   const router = useRouter();
+  const toast = useToast();
 
   const { walletAddress } = useAuthStore(
     (state) => ({
@@ -41,13 +42,29 @@ const RegisterModal = ({ isOpen, onClose }) => {
     } catch (e) {
       console.log(e);
       if (e.code === 4001) {
-        toast.error("User rejected transaction");
+        toast({
+          title: "Transaction Error",
+          description: "User rejected transaction",
+          status: "error",
+        });
+        return;
       }
+      toast({
+        title: "Error",
+        description: "Network error",
+        status: "error",
+      });
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl" isCentered>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      isCentered
+      colorScheme="red"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Register</ModalHeader>
@@ -57,19 +74,23 @@ const RegisterModal = ({ isOpen, onClose }) => {
             direction={{ base: "column", sm: "row" }}
             overflow="hidden"
             variant="outline"
+            bg="white"
+            pb={3}
           >
             <Image
               objectFit="cover"
               maxW={{ base: "100%", sm: "300px" }}
               src="/images/kids-on-computers.png"
-              alt="Caffe Latte"
+              alt="kids-on-computers"
             />
 
             <Stack>
               <CardBody>
-                <Heading size="md">Welcome to DefiKids</Heading>
+                <Heading size="md" color="#82add9">
+                  Welcome to DefiKids
+                </Heading>
 
-                <Text py="2">
+                <Text py="2" color="#82add9">
                   We require confirmation that you are a parent. This will allow
                   you to access the DefiKids platform. A transaction will be
                   required to store your user type on the blockchain.
@@ -81,6 +102,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                   variant="solid"
                   colorScheme="blue"
                   onClick={handleParent}
+                  w="100%"
                 >
                   Register as a parent
                 </Button>

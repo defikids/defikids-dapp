@@ -5,7 +5,6 @@ import Sequence from "../services/sequence";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { sequence } from "0xsequence";
-import { toast } from "react-toastify";
 
 const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   const router = useRouter();
@@ -32,39 +31,9 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     setIsLoggedIn(loggedIn);
   };
 
-  const switchNetworkMessage = () => {
-    toast.error("Please switch to the Mumbai testnet");
-  };
-
-  const navigateUser = (userType: number) => {
-    const chainId = Sequence.wallet?.getChainId();
-
-    if (chainId !== 80001) {
-      switchNetworkMessage();
-      return;
-    }
-
-    switch (userType) {
-      case UserType.UNREGISTERED:
-        onRegisterOpen();
-        break;
-      case UserType.PARENT:
-        router.push("/parent");
-        break;
-      case UserType.CHILD:
-        router.push("/child");
-        break;
-      default:
-        // logout();
-        return;
-    }
-  };
-
   const logout = () => {
     Sequence.wallet?.disconnect();
-
     updateConnectedUser(UserType.UNREGISTERED, "", false);
-    // window.location.replace("/");
   };
 
   const handleLoginSequence = async (session: any, account: string, wallet) => {
@@ -78,8 +47,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       const userType = await contract?.getUserType();
 
       updateConnectedUser(userType, accountAddress, true);
-
-      navigateUser(Number(userType));
     } catch (error) {
       console.error(error);
       logout();
@@ -90,14 +57,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
    * This hook will navigate the user to the correct page based on the user type
    **/
   useEffect(() => {
-    const chainId = Sequence.wallet?.getChainId();
-    console.log("chainId", chainId);
-
-    if (chainId !== 80001) {
-      switchNetworkMessage();
-      return;
-    }
-
     if (isLoggedIn) {
       switch (Number(userType)) {
         case UserType.UNREGISTERED:
@@ -110,7 +69,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
           router.push("/child");
           break;
         default:
-          // router.push("/");
           return;
       }
     }
@@ -135,19 +93,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     };
     init();
   }, []);
-
-  /**
-   * This hook will check if the user changes the network
-   **/
-  useEffect(() => {
-    const chainId = Sequence.wallet.getChainId();
-    if (chainId) return;
-    if (chainId !== 80001) {
-      router.push("/");
-      switchNetworkMessage();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Sequence.wallet.getChainId()]);
 
   return <></>;
 };

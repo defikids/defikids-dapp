@@ -40,56 +40,47 @@ const WalletNavbar: React.FC = () => {
     wallet.openWallet(path, intent);
   };
 
-  const closeWallet = () => {
-    const wallet = Sequence.wallet;
-    wallet.closeWallet();
-  };
-
   const handleLogoutClick = () => {
     Sequence.wallet?.disconnect();
 
+    //update user state
     setUserType(UserType.UNREGISTERED);
     setWalletAddress("");
     setIsLoggedIn(false);
     window.location.replace("/");
   };
 
-  const options = ["Open Wallet", "Close Wallet", "Disconnect"];
-
   const handleSelectOption = (option: string) => {
-    console.log(option);
-
-    switch (option) {
-      case "Open Wallet":
-        openWalletWithSettings();
-        break;
-      case "Close Wallet":
-        closeWallet();
-        break;
-      case "Disconnect":
-        handleLogoutClick();
-
-        break;
-
-      default:
-        handleLogoutClick();
-        break;
+    if (option === "Open Wallet" && Sequence.wallet?.isConnected) {
+      openWalletWithSettings();
+      return;
     }
+    handleLogoutClick();
   };
 
   return (
-    <Stack direction="row" justifyContent={"flex-end"} pr={8}>
-      {options.map((option, index) => (
-        <Badge
-          variant="subtle"
-          colorScheme="blue"
-          key={index}
-          style={{ cursor: "pointer" }}
-          onClick={() => handleSelectOption(option)}
-        >
-          {option}
-        </Badge>
-      ))}
+    <Stack direction="row" justifyContent="flex-end">
+      <Badge
+        variant="subtle"
+        colorScheme="blue"
+        cursor="pointer"
+        px={3}
+        onClick={() => handleSelectOption("Open Wallet")}
+        style={{ borderRadius: "10px" }}
+      >
+        Open Wallet
+      </Badge>
+
+      <Badge
+        variant="subtle"
+        colorScheme="blue"
+        cursor="pointer"
+        px={3}
+        onClick={() => handleSelectOption("Disconnect")}
+        style={{ borderRadius: "10px" }}
+      >
+        Disconnect Wallet
+      </Badge>
     </Stack>
   );
 };

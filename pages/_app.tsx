@@ -1,13 +1,16 @@
-// import "../styles/globals.css";
-import Page from "@/components/page";
+// import Layout from "@/components/layout";
 import Auth from "@/components/auth";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ChakraProvider, extendTheme, useDisclosure } from "@chakra-ui/react";
 import RegisterModal from "@/components/Modals/RegisterModal";
+import Footer from "@/components/footer";
+import { MainLayout } from "@/components/main_layout";
+import "@fontsource/slackey";
+import "@fontsource-variable/jetbrains-mono";
+import { modalTheme } from "@/components/theme/modalTheme";
 
 const config = {
-  initialColorMode: "dark",
+  initialColorMode: "light",
   useSystemColorMode: false,
 };
 
@@ -19,7 +22,16 @@ const colors = {
   },
 };
 
-export const theme = extendTheme({ config, colors });
+const fonts = {
+  // heading: `'Permanent Marker', sans-serif`,
+  heading: `'Slackey', sans-serif`,
+  body: `'JetBrains Mono', monospace`,
+  // body: `'Raleway', sans-serif`,
+};
+
+const components = { Modal: modalTheme };
+
+export const theme = extendTheme({ config, colors, fonts, components });
 
 function MyApp({ Component, pageProps }) {
   const {
@@ -30,16 +42,21 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <ChakraProvider theme={theme}>
-        <Page onRegisterOpen={onRegisterOpen} />
-        <ToastContainer
-          position="top-right"
-          autoClose={false}
-          closeOnClick={true}
-        />
+      <ChakraProvider
+        theme={theme}
+        toastOptions={{
+          defaultOptions: {
+            position: "bottom",
+            isClosable: true,
+            duration: 9000,
+          },
+        }}
+      >
         <Auth onRegisterOpen={onRegisterOpen} />
-        <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+        <MainLayout />
         <Component {...pageProps} />
+        <Footer />
+        <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
       </ChakraProvider>
     </>
   );

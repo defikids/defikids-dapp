@@ -21,13 +21,15 @@ export default function Footer() {
       as="footer" // Use <footer> semantic element
       alignItems="center"
       justifyContent="space-between"
-      bg="gray.800"
+      // bg="gray.800"
+      bgGradient={["linear(to-b, black, #4F1B7C)"]}
       color="white"
-      p={4}
-      position="fixed" // Position the footer at the bottom
+      px={4}
+      pt={10}
       left={0}
       bottom={0}
       right={0}
+      h={100}
       width="100%" // Take up full width
       style={{ zIndex: 100 }}
     >
@@ -72,9 +74,6 @@ export default function Footer() {
         <Heading as="h6" size="xs">
           &copy; {new Date().getFullYear()} DefiKids Inc.
         </Heading>
-        <Text size="xs" fontSize="10px" align="center">
-          All rights reserved.
-        </Text>
       </Flex>
       {/* </Center> */}
 

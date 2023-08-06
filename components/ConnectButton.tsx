@@ -12,13 +12,9 @@ const ConnectButton = ({
   };
 
   return (
-    <Box>
+    <Box mr={2}>
       <Button variant="outline" onClick={handleClick}>
-        {walletAddress ? (
-          trimAddress(walletAddress)
-        ) : (
-          <span>Connect Wallet</span>
-        )}
+        {walletAddress ? trimAddress(walletAddress) : <span>Connect</span>}
       </Button>
     </Box>
   );

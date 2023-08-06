@@ -21,11 +21,9 @@ export default function Footer() {
       as="footer" // Use <footer> semantic element
       alignItems="center"
       justifyContent="space-between"
-      // bg="gray.800"
-      bgGradient={["linear(to-b, black, #4F1B7C)"]}
+      bgGradient={["linear(to-b, #020049, #4F1B7C)"]}
       color="white"
       px={4}
-      pt={10}
       left={0}
       bottom={0}
       right={0}

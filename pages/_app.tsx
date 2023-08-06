@@ -1,4 +1,3 @@
-// import Layout from "@/components/layout";
 import Auth from "@/components/auth";
 import "react-toastify/dist/ReactToastify.css";
 import { ChakraProvider, extendTheme, useDisclosure } from "@chakra-ui/react";
@@ -23,15 +22,27 @@ const colors = {
 };
 
 const fonts = {
-  // heading: `'Permanent Marker', sans-serif`,
   heading: `'Slackey', sans-serif`,
   body: `'JetBrains Mono', monospace`,
-  // body: `'Raleway', sans-serif`,
+};
+
+const breakpoints = {
+  sm: "30em",
+  md: "48em",
+  lg: "62em",
+  xl: "80em",
+  "2xl": "96em",
 };
 
 const components = { Modal: modalTheme };
 
-export const theme = extendTheme({ config, colors, fonts, components });
+export const theme = extendTheme({
+  config,
+  colors,
+  fonts,
+  components,
+  breakpoints,
+});
 
 function MyApp({ Component, pageProps }) {
   const {

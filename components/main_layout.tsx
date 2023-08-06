@@ -1,20 +1,19 @@
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC, PropsWithChildren, useState } from "react";
 import Navbar from "./navbar";
 import WalletMenuBar from "./WalletMenuBar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
-import Footer from "./footer";
-import { useDisclosure, Flex, Box, Stack } from "@chakra-ui/react";
+import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
 import FaqModal from "./Modals/FaqModal";
 import AboutModal from "./Modals/AboutModal";
 import RegisterModal from "@/components/Modals/RegisterModal";
-
-import { Section } from "@/components/section";
 
 export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
+  const isMobileSize = useBreakpointValue({ base: true, sm: false, md: false });
+
   const { isLoggedIn } = useAuthStore(
     (state) => ({
       isLoggedIn: state.isLoggedIn,
@@ -42,7 +41,7 @@ export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
   //                               STATE
   //=============================================================================
 
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   //=============================================================================
   //                             FUNCTIONS
@@ -50,34 +49,17 @@ export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
 
   const handleWalletMenuToggle = () => setIsMenuOpen(!isMenuOpen);
 
-  // #4ECAFF
-  // #7A49FF
-  // #161D2B
-  // #3D5CFD
-
-  // #12c2e9
-  // #1D2671
-  // 82ADD9
-
-  // blue-waves-wallpaper
-
   return (
     <Box
-      // bgGradient="linear(to-r, #4F1B7C, #2a0845)"
-      bgGradient={[
-        // "linear(to-tr, #4F1B7C, #2a0845)",
-        // "linear(to-t, #1A202C, #282C34)",
-        "linear(to-b, #4F1B7C, black)",
-      ]}
-      px={5}
-      py={1}
-      position="fixed" // Position the footer at the bottom
-      w="100%"
+      bgGradient={["linear(to-b, black,#4F1B7C)"]}
+      position="fixed"
+      top="0"
+      left="0"
+      width="100%"
+      p={1}
+      zIndex={5}
     >
-      <Box
-        h="82px"
-        // position="fixed" // Position the footer at the bottom
-      >
+      <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
         <Navbar
           onFaqOpen={onFaqOpen}
           onAboutOpen={onAboutOpen}
@@ -95,8 +77,6 @@ export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
       <FaqModal isOpen={isFaqOpen} onClose={onFaqClose} />
       <AboutModal isOpen={isAboutOpen} onClose={onAboutClose} />
       <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
-
-      {/* <Footer /> */}
     </Box>
   );
 };

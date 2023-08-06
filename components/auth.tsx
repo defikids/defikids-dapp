@@ -7,6 +7,9 @@ import { shallow } from "zustand/shallow";
 import { sequence } from "0xsequence";
 
 const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
   const router = useRouter();
 
   const { isLoggedIn, userType, setUserType, setIsLoggedIn, setWalletAddress } =
@@ -21,38 +24,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       shallow
     );
 
-  const updateConnectedUser = (
-    userType: number,
-    address: string,
-    loggedIn: boolean
-  ) => {
-    setUserType(userType);
-    setWalletAddress(address);
-    setIsLoggedIn(loggedIn);
-  };
-
-  const logout = () => {
-    Sequence.wallet?.disconnect();
-    updateConnectedUser(UserType.UNREGISTERED, "", false);
-  };
-
-  const handleLoginSequence = async (session: any, account: string, wallet) => {
-    try {
-      const connectDetails = session;
-      const { accountAddress } = connectDetails;
-
-      const signer = wallet.getSigner();
-
-      const contract = await HostContract.fromProvider(signer, accountAddress);
-      const userType = await contract?.getUserType();
-
-      updateConnectedUser(userType, accountAddress, true);
-    } catch (error) {
-      console.error(error);
-      logout();
-    }
-  };
-
   /**
    * This hook will navigate the user to the correct page based on the user type
    **/
@@ -60,7 +31,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     if (isLoggedIn) {
       switch (Number(userType)) {
         case UserType.UNREGISTERED:
-          onRegisterOpen();
+          // onRegisterOpen();
           break;
         case UserType.PARENT:
           router.push("/parent");
@@ -85,7 +56,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
         const session = wallet.getSession();
 
         if (session) {
-          handleLoginSequence(session, session.accountAddress, wallet);
+          handleLoginSequence(session, wallet);
         }
       } catch (error) {
         console.error(error);
@@ -93,6 +64,42 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     };
     init();
   }, []);
+
+  //=============================================================================
+  //                               FUNCTIONS
+  //=============================================================================
+
+  const updateConnectedUser = (
+    userType: number,
+    address: string,
+    loggedIn: boolean
+  ) => {
+    setUserType(userType);
+    setWalletAddress(address);
+    setIsLoggedIn(loggedIn);
+  };
+
+  // const logout = () => {
+  //   Sequence.wallet?.disconnect();
+  //   updateConnectedUser(UserType.UNREGISTERED, "", false);
+  // };
+
+  const handleLoginSequence = async (session: any, wallet: any) => {
+    try {
+      const connectDetails = session;
+      const { accountAddress } = connectDetails;
+
+      const signer = wallet.getSigner();
+
+      const contract = await HostContract.fromProvider(signer, accountAddress);
+      const userType = await contract?.getUserType();
+
+      updateConnectedUser(userType, accountAddress, true);
+    } catch (error) {
+      console.error(error);
+      // logout();
+    }
+  };
 
   return <></>;
 };

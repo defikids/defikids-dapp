@@ -15,6 +15,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": ".",
+    "downlevelIteration": true,
     "paths": {
       "@/components/*": ["components/*"],
       "@/pages/*": ["pages/*"],

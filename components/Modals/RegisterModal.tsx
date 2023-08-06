@@ -64,6 +64,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
       size="2xl"
       isCentered
       colorScheme="red"
+      closeOnOverlayClick={false}
     >
       <ModalOverlay />
       <ModalContent>
@@ -91,9 +92,9 @@ const RegisterModal = ({ isOpen, onClose }) => {
                 </Heading>
 
                 <Text py="2" color="#82add9">
-                  We require confirmation that you are a parent. This will allow
-                  you to access the DefiKids platform. A transaction will be
-                  required to store your user type on the blockchain.
+                  Register to access the DefiKids platform. A transaction will
+                  be required to store a family record that is associated with
+                  this connected wallet on the blockchain.
                 </Text>
               </CardBody>
 

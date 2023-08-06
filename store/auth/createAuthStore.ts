@@ -8,12 +8,14 @@ type State = {
   walletAddress: "";
   isLoggedIn: boolean;
   userType: UserType;
+  navigationSection: string;
 };
 
 type Actions = {
   setWalletAddress: (walletAddress: string) => void;
   setIsLoggedIn: (isLoggingIn: boolean) => void;
   setUserType: (userType: UserType) => void;
+  setNavigationSection: (section: string) => void;
 };
 
 type MyStore = State & Actions;
@@ -22,6 +24,7 @@ const initialState: State = {
   walletAddress: "",
   isLoggedIn: false,
   userType: UserType.UNREGISTERED,
+  navigationSection: "DefiKids",
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -43,6 +46,11 @@ const setters = (set: any) => ({
   setUserType: (userType: UserType) => {
     set((state: { userType: UserType }) => {
       state.userType = userType;
+    }, shallow);
+  },
+  setNavigationSection: (section: string) => {
+    set((state: { navigationSection: string }) => {
+      state.navigationSection = section;
     }, shallow);
   },
 });

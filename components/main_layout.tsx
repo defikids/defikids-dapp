@@ -1,22 +1,27 @@
-import React, { FC, PropsWithChildren, useState } from "react";
+import React, { FC, PropsWithChildren, useEffect, useState } from "react";
 import Navbar from "./navbar";
-import WalletMenuBar from "./WalletMenuBar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
 import FaqModal from "./Modals/FaqModal";
 import AboutModal from "./Modals/AboutModal";
+import WalletModal from "./Modals/WalletModal";
 import RegisterModal from "@/components/Modals/RegisterModal";
 
-export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
+export const MainLayout = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const isMobileSize = useBreakpointValue({ base: true, sm: false, md: false });
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
 
-  const { isLoggedIn } = useAuthStore(
+  const { navigationSection } = useAuthStore(
     (state) => ({
-      isLoggedIn: state.isLoggedIn,
+      navigationSection: state.navigationSection,
     }),
     shallow
   );
@@ -26,28 +31,42 @@ export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
     onOpen: onFaqOpen,
     onClose: onFaqClose,
   } = useDisclosure();
+
   const {
     isOpen: isAboutOpen,
     onOpen: onAboutOpen,
     onClose: onAboutClose,
   } = useDisclosure();
+
   const {
     isOpen: isRegisterOpen,
     onOpen: onRegisterOpen,
     onClose: onRegisterClose,
   } = useDisclosure();
+  const {
+    isOpen: isWalletOpen,
+    onOpen: onWalletOpen,
+    onClose: onWalletClose,
+  } = useDisclosure();
+
+  const { onToggle } = useDisclosure();
+
+  useEffect(() => {
+    console.log("navigationSection - useEffect", navigationSection);
+    if (navigationSection === "DefiKids") {
+      onToggle;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigationSection]);
 
   //=============================================================================
   //                               STATE
   //=============================================================================
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
-
-  const handleWalletMenuToggle = () => setIsMenuOpen(!isMenuOpen);
+  const handleWalletMenuToggle = () => onWalletOpen();
 
   return (
     <Box
@@ -64,19 +83,14 @@ export const MainLayout: FC<PropsWithChildren> = ({ children }) => {
           onFaqOpen={onFaqOpen}
           onAboutOpen={onAboutOpen}
           onRegisterOpen={onRegisterOpen}
-          handleWalletMenuToggle={handleWalletMenuToggle}
+          onWalletOpen={onWalletOpen}
         />
-
-        {isLoggedIn && isMenuOpen ? <WalletMenuBar /> : <></>}
-      </Box>
-
-      <Box maxW="1380px" mx="auto" flexGrow={1} px={4}>
-        {children}
       </Box>
 
       <FaqModal isOpen={isFaqOpen} onClose={onFaqClose} />
       <AboutModal isOpen={isAboutOpen} onClose={onAboutClose} />
       <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+      <WalletModal isOpen={isWalletOpen} onClose={onWalletClose} />
     </Box>
   );
 };

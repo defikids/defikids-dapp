@@ -9,7 +9,7 @@ import "@fontsource-variable/jetbrains-mono";
 import { modalTheme } from "@/components/theme/modalTheme";
 
 const config = {
-  initialColorMode: "light",
+  initialColorMode: "dark",
   useSystemColorMode: false,
 };
 
@@ -27,11 +27,11 @@ const fonts = {
 };
 
 const breakpoints = {
-  sm: "30em",
-  md: "48em",
-  lg: "62em",
-  xl: "80em",
-  "2xl": "96em",
+  sm: "48em",
+  md: "62em",
+  lg: "80em",
+  xl: "96em",
+  "2xl": "120em",
 };
 
 const components = { Modal: modalTheme };
@@ -67,7 +67,7 @@ function MyApp({ Component, pageProps }) {
         <MainLayout />
         <Component {...pageProps} />
         <Footer />
-        <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+        {/* <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} /> */}
       </ChakraProvider>
     </>
   );

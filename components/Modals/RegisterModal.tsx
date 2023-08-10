@@ -63,7 +63,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
       onClose={onClose}
       size="2xl"
       isCentered
-      colorScheme="red"
       closeOnOverlayClick={false}
     >
       <ModalOverlay />

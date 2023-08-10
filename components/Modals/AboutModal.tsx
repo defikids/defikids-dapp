@@ -8,11 +8,16 @@ import {
   ModalCloseButton,
   Button,
 } from "@chakra-ui/react";
-//   import RegisterVaultForm from "../Forms/RegisterVaultForm";
 
 const AboutModal = ({ isOpen, onClose }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      isCentered
+      closeOnOverlayClick={false}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>About</ModalHeader>

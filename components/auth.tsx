@@ -55,6 +55,9 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
         const wallet = sequence.getWallet();
         const session = wallet.getSession();
 
+        console.log("wallet", wallet);
+        console.log("session", session);
+
         if (session) {
           handleLoginSequence(session, wallet);
         }
@@ -79,10 +82,10 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     setIsLoggedIn(loggedIn);
   };
 
-  // const logout = () => {
-  //   Sequence.wallet?.disconnect();
-  //   updateConnectedUser(UserType.UNREGISTERED, "", false);
-  // };
+  const logout = () => {
+    Sequence.wallet?.disconnect();
+    updateConnectedUser(UserType.UNREGISTERED, "", false);
+  };
 
   const handleLoginSequence = async (session: any, wallet: any) => {
     try {
@@ -97,7 +100,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       updateConnectedUser(userType, accountAddress, true);
     } catch (error) {
       console.error(error);
-      // logout();
+      logout();
     }
   };
 

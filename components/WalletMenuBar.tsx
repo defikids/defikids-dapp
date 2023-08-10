@@ -1,101 +1,27 @@
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Sequence from "@/services/sequence";
-import { UserType } from "@/services/contract";
-import { OpenWalletIntent, Settings } from "@0xsequence/provider";
-import {
-  Badge,
-  Flex,
-  Stack,
-  useColorMode,
-  Text,
-  Heading,
-  useBreakpointValue,
-  Button,
-  useToast,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Flex, Stack, Text, Heading, useToast } from "@chakra-ui/react";
+import { BiSolidCopy } from "react-icons/bi";
+import { BsBoxArrowUpRight } from "react-icons/bs";
 
-const animatedBorderBottom = {
-  position: "relative",
-  _before: {
-    content: '""',
-    position: "absolute",
-    bottom: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "0",
-    height: "1px",
-    backgroundColor: "#FF0080",
-    transition: "width 0.3s ease-in-out",
-  },
-  "&:hover:before": {
-    width: "90%",
-  },
-};
-
-const WalletNavbar: React.FC = () => {
+export const WalletDetails: React.FC = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { colorMode } = useColorMode();
-  const isMobileSize = useBreakpointValue({ base: true, sm: false, md: false });
+
   const toast = useToast();
 
-  const { walletAddress, setIsLoggedIn, setUserType, setWalletAddress } =
-    useAuthStore(
-      (state) => ({
-        walletAddress: state.walletAddress,
-        isLoggedIn: state.isLoggedIn,
-        setIsLoggedIn: state.setIsLoggedIn,
-        setUserType: state.setUserType,
-        setWalletAddress: state.setWalletAddress,
-      }),
-      shallow
-    );
+  const { walletAddress } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
+    }),
+    shallow
+  );
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
-  const openWalletWithSettings = () => {
-    const wallet = Sequence.wallet;
-
-    const settings: Settings = {
-      theme: colorMode,
-      includedPaymentProviders: ["moonpay", "ramp", "wyre"],
-      defaultFundingCurrency: "eth",
-      signInOptions: ["email", "google", "apple", "discord", "facebook"],
-    };
-
-    const intent: OpenWalletIntent = {
-      type: "openWithOptions",
-      options: {
-        app: "DefiKids",
-        settings,
-      },
-    };
-
-    const path = "wallet";
-    wallet.openWallet(path, intent);
-  };
-
-  const handleLogoutClick = () => {
-    Sequence.wallet?.disconnect();
-
-    //update user state
-    setUserType(UserType.UNREGISTERED);
-    setWalletAddress("");
-    setIsLoggedIn(false);
-    window.location.replace("/");
-  };
-
-  const handleSelectOption = (option: string) => {
-    if (option === "Open Wallet" && Sequence.wallet?.isConnected) {
-      openWalletWithSettings();
-      return;
-    }
-    handleLogoutClick();
-  };
 
   const trimAddress = (address: string) => {
     return address.slice(0, 6) + "..." + address.slice(-4);
@@ -106,7 +32,7 @@ const WalletNavbar: React.FC = () => {
       case 137:
         return "Polygon";
       case 80001:
-        return "Mumbai";
+        return "Polygon Mumbai";
       default:
         return "Unknown";
     }
@@ -120,75 +46,58 @@ const WalletNavbar: React.FC = () => {
     });
   };
 
+  const getBlockchainUrl = () => {
+    const network = Sequence.wallet?.getChainId();
+    console.log("network", network);
+    const session = Sequence.wallet?.getSession();
+    const url = session.networks.find((n) => n.chainId === network)
+      ?.blockExplorer.rootUrl;
+
+    return url;
+  };
+
   return (
-    <Stack
-      direction={isMobileSize ? "column" : "row"}
-      justifyContent={isMobileSize ? "flex-start" : "space-between"}
-      py={2}
-    >
+    <Stack direction="column" justifyContent="center" py={2} w="100%">
       {/* WalletAddress */}
-      <Flex alignItems="center" direction="row" mr={6}>
-        <Heading
-          size="sm"
-          textAlign="center"
-          mr={2}
-          bgGradient="linear(to-l, white, #82add9)"
-          bgClip="text"
-        >
-          Wallet Address
-        </Heading>
-        <Tooltip label="Copy address" fontSize="sm">
-          <Text
-            size="sm"
-            cursor="pointer"
-            onClick={() => copyAddressToClipboard(walletAddress)}
-          >
-            {trimAddress(walletAddress)}
-          </Text>
-        </Tooltip>
+      <Heading size="xs" textAlign="left" mr={2} color="#82add9">
+        Wallet Address
+      </Heading>
+
+      <Flex direction="row" justify="center" align="center">
+        <Text color="black" align="center" fontSize="xl">
+          {trimAddress(walletAddress)}
+        </Text>
+        <BiSolidCopy
+          size={15}
+          color="black"
+          style={{
+            marginBottom: "0.5rem",
+            marginLeft: "1.5rem",
+            cursor: "pointer",
+          }}
+          onClick={() => copyAddressToClipboard(walletAddress)}
+        />
       </Flex>
 
       {/* ChaninId */}
-      <Flex alignItems="center" direction="row" mr={6}>
-        <Heading
-          size="sm"
-          textAlign="center"
-          mr={2}
-          bgGradient="linear(to-l, white, #82add9)"
-          bgClip="text"
-        >
-          Blockchain
-        </Heading>
-        <Text size="sm">
+      <Heading size="xs" textAlign="left" color="#82add9" mr={2} mt={2}>
+        Blockchain
+      </Heading>
+      <Flex direction="row" justify="center" align="center">
+        <Text fontSize="xl" color="black" align="center">
           {blockchainNameByChainId(Sequence.wallet.getChainId())}
         </Text>
-      </Flex>
-
-      {/* Open Wallet Button */}
-      <Flex
-        alignItems="center"
-        direction="row"
-        mr={6}
-        pt={isMobileSize ? 5 : 0}
-        pb={isMobileSize ? 2 : 0}
-        justify={isMobileSize ? "center" : "flex-start"}
-      >
-        <Heading
-          size="xs"
-          textAlign="center"
-          bgGradient="linear(to-l, white, #82add9)"
-          bgClip="text"
-          cursor="pointer"
-          onClick={() => handleSelectOption("Open Wallet")}
-          sx={{
-            ...animatedBorderBottom,
+        <BsBoxArrowUpRight
+          size={10}
+          color="black"
+          style={{
+            marginBottom: "0.5rem",
+            marginLeft: "1rem",
+            cursor: "pointer",
           }}
-        >
-          Open Wallet
-        </Heading>
+          onClick={() => window.open(getBlockchainUrl(), "_blank")}
+        />
       </Flex>
     </Stack>
   );
 };
-
-export default WalletNavbar;

@@ -1,11 +1,10 @@
-import React, { FC, PropsWithChildren, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Navbar from "./navbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
 import FaqModal from "./Modals/FaqModal";
 import AboutModal from "./Modals/AboutModal";
-import WalletModal from "./Modals/WalletModal";
 import RegisterModal from "@/components/Modals/RegisterModal";
 
 export const MainLayout = () => {
@@ -90,7 +89,6 @@ export const MainLayout = () => {
       <FaqModal isOpen={isFaqOpen} onClose={onFaqClose} />
       <AboutModal isOpen={isAboutOpen} onClose={onAboutClose} />
       <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
-      <WalletModal isOpen={isWalletOpen} onClose={onWalletClose} />
     </Box>
   );
 };

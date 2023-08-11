@@ -26,6 +26,8 @@ export default function Main() {
       const sections = document.querySelectorAll("section");
 
       for (const section of sections) {
+        if (section.id === "popover-content-:r3:") continue;
+
         const rect = section.getBoundingClientRect();
         if (
           rect.top <= window.innerHeight * 0.2 &&

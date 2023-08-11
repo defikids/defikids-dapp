@@ -25,6 +25,7 @@ import { BiUserCircle, BiSolidLockOpen } from "react-icons/bi";
 import { GrPowerShutdown } from "react-icons/gr";
 import { VscArrowSwap } from "react-icons/vsc";
 import { AiOutlinePoweroff } from "react-icons/ai";
+import { WalletPopover } from "@/components/WalletPopover";
 
 type ConnectedUser = {
   success: boolean;
@@ -143,22 +144,7 @@ export default function NavBar({
               />
             )}
 
-            {isLoggedIn && (
-              <IconButton
-                size="lg"
-                aria-label="Wallet Icon"
-                icon={
-                  <Image
-                    src={"/logos/Sequence-Icon.png"}
-                    alt="Wallet Icon"
-                    width="30"
-                    height="25"
-                  />
-                }
-                mx={4}
-                onClick={onWalletOpen}
-              />
-            )}
+            {isLoggedIn && <WalletPopover />}
 
             {/* Mobile Menu */}
             <Menu>

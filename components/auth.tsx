@@ -25,8 +25,15 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     );
 
   /**
-   * This hook will navigate the user to the correct page based on the user type
+   * This hook will check if the user has a dark mode preference set in local storage
    **/
+  useEffect(() => {
+    const colorMode = localStorage.getItem("chakra-ui-color-mode");
+    if (colorMode !== "dark") {
+      localStorage.setItem("chakra-ui-color-mode", "dark");
+    }
+  }, []);
+
   useEffect(() => {
     if (isLoggedIn) {
       switch (Number(userType)) {

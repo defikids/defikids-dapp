@@ -34,11 +34,15 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     }
   }, []);
 
+  /**
+   * This hook will check if the user is already logged in with sequence
+   **/
+
   useEffect(() => {
     if (isLoggedIn) {
       switch (Number(userType)) {
         case UserType.UNREGISTERED:
-          // onRegisterOpen();
+          onRegisterOpen();
           break;
         case UserType.PARENT:
           router.push("/parent");
@@ -47,6 +51,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
           router.push("/child");
           break;
         default:
+          router.push("/");
           return;
       }
     }
@@ -62,9 +67,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
         const wallet = sequence.getWallet();
         const session = wallet.getSession();
 
-        console.log("wallet", wallet);
-        console.log("session", session);
-
         if (session) {
           handleLoginSequence(session, wallet);
         }
@@ -75,8 +77,20 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     init();
   }, []);
 
+  /**
+   * This hook will check if the user changes the network
+   **/
+  useEffect(() => {
+    const chainId = Sequence.wallet.getChainId();
+    if (chainId) return;
+    if (chainId !== 80001) {
+      router.push("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Sequence.wallet.getChainId()]);
+
   //=============================================================================
-  //                               FUNCTIONS
+  //                             FUNCTIONS
   //=============================================================================
 
   const updateConnectedUser = (
@@ -89,12 +103,33 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     setIsLoggedIn(loggedIn);
   };
 
+  const navigateUser = (userType: number) => {
+    switch (userType) {
+      case UserType.UNREGISTERED:
+        onRegisterOpen();
+        break;
+      case UserType.PARENT:
+        router.push("/parent");
+        break;
+      case UserType.CHILD:
+        router.push("/child");
+        break;
+      default:
+        logout();
+        return;
+    }
+  };
+
   const logout = () => {
     Sequence.wallet?.disconnect();
     updateConnectedUser(UserType.UNREGISTERED, "", false);
+    window.location.replace("/");
   };
 
-  const handleLoginSequence = async (session: any, wallet: any) => {
+  const handleLoginSequence = async (
+    session: any,
+    wallet: sequence.provider.SequenceProvider
+  ) => {
     try {
       const connectDetails = session;
       const { accountAddress } = connectDetails;
@@ -105,6 +140,8 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       const userType = await contract?.getUserType();
 
       updateConnectedUser(userType, accountAddress, true);
+
+      navigateUser(Number(userType));
     } catch (error) {
       console.error(error);
       logout();

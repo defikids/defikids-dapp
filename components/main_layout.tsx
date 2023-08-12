@@ -5,9 +5,14 @@ import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
 import FaqModal from "./Modals/FaqModal";
 import AboutModal from "./Modals/AboutModal";
-import RegisterModal from "@/components/Modals/RegisterModal";
 
-export const MainLayout = () => {
+export const MainLayout = ({
+  showStartEarning,
+  isRegisterOpen,
+}: {
+  showStartEarning: boolean;
+  isRegisterOpen: boolean;
+}) => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
@@ -25,29 +30,6 @@ export const MainLayout = () => {
     shallow
   );
 
-  const {
-    isOpen: isFaqOpen,
-    onOpen: onFaqOpen,
-    onClose: onFaqClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isAboutOpen,
-    onOpen: onAboutOpen,
-    onClose: onAboutClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isRegisterOpen,
-    onOpen: onRegisterOpen,
-    onClose: onRegisterClose,
-  } = useDisclosure();
-  const {
-    isOpen: isWalletOpen,
-    onOpen: onWalletOpen,
-    onClose: onWalletClose,
-  } = useDisclosure();
-
   const { onToggle } = useDisclosure();
 
   useEffect(() => {
@@ -59,13 +41,8 @@ export const MainLayout = () => {
   }, [navigationSection]);
 
   //=============================================================================
-  //                               STATE
-  //=============================================================================
-
-  //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
-  const handleWalletMenuToggle = () => onWalletOpen();
 
   return (
     <Box
@@ -79,16 +56,10 @@ export const MainLayout = () => {
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
         <Navbar
-          onFaqOpen={onFaqOpen}
-          onAboutOpen={onAboutOpen}
-          onRegisterOpen={onRegisterOpen}
-          onWalletOpen={onWalletOpen}
+          showStartEarning={showStartEarning}
+          isRegisterOpen={isRegisterOpen}
         />
       </Box>
-
-      <FaqModal isOpen={isFaqOpen} onClose={onFaqClose} />
-      <AboutModal isOpen={isAboutOpen} onClose={onAboutClose} />
-      <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
     </Box>
   );
 };

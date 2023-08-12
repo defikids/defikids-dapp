@@ -1,16 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
   Heading,
   IconButton,
   useBreakpointValue,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuGroup,
-  MenuDivider,
   Collapse,
 } from "@chakra-ui/react";
 import ConnectButton from "@/components/ConnectButton";
@@ -19,13 +13,11 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import Sequence from "@/services/sequence";
-import { UserType } from "@/services/contract";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { BiUserCircle, BiSolidLockOpen } from "react-icons/bi";
-import { GrPowerShutdown } from "react-icons/gr";
-import { VscArrowSwap } from "react-icons/vsc";
-import { AiOutlinePoweroff } from "react-icons/ai";
 import { WalletPopover } from "@/components/WalletPopover";
+import { MenuPopover } from "@/components/MenuPopover";
+import { AiFillAppstore } from "react-icons/ai";
+import { IoMdClose } from "react-icons/io";
+import { UserType } from "@/services/contract";
 
 type ConnectedUser = {
   success: boolean;
@@ -34,15 +26,11 @@ type ConnectedUser = {
 };
 
 export default function NavBar({
-  onFaqOpen,
-  onAboutOpen,
-  onRegisterOpen,
-  onWalletOpen,
+  showStartEarning,
+  isRegisterOpen,
 }: {
-  onFaqOpen: () => void;
-  onAboutOpen: () => void;
-  onRegisterOpen: () => void;
-  onWalletOpen: () => void;
+  showStartEarning: boolean;
+  isRegisterOpen: boolean;
 }) {
   //=============================================================================
   //                               HOOKS
@@ -75,6 +63,16 @@ export default function NavBar({
   );
 
   //=============================================================================
+  //                             STATE
+  //=============================================================================
+  const [menuOpen, setMenuOpen] = useState(false);
+  const iconToShow = menuOpen ? (
+    <IoMdClose size={30} />
+  ) : (
+    <AiFillAppstore size={30} />
+  );
+
+  //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
 
@@ -96,23 +94,13 @@ export default function NavBar({
     }
   };
 
-  const handleLogoutClick = () => {
-    Sequence.wallet?.disconnect();
-
-    //update user state
-    setUserType(UserType.UNREGISTERED);
-    setWalletAddress("");
-    setIsLoggedIn(false);
-    window.location.replace("/");
-  };
-
   return (
     <>
       <Box
         zIndex={5}
         bgGradient={["linear(to-b, black,#4F1B7C)"]}
         position="fixed"
-        top={0}
+        top={`${showStartEarning && !isRegisterOpen ? 8 : 0}`}
         left={0}
         right={0}
         p={!isMobileSize ? 5 : 2}
@@ -120,7 +108,13 @@ export default function NavBar({
       >
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           {/* DefiKids Logo */}
-          <Flex align="center">
+          <Flex
+            align="center"
+            cursor={"pointer"}
+            onClick={() => {
+              router.push("/");
+            }}
+          >
             {!isMobileSize && (
               <Image
                 src={"/pig_logo.png"}
@@ -144,42 +138,17 @@ export default function NavBar({
               />
             )}
 
+            {/* Wallet Menu */}
             {isLoggedIn && <WalletPopover />}
 
-            {/* Mobile Menu */}
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<GiHamburgerMenu />}
-                variant="outline"
-                size="lg"
-              />
-
-              <MenuList>
-                {isLoggedIn && (
-                  <>
-                    <MenuGroup title="Profile">
-                      <MenuItem>My Account</MenuItem>
-                    </MenuGroup>
-                    <MenuDivider />
-                  </>
-                )}
-                <MenuGroup title="Help">
-                  <MenuItem>Docs</MenuItem>
-                  <MenuItem onClick={onAboutOpen}>About</MenuItem>
-                  <MenuItem onClick={onFaqOpen}>FAQ</MenuItem>
-                  <MenuItem onClick={onWalletOpen}>Wallet</MenuItem>
-                </MenuGroup>
-                {isLoggedIn && (
-                  <>
-                    {" "}
-                    <MenuDivider />
-                    <MenuItem onClick={handleLogoutClick}>Log Out</MenuItem>
-                  </>
-                )}
-              </MenuList>
-            </Menu>
+            {/* Main Menu */}
+            <IconButton
+              size="lg"
+              aria-label="Menu Icon"
+              icon={iconToShow}
+              onClick={() => setMenuOpen(!menuOpen)}
+            />
+            <MenuPopover menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           </Flex>
         </Flex>
 

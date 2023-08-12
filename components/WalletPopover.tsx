@@ -133,7 +133,7 @@ export const WalletPopover = () => {
   };
 
   return (
-    <Popover placement="bottom" closeOnBlur={false}>
+    <Popover placement="bottom" closeOnBlur={true}>
       <PopoverTrigger>
         <IconButton
           size="lg"
@@ -167,7 +167,7 @@ export const WalletPopover = () => {
         </PopoverBody>
 
         <PopoverArrow bg="white" />
-        {/* <PopoverCloseButton /> */}
+
         <PopoverFooter
           border="0"
           display="flex"

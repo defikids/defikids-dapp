@@ -26,14 +26,13 @@ export default function Main() {
       const sections = document.querySelectorAll("section");
 
       for (const section of sections) {
-        if (section.id === "popover-content-:r3:") continue;
+        if (section.id.includes("popover-content")) continue;
 
         const rect = section.getBoundingClientRect();
         if (
           rect.top <= window.innerHeight * 0.2 &&
           rect.bottom >= window.innerHeight * 0.2
         ) {
-          console.log("section.id", section.id);
           setNavigationSection(section.id);
           break;
         }

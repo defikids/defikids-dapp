@@ -21,6 +21,7 @@ import Sequence from "@/services/sequence";
 import { OpenWalletIntent, Settings } from "@0xsequence/provider";
 import { UserType } from "@/services/contract";
 import { BiSolidCopy } from "react-icons/bi";
+import { trimAddress } from "@/lib/web3";
 
 export const WalletPopover = () => {
   //=============================================================================
@@ -43,10 +44,6 @@ export const WalletPopover = () => {
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
-
-  const trimAddress = (address: string) => {
-    return address.slice(0, 6) + "..." + address.slice(-4);
-  };
 
   const blockchainNameByChainId = () => {
     const chainId = Sequence.wallet?.getChainId();

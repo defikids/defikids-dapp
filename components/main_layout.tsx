@@ -3,8 +3,6 @@ import Navbar from "./navbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
-import FaqModal from "./Modals/FaqModal";
-import AboutModal from "./Modals/AboutModal";
 
 export const MainLayout = ({
   showStartEarning,

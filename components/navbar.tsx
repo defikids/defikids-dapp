@@ -18,6 +18,7 @@ import { MenuPopover } from "@/components/MenuPopover";
 import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/services/contract";
+import { BiSolidUserRectangle } from "react-icons/bi";
 
 type ConnectedUser = {
   success: boolean;
@@ -44,6 +45,7 @@ export default function NavBar({
   });
 
   const {
+    userType,
     isLoggedIn,
     walletAddress,
     navigationSection,
@@ -52,6 +54,7 @@ export default function NavBar({
     setWalletAddress,
   } = useAuthStore(
     (state) => ({
+      userType: state.userType,
       isLoggedIn: state.isLoggedIn,
       walletAddress: state.walletAddress,
       navigationSection: state.navigationSection,
@@ -106,7 +109,12 @@ export default function NavBar({
         p={!isMobileSize ? 5 : 2}
         id="main-navbar"
       >
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+        <Flex
+          h={16}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          mx={2}
+        >
           {/* DefiKids Logo */}
           <Flex
             align="center"
@@ -135,6 +143,15 @@ export default function NavBar({
               <ConnectButton
                 handleClick={handleConnectSequence}
                 walletAddress={walletAddress}
+              />
+            )}
+
+            {userType === UserType.PARENT && router.pathname !== "/parent" && (
+              <IconButton
+                size="lg"
+                aria-label="Parent Icon"
+                icon={<BiSolidUserRectangle size={30} />}
+                onClick={() => router.push("/parent")}
               />
             )}
 

@@ -121,6 +121,8 @@ contract Host {
         child_Parent[_child] = msg.sender;
         child_AccountDetails[_child] = child;
         member_Family[msg.sender][childId] = child;
+
+        //! addMemberSince timestamp
     }
 
     /**

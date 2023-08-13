@@ -4,15 +4,20 @@ import { immer } from "zustand/middleware/immer";
 import { Contract } from "ethers";
 
 import { shallow } from "zustand/shallow";
+import { sequence } from "0xsequence";
 
 type State = {
   readOnlyProvider: any;
   provider: any;
+  connectedSigner: sequence.provider.SequenceSigner;
+  contractInstance: Contract;
 };
 
 type Actions = {
   setReadOnlyProvider: (readOnlyProvider: any) => void;
   setProvider: (provider: any) => void;
+  setConnectedSigner: (signer: sequence.provider.SequenceSigner) => void;
+  setContactInstance: (contractInstance: Contract) => void;
 };
 
 type MyStore = State & Actions;
@@ -20,6 +25,8 @@ type MyStore = State & Actions;
 const initialState: State = {
   readOnlyProvider: null,
   provider: null,
+  connectedSigner: null,
+  contractInstance: null,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -36,6 +43,16 @@ const setters = (set: any) => ({
   setProvider: (provider: any) => {
     set((state: { provider: any }) => {
       state.provider = provider;
+    }, shallow);
+  },
+  setConnectedSigner: (signer: sequence.provider.SequenceSigner) => {
+    set((state: { connectedSigner: sequence.provider.SequenceSigner }) => {
+      state.connectedSigner = signer;
+    }, shallow);
+  },
+  setContactInstance: (contractInstance: Contract) => {
+    set((state: { contractInstance: Contract }) => {
+      state.contractInstance = contractInstance;
     }, shallow);
   },
 });

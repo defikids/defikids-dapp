@@ -2,15 +2,9 @@
 
 import Auth from "@/components/auth";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  ChakraProvider,
-  useDisclosure,
-  Text,
-  Badge,
-  Flex,
-  extendTheme,
-} from "@chakra-ui/react";
+import { ChakraProvider, useDisclosure, extendTheme } from "@chakra-ui/react";
 import { modalTheme } from "@/components/theme/modalTheme";
+import { switchTheme } from "@/components/theme/switchTheme";
 import { useAuthStore } from "@/store/auth/authStore";
 import { UserType } from "@/services/contract";
 import { MainLayout } from "@/components/main_layout";
@@ -20,6 +14,7 @@ import { useState, useEffect } from "react";
 import { RegisterBanner } from "@/components/landingPage/RegisterBanner";
 import "@fontsource/slackey";
 import "@fontsource-variable/jetbrains-mono";
+import { useRouter } from "next/router";
 
 const config = {
   initialColorMode: "dark",
@@ -47,7 +42,7 @@ const breakpoints = {
   "2xl": "120em",
 };
 
-const components = { Modal: modalTheme };
+const components = { Modal: modalTheme, Switch: switchTheme };
 
 export const theme = extendTheme({
   config,
@@ -68,6 +63,8 @@ function MyApp({ Component, pageProps }) {
     userType: state.userType,
     isLoggedIn: state.isLoggedIn,
   }));
+
+  const router = useRouter();
 
   const [showStartEarning, setShowStartEarning] = useState(false);
 
@@ -99,7 +96,9 @@ function MyApp({ Component, pageProps }) {
         isRegisterOpen={isRegisterOpen}
       />
       <Component {...pageProps} />
-      <Footer />
+
+      {router.pathname === "/" && <Footer />}
+
       <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
     </ChakraProvider>
   );

@@ -56,7 +56,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, userType, Sequence.wallet?.getChainId()]);
+  }, [isLoggedIn, userType]);
 
   /**
    * This hook will check if the user is already logged in with sequence

@@ -54,10 +54,11 @@ class HostContract {
   }
 
   async fetchChildren() {
-    return this.contract.fetchChildren();
+    const children = await this.contract.fetchChildren();
+    return children;
   }
 
-  async addMember(wallet: string, username: string, isLocked: boolean) {
+  async addChild(wallet: string, username: string, isLocked: boolean) {
     return this.contract.addChild(wallet, username, isLocked);
   }
 

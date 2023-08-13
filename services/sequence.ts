@@ -41,6 +41,15 @@ const connectWallet = async (authorize: boolean = false) => {
     settings: {
       ...defaultConnectOptions.settings,
       ...connectOptions.settings,
+      theme: "light",
+      signInOptions: [
+        "email",
+        "google",
+        "apple",
+        "discord",
+        "facebook",
+        "twitch",
+      ],
     },
   };
 

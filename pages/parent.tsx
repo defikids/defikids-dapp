@@ -1,77 +1,94 @@
-import Image from "next/image";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import Button from "../components/button";
-// import { useStore } from "../services/store";
-import { getUSDCXBalance } from "../services/usdcx_contract";
-import AddChildModal from "../components/add_child_modal";
-import Plus from "../components/plus";
-import Arrow from "../components/arrow";
-import Child from "../components/child";
-import TopUpModal from "../components/topup_modal";
-import WithdrawModal from "../components/withdraw_modal";
-import TransferModal from "../components/transfer_modal";
-import StreamModal from "../components/stream_modal";
-import { IChild } from "../services/contract";
-import AnimatedNumber from "../components/animated_number";
-import { flowDetails } from "../hooks/useSuperFluid";
+import {
+  AbsoluteCenter,
+  Box,
+  Button,
+  Center,
+  ChakraProvider,
+  Container,
+  Divider,
+  Flex,
+  Heading,
+  Image,
+  Text,
+  useBreakpointValue,
+  useDisclosure,
+} from "@chakra-ui/react";
+import React, { use, useCallback, useEffect, useState } from "react";
+import AnimatedNumber from "@/components/animated_number";
+import Arrow from "@/components/arrow";
+import Child from "@/components/child";
+import TopUpModal from "@/components/topup_modal";
+import WithdrawModal from "@/components/withdraw_modal";
+import TransferAllModal from "@/components/transfer_all_modal";
+import TransferModal from "@/components/transfer_modal";
+import StreamModal from "@/components/stream_modal";
+import contract, { IChild } from "@/services/contract";
+import HostContract from "@/services/contract";
+import StakeContract from "@/services/stake";
+import { flowDetails } from "@/hooks/useSuperFluid";
 import { ethers } from "ethers";
-import TransferAllModal from "../components/transfer_all_modal";
-import StakeContract from "../services/stake";
-
-const FETCH_BALANCE_INTERVAL = 25000; // correct balance value X milliseconds
-const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecting a change
-const FETCH_RETRY_TIMEOUT = 1000; // timeout between fetches when expecting a change
+import Plus from "@/components/plus";
+import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { getUSDCXBalance } from "@/services/usdcx_contract";
+import { BiTransfer } from "react-icons/bi";
+import { AiOutlinePlus } from "react-icons/ai";
+import sequence from "@/services/sequence";
+import shallow from "zustand/shallow";
+import { useAuthStore } from "@/store/auth/authStore";
+import { trimAddress } from "@/lib/web3";
 
 const Parent: React.FC = () => {
-  // const {
-  //   state: { contract, provider, wallet },
-  // } = useStore();
+  //=============================================================================
+  //                               STATE
+  //=============================================================================
+
+  const [childKey, setChildKey] = useState(0);
+  const [balance, setBalance] = useState<number>();
+  const [netFlow, setNetFlow] = useState<number>(0);
+  const [childrenLoading, setChildrenLoading] = useState(false);
+  const [showTopUp, setShowTopUp] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showTransferAll, setShowTransferAll] = useState(false);
+  const [transferChild, setTransferChild] = useState<IChild>();
+  const [streamChild, setStreamChild] = useState<IChild>();
   const [children, setChildren] = useState<IChild[]>([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
 
-  // const fetchChildren = useCallback(
-  //   async (retry = false, retries = 0) => {
-  //     setChildrenLoading(true);
-  //     const newChildren = await contract.fetchChildren();
-  //     if (
-  //       retry &&
-  //       retries < MAX_FETCH_RETRIES &&
-  //       children.length === newChildren.length
-  //     ) {
-  //       return setTimeout(
-  //         () => fetchChildren(true, retries + 1),
-  //         FETCH_RETRY_TIMEOUT
-  //       );
-  //     }
-  //     setChildrenLoading(false);
-  //     setChildren(newChildren);
-  //     console.log("new", newChildren);
-  //   },
-  //   [children.length, contract]
-  // );
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
+  const { walletAddress } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
+    }),
+    shallow
+  );
 
-  // useEffect(() => {
-  //   if (!contract) {
-  //     return;
-  //   }
+  const isMobileLarge = useBreakpointValue({
+    lg: true,
+  });
 
-  //   fetchChildren();
-  // }, [contract, fetchChildren]);
+  const isMobileSmall = useBreakpointValue({
+    sm: true,
+  });
 
-  // useEffect(() => {
-  //   if (provider && wallet) {
-  //     StakeContract.fromProvider(provider, wallet).then((contract) =>
-  //       setStakeContract(contract)
-  //     );
-  //   }
-  // }, [provider, wallet]);
+  const {
+    isOpen: isAddChildOpen,
+    onOpen: onAddChildOpen,
+    onClose: onAddChildClose,
+  } = useDisclosure();
+
+  useEffect(() => {
+    fetchChildren();
+  }, []);
 
   useEffect(() => {
     if (!stakeContract || !children.length) {
       setChildrenStakes({});
       return;
     }
+
     const fetchChildDetails = async () => {
       const childDetails = {};
       await Promise.all(
@@ -88,129 +105,206 @@ const Parent: React.FC = () => {
     fetchChildDetails();
   }, [stakeContract, children]);
 
-  const [childKey, setChildKey] = useState(0);
-  const [balance, setBalance] = useState<number>();
-  const [netFlow, setNetFlow] = useState<number>(0);
-  const [childrenLoading, setChildrenLoading] = useState(false);
+  //=============================================================================
+  //                               FUNCTIONS
+  //=============================================================================
+  const updateBalance = () => {};
 
-  const updateBalance = () => {
-    // getUSDCXBalance(provider, wallet).then((value) => {
-    //   setBalance(parseFloat(value));
-    // });
-    // setChildKey((key) => key + 1);
+  const updateNetFlow = async () => {};
+
+  const balanceActions = () => {
+    return (
+      <Flex mt="8" justifyContent="flex-end" gridGap="4">
+        <Button
+          onClick={() => setShowTopUp(true)}
+          disabled={childrenLoading} // Disable the button while loading
+          w={{ base: "100%", md: "auto" }} // Set button width
+        >
+          <Flex alignItems="center">
+            <Arrow />
+            <Text
+              ml="6"
+              fontWeight="medium"
+              fontSize="base"
+              textAlign="left"
+              px=".6rem"
+            >
+              Deposit
+            </Text>
+          </Flex>
+        </Button>
+
+        <Button
+          className="bg-blue-oil"
+          onClick={() => setShowWithdraw(true)}
+          disabled={childrenLoading} // Disable the button while loading
+          w={{ base: "100%", md: "auto" }} // Set button width
+        >
+          <Flex alignItems="center">
+            <Arrow dir="down" />
+            <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
+              Withdraw
+            </Text>
+          </Flex>
+        </Button>
+      </Flex>
+    );
   };
 
-  const updateNetFlow = async () => {
-    // const result = await flowDetails(wallet);
-    // setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
-  };
+  const fetchChildren = useCallback(async () => {
+    const getChildren = async () => {
+      const signer = sequence.wallet.getSigner();
+      const contract = await HostContract.fromProvider(signer);
 
-  // useEffect(() => {
-  //   if (!provider) {
-  //     return;
-  //   }
-  //   const id = setInterval(() => {
-  //     updateBalance();
-  //   }, FETCH_BALANCE_INTERVAL);
+      setChildrenLoading(true);
+      const newChildren = await contract.fetchChildren();
+      setChildrenLoading(false);
 
-  //   updateBalance();
-  //   updateNetFlow();
-  //   return () => clearInterval(id);
-  // }, [provider]);
+      setChildren(newChildren);
+      console.log("new", newChildren);
+    };
 
-  const [showAddChild, setShowAddChild] = useState(false);
-  const [showTopUp, setShowTopUp] = useState(false);
-  const [showWithdraw, setShowWithdraw] = useState(false);
-  const [showTransferAll, setShowTransferAll] = useState(false);
-  const [transferChild, setTransferChild] = useState<IChild>();
-  const [streamChild, setStreamChild] = useState<IChild>();
+    await getChildren();
+  }, [children.length, contract]);
 
   return (
-    <div>
-      <h1 className="text-xxl text-blue-dark mb-[5vh] ">
-        Welcome to your
-        <br /> parent account,
-      </h1>
-      <div className="bg-blue-dark px-6 py-8 rounded-xl text-white flex justify-between items-end stretch">
-        <div className="flex flex-col items-start">
-          <p className="text-sm mb-1">AVAILABLE FUNDS</p>
-          <h1 className={`text-xxl mb-6 flex items-end`}>
-            {balance ? <AnimatedNumber value={balance} rate={netFlow} /> : 0}
-            <span className="text-base ml-2"> USDx</span>
-          </h1>
-          <Image
-            src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=018"
-            alt="USDC logo"
-            width={48}
-            height={48}
-          />
-        </div>
-        <div className="flex" style={{ height: 130 }}>
-          <Button
-            size="lg"
-            className={`mr-6 rounded-full`}
-            style={{ borderRadius: 8 }}
-            onClick={() => setShowTopUp(true)}
-          >
-            <div className="flex items-center">
-              <span className="mr-6">Top up account</span>
-              <Arrow dir="up" />
-            </div>
-          </Button>
-          <Button
-            size="lg"
-            className={`bg-[#47a1b5] mr-6`}
-            style={{ borderRadius: 8 }}
-            onClick={() => setShowWithdraw(true)}
-          >
-            <div className="flex items-center">
-              <span className="mr-6">Withdraw funds</span>
-              <Arrow dir="down" />
-            </div>
-          </Button>
-        </div>
-      </div>
-      <div className={`mt-16 ${childrenLoading && "animate-pulse"}`}>
-        <div className="mb-8 flex items-center">
-          <p className="text-md">YOUR KIDS</p>
-          <Button
-            size="sm"
-            className="bg-blue-oil ml-4"
+    <Container maxW="container.lg" mt="10rem">
+      <Heading fontSize={isMobileSmall ? "2xl" : "xl"} mt={6} mb={10}>
+        {`Welcome back, ${trimAddress(walletAddress)}`}
+      </Heading>
+
+      {/* Account Balance */}
+      <Container
+        maxW="container.md"
+        centerContent
+        bgGradient={["linear(to-b, #4F1B7C, black)"]}
+        borderRadius={20}
+      >
+        <Flex
+          py="8"
+          rounded="xl"
+          color="white"
+          justify="space-between"
+          w="100%"
+        >
+          {/* Parent Account Details */}
+          <Flex flexDir="column" alignItems="space-between" w="100%">
+            <Text fontSize="xs" mb={2}>
+              AVAILABLE FUNDS
+            </Text>
+
+            {/* Balance */}
+            <Flex alignItems="center">
+              <Image
+                src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=018"
+                alt="USDC logo"
+                width={10}
+                height={10}
+                mr={3}
+              />
+
+              <Heading
+                size={isMobileSmall ? "2xl" : "xl"}
+                display="flex"
+                alignItems="baseline"
+              >
+                {balance ? (
+                  <AnimatedNumber value={balance} rate={netFlow} />
+                ) : (
+                  104.9875521
+                )}
+                <Text fontSize="sm" ml="2">
+                  USDx
+                </Text>
+              </Heading>
+            </Flex>
+            {balanceActions()}
+          </Flex>
+        </Flex>
+      </Container>
+
+      {/* {!isMobileLarge && balanceActions()} */}
+
+      <Center mt="5rem">
+        <Heading fontSize="2xl">YOUR KIDS</Heading>
+      </Center>
+
+      {/* Kids Action Buttons */}
+      <Flex
+        mt="8"
+        flexDirection={{ base: "column", md: "row" }}
+        justifyContent="center"
+        alignItems={{ base: "center", md: "flex-start" }}
+        gridGap="4"
+      >
+        <Button
+          className="bg-blue-oil"
+          onClick={() => {
+            console.log("open");
+            console.log("isAddChildOpen", isAddChildOpen);
+            onAddChildOpen();
+          }}
+          disabled={childrenLoading} // Disable the button while loading
+          w={{ base: "100%", md: "auto" }} // Set button width
+        >
+          {/* Add a new kid */}
+          <Flex alignItems="center">
+            <AiOutlinePlus size={30} />
+            <Text
+              ml="6"
+              fontWeight="medium"
+              fontSize="base"
+              textAlign="left"
+              px=".6rem"
+            >
+              {children.length === 0 ? "Add a new kid" : "Add more kids"}
+            </Text>
+          </Flex>
+        </Button>
+
+        {/* Transfer to all kids */}
+        <Button
+          className="bg-blue-oil"
+          onClick={() => setShowWithdraw(true)}
+          disabled={childrenLoading} // Disable the button while loading
+          w={{ base: "100%", md: "auto" }} // Set button width
+        >
+          <Flex
+            alignItems="center"
             onClick={() => {
               setShowTransferAll(true);
             }}
           >
-            Transfer to all kids
-          </Button>
-        </div>
-        <div className="grid grid-cols-2 gap-14">
-          {children.map((c) => (
-            <Child
-              key={c._address + childKey}
-              {...c}
-              {...childrenStakes[c._address]}
-              onTransfer={() => setTransferChild(c)}
-              onStream={() => setStreamChild(c)}
-            />
-          ))}
-        </div>
-        <Button
-          className="text-sm w-full rounded-md flex justify-end mt-4"
-          onClick={() => setShowAddChild(true)}
-        >
-          <div className="flex items-center">
-            <Plus />
-            <span className="ml-6 font-medium text-base">
-              {children.length === 0 ? "Add a new kid" : "Add more kids"}
-            </span>
-          </div>
+            <BiTransfer size={40} />
+            <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
+              Transfer to all kids
+            </Text>
+          </Flex>
         </Button>
-      </div>
-      {/* <AddChildModal
-        show={showAddChild}
-        onClose={() => setShowAddChild(false)}
-        // onAdd={() => fetchChildren(true)}
-      /> */}
+      </Flex>
+
+      <Box my="16" className={childrenLoading && "animate-pulse"}>
+        {children.length > 0 && (
+          <Flex direction="column" gridGap="14" gridTemplateColumns="1fr">
+            {children.map((c) => (
+              <Child
+                key={c._address + childKey}
+                {...c}
+                {...childrenStakes[c._address]}
+                onTransfer={() => setTransferChild(c)}
+                onStream={() => setStreamChild(c)}
+              />
+            ))}
+          </Flex>
+        )}
+      </Box>
+
+      <AddChildModal
+        isOpen={isAddChildOpen}
+        onClose={onAddChildClose}
+        onAdd={() => fetchChildren()}
+      />
+
       <TopUpModal
         show={showTopUp}
         onClose={() => setShowTopUp(false)}
@@ -242,7 +336,7 @@ const Parent: React.FC = () => {
         balance={Math.floor(balance)}
         child={streamChild}
       />
-    </div>
+    </Container>
   );
 };
 

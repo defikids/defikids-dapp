@@ -1,63 +1,55 @@
 # DefiKids
 
-A platform to empower the next generation with the use of de-fi tools. It is designed for kids, managed by parents.
+An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
 <img src="public/defikids-cover.png" href="https://allocate.vercel.app" alt="Logo" >
 
-## Description
+## Simplified Platform Overview:
 
-Crypto doesn't have to be complicated. The DefiKids platform is designed to help you and your family learn how to comfortably use crypto in your everyday life. It's designed for kids, managed by parents.
+Discover the world of cryptocurrency with ease through the DefiKids platform. This platform is designed to guide you and your family in using crypto confidently in your daily life, and it's tailored for kids while being supervised by parents.
 
-## Problem
+## Common Challenge:
 
 How do you teach your children to use crypto safely and confidently.
 
-## Our solution
+## Our Approach:
 
-- Parents create a family sandbox. They allocate funds to be used for allowance. A percentage of funds will be allocated to a staking contract in order to distribute rewards.
+Parents can establish a secure family sandbox within the platform. They allocate funds for allowances and set aside a portion for staking. This staked amount generates rewards over time.
 
-- Funds automatically stream to the child creating real-time cash flow.
+An exciting feature is that funds automatically flow to the child, providing a real-time understanding of finances.
 
-- Children will have the ability to use De-Fi tools such as staking & time-locks. This introduces the concepts of savings, interest and compound interest.
+## De-Fi Tools for Learning:
 
-- Funds can be allocated for the purchase of future goods and services through the use of time-locks. This ensures that children have the funds they need when they need it.
+Children gain access to valuable De-Fi tools like staking and time-locks. These tools introduce them to concepts like savings, interest, and compound interest.
 
-- The parent has the ability to enable full-access mode that will allow the child to withdraw funds to be used across crypto markets. By default, withdraws are sent back to the parent who can then payout the child with fiat.
+Moreover, funds can be reserved for future purchases through time-locks, guaranteeing that children have funds accessible when needed.
 
-## How It's Made
+## Empowering Parents:
 
-Architecture:
+Parents can activate full-access mode, enabling children to withdraw funds for use in various crypto markets. By default, withdrawals are sent to parents, who can then convert them to fiat for their children.
 
-- Polygon: All contracts are on Polygon instead of L1.
-- Web3Auth: Used for authentication.
-- Sequence: Used for authentication
-- Superfluid: Used to stream funds to children in real-time
-- Next.js for frontend
-- Truffle and Remix for Solidity development
+## Technical Architecture:
 
-Technologies
+- Contracts are deployed on the Polygon network for reduced gas fees.
+- Sequence streamlines the onboarding and authentication processes.
+- Superfluid technology facilitates real-time fund streaming to children.
+- Next.js powers the user-friendly frontend.
+- Solidity development involves Truffle and Remix.
 
-- Polygon: All contracts are deployed on Polygon to reduce gas fees.
-- Web3Auth: Used as a web2 alternative to onboarding and authentication.
-- Sequence: Used as a web2 alternative to onboarding and authentication.
-- Superfluid: Handles the instant distrubution of funds and streams allowances to the children.
-- Next.js for frontend
-- Truffle and Remix for Solidity development
+## Understanding Staking:
 
-## The staking process
+Children initiate the staking process by approving the USDCx contract to manage their coins.
 
-1. The child will call the USDCx contract and approve the Allocate Contract to handle their coins.
-2. The Allocate Contract:
+## The Allocate Contract:
 
-- Transfers their stake to a holding wallet.
-- Calculates their reward.
-- Transfers the reward to their Allocate wallet.
-- Stores their stake for the locked duration.
+- Transfers the staked amount to a secure holding wallet.
+- Calculates and transfers the earned rewards to the Allocate wallet.
+- Preserves the initial stake for the agreed-upon locked duration.
+- Remaining lock duration is visible to the child at any time.
+- Withdrawal of the initial stake is possible only after the lock duration expires.
+- The reward, equivalent to 5% of the initial funds multiplied by the duration, is granted in Allocate tokens.
 
-3. The child can view the remaining duration at anytime
-4. The child can only withdraw their initial stake once the duration has elapsed.
-5. The reward is calculated at 5% of the initial funds times the duration.
-6. The reward is Allocate tokens.
+Embrace the user-friendly DefiKids platform to unlock the world of crypto for your family, while ensuring safety, learning, and financial exploration.
 
 ## Contracts
 
@@ -68,14 +60,14 @@ Technologies
 
 ## Getting Started
 
-### Prerequisites
+### Prerequisites:
 
 - npm
   ```sh
   npm install npm@latest -g
   ```
 
-### Installation
+### Installation:
 
 1. Clone the repo
    ```sh
@@ -92,9 +84,18 @@ Technologies
 
 <!-- CONTRIBUTING -->
 
-## Contributing
+## Contributing:
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
+
+Please try to create bug reports that are:
+
+<i>Reproducible. Include steps to reproduce the problem.</i>
+<i>Specific. Include as much detail as possible: which version, what environment, etc.</i>
+<i>Unique. Do not duplicate existing opened issues.</i>
+<i>Scoped to a Single Bug. One bug per report.</i>
+
+### Steps:
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -112,7 +113,7 @@ Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individua
 
 Follow us on [Twitter](https://twitter.com/defikids_)
 
-## Test the app
+## Run the app
 
 Check it out [here](https://defikids-nathantarbert.vercel.app/)
 

@@ -89,11 +89,10 @@ Embrace the user-friendly DefiKids platform to unlock the world of crypto for yo
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
 
 Please try to create bug reports that are:
-
-<i>Reproducible. Include steps to reproduce the problem.</i>
-<i>Specific. Include as much detail as possible: which version, what environment, etc.</i>
-<i>Unique. Do not duplicate existing opened issues.</i>
-<i>Scoped to a Single Bug. One bug per report.</i>
+- <i>Reproducible:</i> Include steps to reproduce the problem.
+- <i>Specific</i> Include as much detail as possible: which version, what environment, etc.
+- <i>Unique:</i> Do not duplicate existing opened issues.
+- <i>Scoped to a Single Bug</i> One bug per report.
 
 ### Steps:
 

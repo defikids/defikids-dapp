@@ -2,7 +2,7 @@
 pragma solidity 0.8.15;
 
 import "forge-std/Test.sol";
-
+import "forge-std/console.sol";
 import "../src/Host.sol";
 
 contract HostContractTest is Test {
@@ -18,6 +18,7 @@ contract HostContractTest is Test {
     address child1 = address(0x0002);
     address child2 = address(0x0003);
     address notRegistered = address(0x0004);
+    address parent2 = address(0x0005);
 
     function setUp() public {
         host = new Host();
@@ -25,7 +26,7 @@ contract HostContractTest is Test {
         incorrectFamilyID = host.hashFamilyId(parent, "incorrectFamilyID");
 
         vm.startPrank(parent);
-        host.registerParent(familyID, avatarURI);
+        host.registerParent(familyID, avatarURI, username);
     }
 
     function testFail_getParentId() public {
@@ -51,8 +52,8 @@ contract HostContractTest is Test {
         vm.startPrank(child1);
         host.updateChildAvatarURI(
             familyID,
-            updatedAvatarURI,
-            fetchedChild.childId
+            fetchedChild.wallet,
+            updatedAvatarURI
         );
 
         vm.startPrank(parent);
@@ -74,22 +75,22 @@ contract HostContractTest is Test {
 
         Host.Child memory fetchedChild = host.fetchChild(child1, familyID);
 
-        vm.startPrank(parent);
+        vm.startPrank(notRegistered);
 
-        vm.expectRevert(Host.NotValidUserType.selector);
+        vm.expectRevert(Host.NotFamilyMember.selector);
         host.updateChildAvatarURI(
             familyID,
-            updatedAvatarURI,
-            fetchedChild.childId
+            fetchedChild.wallet,
+            updatedAvatarURI
         );
     }
 
     function test_addChild() public {
-        assertEq(host.getFamilyByOwner(parent).numOfChildren, 0);
+        assertEq(host.getFamilyByOwner(parent).children.length, 0);
 
         host.addChild(familyID, username, avatarURI, child1, sandboxMode);
 
-        assertEq(host.getFamilyByOwner(parent).numOfChildren, 1);
+        assertEq(host.getFamilyByOwner(parent).children.length, 1);
     }
 
     function test_revert_addAlreadyRegisteredChild() public {
@@ -114,7 +115,6 @@ contract HostContractTest is Test {
 
     function test_fetchChildren() public {
         host.addChild(familyID, username, avatarURI, child1, sandboxMode);
-
         host.addChild(familyID, username, avatarURI, child2, sandboxMode);
 
         Host.Child[] memory children = host.fetchChildren(familyID);
@@ -134,6 +134,11 @@ contract HostContractTest is Test {
         assertEq(host.fetchChild(child1, familyID).sandboxMode, true);
     }
 
+    function test_revert_toggleSandboxMode() public {
+        vm.expectRevert(Host.NotRegistered.selector);
+        host.toggleSandbox(child1, familyID);
+    }
+
     function test_hashFamilyId() public view {
         assert(
             host.getFamilyByOwner(parent).familyId ==
@@ -151,30 +156,89 @@ contract HostContractTest is Test {
         assertEq(host.getUserType(child1), uint24(Host.UserType.Child));
     }
 
+    function test_updateUsername() public {
+        // non-empty string
+        host.updateUsername(updatedUsername);
+        assertEq(host.getFamilyByOwner(parent).username, updatedUsername);
+
+        // empty string
+        host.updateUsername("");
+        assertEq(host.getFamilyByOwner(parent).username, "");
+    }
+
     function test_updateChildUsername() public {
         host.addChild(familyID, username, avatarURI, child1, sandboxMode);
         assertEq(host.fetchChild(child1, familyID).username, username);
 
         // parent changes the username
         Host.Child memory fetchedChild = host.fetchChild(child1, familyID);
-        host.updateUsername(familyID, updatedUsername, fetchedChild.childId);
+        host.updateChildUsername(
+            familyID,
+            fetchedChild.wallet,
+            updatedUsername
+        );
         assertEq(host.fetchChild(child1, familyID).username, updatedUsername);
 
         // child sets username back to original
         vm.startPrank(child1);
-        host.updateUsername(familyID, username, fetchedChild.childId);
+
+        host.updateChildUsername(familyID, fetchedChild.wallet, username);
 
         vm.startPrank(parent);
         assertEq(host.fetchChild(child1, familyID).username, username);
     }
 
-    function test_revert_updateChildUsername() public {
+    function test_revert_wrongUserUpdateUsername() public {
         host.addChild(familyID, username, avatarURI, child1, sandboxMode);
 
+        vm.startPrank(child1);
+
+        vm.expectRevert(Host.ParentOnly.selector);
+        host.updateUsername(updatedUsername);
+    }
+
+    function test_revert_updateChildUsername() public {
+        host.addChild(familyID, username, avatarURI, child1, sandboxMode);
         Host.Child memory fetchedChild = host.fetchChild(child1, familyID);
 
         vm.startPrank(notRegistered);
-        vm.expectRevert(Host.NotValidUserType.selector);
-        host.updateUsername(familyID, updatedUsername, fetchedChild.childId);
+        vm.expectRevert(Host.NotFamilyMember.selector);
+        host.updateChildUsername(
+            familyID,
+            fetchedChild.wallet,
+            updatedUsername
+        );
+    }
+
+    function test_updateFamilyId() public {
+        // proof ID is set
+        vm.expectRevert(Host.AlreadyRegistered.selector);
+        host.registerParent(familyID, avatarURI, username);
+
+        host.addChild(familyID, username, avatarURI, child1, sandboxMode);
+        host.addChild(familyID, username, avatarURI, child2, sandboxMode);
+
+        Host.Child[] memory childrenBefore = host.fetchChildren(familyID);
+
+        assertEq(childrenBefore[0].familyId, familyID);
+        assertEq(childrenBefore[1].familyId, familyID);
+
+        string memory updatedFamilyID = "updatedID";
+        bytes32 updatedFamilyIDHash = host.hashFamilyId(
+            parent,
+            updatedFamilyID
+        );
+        host.updateFamilyId(parent, familyID, updatedFamilyIDHash);
+
+        assertEq(host.getFamilyByOwner(parent).familyId, updatedFamilyIDHash);
+
+        Host.Child[] memory children = host.fetchChildren(updatedFamilyIDHash);
+
+        assertEq(children[0].familyId, updatedFamilyIDHash);
+        assertEq(children[1].familyId, updatedFamilyIDHash);
+
+        vm.startPrank(parent2);
+        host.registerParent(familyID, avatarURI, username);
+        assertEq(host.getFamilyByOwner(parent2).familyId, familyID);
     }
 }

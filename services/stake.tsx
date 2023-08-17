@@ -28,7 +28,7 @@ export interface IStake {
 }
 
 const parseStake = function (stake: IContractStake): IStake {
-  console.log("start time:", new Date(stake.stakeStartTime.toNumber() * 1000));
+  // console.log("start time:", new Date(stake.stakeStartTime.toNumber() * 1000));
   const timePassed = Math.abs(
     new Date().getTime() -
       new Date(stake.stakeStartTime.toNumber() * 1000).getTime()

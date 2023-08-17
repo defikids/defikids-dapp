@@ -8,11 +8,14 @@ contract Host {
     error NotValidUserType();
     error AlreadyRegistered();
     error NotRegistered();
+    error NotFamilyMember();
+    error FamilyIdExists();
 
+    mapping(bytes32 => bool) private _familyIdExists;
     mapping(address => Family) private _familyByOwner;
     mapping(address => bytes32) private _familyIdByOwner;
     mapping(address => uint24) private _userTypeByAddress;
-    mapping(bytes32 => Child[]) private _childrenByFamilyId;
+    mapping(bytes32 => mapping(address => Child)) private _childByFamilyId;
 
     enum UserType {
         Unregistered,
@@ -26,7 +29,6 @@ contract Host {
         bytes32 familyId;
         uint256 memberSince;
         address wallet;
-        uint24 childId;
         bool sandboxMode;
         bool isActive;
     }
@@ -35,8 +37,35 @@ contract Host {
         bytes32 familyId;
         uint256 memberSince;
         string avatarURI;
+        string username;
         address payable owner;
-        uint8 numOfChildren;
+        address[] children;
+    }
+
+    modifier alreadyRegistered(bytes32 _familyId, address familyMember) {
+        uint24 userType = _userTypeByAddress[familyMember];
+
+        if (
+            userType == uint24(UserType.Parent) &&
+            _familyByOwner[familyMember].owner == msg.sender
+        ) {
+            revert AlreadyRegistered();
+        }
+
+        if (
+            userType == uint24(UserType.Child) &&
+            _childByFamilyId[_familyId][familyMember].wallet == familyMember
+        ) {
+            revert AlreadyRegistered();
+        }
+        _;
+    }
+
+    modifier isValidFamilyId(bytes32 _familyId) {
+        if (_familyIdExists[_familyId]) {
+            revert FamilyIdExists();
+        }
+        _;
     }
 
     modifier onlyParent() {
@@ -46,18 +75,50 @@ contract Host {
         _;
     }
 
+    modifier isRegistered(address familyMember) {
+        if (_userTypeByAddress[familyMember] == uint24(UserType.Unregistered)) {
+            revert NotRegistered();
+        }
+        _;
+    }
+
+    modifier isFamilyMember(bytes32 familyId) {
+        address familyMember = msg.sender;
+
+        Family memory familyDetails = _familyByOwner[familyMember];
+        Child memory childDetails = _childByFamilyId[familyId][familyMember];
+
+        if (
+            familyDetails.owner != familyMember &&
+            childDetails.wallet != familyMember
+        ) {
+            revert NotFamilyMember();
+        }
+
+        _;
+    }
+
     function registerParent(
         bytes32 _familyId,
-        string memory _avatarURI
-    ) public {
+        string memory _avatarURI,
+        string memory _username
+    )
+        public
+        alreadyRegistered(_familyId, msg.sender)
+        isValidFamilyId(_familyId)
+    {
+        address[] memory emptyArray;
+
         Family memory family = Family({
             familyId: _familyId,
             memberSince: block.timestamp,
             avatarURI: _avatarURI,
+            username: _username,
             owner: payable(msg.sender),
-            numOfChildren: 0
+            children: emptyArray
         });
 
+        _familyIdExists[_familyId] = true;
         _familyByOwner[msg.sender] = family;
         _familyIdByOwner[msg.sender] = _familyId;
         _userTypeByAddress[msg.sender] = 1;
@@ -79,20 +140,20 @@ contract Host {
         _familyByOwner[msg.sender].avatarURI = _avatarURI;
     }
 
+    function updateUsername(string memory _username) public onlyParent {
+        _familyByOwner[msg.sender].username = _username;
+    }
+
     function addChild(
         bytes32 _familyId,
         string memory _username,
         string memory _avatarURI,
         address _child,
         bool _sandboxMode
-    ) public onlyParent {
-        uint24 currentChildCount = _familyByOwner[msg.sender].numOfChildren;
-
-        for (uint i = 0; i < currentChildCount; i++) {
-            if (_childrenByFamilyId[_familyId][i].wallet == _child) {
-                revert AlreadyRegistered();
-            }
-        }
+    ) public onlyParent alreadyRegistered(_familyId, _child) {
+        // if (_childByFamilyId[_familyId][_child].wallet == _child) {
+        //     revert AlreadyRegistered();
+        // }
 
         Child memory child = Child({
             username: _username,
@@ -100,42 +161,37 @@ contract Host {
             familyId: _familyId,
             memberSince: block.timestamp,
             wallet: _child,
-            childId: currentChildCount++,
             sandboxMode: _sandboxMode,
             isActive: true
         });
 
-        _childrenByFamilyId[_familyId].push(child);
+        _childByFamilyId[_familyId][_child] = child;
         _userTypeByAddress[_child] = 2;
-        _familyByOwner[msg.sender].numOfChildren++;
+        _familyByOwner[msg.sender].children.push(_child);
     }
 
     function updateChildAvatarURI(
         bytes32 _familyId,
-        string memory _avatarURI,
-        uint24 _childId
-    ) public {
-        uint24 userType = _userTypeByAddress[msg.sender];
-
-        if (userType != uint24(UserType.Child)) {
-            revert NotValidUserType();
+        address _child,
+        string memory _avatarURI
+    ) public isFamilyMember(_familyId) {
+        if (_userTypeByAddress[msg.sender] != uint24(UserType.Child)) {
+            _childByFamilyId[_familyId][_child].avatarURI = _avatarURI;
+        } else {
+            _childByFamilyId[_familyId][msg.sender].avatarURI = _avatarURI;
         }
-
-        _childrenByFamilyId[_familyId][_childId].avatarURI = _avatarURI;
     }
 
-    function updateUsername(
+    function updateChildUsername(
         bytes32 _familyId,
-        string memory _username,
-        uint24 _childId
-    ) public {
-        uint24 userType = _userTypeByAddress[msg.sender];
-
-        if (userType == uint24(UserType.Unregistered)) {
-            revert NotValidUserType();
+        address _child,
+        string memory _username
+    ) public isFamilyMember(_familyId) {
+        if (_userTypeByAddress[msg.sender] != uint24(UserType.Child)) {
+            _childByFamilyId[_familyId][_child].username = _username;
+        } else {
+            _childByFamilyId[_familyId][msg.sender].username = _username;
         }
-
-        _childrenByFamilyId[_familyId][_childId].username = _username;
     }
 
     function hashFamilyId(
@@ -152,32 +208,67 @@ contract Host {
     function fetchChild(
         address _child,
         bytes32 _familyId
-    ) public view onlyParent returns (Child memory fetchedChild) {
-        uint24 currentChildCount = _familyByOwner[msg.sender].numOfChildren;
-
-        for (uint24 i = 0; i < currentChildCount; i++) {
-            if (_childrenByFamilyId[_familyId][i].wallet == _child) {
-                fetchedChild = _childrenByFamilyId[_familyId][i];
-            } else {
-                revert NotRegistered();
-            }
-        }
+    )
+        public
+        view
+        onlyParent
+        isRegistered(_child)
+        returns (Child memory fetchedChild)
+    {
+        return _childByFamilyId[_familyId][_child];
     }
 
     function fetchChildren(
         bytes32 _familyId
     ) public view onlyParent returns (Child[] memory) {
-        return _childrenByFamilyId[_familyId];
+        address[] memory totalChildren = _familyByOwner[msg.sender].children;
+
+        Child[] memory children = new Child[](totalChildren.length);
+
+        if (totalChildren.length > 0) {
+            for (uint256 i = 0; i < totalChildren.length; i++) {
+                children[i] = _childByFamilyId[_familyId][totalChildren[i]];
+            }
+        }
+
+        return children;
     }
 
     function toggleSandbox(
         address _child,
         bytes32 _familyId
-    ) public onlyParent {
+    ) public onlyParent isRegistered(_child) {
         Child memory child = fetchChild(_child, _familyId);
+        _childByFamilyId[_familyId][_child].sandboxMode = !child.sandboxMode;
+    }
 
-        child.sandboxMode = !child.sandboxMode;
+    function updateFamilyId(
+        address _owner,
+        bytes32 _familyId,
+        bytes32 _updatedFamilyId
+    ) public onlyParent isValidFamilyId(_updatedFamilyId) {
+        Family storage updatedFamily = _familyByOwner[_owner];
 
-        _childrenByFamilyId[_familyId][child.childId] = child;
+        // Update the family ID for the owner
+        _familyIdByOwner[_owner] = _updatedFamilyId;
+
+        // Update the family ID in the family struct
+        updatedFamily.familyId = _updatedFamilyId;
+
+        // Get the children associated with the old family ID
+        address[] memory children = updatedFamily.children;
+
+        // Update the _childByFamilyId mapping with the updated familyId
+        for (uint256 i = 0; i < children.length; i++) {
+            address child = children[i];
+            Child storage childData = _childByFamilyId[_familyId][child];
+
+            childData.familyId = _updatedFamilyId;
+
+            _childByFamilyId[_updatedFamilyId][child] = childData;
+
+            delete _childByFamilyId[_familyId][child];
+            _familyIdExists[_familyId] = false;
+        }
     }
 }

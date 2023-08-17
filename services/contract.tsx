@@ -5,16 +5,20 @@ import { SequenceSigner } from "@0xsequence/provider";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
 
 export enum UserType {
+  UNREGISTERED = 0,
   PARENT = 1,
   CHILD = 2,
-  UNREGISTERED = 3,
 }
 
 export interface IChild {
   username: string;
-  _address: string;
+  avatarURI: string;
+  familyId: string;
+  memberSince: ethers.BigNumber;
+  wallet: string;
+  childId: number;
+  sandboxMode: boolean;
   isActive: boolean;
-  isLocked: boolean;
 }
 
 class HostContract {
@@ -43,18 +47,19 @@ class HostContract {
     return new HostContract(contract, address);
   }
 
-  async getUserType(): Promise<UserType> {
-    const result = await this.contract.getUserType(this.wallet);
-    const userType = parseInt(result._hex, 16);
+  async getUserType(accountAddress: string): Promise<UserType> {
+    const userType = await this.contract.getUserType(accountAddress);
     return userType;
   }
 
-  async registerParent() {
-    return this.contract.registerParent();
+  async registerParent(hash: string, avatarURI: string) {
+    return this.contract.registerParent(hash, avatarURI);
   }
 
-  async fetchChildren() {
-    const children = await this.contract.fetchChildren();
+  async fetchChildren(family_Id: string) {
+    console.log("fetchChildren - contract");
+    const children = await this.contract.fetchChildren(family_Id);
+    console.log("Children - contract", children);
     return children;
   }
 
@@ -64,6 +69,14 @@ class HostContract {
 
   async changeAccess(wallet: string, childId: number) {
     return this.contract.changeAccess(wallet, childId);
+  }
+
+  async hashFamilyId(wallet: string, familyId: string) {
+    return this.contract.hashFamilyId(wallet, familyId);
+  }
+
+  async getFamilyIdByOwner(wallet: string) {
+    return this.contract.getFamilyIdByOwner(wallet);
   }
 }
 

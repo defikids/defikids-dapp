@@ -2,29 +2,12 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Signer } from "ethers";
-import { Provider, TransactionRequest } from "@ethersproject/providers";
-import { Contract, ContractFactory, Overrides } from "@ethersproject/contracts";
+import { Contract, Signer } from "ethers";
+import { Provider } from "@ethersproject/providers";
 
 import type { Host } from "./Host";
 
-export class HostFactory extends ContractFactory {
-  constructor(signer?: Signer) {
-    super(_abi, _bytecode, signer);
-  }
-
-  deploy(overrides?: Overrides): Promise<Host> {
-    return super.deploy(overrides || {}) as Promise<Host>;
-  }
-  getDeployTransaction(overrides?: Overrides): TransactionRequest {
-    return super.getDeployTransaction(overrides || {});
-  }
-  attach(address: string): Host {
-    return super.attach(address) as Host;
-  }
-  connect(signer: Signer): HostFactory {
-    return super.connect(signer) as HostFactory;
-  }
+export class HostFactory {
   static connect(address: string, signerOrProvider: Signer | Provider): Host {
     return new Contract(address, _abi, signerOrProvider) as Host;
   }
@@ -32,123 +15,41 @@ export class HostFactory extends ContractFactory {
 
 const _abi = [
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_user",
-        type: "address",
-      },
-    ],
-    name: "getUserType",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_child",
-        type: "address",
-      },
-    ],
-    name: "fetchChild",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "_address",
-            type: "address",
-          },
-          {
-            internalType: "string",
-            name: "username",
-            type: "string",
-          },
-          {
-            internalType: "bool",
-            name: "isLocked",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isActive",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "childId",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct Host.Child",
-        name: "",
-        type: "tuple",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    inputs: [],
+    name: "AlreadyRegistered",
+    type: "error",
   },
   {
     inputs: [],
-    name: "fetchChildren",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "_address",
-            type: "address",
-          },
-          {
-            internalType: "string",
-            name: "username",
-            type: "string",
-          },
-          {
-            internalType: "bool",
-            name: "isLocked",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isActive",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "childId",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct Host.Child[]",
-        name: "",
-        type: "tuple[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    name: "MaxParentIdExceeded",
+    type: "error",
   },
   {
     inputs: [],
-    name: "registerParent",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    name: "NotRegistered",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotValidUserType",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "OwnerOnly",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ParentOnly",
+    type: "error",
   },
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_child",
-        type: "address",
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
       },
       {
         internalType: "string",
@@ -156,8 +57,18 @@ const _abi = [
         type: "string",
       },
       {
+        internalType: "string",
+        name: "_avatarURI",
+        type: "string",
+      },
+      {
+        internalType: "address",
+        name: "_child",
+        type: "address",
+      },
+      {
         internalType: "bool",
-        name: "_isLocked",
+        name: "_sandboxMode",
         type: "bool",
       },
     ],
@@ -174,17 +85,326 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "uint256",
-        name: "_childId",
-        type: "uint256",
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
       },
     ],
-    name: "changeAccess",
+    name: "fetchChild",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "username",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "avatarURI",
+            type: "string",
+          },
+          {
+            internalType: "bytes32",
+            name: "familyId",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint256",
+            name: "memberSince",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "wallet",
+            type: "address",
+          },
+          {
+            internalType: "uint24",
+            name: "childId",
+            type: "uint24",
+          },
+          {
+            internalType: "bool",
+            name: "sandboxMode",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "isActive",
+            type: "bool",
+          },
+        ],
+        internalType: "struct Host.Child",
+        name: "fetchedChild",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
+      },
+    ],
+    name: "fetchChildren",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "username",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "avatarURI",
+            type: "string",
+          },
+          {
+            internalType: "bytes32",
+            name: "familyId",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint256",
+            name: "memberSince",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "wallet",
+            type: "address",
+          },
+          {
+            internalType: "uint24",
+            name: "childId",
+            type: "uint24",
+          },
+          {
+            internalType: "bool",
+            name: "sandboxMode",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "isActive",
+            type: "bool",
+          },
+        ],
+        internalType: "struct Host.Child[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "getFamilyByOwner",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "familyId",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint256",
+            name: "memberSince",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "avatarURI",
+            type: "string",
+          },
+          {
+            internalType: "address payable",
+            name: "owner",
+            type: "address",
+          },
+          {
+            internalType: "uint8",
+            name: "numOfChildren",
+            type: "uint8",
+          },
+        ],
+        internalType: "struct Host.Family",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "getFamilyIdByOwner",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getUserType",
+    outputs: [
+      {
+        internalType: "uint24",
+        name: "",
+        type: "uint24",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "_id",
+        type: "string",
+      },
+    ],
+    name: "hashFamilyId",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "_avatarURI",
+        type: "string",
+      },
+    ],
+    name: "registerParent",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_child",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
+      },
+    ],
+    name: "toggleSandbox",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_avatarURI",
+        type: "string",
+      },
+    ],
+    name: "updateAvatarURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "_avatarURI",
+        type: "string",
+      },
+      {
+        internalType: "uint24",
+        name: "_childId",
+        type: "uint24",
+      },
+    ],
+    name: "updateChildAvatarURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "_username",
+        type: "string",
+      },
+      {
+        internalType: "uint24",
+        name: "_childId",
+        type: "uint24",
+      },
+    ],
+    name: "updateUsername",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
 ];
-
-const _bytecode =
-  "0x608060405234801561001057600080fd5b506119b1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c8063106202e61461006757806381b92767146100835780638b3f863f146100b3578063b2f09149146100e3578063b8646f8514610101578063f035aaf71461011d575b600080fd5b610081600480360381019061007c91906111f8565b610127565b005b61009d600480360381019061009891906111cf565b6105ef565b6040516100aa9190611639565b60405180910390f35b6100cd60048036038101906100c891906111cf565b6107fc565b6040516100da919061165b565b60405180910390f35b6100eb6108be565b6040516100f891906115b7565b60405180910390f35b61011b6004803603810190610116919061125f565b610c0b565b005b610125610e90565b005b600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff166101b3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101aa90611619565b60405180910390fd5b600560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615610240576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610237906115d9565b60405180910390fd5b60006001600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060010154610291919061173d565b905060006040518060a001604052808673ffffffffffffffffffffffffffffffffffffffff168152602001858152602001841515815260200160011515815260200183815250905081600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600101819055506001600560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff021916908315150217905550336000808773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550602082015181600101908051906020019061049892919061103c565b5060408201518160020160006101000a81548160ff02191690831515021790555060608201518160020160016101000a81548160ff0219169083151502179055506080820151816003015590505080600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600084815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550602082015181600101908051906020019061059a92919061103c565b5060408201518160020160006101000a81548160ff02191690831515021790555060608201518160020160016101000a81548160ff021916908315150217905550608082015181600301559050505050505050565b6105f76110c2565b600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16610683576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161067a90611619565b60405180910390fd5b600160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206040518060a00160405290816000820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020016001820180546107339061181d565b80601f016020809104026020016040519081016040528092919081815260200182805461075f9061181d565b80156107ac5780601f10610781576101008083540402835291602001916107ac565b820191906000526020600020905b81548152906001019060200180831161078f57829003601f168201915b505050505081526020016002820160009054906101000a900460ff161515151581526020016002820160019054906101000a900460ff161515151581526020016003820154815250509050919050565b6000600460008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff161561085957600190506108b9565b600560008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16156108b457600290506108b9565b600390505b919050565b6060600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1661094c576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161094390611619565b60405180910390fd5b6000600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060010154905060008167ffffffffffffffff8111156109d5577f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b604051908082528060200260200182016040528015610a0e57816020015b6109fb6110c2565b8152602001906001900390816109f35790505b50905060005b82811015610c0257600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000600183610a6a919061173d565b81526020019081526020016000206040518060a00160405290816000820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001600182018054610ae99061181d565b80601f0160208091040260200160405190810160405280929190818152602001828054610b159061181d565b8015610b625780601f10610b3757610100808354040283529160200191610b62565b820191906000526020600020905b815481529060010190602001808311610b4557829003601f168201915b505050505081526020016002820160009054906101000a900460ff161515151581526020016002820160019054906101000a900460ff16151515158152602001600382015481525050828281518110610be4577f4e487b7100000000000000000000000000000000000000000000000000000000600052603260045260246000fd5b60200260200101819052508080610bfa9061184f565b915050610a14565b50809250505090565b600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16610c97576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610c8e90611619565b60405180910390fd5b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060020160009054906101000a900460ff169050600115158115151415610dc4576000600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060020160006101000a81548160ff0219169083151502179055506000600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600084815260200190815260200160002060020160006101000a81548160ff021916908315150217905550610e8b565b60018060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060020160006101000a81548160ff0219169083151502179055506001600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600084815260200190815260200160002060020160006101000a81548160ff0219169083151502179055505b505050565b600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615610f1d576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610f14906115f9565b60405180910390fd5b600060405180604001604052803373ffffffffffffffffffffffffffffffffffffffff1681526020016000815250905080600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550602082015181600101559050506001600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff02191690831515021790555050565b8280546110489061181d565b90600052602060002090601f01602090048101928261106a57600085556110b1565b82601f1061108357805160ff19168380011785556110b1565b828001600101855582156110b1579182015b828111156110b0578251825591602001919060010190611095565b5b5090506110be919061110b565b5090565b6040518060a00160405280600073ffffffffffffffffffffffffffffffffffffffff16815260200160608152602001600015158152602001600015158152602001600081525090565b5b8082111561112457600081600090555060010161110c565b5090565b600061113b611136846116a7565b611676565b90508281526020810184848401111561115357600080fd5b61115e8482856117db565b509392505050565b60008135905061117581611936565b92915050565b60008135905061118a8161194d565b92915050565b600082601f8301126111a157600080fd5b81356111b1848260208601611128565b91505092915050565b6000813590506111c981611964565b92915050565b6000602082840312156111e157600080fd5b60006111ef84828501611166565b91505092915050565b60008060006060848603121561120d57600080fd5b600061121b86828701611166565b935050602084013567ffffffffffffffff81111561123857600080fd5b61124486828701611190565b92505060406112558682870161117b565b9150509250925092565b6000806040838503121561127257600080fd5b600061128085828601611166565b9250506020611291858286016111ba565b9150509250929050565b60006112a783836114ad565b905092915050565b6112b881611793565b82525050565b60006112c9826116e7565b6112d3818561170a565b9350836020820285016112e5856116d7565b8060005b858110156113215784840389528151611302858261129b565b945061130d836116fd565b925060208a019950506001810190506112e9565b50829750879550505050505092915050565b61133c816117a5565b82525050565b600061134d826116f2565b611357818561171b565b93506113678185602086016117ea565b61137081611925565b840191505092915050565b600061138860278361172c565b91507f4368696c6420697320616c7265616479207265676973746572656420746f206160008301527f2066616d696c79000000000000000000000000000000000000000000000000006020830152604082019050919050565b60006113ee60268361172c565b91507f596f752061726520616c7265616479207265676973746572656420617320612060008301527f706172656e7400000000000000000000000000000000000000000000000000006020830152604082019050919050565b600061145460238361172c565b91507f4f6e6c79206120706172656e742063616e206d616b652074686973207265717560008301527f65737400000000000000000000000000000000000000000000000000000000006020830152604082019050919050565b600060a0830160008301516114c560008601826112af565b50602083015184820360208601526114dd8282611342565b91505060408301516114f26040860182611333565b5060608301516115056060860182611333565b5060808301516115186080860182611599565b508091505092915050565b600060a08301600083015161153b60008601826112af565b50602083015184820360208601526115538282611342565b91505060408301516115686040860182611333565b50606083015161157b6060860182611333565b50608083015161158e6080860182611599565b508091505092915050565b6115a2816117d1565b82525050565b6115b1816117d1565b82525050565b600060208201905081810360008301526115d181846112be565b905092915050565b600060208201905081810360008301526115f28161137b565b9050919050565b60006020820190508181036000830152611612816113e1565b9050919050565b6000602082019050818103600083015261163281611447565b9050919050565b600060208201905081810360008301526116538184611523565b905092915050565b600060208201905061167060008301846115a8565b92915050565b6000604051905081810181811067ffffffffffffffff8211171561169d5761169c6118f6565b5b8060405250919050565b600067ffffffffffffffff8211156116c2576116c16118f6565b5b601f19601f8301169050602081019050919050565b6000819050602082019050919050565b600081519050919050565b600081519050919050565b6000602082019050919050565b600082825260208201905092915050565b600082825260208201905092915050565b600082825260208201905092915050565b6000611748826117d1565b9150611753836117d1565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0382111561178857611787611898565b5b828201905092915050565b600061179e826117b1565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b82818337600083830152505050565b60005b838110156118085780820151818401526020810190506117ed565b83811115611817576000848401525b50505050565b6000600282049050600182168061183557607f821691505b60208210811415611849576118486118c7565b5b50919050565b600061185a826117d1565b91507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff82141561188d5761188c611898565b5b600182019050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6000601f19601f8301169050919050565b61193f81611793565b811461194a57600080fd5b50565b611956816117a5565b811461196157600080fd5b50565b61196d816117d1565b811461197857600080fd5b5056fea2646970667358221220f55ddedca102af0bb0c594e39d62a9c4dd58df20cb8e944ec4ac23ff0711dc1a64736f6c63430008000033";

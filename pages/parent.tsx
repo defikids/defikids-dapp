@@ -58,9 +58,10 @@ const Parent: React.FC = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { walletAddress } = useAuthStore(
+  const { walletAddress, family_Id } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
+      family_Id: state.family_Id,
     }),
     shallow
   );
@@ -80,7 +81,7 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    fetchChildren();
+    fetchChildren(family_Id);
   }, []);
 
   useEffect(() => {
@@ -89,20 +90,20 @@ const Parent: React.FC = () => {
       return;
     }
 
-    const fetchChildDetails = async () => {
-      const childDetails = {};
-      await Promise.all(
-        children.map(async (child) => {
-          const [details, stakes] = await Promise.all([
-            stakeContract.fetchStakerDetails(child._address),
-            stakeContract.fetchStakes(child._address),
-          ]);
-          childDetails[child._address] = { ...details, stakes };
-        })
-      );
-      setChildrenStakes(childDetails);
-    };
-    fetchChildDetails();
+    // const fetchChildDetails = async () => {
+    //   const childDetails = {};
+    //   await Promise.all(
+    //     children.map(async (child) => {
+    //       const [details, stakes] = await Promise.all([
+    //         stakeContract.fetchStakerDetails(child._address),
+    //         stakeContract.fetchStakes(child._address),
+    //       ]);
+    //       childDetails[child._address] = { ...details, stakes };
+    //     })
+    //   );
+    //   setChildrenStakes(childDetails);
+    // };
+    // fetchChildDetails();
   }, [stakeContract, children]);
 
   //=============================================================================
@@ -151,21 +152,25 @@ const Parent: React.FC = () => {
     );
   };
 
-  const fetchChildren = useCallback(async () => {
-    const getChildren = async () => {
-      const signer = sequence.wallet.getSigner();
-      const contract = await HostContract.fromProvider(signer);
+  const fetchChildren = useCallback(
+    async (family_Id: string) => {
+      const getChildren = async (family_Id: string) => {
+        const signer = sequence.wallet.getSigner();
+        const contract = await HostContract.fromProvider(signer);
 
-      setChildrenLoading(true);
-      const newChildren = await contract.fetchChildren();
-      setChildrenLoading(false);
+        console.log("parent - getChildren");
+        setChildrenLoading(true);
+        const newChildren = await contract.fetchChildren(family_Id);
+        setChildrenLoading(false);
 
-      setChildren(newChildren);
-      console.log("new", newChildren);
-    };
+        // setChildren(newChildren);
+        console.log("new", newChildren);
+      };
 
-    await getChildren();
-  }, [children.length, contract]);
+      await getChildren(family_Id);
+    },
+    [children.length, contract]
+  );
 
   return (
     <Container maxW="container.lg" mt="10rem">
@@ -240,8 +245,6 @@ const Parent: React.FC = () => {
         <Button
           className="bg-blue-oil"
           onClick={() => {
-            console.log("open");
-            console.log("isAddChildOpen", isAddChildOpen);
             onAddChildOpen();
           }}
           disabled={childrenLoading} // Disable the button while loading

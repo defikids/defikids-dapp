@@ -16,6 +16,7 @@ const baseStyle = definePartsStyle({
   },
   body: {
     bg: "white",
+    color: "black",
   },
   dialogContainer: {
     borderRadius: "md",

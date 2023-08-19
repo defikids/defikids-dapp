@@ -8,6 +8,8 @@ import {
   ModalOverlay,
   Modal,
   Heading,
+  ModalFooter,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { RegisterChildForm } from "@/components/forms/registerChildForm";
 
@@ -20,11 +22,17 @@ export const AddChildModal = ({
   onClose: () => void;
   onAdd: () => void;
 }) => {
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="sm"
+      size={isMobileSize ? "6xl" : "md"}
       isCentered
       closeOnOverlayClick={false}
     >
@@ -37,6 +45,7 @@ export const AddChildModal = ({
         <ModalBody>
           <RegisterChildForm onClose={onClose} onAdd={onAdd} />
         </ModalBody>
+        <ModalFooter />
       </ModalContent>
     </Modal>
   );

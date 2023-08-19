@@ -12,24 +12,17 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
   const router = useRouter();
 
-  const {
-    isLoggedIn,
-    userType,
-    family_Id,
-    setUserType,
-    setIsLoggedIn,
-    setWalletAddress,
-  } = useAuthStore(
-    (state) => ({
-      isLoggedIn: state.isLoggedIn,
-      userType: state.userType,
-      family_Id: state.family_Id,
-      setUserType: state.setUserType,
-      setIsLoggedIn: state.setIsLoggedIn,
-      setWalletAddress: state.setWalletAddress,
-    }),
-    shallow
-  );
+  const { isLoggedIn, userType, setUserType, setIsLoggedIn, setWalletAddress } =
+    useAuthStore(
+      (state) => ({
+        isLoggedIn: state.isLoggedIn,
+        userType: state.userType,
+        setUserType: state.setUserType,
+        setIsLoggedIn: state.setIsLoggedIn,
+        setWalletAddress: state.setWalletAddress,
+      }),
+      shallow
+    );
 
   /**
    * This hook will check if the user has a dark mode preference set in local storage
@@ -104,12 +97,15 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     userType: number,
     address: string,
     loggedIn: boolean,
-    family_Id: string
+    familyId?: string
   ) => {
     setUserType(userType);
     setWalletAddress(address);
     setIsLoggedIn(loggedIn);
-    setFamily_Id(family_Id);
+
+    loggedIn
+      ? localStorage.setItem("defi-kids.family-id", familyId)
+      : localStorage.removeItem("defi-kids.family-id");
   };
 
   const navigateUser = (userType: number) => {
@@ -147,10 +143,11 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
 
       const contract = await HostContract.fromProvider(signer, accountAddress);
       const userType = await contract?.getUserType(accountAddress);
-      const family_Id = await contract?.getFamilyIdByOwner(accountAddress);
-      console.log("family_Id", family_Id);
+      console.log("userType", userType);
+      const familyId = await contract?.getFamilyIdByOwner(accountAddress);
+      console.log("familyId", familyId);
 
-      updateConnectedUser(userType, accountAddress, true, family_Id);
+      updateConnectedUser(userType, accountAddress, true, familyId);
 
       navigateUser(Number(userType));
     } catch (error) {

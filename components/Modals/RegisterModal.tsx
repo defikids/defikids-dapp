@@ -34,10 +34,9 @@ const RegisterModal = ({ isOpen, onClose }) => {
   const [avatarURI, setAvatarURI] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const { walletAddress, family_Id } = useAuthStore(
+  const { walletAddress } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
-      family_Id: state.family_Id,
     }),
     shallow
   );
@@ -57,12 +56,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
       const hash = await contract.hashFamilyId(walletAddress, familyId);
       const avatarURI = "";
       await contract.registerParent(hash, avatarURI);
+      localStorage.setItem("defi-kids.family-id", familyId);
       router.push("/parent");
       onClose();
     } catch (e) {
       console.log(e);
       if (e.code === 4001) {
-        setFamilyId(family_Id);
         toast({
           title: "Transaction Error",
           description: "User rejected transaction",

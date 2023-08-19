@@ -58,10 +58,9 @@ const Parent: React.FC = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { walletAddress, family_Id } = useAuthStore(
+  const { walletAddress } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
-      family_Id: state.family_Id,
     }),
     shallow
   );
@@ -81,7 +80,7 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    fetchChildren(family_Id);
+    fetchChildren();
   }, []);
 
   useEffect(() => {
@@ -152,25 +151,23 @@ const Parent: React.FC = () => {
     );
   };
 
-  const fetchChildren = useCallback(
-    async (family_Id: string) => {
-      const getChildren = async (family_Id: string) => {
-        const signer = sequence.wallet.getSigner();
-        const contract = await HostContract.fromProvider(signer);
+  const fetchChildren = useCallback(async () => {
+    const getChildren = async () => {
+      const signer = sequence.wallet.getSigner();
+      const contract = await HostContract.fromProvider(signer);
 
-        console.log("parent - getChildren");
-        setChildrenLoading(true);
-        const newChildren = await contract.fetchChildren(family_Id);
-        setChildrenLoading(false);
+      console.log("parent - getChildren");
+      setChildrenLoading(true);
+      const familyId = localStorage.getItem("defi-kids.family-id");
+      const newChildren = await contract.fetchChildren(familyId);
+      setChildrenLoading(false);
 
-        // setChildren(newChildren);
-        console.log("new", newChildren);
-      };
+      // setChildren(newChildren);
+      console.log("new", newChildren);
+    };
 
-      await getChildren(family_Id);
-    },
-    [children.length, contract]
-  );
+    await getChildren();
+  }, [children.length, contract]);
 
   return (
     <Container maxW="container.lg" mt="10rem">

@@ -151,10 +151,6 @@ contract Host {
         address _child,
         bool _sandboxMode
     ) public onlyParent alreadyRegistered(_familyId, _child) {
-        // if (_childByFamilyId[_familyId][_child].wallet == _child) {
-        //     revert AlreadyRegistered();
-        // }
-
         Child memory child = Child({
             username: _username,
             avatarURI: _avatarURI,

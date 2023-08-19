@@ -56,15 +56,26 @@ class HostContract {
     return this.contract.registerParent(hash, avatarURI);
   }
 
-  async fetchChildren(family_Id: string) {
-    console.log("fetchChildren - contract");
-    const children = await this.contract.fetchChildren(family_Id);
-    console.log("Children - contract", children);
+  async fetchChildren() {
+    const familyId = localStorage.getItem("defi-kids.family-id");
+    const children = await this.contract.fetchChildren(familyId);
     return children;
   }
 
-  async addChild(wallet: string, username: string, isLocked: boolean) {
-    return this.contract.addChild(wallet, username, isLocked);
+  async addChild(
+    familyId: string,
+    username: string,
+    avatarURI: string,
+    wallet: string,
+    sandboxMode: boolean
+  ) {
+    return this.contract.addChild(
+      familyId,
+      username,
+      avatarURI,
+      wallet,
+      sandboxMode
+    );
   }
 
   async changeAccess(wallet: string, childId: number) {

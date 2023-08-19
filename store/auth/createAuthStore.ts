@@ -9,7 +9,6 @@ type State = {
   isLoggedIn: boolean;
   userType: UserType;
   navigationSection: string;
-  family_Id: string;
 };
 
 type Actions = {
@@ -17,7 +16,6 @@ type Actions = {
   setIsLoggedIn: (isLoggingIn: boolean) => void;
   setUserType: (userType: UserType) => void;
   setNavigationSection: (section: string) => void;
-  setFamilyId: (familyId: string) => void;
 };
 
 type MyStore = State & Actions;
@@ -27,7 +25,6 @@ const initialState: State = {
   isLoggedIn: false,
   userType: UserType.UNREGISTERED,
   navigationSection: "DefiKids",
-  family_Id: "",
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -54,11 +51,6 @@ const setters = (set: any) => ({
   setNavigationSection: (section: string) => {
     set((state: { navigationSection: string }) => {
       state.navigationSection = section;
-    }, shallow);
-  },
-  setFamilyId: (familyId: string) => {
-    set((state: { family_Id: string }) => {
-      state.family_Id = familyId;
     }, shallow);
   },
 });

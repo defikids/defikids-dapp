@@ -241,6 +241,7 @@ export const RegisterChildForm = ({
                   size="sm"
                   onClick={() => {
                     setAvatarURI("");
+                    setUploadURI("");
                     inputUrlRef.current.value = "";
                   }}
                 >
@@ -258,7 +259,7 @@ export const RegisterChildForm = ({
                     onClick={openFileInput}
                     w="100%"
                   >
-                    {avatarURI ? "Change" : "Upload"}
+                    Upload File
                   </Button>
 
                   {/* hidden file input */}
@@ -269,6 +270,26 @@ export const RegisterChildForm = ({
                     onChange={(e) => {
                       e.preventDefault();
                       const files = e.target.files;
+                      console.log(files);
+                      console.log(files[0].type);
+                      const validTypes = [
+                        "image/png",
+                        "image/jpg",
+                        "image/jpeg",
+                      ];
+
+                      if (
+                        files &&
+                        files.length > 0 &&
+                        !validTypes.includes(files[0].type)
+                      ) {
+                        toast({
+                          title: "Error",
+                          description:
+                            "Invalid file type. Only accept images with .png, .jpg or .jpeg extensions.",
+                          status: "error",
+                        });
+                      }
 
                       if (files && files.length > 0) {
                         const file = files[0];
@@ -336,7 +357,7 @@ export const RegisterChildForm = ({
                       }
                     }}
                   >
-                    Upload
+                    Upload Image URL
                   </Button>
                 </Flex>
               )}

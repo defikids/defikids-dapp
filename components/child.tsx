@@ -23,16 +23,16 @@ import {
   Image,
 } from "@chakra-ui/react";
 
-interface IProps extends IChild {
-  details: {
-    totalCreatedStakes: BigNumber;
-    totalInvested: BigNumber;
-    totalRewards: BigNumber;
-  };
-  stakes: IStake[];
-  onTransfer: () => void;
-  onStream: () => void;
-}
+// interface IProps extends IChild {
+//   details: {
+//     totalCreatedStakes: BigNumber;
+//     totalInvested: BigNumber;
+//     totalRewards: BigNumber;
+//   };
+//   stakes: IStake[];
+//   onTransfer: () => void;
+//   onStream: () => void;
+// }
 
 export const MOCK_ALLOCATIONS = [
   {
@@ -61,7 +61,7 @@ export const MOCK_ALLOCATIONS = [
   },
 ];
 
-const Child: React.FC<IProps> = ({
+const Child = ({
   _address,
   username,
   isLocked,

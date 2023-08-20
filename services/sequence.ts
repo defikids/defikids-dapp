@@ -9,17 +9,19 @@ type ConnectedUser = {
   address?: string;
 };
 
-const defaultChainId = ChainId.POLYGON_MUMBAI;
+// const defaultChainId = ChainId.POLYGON_MUMBAI;
+const defaultChainId = ChainId.GOERLI;
 
 sequence.initWallet({ defaultNetwork: defaultChainId });
 const wallet = sequence.getWallet().getProvider();
 
 const getUserType = async (connectDetails: any) => {
-  const { accountAddress } = connectDetails;
+  const { session } = connectDetails;
+  const { accountAddress } = session;
   const signer = wallet.getSigner();
 
   const contract = await HostContract.fromProvider(signer, accountAddress);
-  const userType = await contract.getUserType();
+  const userType = await contract.getUserType(accountAddress);
   return userType;
 };
 
@@ -61,7 +63,7 @@ const connectWallet = async (authorize: boolean = false) => {
       const { session } = connectDetails;
       const { accountAddress } = session;
 
-      const userType = await getUserType(session);
+      const userType = await getUserType(connectDetails);
 
       return { success: true, userType, accountAddress } as ConnectedUser;
     } else {

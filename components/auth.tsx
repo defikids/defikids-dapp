@@ -83,7 +83,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   useEffect(() => {
     const chainId = Sequence.wallet.getChainId();
     if (chainId) return;
-    if (chainId !== 80001) {
+    if (chainId !== 5) {
       router.push("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,11 +96,16 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   const updateConnectedUser = (
     userType: number,
     address: string,
-    loggedIn: boolean
+    loggedIn: boolean,
+    familyId?: string
   ) => {
     setUserType(userType);
     setWalletAddress(address);
     setIsLoggedIn(loggedIn);
+
+    loggedIn
+      ? localStorage.setItem("defi-kids.family-id", familyId)
+      : localStorage.removeItem("defi-kids.family-id");
   };
 
   const navigateUser = (userType: number) => {
@@ -137,9 +142,12 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       const signer = wallet.getSigner();
 
       const contract = await HostContract.fromProvider(signer, accountAddress);
-      const userType = await contract?.getUserType();
+      const userType = await contract?.getUserType(accountAddress);
+      console.log("userType", userType);
+      const familyId = await contract?.getFamilyIdByOwner(accountAddress);
+      console.log("familyId", familyId);
 
-      updateConnectedUser(userType, accountAddress, true);
+      updateConnectedUser(userType, accountAddress, true, familyId);
 
       navigateUser(Number(userType));
     } catch (error) {

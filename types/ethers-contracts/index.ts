@@ -3,9 +3,8 @@
 /* eslint-disable */
 export { Erc20UpgradeableFactory } from "./Erc20UpgradeableFactory";
 export type { Erc20Upgradeable } from "./Erc20Upgradeable";
-export { HostFactory } from "./HostFactory";
-export type { Host } from "./Host";
 export { MigrationsFactory } from "./MigrationsFactory";
 export type { Migrations } from "./Migrations";
 export { StakingTokenFactory } from "./StakingTokenFactory";
 export type { StakingToken } from "./StakingToken";
+export type { Host } from "./Host";

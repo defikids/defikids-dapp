@@ -49,9 +49,9 @@ const Parent: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [showTransferAll, setShowTransferAll] = useState(false);
-  const [transferChild, setTransferChild] = useState<IChild>();
-  const [streamChild, setStreamChild] = useState<IChild>();
-  const [children, setChildren] = useState<IChild[]>([]);
+  const [transferChild, setTransferChild] = useState();
+  const [streamChild, setStreamChild] = useState();
+  const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
 
@@ -89,20 +89,20 @@ const Parent: React.FC = () => {
       return;
     }
 
-    const fetchChildDetails = async () => {
-      const childDetails = {};
-      await Promise.all(
-        children.map(async (child) => {
-          const [details, stakes] = await Promise.all([
-            stakeContract.fetchStakerDetails(child._address),
-            stakeContract.fetchStakes(child._address),
-          ]);
-          childDetails[child._address] = { ...details, stakes };
-        })
-      );
-      setChildrenStakes(childDetails);
-    };
-    fetchChildDetails();
+    // const fetchChildDetails = async () => {
+    //   const childDetails = {};
+    //   await Promise.all(
+    //     children.map(async (child) => {
+    //       const [details, stakes] = await Promise.all([
+    //         stakeContract.fetchStakerDetails(child._address),
+    //         stakeContract.fetchStakes(child._address),
+    //       ]);
+    //       childDetails[child._address] = { ...details, stakes };
+    //     })
+    //   );
+    //   setChildrenStakes(childDetails);
+    // };
+    // fetchChildDetails();
   }, [stakeContract, children]);
 
   //=============================================================================
@@ -156,11 +156,12 @@ const Parent: React.FC = () => {
       const signer = sequence.wallet.getSigner();
       const contract = await HostContract.fromProvider(signer);
 
+      console.log("parent - getChildren");
       setChildrenLoading(true);
       const newChildren = await contract.fetchChildren();
       setChildrenLoading(false);
 
-      setChildren(newChildren);
+      // setChildren(newChildren);
       console.log("new", newChildren);
     };
 
@@ -240,8 +241,6 @@ const Parent: React.FC = () => {
         <Button
           className="bg-blue-oil"
           onClick={() => {
-            console.log("open");
-            console.log("isAddChildOpen", isAddChildOpen);
             onAddChildOpen();
           }}
           disabled={childrenLoading} // Disable the button while loading
@@ -310,7 +309,7 @@ const Parent: React.FC = () => {
         onClose={() => setShowTopUp(false)}
         onTransfer={() => updateBalance()}
       />
-      <WithdrawModal
+      {/* <WithdrawModal
         show={showWithdraw}
         onClose={() => setShowWithdraw(false)}
         onTransfer={() => updateBalance()}
@@ -335,7 +334,7 @@ const Parent: React.FC = () => {
         onTransfer={() => updateBalance()}
         balance={Math.floor(balance)}
         child={streamChild}
-      />
+      /> */}
     </Container>
   );
 };

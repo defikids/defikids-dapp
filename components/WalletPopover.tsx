@@ -67,7 +67,6 @@ export const WalletPopover = () => {
 
   const getBlockchainUrl = () => {
     const network = Sequence.wallet?.getChainId();
-    console.log("network", network);
     const session = Sequence.wallet?.getSession();
     const url = session.networks.find((n) => n.chainId === network)
       ?.blockExplorer.rootUrl;

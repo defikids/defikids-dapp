@@ -31,7 +31,6 @@ export const MainLayout = ({
   const { onToggle } = useDisclosure();
 
   useEffect(() => {
-    console.log("navigationSection - useEffect", navigationSection);
     if (navigationSection === "DefiKids") {
       onToggle;
     }

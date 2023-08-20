@@ -16,14 +16,24 @@ import {
   CardFooter,
   Button,
   useToast,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import shallow from "zustand/shallow";
 import Sequence from "@/services/sequence";
+import { useState } from "react";
 
 const RegisterModal = ({ isOpen, onClose }) => {
   const router = useRouter();
   const toast = useToast();
+
+  const [familyId, setFamilyId] = useState("");
+  const [avatarURI, setAvatarURI] = useState("");
+  const [username, setUsername] = useState("");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const { walletAddress } = useAuthStore(
     (state) => ({
@@ -32,11 +42,22 @@ const RegisterModal = ({ isOpen, onClose }) => {
     shallow
   );
 
+  const isIdError = familyId === "";
+
   const handleParent = async () => {
     try {
+      setHasSubmitted(true);
+
+      if (isIdError) {
+        return;
+      }
+
       const signer = Sequence.wallet?.getSigner();
       const contract = await HostContract.fromProvider(signer, walletAddress);
-      await contract.registerParent();
+      const hash = await contract.hashFamilyId(walletAddress, familyId);
+      const avatarURI = "";
+      await contract.registerParent(hash, avatarURI, username);
+      localStorage.setItem("defi-kids.family-id", familyId);
       router.push("/parent");
       onClose();
     } catch (e) {
@@ -61,11 +82,16 @@ const RegisterModal = ({ isOpen, onClose }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="2xl"
+      size="4xl"
       isCentered
       closeOnOverlayClick={false}
     >
-      <ModalOverlay />
+      <ModalOverlay
+        bg="none"
+        backdropFilter="auto"
+        backdropInvert="10%"
+        backdropBlur="4px"
+      />
       <ModalContent>
         <ModalHeader>Register</ModalHeader>
         <ModalCloseButton />
@@ -95,6 +121,75 @@ const RegisterModal = ({ isOpen, onClose }) => {
                   be required to store a family record that is associated with
                   this connected wallet on the blockchain.
                 </Text>
+
+                {/* Family Id */}
+                <FormControl isInvalid={isIdError && hasSubmitted}>
+                  <FormLabel mt={3} color="black">{`Your username`}</FormLabel>
+                  <Input
+                    type="text"
+                    color="black"
+                    placeholder="Create a family id."
+                    value={familyId}
+                    onChange={(e) => setFamilyId(e.target.value)}
+                    borderColor={
+                      isIdError && hasSubmitted ? "red.500" : "black"
+                    }
+                    _hover={{
+                      borderColor: "gray.300",
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
+                  />
+                  {isIdError && hasSubmitted && (
+                    <FormErrorMessage color="red.500">
+                      Family Id is required.
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+
+                {/* Avatar URI*/}
+                <FormControl>
+                  <FormLabel
+                    mt={3}
+                    color="black"
+                  >{`Your profile image (optional)`}</FormLabel>
+                  <Input
+                    type="text"
+                    color="black"
+                    placeholder="Provide image url."
+                    value={avatarURI}
+                    onChange={(e) => setAvatarURI(e.target.value)}
+                    borderColor="black"
+                    _hover={{
+                      borderColor: "gray.300",
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
+                  />
+                </FormControl>
+
+                {/* Username*/}
+                <FormControl>
+                  <FormLabel mt={3} color="black">
+                    Username
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    color="black"
+                    placeholder="Provide username."
+                    value={avatarURI}
+                    onChange={(e) => setUsername(e.target.value)}
+                    borderColor="black"
+                    _hover={{
+                      borderColor: "gray.300",
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
+                  />
+                </FormControl>
               </CardBody>
 
               <CardFooter>

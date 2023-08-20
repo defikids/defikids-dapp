@@ -53,6 +53,7 @@ class HostContract {
   }
 
   async registerParent(hash: string, avatarURI: string, username: string) {
+    // @ts-ignore
     return this.contract.registerParent(hash, avatarURI, username);
   }
 

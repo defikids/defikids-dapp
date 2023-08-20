@@ -7,3 +7,4 @@ export { MigrationsFactory } from "./MigrationsFactory";
 export type { Migrations } from "./Migrations";
 export { StakingTokenFactory } from "./StakingTokenFactory";
 export type { StakingToken } from "./StakingToken";
+export type { Host } from "./Host";

@@ -49,9 +49,9 @@ const Parent: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [showTransferAll, setShowTransferAll] = useState(false);
-  const [transferChild, setTransferChild] = useState<IChild>();
-  const [streamChild, setStreamChild] = useState<IChild>();
-  const [children, setChildren] = useState<IChild[]>([]);
+  const [transferChild, setTransferChild] = useState();
+  const [streamChild, setStreamChild] = useState();
+  const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
 

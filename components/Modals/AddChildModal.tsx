@@ -36,7 +36,12 @@ export const AddChildModal = ({
       isCentered
       closeOnOverlayClick={false}
     >
-      <ModalOverlay />
+      <ModalOverlay
+        bg="none"
+        backdropFilter="auto"
+        backdropInvert="10%"
+        backdropBlur="4px"
+      />
       <ModalContent>
         <ModalHeader>
           <Heading size="md">New Kid</Heading>

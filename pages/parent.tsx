@@ -158,8 +158,7 @@ const Parent: React.FC = () => {
 
       console.log("parent - getChildren");
       setChildrenLoading(true);
-      const familyId = localStorage.getItem("defi-kids.family-id");
-      const newChildren = await contract.fetchChildren(familyId);
+      const newChildren = await contract.fetchChildren();
       setChildrenLoading(false);
 
       // setChildren(newChildren);
@@ -310,7 +309,7 @@ const Parent: React.FC = () => {
         onClose={() => setShowTopUp(false)}
         onTransfer={() => updateBalance()}
       />
-      <WithdrawModal
+      {/* <WithdrawModal
         show={showWithdraw}
         onClose={() => setShowWithdraw(false)}
         onTransfer={() => updateBalance()}
@@ -335,7 +334,7 @@ const Parent: React.FC = () => {
         onTransfer={() => updateBalance()}
         balance={Math.floor(balance)}
         child={streamChild}
-      />
+      /> */}
     </Container>
   );
 };

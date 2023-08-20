@@ -52,13 +52,14 @@ class HostContract {
     return userType;
   }
 
-  async registerParent(hash: string, avatarURI: string) {
-    return this.contract.registerParent(hash, avatarURI);
+  async registerParent(hash: string, avatarURI: string, username: string) {
+    return this.contract.registerParent(hash, avatarURI, username);
   }
 
   async fetchChildren() {
     const familyId = localStorage.getItem("defi-kids.family-id");
     const children = await this.contract.fetchChildren(familyId);
+    console.log("fetchChildren-children", children);
     return children;
   }
 

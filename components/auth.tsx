@@ -83,7 +83,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   useEffect(() => {
     const chainId = Sequence.wallet.getChainId();
     if (chainId) return;
-    if (chainId !== 80001) {
+    if (chainId !== 5) {
       router.push("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

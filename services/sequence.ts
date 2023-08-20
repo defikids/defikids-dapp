@@ -9,7 +9,8 @@ type ConnectedUser = {
   address?: string;
 };
 
-const defaultChainId = ChainId.POLYGON_MUMBAI;
+// const defaultChainId = ChainId.POLYGON_MUMBAI;
+const defaultChainId = ChainId.GOERLI;
 
 sequence.initWallet({ defaultNetwork: defaultChainId });
 const wallet = sequence.getWallet().getProvider();

@@ -32,6 +32,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
 
   const [familyId, setFamilyId] = useState("");
   const [avatarURI, setAvatarURI] = useState("");
+  const [username, setUsername] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const { walletAddress } = useAuthStore(
@@ -55,7 +56,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
       const contract = await HostContract.fromProvider(signer, walletAddress);
       const hash = await contract.hashFamilyId(walletAddress, familyId);
       const avatarURI = "";
-      await contract.registerParent(hash, avatarURI);
+      await contract.registerParent(hash, avatarURI, username);
       localStorage.setItem("defi-kids.family-id", familyId);
       router.push("/parent");
       onClose();
@@ -85,7 +86,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
       isCentered
       closeOnOverlayClick={false}
     >
-      <ModalOverlay />
+      <ModalOverlay
+        bg="none"
+        backdropFilter="auto"
+        backdropInvert="10%"
+        backdropBlur="4px"
+      />
       <ModalContent>
         <ModalHeader>Register</ModalHeader>
         <ModalCloseButton />
@@ -154,6 +160,27 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     placeholder="Provide image url."
                     value={avatarURI}
                     onChange={(e) => setAvatarURI(e.target.value)}
+                    borderColor="black"
+                    _hover={{
+                      borderColor: "gray.300",
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
+                  />
+                </FormControl>
+
+                {/* Username*/}
+                <FormControl>
+                  <FormLabel mt={3} color="black">
+                    Username
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    color="black"
+                    placeholder="Provide username."
+                    value={avatarURI}
+                    onChange={(e) => setUsername(e.target.value)}
                     borderColor="black"
                     _hover={{
                       borderColor: "gray.300",

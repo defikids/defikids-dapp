@@ -20,31 +20,27 @@ import {
   connectorsForWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { createConfig, WagmiConfig, configureChains } from "wagmi";
-import { rainbowWeb3AuthConnector } from "@/services/RainbowWeb3authConnector";
-import { mainnet, polygon, goerli, polygonMumbai } from "wagmi/chains";
+
+import "@rainbow-me/rainbowkit/styles.css";
 import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
+const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
+
 const { chains, publicClient } = configureChains(
+  [goerli],
   [
-    // mainnet,
-    //  polygon,
-    goerli,
-    //  polygonMumbai
-  ],
-  [
-    // alchemyProvider({ apiKey: "" }),
-    // alchemyProvider({ apiKey: "" }),
+    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_GOERLI }),
     publicProvider(),
   ]
 );
-
-const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
 
 const connectors = connectorsForWallets([
   {
@@ -52,8 +48,6 @@ const connectors = connectorsForWallets([
     wallets: [
       walletConnectWallet({ projectId, chains }),
       metaMaskWallet({ projectId, chains }),
-      // @ts-ignore
-      rainbowWeb3AuthConnector({ projectId, chains }),
     ],
   },
 ]);
@@ -63,11 +57,6 @@ const wagmiConfig = createConfig({
   connectors,
   publicClient,
 });
-
-const config = {
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-};
 
 const colors = {
   brand: {
@@ -88,6 +77,11 @@ const breakpoints = {
   lg: "80em",
   xl: "96em",
   "2xl": "120em",
+};
+
+const config = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
 };
 
 const components = { Modal: modalTheme, Switch: switchTheme };
@@ -134,7 +128,7 @@ function MyApp({ Component, pageProps }) {
       }}
     >
       <WagmiConfig config={wagmiConfig}>
-        <RainbowKitProvider chains={chains}>
+        <RainbowKitProvider chains={chains} modalSize="compact">
           <Auth onRegisterOpen={onRegisterOpen} />
 
           {showStartEarning && !isRegisterOpen && (

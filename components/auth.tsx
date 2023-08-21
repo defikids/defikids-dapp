@@ -5,12 +5,39 @@ import Web3Auth from "@/services/web3auth";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { ethers } from "ethers";
+import { useWeb3User } from "@/hooks/useWeb3User";
+import { watchAccount } from "@wagmi/core";
 
 const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
   const router = useRouter();
+
+  // {
+  //   address?: Address
+  //   connector?: Connector
+  //   isConnecting: boolean
+  //   isReconnecting: boolean
+  //   isConnected: boolean
+  //   isDisconnected: boolean
+  //   status: 'connecting' | 'reconnecting' | 'connected' | 'disconnected'
+  // }
+  const unwatch = watchAccount((account) => {
+    const { isConnected, address, isDisconnected } = account;
+
+    if (isConnected) {
+      setWalletAddress(address);
+      setIsLoggedIn(true);
+    }
+
+    if (isDisconnected) {
+      setWalletAddress("");
+      setIsLoggedIn(false);
+      updateConnectedUser(UserType.UNREGISTERED, "", false);
+      window.location.replace("/");
+    }
+  });
 
   const {
     isLoggedIn,
@@ -63,32 +90,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, userType]);
-
-  /**
-   * This hook will initialize the web3auth modal
-   **/
-  useEffect(() => {
-    const init = async () => {
-      try {
-        await Web3Auth.initializeModal(handleLogin, logout);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    init();
-  }, []);
-
-  /**
-   * This hook will check if the user changes the network
-   **/
-  // useEffect(() => {
-  //   const chainId = Sequence.wallet.getChainId();
-  //   if (chainId) return;
-  //   if (chainId !== 5) {
-  //     router.push("/");
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [Sequence.wallet.getChainId()]);
 
   //=============================================================================
   //                             FUNCTIONS
@@ -168,12 +169,12 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     }
   };
 
-  const logout = () => {
-    Web3Auth.logout();
+  // const logout = () => {
+  //   Web3Auth.logout();
 
-    updateConnectedUser(UserType.UNREGISTERED, "", false);
-    window.location.replace("/");
-  };
+  //   updateConnectedUser(UserType.UNREGISTERED, "", false);
+  //   window.location.replace("/");
+  // };
 
   return <></>;
 };

@@ -27,6 +27,7 @@ import Web3Auth from "@/services/web3auth";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
+import { useWalletClient } from "wagmi";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -56,6 +57,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const toast = useToast();
   const fileInputRef = useRef(null);
   const inputUrlRef = useRef(null);
+  const { data: walletClient } = useWalletClient();
 
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
@@ -144,8 +146,11 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       ipfsImageHash = ifpsHash;
     }
 
-    const signer = await Web3Auth.getSigner();
-    const contract = await HostContract.fromProvider(signer, walletAddress);
+    // const signer = await Web3Auth.getSigner();
+    const contract = await HostContract.fromProvider(
+      walletClient,
+      walletAddress
+    );
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 

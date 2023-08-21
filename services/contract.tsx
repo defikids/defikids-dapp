@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { Host } from "../types/ethers-contracts";
 import HOST_ABI from "../abis/contracts/Host.json";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
+import { WalletClient } from "wagmi";
 
 export enum UserType {
   UNREGISTERED = 0,
@@ -34,7 +35,10 @@ class HostContract {
   }
 
   static async fromProvider(
-    provider: ethers.providers.JsonRpcProvider | ethers.providers.JsonRpcSigner,
+    provider:
+      | ethers.providers.JsonRpcProvider
+      | ethers.providers.JsonRpcSigner
+      | WalletClient,
     address?: string
   ) {
     console.log("address", address);

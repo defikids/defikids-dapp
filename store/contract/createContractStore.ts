@@ -1,22 +1,25 @@
-import { create, StoreApi, UseBoundStore } from "zustand";
+import { StoreApi, UseBoundStore } from "zustand";
+import { createWithEqualityFn } from "zustand/traditional";
+
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { Contract } from "ethers";
 
 import { shallow } from "zustand/shallow";
-import { sequence } from "0xsequence";
+import { SafeEventEmitterProvider } from "@web3auth/base";
+import { ethers } from "ethers";
 
 type State = {
   readOnlyProvider: any;
   provider: any;
-  connectedSigner: sequence.provider.SequenceSigner;
+  connectedSigner: ethers.providers.JsonRpcSigner;
   contractInstance: Contract;
 };
 
 type Actions = {
   setReadOnlyProvider: (readOnlyProvider: any) => void;
   setProvider: (provider: any) => void;
-  setConnectedSigner: (signer: sequence.provider.SequenceSigner) => void;
+  setConnectedSigner: (signer: ethers.providers.JsonRpcSigner) => void;
   setContactInstance: (contractInstance: Contract) => void;
 };
 
@@ -45,8 +48,8 @@ const setters = (set: any) => ({
       state.provider = provider;
     }, shallow);
   },
-  setConnectedSigner: (signer: sequence.provider.SequenceSigner) => {
-    set((state: { connectedSigner: sequence.provider.SequenceSigner }) => {
+  setConnectedSigner: (signer: ethers.providers.JsonRpcSigner) => {
+    set((state: { connectedSigner: ethers.providers.JsonRpcSigner }) => {
       state.connectedSigner = signer;
     }, shallow);
   },
@@ -58,7 +61,7 @@ const setters = (set: any) => ({
 });
 
 // Store
-export const contractStore = create<
+export const contractStore = createWithEqualityFn<
   MyStore,
   [["zustand/devtools", never], ["zustand/immer", never]]
 >(
@@ -67,7 +70,8 @@ export const contractStore = create<
       ...initialState,
       ...setters(set),
     }))
-  )
+  ),
+  shallow
 );
 
 // Selectors

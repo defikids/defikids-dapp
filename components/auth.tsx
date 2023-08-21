@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import HostContract, { UserType } from "../services/contract";
-import Sequence from "../services/sequence";
+import Web3Auth from "@/services/web3auth";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
-import { sequence } from "0xsequence";
+import { ethers } from "ethers";
 
 const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
@@ -12,17 +12,24 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
   const router = useRouter();
 
-  const { isLoggedIn, userType, setUserType, setIsLoggedIn, setWalletAddress } =
-    useAuthStore(
-      (state) => ({
-        isLoggedIn: state.isLoggedIn,
-        userType: state.userType,
-        setUserType: state.setUserType,
-        setIsLoggedIn: state.setIsLoggedIn,
-        setWalletAddress: state.setWalletAddress,
-      }),
-      shallow
-    );
+  const {
+    isLoggedIn,
+    userType,
+    walletAddress,
+    setUserType,
+    setIsLoggedIn,
+    setWalletAddress,
+  } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
+      isLoggedIn: state.isLoggedIn,
+      userType: state.userType,
+      setUserType: state.setUserType,
+      setIsLoggedIn: state.setIsLoggedIn,
+      setWalletAddress: state.setWalletAddress,
+    }),
+    shallow
+  );
 
   /**
    * This hook will check if the user has a dark mode preference set in local storage
@@ -35,9 +42,8 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   }, []);
 
   /**
-   * This hook will check if the user is already logged in with sequence
+   * This hook will navigate the user to the correct page based on their user type
    **/
-
   useEffect(() => {
     if (isLoggedIn) {
       switch (Number(userType)) {
@@ -59,17 +65,12 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   }, [isLoggedIn, userType]);
 
   /**
-   * This hook will check if the user is already logged in with sequence
+   * This hook will initialize the web3auth modal
    **/
   useEffect(() => {
     const init = async () => {
       try {
-        const wallet = sequence.getWallet();
-        const session = wallet.getSession();
-
-        if (session) {
-          handleLoginSequence(session, wallet);
-        }
+        await Web3Auth.initializeModal(handleLogin, logout);
       } catch (error) {
         console.error(error);
       }
@@ -80,18 +81,60 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   /**
    * This hook will check if the user changes the network
    **/
-  useEffect(() => {
-    const chainId = Sequence.wallet.getChainId();
-    if (chainId) return;
-    if (chainId !== 5) {
-      router.push("/");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Sequence.wallet.getChainId()]);
+  // useEffect(() => {
+  //   const chainId = Sequence.wallet.getChainId();
+  //   if (chainId) return;
+  //   if (chainId !== 5) {
+  //     router.push("/");
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [Sequence.wallet.getChainId()]);
 
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
+  const handleLogin = async () => {
+    try {
+      console.log("handleLogin");
+
+      const provider = new ethers.providers.Web3Provider(
+        Web3Auth.web3auth.provider
+      );
+
+      const signer = provider.getSigner();
+
+      console.log("signer", signer);
+      const accountAddress = await signer.getAddress();
+      console.log("accountAddress", accountAddress);
+
+      const contract = await HostContract.fromProvider(
+        provider,
+        accountAddress
+      );
+
+      console.log("contract", contract);
+
+      const userType = await contract?.getUserType(accountAddress);
+      console.log("userType", userType);
+      console.log("accountAddress", accountAddress);
+
+      let familyId;
+
+      if (userType === UserType.PARENT) {
+        familyId = await contract?.getFamilyIdByOwner(accountAddress);
+        console.log("familyId", familyId);
+      }
+
+      console.log("userType", userType);
+
+      updateConnectedUser(userType, accountAddress, true, familyId);
+
+      navigateUser(Number(userType));
+    } catch (error) {
+      console.log("error", error);
+      // handleLogout();
+    }
+  };
 
   const updateConnectedUser = (
     userType: number,
@@ -120,40 +163,16 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
         router.push("/child");
         break;
       default:
-        logout();
+        // handleLogout();
         return;
     }
   };
 
   const logout = () => {
-    Sequence.wallet?.disconnect();
+    Web3Auth.logout();
+
     updateConnectedUser(UserType.UNREGISTERED, "", false);
     window.location.replace("/");
-  };
-
-  const handleLoginSequence = async (
-    session: any,
-    wallet: sequence.provider.SequenceProvider
-  ) => {
-    try {
-      const connectDetails = session;
-      const { accountAddress } = connectDetails;
-
-      const signer = wallet.getSigner();
-
-      const contract = await HostContract.fromProvider(signer, accountAddress);
-      const userType = await contract?.getUserType(accountAddress);
-      console.log("userType", userType);
-      const familyId = await contract?.getFamilyIdByOwner(accountAddress);
-      console.log("familyId", familyId);
-
-      updateConnectedUser(userType, accountAddress, true, familyId);
-
-      navigateUser(Number(userType));
-    } catch (error) {
-      console.error(error);
-      logout();
-    }
   };
 
   return <></>;

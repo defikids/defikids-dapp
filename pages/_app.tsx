@@ -15,6 +15,54 @@ import { RegisterBanner } from "@/components/landingPage/RegisterBanner";
 import "@fontsource/slackey";
 import "@fontsource-variable/jetbrains-mono";
 import { useRouter } from "next/router";
+import "@rainbow-me/rainbowkit/styles.css";
+import {
+  connectorsForWallets,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
+import { createConfig, WagmiConfig, configureChains } from "wagmi";
+import { rainbowWeb3AuthConnector } from "@/services/RainbowWeb3authConnector";
+import { mainnet, polygon, goerli, polygonMumbai } from "wagmi/chains";
+import {
+  walletConnectWallet,
+  metaMaskWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { publicProvider } from "wagmi/providers/public";
+
+const { chains, publicClient } = configureChains(
+  [
+    // mainnet,
+    //  polygon,
+    goerli,
+    //  polygonMumbai
+  ],
+  [
+    // alchemyProvider({ apiKey: "" }),
+    // alchemyProvider({ apiKey: "" }),
+    publicProvider(),
+  ]
+);
+
+const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
+
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      walletConnectWallet({ projectId, chains }),
+      metaMaskWallet({ projectId, chains }),
+      // @ts-ignore
+      rainbowWeb3AuthConnector({ projectId, chains }),
+    ],
+  },
+]);
+
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors,
+  publicClient,
+});
 
 const config = {
   initialColorMode: "dark",
@@ -85,21 +133,25 @@ function MyApp({ Component, pageProps }) {
         },
       }}
     >
-      <Auth onRegisterOpen={onRegisterOpen} />
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains}>
+          <Auth onRegisterOpen={onRegisterOpen} />
 
-      {showStartEarning && !isRegisterOpen && (
-        <RegisterBanner onRegisterOpen={onRegisterOpen} />
-      )}
+          {showStartEarning && !isRegisterOpen && (
+            <RegisterBanner onRegisterOpen={onRegisterOpen} />
+          )}
 
-      <MainLayout
-        showStartEarning={showStartEarning}
-        isRegisterOpen={isRegisterOpen}
-      />
-      <Component {...pageProps} />
+          <MainLayout
+            showStartEarning={showStartEarning}
+            isRegisterOpen={isRegisterOpen}
+          />
+          <Component {...pageProps} />
 
-      {router.pathname === "/" && <Footer />}
+          {router.pathname === "/" && <Footer />}
 
-      <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+          <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+        </RainbowKitProvider>
+      </WagmiConfig>
     </ChakraProvider>
   );
 }

@@ -22,15 +22,13 @@ import {
   RegisterChildStepper,
   steps,
 } from "@/components/steppers/RegisterChildStepper";
+import router from "next/router";
 import Web3Auth from "@/services/web3auth";
+import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
+import shallow from "zustand/shallow";
 
-export const RegisterChildForm = ({
-  onClose,
-  onAdd,
-}: {
-  onClose: () => void;
-  onAdd: () => void;
-}) => {
+export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
   //                             STATE
   //=============================================================================
@@ -40,14 +38,15 @@ export const RegisterChildForm = ({
   const [avatarURI, setAvatarURI] = useState("");
   const [uploadURI, setUploadURI] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [familyId, setFamilyId] = useState("");
 
-  const [sandboxMode, setSandboxMode] = useState(false);
   const [provideUrl, setProvideUrl] = useState(false);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const isNameError = username === "";
+  const isIdError = familyId === "";
   const isInvalidWallet = !ethers.utils.isAddress(wallet);
 
   //=============================================================================
@@ -62,6 +61,21 @@ export const RegisterChildForm = ({
     index: 1,
     count: steps.length,
   });
+
+  const { walletAddress, setWalletAddress } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
+      setWalletAddress: state.setWalletAddress,
+    }),
+    shallow
+  );
+
+  const { connectedSigner } = useContractStore(
+    (state) => ({
+      connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
 
   //=============================================================================
   //                             FUNCTIONS
@@ -97,9 +111,16 @@ export const RegisterChildForm = ({
   const handleSubmit = async () => {
     setHasSubmitted(true);
 
-    if (username === "" || wallet === "" || isInvalidWallet) {
+    // console.log("avatarURI", avatarURI);
+
+    if (username === "" || wallet === "" || isIdError || isInvalidWallet) {
       return;
     }
+
+    console.log("handleSubmit");
+    console.log("username", username);
+    console.log("wallet", wallet);
+    console.log("familyId", familyId);
 
     setIsLoading(true);
     setActiveStep(0);
@@ -123,46 +144,37 @@ export const RegisterChildForm = ({
       ipfsImageHash = ifpsHash;
     }
 
-    const provider = new ethers.providers.Web3Provider(
-      Web3Auth.web3auth.provider
-    );
-    const contract = await HostContract.fromProvider(provider);
+    const signer = await Web3Auth.getSigner();
+    const contract = await HostContract.fromProvider(signer, walletAddress);
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
-    console.log("Registering parent...");
-    console.log(`Username: ${username}`);
-    console.log(`Wallet: ${wallet}`);
-    console.log(`Avatar URI: ${avatar}`);
-    console.log(`Sandbox Mode: ${sandboxMode}`);
+    console.log("avatar", avatar);
 
     try {
-      const familyId = localStorage.getItem("defi-kids.family-id");
-      console.log(`familyId: ${familyId}`);
-
       setActiveStep(1);
-      const tx = await contract.addChild(
-        familyId,
-        username,
-        avatar,
-        wallet,
-        sandboxMode
-      );
+      const hash = await contract.hashFamilyId(walletAddress, familyId);
+      console.log("hash", hash);
+      const tx = await contract.registerParent(hash, avatar, username);
 
       const txReceipt = await tx.wait();
       setActiveStep(2);
 
       if (txReceipt.status === 1) {
+        localStorage.setItem("defi-kids.family-id", familyId);
         toast({
           title: "Child successfully added",
           status: "success",
         });
-        onAdd();
         onClose();
+        router.push("/parent");
       }
     } catch (e) {
+      console.error(e);
       setIsLoading(false);
-      if (e.code === 4001) {
+      console.log("e.code", e.code);
+
+      if (e.message.includes("user rejected transaction")) {
         toast({
           title: "Transaction Error",
           description: "User rejected transaction",
@@ -225,7 +237,6 @@ export const RegisterChildForm = ({
             )}
           </FormControl>
         </Flex>
-
         {/* Wallet */}
         <FormControl isInvalid={isInvalidWallet && hasSubmitted} mt={5}>
           <FormLabel>Wallet Address</FormLabel>
@@ -249,31 +260,30 @@ export const RegisterChildForm = ({
             </FormErrorMessage>
           )}
         </FormControl>
-
-        <Divider mt={5} mb={5} borderColor="black" />
-
-        {/* Sandbox mode toggle switch */}
-        <Flex
-          direction="row"
-          justify="space-between"
-          align="center"
-          mt={4}
-          mb={4}
-        >
-          <FormLabel pr={2} pt={2}>
-            {`Sandbox mode ${sandboxMode ? "enabled" : "disabled"}`}
-          </FormLabel>
-          <Switch
-            disabled={isLoading}
-            id="sandbox"
-            isChecked={sandboxMode}
-            colorScheme="blue"
-            variant="outline"
-            size="lg"
-            onChange={(e) => setSandboxMode(e.target.checked)}
+        {/* Family Id */}
+        <FormControl isInvalid={isIdError && hasSubmitted}>
+          <FormLabel mt={3} color="black">{`Family ID`}</FormLabel>
+          <Input
+            type="text"
+            color="black"
+            placeholder="Create a family id."
+            value={familyId}
+            onChange={(e) => setFamilyId(e.target.value)}
+            borderColor={isIdError && hasSubmitted ? "red.500" : "black"}
+            _hover={{
+              borderColor: "gray.300",
+            }}
+            _focus={{
+              borderColor: "blue.500",
+            }}
           />
-        </Flex>
-
+          {isIdError && hasSubmitted && (
+            <FormErrorMessage color="red.500">
+              Family Id is required.
+            </FormErrorMessage>
+          )}
+        </FormControl>{" "}
+        <Divider mt={5} mb={5} borderColor="black" />
         {/* Avatar input toggle switch */}
         <Flex direction="row" justify="space-between" align="center">
           <Text>{`Provide avatar ${!provideUrl ? "url" : "file"}`}</Text>
@@ -287,9 +297,7 @@ export const RegisterChildForm = ({
             onChange={(e) => setProvideUrl(e.target.checked)}
           />
         </Flex>
-
         <Divider mt={5} mb={5} borderColor="black" />
-
         {/* Avatar upload options */}
         <FormControl>
           <Flex direction="row" justify="space-between" align="center" my={5}>
@@ -425,9 +433,7 @@ export const RegisterChildForm = ({
             </Flex>
           )}
         </FormControl>
-
         <Divider mt={5} mb={5} borderColor="black" />
-
         {/* Submit Child Button */}
         <Button
           isLoading={isLoading}
@@ -441,7 +447,7 @@ export const RegisterChildForm = ({
           }}
           onClick={handleSubmit}
         >
-          Add Child
+          Register Parent
         </Button>
       </form>
     </Box>

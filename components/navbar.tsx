@@ -7,18 +7,22 @@ import {
   useBreakpointValue,
   Collapse,
 } from "@chakra-ui/react";
-import ConnectButton from "@/components/ConnectButton";
+// import ConnectButton from "@/components/ConnectButton";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import Sequence from "@/services/sequence";
+import Web3auth from "@/services/web3auth";
 import { WalletPopover } from "@/components/WalletPopover";
 import { MenuPopover } from "@/components/MenuPopover";
 import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/services/contract";
 import { BiSolidUserRectangle } from "react-icons/bi";
+import { ethers } from "ethers";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 type ConnectedUser = {
   success: boolean;
@@ -44,23 +48,20 @@ export default function NavBar({
     lg: false,
   });
 
-  const {
-    userType,
-    isLoggedIn,
-    walletAddress,
-    navigationSection,
-    setUserType,
-    setIsLoggedIn,
-    setWalletAddress,
-  } = useAuthStore(
+  const { userType, isLoggedIn, walletAddress, navigationSection } =
+    useAuthStore(
+      (state) => ({
+        userType: state.userType,
+        isLoggedIn: state.isLoggedIn,
+        walletAddress: state.walletAddress,
+        navigationSection: state.navigationSection,
+      }),
+      shallow
+    );
+
+  const { setConnectedSigner } = useContractStore(
     (state) => ({
-      userType: state.userType,
-      isLoggedIn: state.isLoggedIn,
-      walletAddress: state.walletAddress,
-      navigationSection: state.navigationSection,
-      setUserType: state.setUserType,
-      setIsLoggedIn: state.setIsLoggedIn,
-      setWalletAddress: state.setWalletAddress,
+      setConnectedSigner: state.setConnectedSigner,
     }),
     shallow
   );
@@ -79,23 +80,23 @@ export default function NavBar({
   //                             FUNCTIONS
   //=============================================================================
 
-  const handleConnectSequence = async () => {
-    if (Sequence.wallet?.isConnected()) return;
+  // const handleConnectSequence = async () => {
+  //   if (Sequence.wallet?.isConnected()) return;
 
-    const { success, userType, accountAddress } = (await Sequence.connectWallet(
-      true
-    )) as ConnectedUser;
+  //   const { success, userType, accountAddress } = (await Sequence.connectWallet(
+  //     true
+  //   )) as ConnectedUser;
 
-    if (!Boolean(isLoggedIn)) {
-      router.push("/");
-    }
+  //   if (!Boolean(isLoggedIn)) {
+  //     router.push("/");
+  //   }
 
-    if (success) {
-      setUserType(userType);
-      setIsLoggedIn(true);
-      setWalletAddress(accountAddress);
-    }
-  };
+  //   if (success) {
+  //     setUserType(userType);
+  //     setIsLoggedIn(true);
+  //     setWalletAddress(accountAddress);
+  //   }
+  // };
 
   return (
     <>
@@ -141,8 +142,17 @@ export default function NavBar({
             {/* Connect Button */}
             {!isLoggedIn && (
               <ConnectButton
-                handleClick={handleConnectSequence}
-                walletAddress={walletAddress}
+              // handleClick={async () => {
+              //   const web3authProvider = await Web3auth.connect();
+              //   console.log("web3authProvider", web3authProvider);
+              //   const provider = new ethers.providers.Web3Provider(
+              //     web3authProvider
+              //   );
+              //   const signer = provider.getSigner();
+              //   console.log("signer", signer);
+              //   setConnectedSigner(signer);
+              // }}
+              // walletAddress={walletAddress}
               />
             )}
 

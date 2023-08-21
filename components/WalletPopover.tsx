@@ -17,7 +17,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import shallow from "zustand/shallow";
-import Sequence from "@/services/sequence";
+import Web3auth from "@/services/web3auth";
 import { OpenWalletIntent, Settings } from "@0xsequence/provider";
 import { UserType } from "@/services/contract";
 import { BiSolidCopy } from "react-icons/bi";
@@ -46,12 +46,16 @@ export const WalletPopover = () => {
   //=============================================================================
 
   const blockchainNameByChainId = () => {
-    const chainId = Sequence.wallet?.getChainId();
+    const chainId = 5 as number;
     switch (chainId) {
       case 137:
         return "Polygon";
       case 80001:
-        return "Polygon Mumbai";
+        return "Polygon Mumbai Testnet";
+      case 1:
+        return "Ethereum";
+      case 5:
+        return "Goerli Testnet";
       default:
         return "Unknown";
     }
@@ -66,65 +70,53 @@ export const WalletPopover = () => {
   };
 
   const getBlockchainUrl = () => {
-    const network = Sequence.wallet?.getChainId();
-    const session = Sequence.wallet?.getSession();
-    const url = session.networks.find((n) => n.chainId === network)
-      ?.blockExplorer.rootUrl;
+    // const network = Sequence.wallet?.getChainId();
+    // const session = Sequence.wallet?.getSession();
+    // const url = session.networks.find((n) => n.chainId === network)
+    //   ?.blockExplorer.rootUrl;
 
-    return url;
-  };
-
-  const openWalletWithSettings = () => {
-    const wallet = Sequence.wallet;
-
-    const settings: Settings = {
-      theme: "light",
-      includedPaymentProviders: ["moonpay", "ramp", "wyre"],
-      defaultFundingCurrency: "eth",
-      signInOptions: [
-        "email",
-        "google",
-        "apple",
-        "discord",
-        "facebook",
-        "twitch",
-      ],
-    };
-
-    const intent: OpenWalletIntent = {
-      type: "openWithOptions",
-      options: {
-        app: "DefiKids",
-        settings,
-      },
-    };
-
-    const path = "wallet";
-    wallet.openWallet(path, intent);
+    // return url;
+    // return goerli
+    return "https://goerli.etherscan.io/";
   };
 
   const handleLogoutClick = () => {
-    Sequence.wallet?.disconnect();
+    Web3auth.logout();
 
     //update user state
     setUserType(UserType.UNREGISTERED);
     setWalletAddress("");
     setIsLoggedIn(false);
+    localStorage.removeItem("defi-kids.family-id");
     window.location.replace("/");
   };
 
   const openWalletOnBlockchain = () => {
-    const chain = Sequence.wallet.getChainId();
+    // const chain = web3auth.getChainId();
+    const chain = 5 as number;
     if (chain === 137) {
       window.open(
         ` https://polygonscan.com/address//${walletAddress}`,
         "_blank"
       );
-    } else if (chain === 80001) {
+      return;
+    }
+    if (chain === 80001) {
       window.open(
         ` https://mumbai.polygonscan.com/address/${walletAddress}`,
         "_blank"
       );
+    }
+    if (chain === 1) {
+      window.open(` https://etherscan.io/address/${walletAddress}`, "_blank");
+      return;
+    }
+    if (chain === 5) {
+      window.open(
+        ` https://goerli.etherscan.io/address/${walletAddress}`,
+        "_blank"
+      );
+      return;
     }
   };
 
@@ -175,7 +167,7 @@ export const WalletPopover = () => {
             <Button
               size="sm"
               colorScheme="messenger"
-              onClick={openWalletWithSettings}
+              // onClick={openWalletWithSettings}
             >
               <Heading size="xs">Open</Heading>
             </Button>

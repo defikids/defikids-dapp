@@ -1,4 +1,5 @@
-import { create, StoreApi, UseBoundStore } from "zustand";
+import { StoreApi, UseBoundStore } from "zustand";
+import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
@@ -56,7 +57,7 @@ const setters = (set: any) => ({
 });
 
 // Store
-export const authStore = create<
+export const authStore = createWithEqualityFn<
   MyStore,
   [["zustand/devtools", never], ["zustand/immer", never]]
 >(
@@ -65,7 +66,8 @@ export const authStore = create<
       ...initialState,
       ...setters(set),
     }))
-  )
+  ),
+  shallow
 );
 
 // Selectors

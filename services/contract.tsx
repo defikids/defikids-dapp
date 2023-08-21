@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { Host } from "../types/ethers-contracts";
 import HOST_ABI from "../abis/contracts/Host.json";
-import { SequenceSigner } from "@0xsequence/provider";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
 
 export enum UserType {
@@ -35,9 +34,11 @@ class HostContract {
   }
 
   static async fromProvider(
-    provider: ethers.providers.JsonRpcProvider | SequenceSigner,
+    provider: ethers.providers.JsonRpcProvider | ethers.providers.JsonRpcSigner,
     address?: string
   ) {
+    console.log("address", address);
+    console.log("provider", provider);
     const contract = new ethers.Contract(
       HOST_ADDRESS,
       HOST_ABI.abi,

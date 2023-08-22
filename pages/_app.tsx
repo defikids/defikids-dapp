@@ -15,48 +15,10 @@ import { RegisterBanner } from "@/components/landingPage/RegisterBanner";
 import "@fontsource/slackey";
 import "@fontsource-variable/jetbrains-mono";
 import { useRouter } from "next/router";
+import { chains, wagmiConfig } from "@/services/wagmi/wagmiConfig";
 import "@rainbow-me/rainbowkit/styles.css";
-import {
-  connectorsForWallets,
-  RainbowKitProvider,
-} from "@rainbow-me/rainbowkit";
-
-import "@rainbow-me/rainbowkit/styles.css";
-import {
-  walletConnectWallet,
-  metaMaskWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { goerli } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
-
-const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
-
-const { chains, publicClient } = configureChains(
-  [goerli],
-  [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_GOERLI }),
-    publicProvider(),
-  ]
-);
-
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      walletConnectWallet({ projectId, chains }),
-      metaMaskWallet({ projectId, chains }),
-    ],
-  },
-]);
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-});
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiConfig } from "wagmi";
 
 const colors = {
   brand: {

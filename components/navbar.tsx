@@ -7,7 +7,7 @@ import {
   useBreakpointValue,
   Collapse,
 } from "@chakra-ui/react";
-// import ConnectButton from "@/components/ConnectButton";
+import { CustomConnectButton } from "@/components/ConnectButton";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -21,8 +21,7 @@ import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/services/contract";
 import { BiSolidUserRectangle } from "react-icons/bi";
-import { ethers } from "ethers";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
 type ConnectedUser = {
   success: boolean;
@@ -41,6 +40,8 @@ export default function NavBar({
   //                               HOOKS
   //============================================================================
   const router = useRouter();
+  const { isConnected } = useAccount();
+
   const isMobileSize = useBreakpointValue({
     base: true,
     sm: false,
@@ -79,24 +80,6 @@ export default function NavBar({
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
-
-  // const handleConnectSequence = async () => {
-  //   if (Sequence.wallet?.isConnected()) return;
-
-  //   const { success, userType, accountAddress } = (await Sequence.connectWallet(
-  //     true
-  //   )) as ConnectedUser;
-
-  //   if (!Boolean(isLoggedIn)) {
-  //     router.push("/");
-  //   }
-
-  //   if (success) {
-  //     setUserType(userType);
-  //     setIsLoggedIn(true);
-  //     setWalletAddress(accountAddress);
-  //   }
-  // };
 
   return (
     <>
@@ -140,21 +123,7 @@ export default function NavBar({
 
           <Flex justifyContent="flex-end">
             {/* Connect Button */}
-            {!isLoggedIn && (
-              <ConnectButton
-              // handleClick={async () => {
-              //   const web3authProvider = await Web3auth.connect();
-              //   console.log("web3authProvider", web3authProvider);
-              //   const provider = new ethers.providers.Web3Provider(
-              //     web3authProvider
-              //   );
-              //   const signer = provider.getSigner();
-              //   console.log("signer", signer);
-              //   setConnectedSigner(signer);
-              // }}
-              // walletAddress={walletAddress}
-              />
-            )}
+            {!isLoggedIn && <CustomConnectButton />}
 
             {userType === UserType.PARENT && router.pathname !== "/parent" && (
               <IconButton

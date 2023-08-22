@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import HostContract, { UserType } from "../services/contract";
-import Web3Auth from "@/services/web3auth";
+import { UserType } from "../services/contract";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { ethers } from "ethers";
-import { useWeb3User } from "@/hooks/useWeb3User";
 import { watchAccount } from "@wagmi/core";
+import { HOST_ADDRESS } from "@/store/contract/contractStore";
+import Host from "@/abis/contracts/Host.json";
 
 const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
@@ -14,28 +14,13 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
   const router = useRouter();
 
-  // {
-  //   address?: Address
-  //   connector?: Connector
-  //   isConnecting: boolean
-  //   isReconnecting: boolean
-  //   isConnected: boolean
-  //   isDisconnected: boolean
-  //   status: 'connecting' | 'reconnecting' | 'connected' | 'disconnected'
-  // }
-  const unwatch = watchAccount((account) => {
-    const { isConnected, address, isDisconnected } = account;
+  watchAccount((account) => {
+    const { isConnected, address } = account;
 
     if (isConnected) {
+      localStorage.remove("defi-kids.family-id");
       setWalletAddress(address);
       setIsLoggedIn(true);
-    }
-
-    if (isDisconnected) {
-      setWalletAddress("");
-      setIsLoggedIn(false);
-      updateConnectedUser(UserType.UNREGISTERED, "", false);
-      window.location.replace("/");
     }
   });
 
@@ -57,6 +42,43 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     }),
     shallow
   );
+
+  /**
+   * This hook will check for the user's wallet address and set the user type and family id
+   **/
+  useEffect(() => {
+    if (!walletAddress) return;
+
+    const fetchUserType = async () => {
+      // create ether provider
+      const provider = new ethers.providers.InfuraProvider(
+        "goerli",
+        process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
+      );
+
+      // create contract
+      const contract = new ethers.Contract(HOST_ADDRESS, Host.abi, provider);
+
+      // getUserType
+      const getUserType = await contract.getUserType(walletAddress);
+      setUserType(getUserType);
+
+      if (userType === UserType.PARENT) {
+        // check if familyID is set
+        const storedFamilyId = localStorage.getItem("defi-kids.family-id");
+        if (!storedFamilyId) {
+          const familyId = await contract?.getFamilyIdByOwner(walletAddress);
+          localStorage.setItem("defi-kids.family-id", familyId);
+          console.log("familyId", familyId);
+        }
+      }
+
+      navigateUser(Number(userType));
+    };
+
+    fetchUserType();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
 
   /**
    * This hook will check if the user has a dark mode preference set in local storage
@@ -94,63 +116,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
-  const handleLogin = async () => {
-    try {
-      console.log("handleLogin");
-
-      const provider = new ethers.providers.Web3Provider(
-        Web3Auth.web3auth.provider
-      );
-
-      const signer = provider.getSigner();
-
-      console.log("signer", signer);
-      const accountAddress = await signer.getAddress();
-      console.log("accountAddress", accountAddress);
-
-      const contract = await HostContract.fromProvider(
-        provider,
-        accountAddress
-      );
-
-      console.log("contract", contract);
-
-      const userType = await contract?.getUserType(accountAddress);
-      console.log("userType", userType);
-      console.log("accountAddress", accountAddress);
-
-      let familyId;
-
-      if (userType === UserType.PARENT) {
-        familyId = await contract?.getFamilyIdByOwner(accountAddress);
-        console.log("familyId", familyId);
-      }
-
-      console.log("userType", userType);
-
-      updateConnectedUser(userType, accountAddress, true, familyId);
-
-      navigateUser(Number(userType));
-    } catch (error) {
-      console.log("error", error);
-      // handleLogout();
-    }
-  };
-
-  const updateConnectedUser = (
-    userType: number,
-    address: string,
-    loggedIn: boolean,
-    familyId?: string
-  ) => {
-    setUserType(userType);
-    setWalletAddress(address);
-    setIsLoggedIn(loggedIn);
-
-    loggedIn
-      ? localStorage.setItem("defi-kids.family-id", familyId)
-      : localStorage.removeItem("defi-kids.family-id");
-  };
 
   const navigateUser = (userType: number) => {
     switch (userType) {
@@ -168,13 +133,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
         return;
     }
   };
-
-  // const logout = () => {
-  //   Web3Auth.logout();
-
-  //   updateConnectedUser(UserType.UNREGISTERED, "", false);
-  //   window.location.replace("/");
-  // };
 
   return <></>;
 };

@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+//@ts-ignore
 import { Host } from "../types/ethers-contracts";
 import HOST_ABI from "../abis/contracts/Host.json";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";

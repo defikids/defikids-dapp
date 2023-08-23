@@ -25,7 +25,7 @@ import {
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 
-export const RegisterChildForm = ({
+const RegisterChildForm = ({
   onClose,
   onAdd,
 }: {
@@ -452,3 +452,5 @@ export const RegisterChildForm = ({
     </Box>
   );
 };
+
+export default RegisterChildForm;

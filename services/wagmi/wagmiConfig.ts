@@ -11,7 +11,7 @@ import { configureChains, createConfig } from "wagmi";
 import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { createPublicClient, http } from "viem";
+// import { createPublicClient, http } from "viem";
 
 const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
 
@@ -38,8 +38,9 @@ const connectors = connectorsForWallets([
       }),
       rainbowWallet({ projectId, chains }),
       coinbaseWallet({
-        appName: "Web3",
+        appName: "Defikids",
         chains,
+        //@ts-ignore
         projectId,
       }),
       walletConnectWallet({ projectId, chains }),

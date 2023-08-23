@@ -6,7 +6,6 @@ import { immer } from "zustand/middleware/immer";
 import { Contract } from "ethers";
 
 import { shallow } from "zustand/shallow";
-import { SafeEventEmitterProvider } from "@web3auth/base";
 import { ethers } from "ethers";
 
 type State = {

@@ -77,3 +77,5 @@
 // };
 
 // export default TopUpModal;
+
+export {};

@@ -77,6 +77,7 @@ const Auth = ({
     const fetchUserType = async () => {
       if (!walletAddress || hasCheckedUserType) return;
 
+      // @ts-ignore
       const provider = new providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner(walletAddress);
 

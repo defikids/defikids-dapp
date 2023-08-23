@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { IChild } from "../services/contract";
 import { IStake, IStakeDuration } from "../services/stake";
 import { getUSDCXBalance } from "../services/usdcx_contract";
-import Allocation from "./allocation";
+// import Allocation from "./allocation";
 import { AiOutlinePlus } from "react-icons/ai";
 import { IoIosMore } from "react-icons/io";
 import { trimAddress } from "@/lib/web3";

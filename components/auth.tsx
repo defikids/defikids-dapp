@@ -24,7 +24,13 @@ const Auth = ({
   const router = useRouter();
 
   watchAccount((account) => {
-    const { isConnected, address } = account;
+    const { isConnected, address, isDisconnected } = account;
+
+    if (isDisconnected) {
+      console.log("disconnected");
+      setLogout();
+      setHasCheckedUserType(false);
+    }
 
     if (isConnected) {
       const selectedWalletAddress = address.toLowerCase();
@@ -32,6 +38,7 @@ const Auth = ({
       const storedWalletAddress = localStorage.getItem(
         "defi-kids.wallet-address"
       );
+
       if (selectedWalletAddress !== storedWalletAddress) {
         localStorage.setItem("defi-kids.wallet-address", selectedWalletAddress);
         localStorage.removeItem("defi-kids.family-id");
@@ -51,6 +58,7 @@ const Auth = ({
     setUserType,
     setIsLoggedIn,
     setWalletAddress,
+    setLogout,
   } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
@@ -58,6 +66,7 @@ const Auth = ({
       setUserType: state.setUserType,
       setIsLoggedIn: state.setIsLoggedIn,
       setWalletAddress: state.setWalletAddress,
+      setLogout: state.setLogout,
     }),
     shallow
   );

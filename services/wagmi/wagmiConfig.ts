@@ -1,12 +1,5 @@
-import { trustWallet } from "@rainbow-me/rainbowkit/wallets";
-import { rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
-import { coinbaseWallet } from "@rainbow-me/rainbowkit/wallets";
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import {
-  walletConnectWallet,
-  metaMaskWallet,
-} from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createConfig } from "wagmi";
 import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -24,29 +17,11 @@ export const { chains, publicClient } = configureChains(
   ]
 );
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Popular",
-    wallets: [
-      metaMaskWallet({
-        chains,
-        projectId,
-      }),
-      trustWallet({
-        chains,
-        projectId,
-      }),
-      rainbowWallet({ projectId, chains }),
-      coinbaseWallet({
-        appName: "Defikids",
-        chains,
-        //@ts-ignore
-        projectId,
-      }),
-      walletConnectWallet({ projectId, chains }),
-    ],
-  },
-]);
+const { connectors } = getDefaultWallets({
+  appName: "Defikids",
+  projectId,
+  chains,
+});
 
 export const wagmiConfig = createConfig({
   autoConnect: true,

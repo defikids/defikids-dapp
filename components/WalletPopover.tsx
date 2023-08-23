@@ -28,10 +28,9 @@ export const WalletPopover = () => {
   const toast = useToast();
   const { chain } = useNetwork();
 
-  const { walletAddress, setLogout } = useAuthStore(
+  const { walletAddress } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
-      setLogout: state.setLogout,
     }),
     shallow
   );
@@ -115,7 +114,7 @@ export const WalletPopover = () => {
     return "/logos/ethereum-logo.png";
   };
 
-  return (
+  return chain?.id ? (
     <Popover placement="bottom" closeOnBlur={true}>
       <PopoverTrigger>
         <IconButton
@@ -254,5 +253,7 @@ export const WalletPopover = () => {
         </PopoverFooter>
       </PopoverContent>
     </Popover>
+  ) : (
+    <></>
   );
 };

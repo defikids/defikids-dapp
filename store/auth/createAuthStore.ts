@@ -74,8 +74,11 @@ const setters = (set: any) => ({
     localStorage.removeItem("defi-kids.family-id");
     localStorage.removeItem("defi-kids.wallet-address");
 
+    if (window.location.pathname !== "/") {
+      window.location.href = "/";
+    }
+
     disconnect();
-    window.location.replace("/");
   },
 });
 

@@ -21,7 +21,17 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "FamilyIdExists",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "MaxParentIdExceeded",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotFamilyMember",
     type: "error",
   },
   {
@@ -120,11 +130,6 @@ const _abi = [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "childId",
-            type: "uint24",
-          },
-          {
             internalType: "bool",
             name: "sandboxMode",
             type: "bool",
@@ -181,11 +186,6 @@ const _abi = [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "childId",
-            type: "uint24",
-          },
-          {
             internalType: "bool",
             name: "sandboxMode",
             type: "bool",
@@ -232,14 +232,19 @@ const _abi = [
             type: "string",
           },
           {
+            internalType: "string",
+            name: "username",
+            type: "string",
+          },
+          {
             internalType: "address payable",
             name: "owner",
             type: "address",
           },
           {
-            internalType: "uint8",
-            name: "numOfChildren",
-            type: "uint8",
+            internalType: "address[]",
+            name: "children",
+            type: "address[]",
           },
         ],
         internalType: "struct Host.Family",
@@ -324,6 +329,11 @@ const _abi = [
         name: "_avatarURI",
         type: "string",
       },
+      {
+        internalType: "string",
+        name: "_username",
+        type: "string",
+      },
     ],
     name: "registerParent",
     outputs: [],
@@ -369,14 +379,14 @@ const _abi = [
         type: "bytes32",
       },
       {
+        internalType: "address",
+        name: "_child",
+        type: "address",
+      },
+      {
         internalType: "string",
         name: "_avatarURI",
         type: "string",
-      },
-      {
-        internalType: "uint24",
-        name: "_childId",
-        type: "uint24",
       },
     ],
     name: "updateChildAvatarURI",
@@ -392,14 +402,50 @@ const _abi = [
         type: "bytes32",
       },
       {
+        internalType: "address",
+        name: "_child",
+        type: "address",
+      },
+      {
         internalType: "string",
         name: "_username",
         type: "string",
       },
+    ],
+    name: "updateChildUsername",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       {
-        internalType: "uint24",
-        name: "_childId",
-        type: "uint24",
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "_familyId",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "_updatedFamilyId",
+        type: "bytes32",
+      },
+    ],
+    name: "updateFamilyId",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_username",
+        type: "string",
       },
     ],
     name: "updateUsername",

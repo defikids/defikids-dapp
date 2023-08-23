@@ -1,6 +1,4 @@
-import React, { useState } from "react";
 import {
-  Box,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -11,7 +9,7 @@ import {
   ModalFooter,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { RegisterChildForm } from "@/components/forms/registerChildForm";
+import RegisterChildForm from "@/components/forms/RegisterChildForm";
 
 export const AddChildModal = ({
   isOpen,

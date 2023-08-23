@@ -1,14 +1,17 @@
-import { create, StoreApi, UseBoundStore } from "zustand";
+import { StoreApi, UseBoundStore } from "zustand";
+import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
 import { UserType } from "../../services/contract";
+import { disconnect } from "@wagmi/core";
 
 type State = {
   walletAddress: "";
   isLoggedIn: boolean;
   userType: UserType;
   navigationSection: string;
+  logout: () => void;
 };
 
 type Actions = {
@@ -16,6 +19,7 @@ type Actions = {
   setIsLoggedIn: (isLoggingIn: boolean) => void;
   setUserType: (userType: UserType) => void;
   setNavigationSection: (section: string) => void;
+  setLogout: () => void;
 };
 
 type MyStore = State & Actions;
@@ -25,6 +29,7 @@ const initialState: State = {
   isLoggedIn: false,
   userType: UserType.UNREGISTERED,
   navigationSection: "DefiKids",
+  logout: () => {},
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -53,10 +58,32 @@ const setters = (set: any) => ({
       state.navigationSection = section;
     }, shallow);
   },
+  setLogout: () => {
+    set(
+      (state: {
+        walletAddress: string;
+        isLoggedIn: boolean;
+        userType: UserType;
+      }) => {
+        state.walletAddress = "";
+        state.isLoggedIn = false;
+        state.userType = UserType.UNREGISTERED;
+      },
+      shallow
+    );
+    localStorage.removeItem("defi-kids.family-id");
+    localStorage.removeItem("defi-kids.wallet-address");
+
+    if (window.location.pathname !== "/") {
+      window.location.href = "/";
+    }
+
+    disconnect();
+  },
 });
 
 // Store
-export const authStore = create<
+export const authStore = createWithEqualityFn<
   MyStore,
   [["zustand/devtools", never], ["zustand/immer", never]]
 >(
@@ -65,7 +92,8 @@ export const authStore = create<
       ...initialState,
       ...setters(set),
     }))
-  )
+  ),
+  shallow
 );
 
 // Selectors

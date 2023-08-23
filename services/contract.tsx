@@ -1,8 +1,9 @@
 import { ethers } from "ethers";
+//@ts-ignore
 import { Host } from "../types/ethers-contracts";
 import HOST_ABI from "../abis/contracts/Host.json";
-import { SequenceSigner } from "@0xsequence/provider";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
+import { ChildDetails } from "@/dataSchema/hostContract";
 
 export enum UserType {
   UNREGISTERED = 0,
@@ -35,7 +36,7 @@ class HostContract {
   }
 
   static async fromProvider(
-    provider: ethers.providers.JsonRpcProvider | SequenceSigner,
+    provider: ethers.providers.JsonRpcProvider | ethers.providers.JsonRpcSigner,
     address?: string
   ) {
     const contract = new ethers.Contract(
@@ -58,9 +59,25 @@ class HostContract {
   }
 
   async fetchChildren() {
-    const familyId = localStorage.getItem("defi-kids.family-id");
-    const children = await this.contract.fetchChildren(familyId);
-    console.log("fetchChildren-children", children);
+    const familyId = await this.contract.getFamilyIdByOwner(this.wallet);
+    const response = await this.contract.fetchChildren(familyId);
+    let children = [];
+    if (response.length)
+      children = response.map((child) => {
+        return {
+          username: child.username,
+          avatarURI: child.avatarURI,
+          familyId: child.familyId,
+          memberSince: child.memberSince.toString(),
+          wallet: child.wallet,
+          childId: child.childId,
+          sandboxMode: child.sandboxMode,
+          isActive: child.isActive,
+        };
+      });
+
+    console.log("children", children);
+
     return children;
   }
 
@@ -90,6 +107,19 @@ class HostContract {
 
   async getFamilyIdByOwner(wallet: string) {
     return this.contract.getFamilyIdByOwner(wallet);
+  }
+
+  async getFamilyByOwner(wallet: string) {
+    const response = await this.contract.getFamilyByOwner(wallet);
+
+    let familyDetails = {
+      familyId: response.familyId,
+      memberSince: response.memberSince.toString(),
+      avatarURI: response.avatarURI,
+      owner: response.owner,
+      username: response.username,
+    };
+    return familyDetails;
   }
 }
 

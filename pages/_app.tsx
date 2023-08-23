@@ -1,7 +1,6 @@
 "use client";
 
 import Auth from "@/components/auth";
-import "react-toastify/dist/ReactToastify.css";
 import { ChakraProvider, useDisclosure, extendTheme } from "@chakra-ui/react";
 import { modalTheme } from "@/components/theme/modalTheme";
 import { switchTheme } from "@/components/theme/switchTheme";
@@ -15,11 +14,10 @@ import { RegisterBanner } from "@/components/landingPage/RegisterBanner";
 import "@fontsource/slackey";
 import "@fontsource-variable/jetbrains-mono";
 import { useRouter } from "next/router";
-
-const config = {
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-};
+import { chains, wagmiConfig } from "@/services/wagmi/wagmiConfig";
+import "@rainbow-me/rainbowkit/styles.css";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiConfig } from "wagmi";
 
 const colors = {
   brand: {
@@ -42,6 +40,11 @@ const breakpoints = {
   "2xl": "120em",
 };
 
+const config = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
+};
+
 const components = { Modal: modalTheme, Switch: switchTheme };
 
 export const theme = extendTheme({
@@ -53,26 +56,26 @@ export const theme = extendTheme({
 });
 
 function MyApp({ Component, pageProps }) {
+  const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
+  const [showStartEarning, setShowStartEarning] = useState(false);
+
   const {
     isOpen: isRegisterOpen,
     onOpen: onRegisterOpen,
     onClose: onRegisterClose,
   } = useDisclosure();
 
-  const { userType, isLoggedIn } = useAuthStore((state) => ({
+  const { userType } = useAuthStore((state) => ({
     userType: state.userType,
-    isLoggedIn: state.isLoggedIn,
   }));
 
   const router = useRouter();
 
-  const [showStartEarning, setShowStartEarning] = useState(false);
-
   useEffect(() => {
-    if (isLoggedIn && userType === UserType.UNREGISTERED) {
-      setShowStartEarning(true);
-    }
-  }, [isRegisterOpen, isLoggedIn, userType]);
+    userType === UserType.UNREGISTERED && hasCheckedUserType
+      ? setShowStartEarning(true)
+      : setShowStartEarning(false);
+  }, [isRegisterOpen, hasCheckedUserType, userType]);
 
   return (
     <ChakraProvider
@@ -85,21 +88,29 @@ function MyApp({ Component, pageProps }) {
         },
       }}
     >
-      <Auth onRegisterOpen={onRegisterOpen} />
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains} modalSize="compact">
+          <Auth
+            onRegisterOpen={onRegisterOpen}
+            setHasCheckedUserType={setHasCheckedUserType}
+            hasCheckedUserType={hasCheckedUserType}
+          />
 
-      {showStartEarning && !isRegisterOpen && (
-        <RegisterBanner onRegisterOpen={onRegisterOpen} />
-      )}
+          {showStartEarning && !isRegisterOpen && (
+            <RegisterBanner onRegisterOpen={onRegisterOpen} />
+          )}
 
-      <MainLayout
-        showStartEarning={showStartEarning}
-        isRegisterOpen={isRegisterOpen}
-      />
-      <Component {...pageProps} />
+          <MainLayout
+            showStartEarning={showStartEarning}
+            isRegisterOpen={isRegisterOpen}
+          />
+          <Component {...pageProps} />
 
-      {router.pathname === "/" && <Footer />}
+          {router.pathname === "/" && <Footer />}
 
-      <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+          <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
+        </RainbowKitProvider>
+      </WagmiConfig>
     </ChakraProvider>
   );
 }

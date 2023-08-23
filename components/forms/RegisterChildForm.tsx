@@ -16,15 +16,16 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import sequence from "@/services/sequence";
 import HostContract from "@/services/contract";
 import axios from "axios";
 import {
   RegisterChildStepper,
   steps,
 } from "@/components/steppers/RegisterChildStepper";
+import { useContractStore } from "@/store/contract/contractStore";
+import shallow from "zustand/shallow";
 
-export const RegisterChildForm = ({
+const RegisterChildForm = ({
   onClose,
   onAdd,
 }: {
@@ -62,6 +63,13 @@ export const RegisterChildForm = ({
     index: 1,
     count: steps.length,
   });
+
+  const { connectedSigner } = useContractStore(
+    (state) => ({
+      connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
 
   //=============================================================================
   //                             FUNCTIONS
@@ -123,8 +131,7 @@ export const RegisterChildForm = ({
       ipfsImageHash = ifpsHash;
     }
 
-    const signer = sequence.wallet.getSigner();
-    const contract = await HostContract.fromProvider(signer);
+    const contract = await HostContract.fromProvider(connectedSigner);
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
@@ -302,7 +309,7 @@ export const RegisterChildForm = ({
               onClick={() => {
                 setAvatarURI("");
                 setUploadURI("");
-                inputUrlRef.current.value = "";
+                // inputUrlRef.current.value = "";
               }}
             >
               Clear
@@ -445,3 +452,5 @@ export const RegisterChildForm = ({
     </Box>
   );
 };
+
+export default RegisterChildForm;

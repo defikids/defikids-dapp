@@ -1,5 +1,6 @@
 import {
   AbsoluteCenter,
+  Avatar,
   Box,
   Button,
   Center,
@@ -10,6 +11,7 @@ import {
   Heading,
   Image,
   Text,
+  Tooltip,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -17,25 +19,27 @@ import React, { use, useCallback, useEffect, useState } from "react";
 import AnimatedNumber from "@/components/animated_number";
 import Arrow from "@/components/arrow";
 import Child from "@/components/child";
-import TopUpModal from "@/components/topup_modal";
-import WithdrawModal from "@/components/withdraw_modal";
-import TransferAllModal from "@/components/transfer_all_modal";
-import TransferModal from "@/components/transfer_modal";
-import StreamModal from "@/components/stream_modal";
+// import TopUpModal from "@/components/topup_modal";
+// import WithdrawModal from "@/components/withdraw_modal";
+// import TransferAllModal from "@/components/transfer_all_modal";
+// import TransferModal from "@/components/transfer_modal";
+// import StreamModal from "@/components/stream_modal";
 import contract, { IChild } from "@/services/contract";
 import HostContract from "@/services/contract";
 import StakeContract from "@/services/stake";
-import { flowDetails } from "@/hooks/useSuperFluid";
+// import { flowDetails } from "@/hooks/useSuperFluid";
 import { ethers } from "ethers";
 import Plus from "@/components/plus";
 import { AddChildModal } from "@/components/Modals/AddChildModal";
 import { getUSDCXBalance } from "@/services/usdcx_contract";
 import { BiTransfer } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
-import sequence from "@/services/sequence";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
 import { trimAddress } from "@/lib/web3";
+import { FamilyDetails } from "@/dataSchema/hostContract";
+import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -54,6 +58,7 @@ const Parent: React.FC = () => {
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
+  const [familyDetails, setFamilyDetails] = useState({} as FamilyDetails);
 
   //=============================================================================
   //                               HOOKS
@@ -64,6 +69,15 @@ const Parent: React.FC = () => {
     }),
     shallow
   );
+
+  const { connectedSigner } = useContractStore(
+    (state) => ({
+      connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const isMobileLarge = useBreakpointValue({
     lg: true,
@@ -80,6 +94,7 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   useEffect(() => {
+    fetchFamilyDetails();
     fetchChildren();
   }, []);
 
@@ -151,29 +166,68 @@ const Parent: React.FC = () => {
     );
   };
 
+  const fetchFamilyDetails = useCallback(async () => {
+    if (!walletAddress) return;
+
+    const contract = await HostContract.fromProvider(
+      connectedSigner,
+      walletAddress
+    );
+    const family = (await contract.getFamilyByOwner(
+      walletAddress
+    )) as FamilyDetails;
+    console.log("family - fetchFamilyDetails", family);
+    setFamilyDetails(family);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
+
   const fetchChildren = useCallback(async () => {
     const getChildren = async () => {
-      const signer = sequence.wallet.getSigner();
-      const contract = await HostContract.fromProvider(signer);
+      if (!walletAddress) return;
 
-      console.log("parent - getChildren");
+      console.log("fetchChildren", walletAddress);
+
+      const contract = await HostContract.fromProvider(
+        connectedSigner,
+        walletAddress
+      );
+
       setChildrenLoading(true);
-      const newChildren = await contract.fetchChildren();
+      const children = await contract.fetchChildren();
+      console.log("children - fetchChildren", children);
+      setChildren(children);
       setChildrenLoading(false);
-
-      // setChildren(newChildren);
-      console.log("new", newChildren);
     };
 
     await getChildren();
-  }, [children.length, contract]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [children.length, contract, walletAddress]);
 
   return (
-    <Container maxW="container.lg" mt="10rem">
-      <Heading fontSize={isMobileSmall ? "2xl" : "xl"} mt={6} mb={10}>
-        {`Welcome back, ${trimAddress(walletAddress)}`}
-      </Heading>
+    <Container maxW="container.lg" mt="8rem">
+      <Flex justifyContent="flex-start" alignItems="center" mb={10}>
+        <Tooltip label="Change Avatar">
+          <Avatar
+            size="xl"
+            name={
+              familyDetails.username
+                ? familyDetails.username
+                : trimAddress(walletAddress)
+            }
+            src={familyDetails.avatarURI}
+            style={{ cursor: "pointer" }}
+            onClick={onOpen}
+          />
+        </Tooltip>
 
+        <Heading fontSize={isMobileSmall ? "2xl" : "xl"}>
+          {`Welcome back, ${
+            familyDetails.username
+              ? familyDetails.username
+              : trimAddress(walletAddress)
+          }`}
+        </Heading>
+      </Flex>
       {/* Account Balance */}
       <Container
         maxW="container.md"
@@ -223,13 +277,10 @@ const Parent: React.FC = () => {
           </Flex>
         </Flex>
       </Container>
-
       {/* {!isMobileLarge && balanceActions()} */}
-
       <Center mt="5rem">
         <Heading fontSize="2xl">YOUR KIDS</Heading>
       </Center>
-
       {/* Kids Action Buttons */}
       <Flex
         mt="8"
@@ -281,7 +332,6 @@ const Parent: React.FC = () => {
           </Flex>
         </Button>
       </Flex>
-
       <Box my="16" className={childrenLoading && "animate-pulse"}>
         {children.length > 0 && (
           <Flex direction="column" gridGap="14" gridTemplateColumns="1fr">
@@ -297,18 +347,18 @@ const Parent: React.FC = () => {
           </Flex>
         )}
       </Box>
-
       <AddChildModal
         isOpen={isAddChildOpen}
         onClose={onAddChildClose}
         onAdd={() => fetchChildren()}
       />
 
-      <TopUpModal
+      <ChangeAvatarModal isOpen={isOpen} onClose={onClose} />
+      {/* <TopUpModal
         show={showTopUp}
         onClose={() => setShowTopUp(false)}
         onTransfer={() => updateBalance()}
-      />
+      /> */}
       {/* <WithdrawModal
         show={showWithdraw}
         onClose={() => setShowWithdraw(false)}

@@ -7,18 +7,19 @@ import {
   useBreakpointValue,
   Collapse,
 } from "@chakra-ui/react";
-import ConnectButton from "@/components/ConnectButton";
+import { CustomConnectButton } from "@/components/ConnectButton";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import Sequence from "@/services/sequence";
 import { WalletPopover } from "@/components/WalletPopover";
 import { MenuPopover } from "@/components/MenuPopover";
 import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/services/contract";
 import { BiSolidUserRectangle } from "react-icons/bi";
+import { useAccount } from "wagmi";
 
 type ConnectedUser = {
   success: boolean;
@@ -37,6 +38,8 @@ export default function NavBar({
   //                               HOOKS
   //============================================================================
   const router = useRouter();
+  const { isConnected } = useAccount();
+
   const isMobileSize = useBreakpointValue({
     base: true,
     sm: false,
@@ -44,23 +47,20 @@ export default function NavBar({
     lg: false,
   });
 
-  const {
-    userType,
-    isLoggedIn,
-    walletAddress,
-    navigationSection,
-    setUserType,
-    setIsLoggedIn,
-    setWalletAddress,
-  } = useAuthStore(
+  const { userType, isLoggedIn, walletAddress, navigationSection } =
+    useAuthStore(
+      (state) => ({
+        userType: state.userType,
+        isLoggedIn: state.isLoggedIn,
+        walletAddress: state.walletAddress,
+        navigationSection: state.navigationSection,
+      }),
+      shallow
+    );
+
+  const { setConnectedSigner } = useContractStore(
     (state) => ({
-      userType: state.userType,
-      isLoggedIn: state.isLoggedIn,
-      walletAddress: state.walletAddress,
-      navigationSection: state.navigationSection,
-      setUserType: state.setUserType,
-      setIsLoggedIn: state.setIsLoggedIn,
-      setWalletAddress: state.setWalletAddress,
+      setConnectedSigner: state.setConnectedSigner,
     }),
     shallow
   );
@@ -78,24 +78,6 @@ export default function NavBar({
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
-
-  const handleConnectSequence = async () => {
-    if (Sequence.wallet?.isConnected()) return;
-
-    const { success, userType, accountAddress } = (await Sequence.connectWallet(
-      true
-    )) as ConnectedUser;
-
-    if (!Boolean(isLoggedIn)) {
-      router.push("/");
-    }
-
-    if (success) {
-      setUserType(userType);
-      setIsLoggedIn(true);
-      setWalletAddress(accountAddress);
-    }
-  };
 
   return (
     <>
@@ -120,6 +102,7 @@ export default function NavBar({
             align="center"
             cursor={"pointer"}
             onClick={() => {
+              localStorage.removeItem("defi-kids.family-id");
               router.push("/");
             }}
           >
@@ -139,12 +122,7 @@ export default function NavBar({
 
           <Flex justifyContent="flex-end">
             {/* Connect Button */}
-            {!isLoggedIn && (
-              <ConnectButton
-                handleClick={handleConnectSequence}
-                walletAddress={walletAddress}
-              />
-            )}
+            {!isLoggedIn && <CustomConnectButton />}
 
             {userType === UserType.PARENT && router.pathname !== "/parent" && (
               <IconButton

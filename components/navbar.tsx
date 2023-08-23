@@ -13,8 +13,6 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import Sequence from "@/services/sequence";
-import Web3auth from "@/services/web3auth";
 import { WalletPopover } from "@/components/WalletPopover";
 import { MenuPopover } from "@/components/MenuPopover";
 import { AiFillAppstore } from "react-icons/ai";
@@ -104,6 +102,7 @@ export default function NavBar({
             align="center"
             cursor={"pointer"}
             onClick={() => {
+              localStorage.removeItem("defi-kids.family-id");
               router.push("/");
             }}
           >

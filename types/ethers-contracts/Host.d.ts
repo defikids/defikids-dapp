@@ -29,11 +29,13 @@ interface HostInterface extends ethers.utils.Interface {
     "getFamilyIdByOwner(address)": FunctionFragment;
     "getUserType(address)": FunctionFragment;
     "hashFamilyId(address,string)": FunctionFragment;
-    "registerParent(bytes32,string)": FunctionFragment;
+    "registerParent(bytes32,string,string)": FunctionFragment;
     "toggleSandbox(address,bytes32)": FunctionFragment;
     "updateAvatarURI(string)": FunctionFragment;
-    "updateChildAvatarURI(bytes32,string,uint24)": FunctionFragment;
-    "updateUsername(bytes32,string,uint24)": FunctionFragment;
+    "updateChildAvatarURI(bytes32,address,string)": FunctionFragment;
+    "updateChildUsername(bytes32,address,string)": FunctionFragment;
+    "updateFamilyId(address,bytes32,bytes32)": FunctionFragment;
+    "updateUsername(string)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -63,7 +65,7 @@ interface HostInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "registerParent",
-    values: [BytesLike, string]
+    values: [BytesLike, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "toggleSandbox",
@@ -75,11 +77,19 @@ interface HostInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "updateChildAvatarURI",
-    values: [BytesLike, string, BigNumberish]
+    values: [BytesLike, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateChildUsername",
+    values: [BytesLike, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateFamilyId",
+    values: [string, BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "updateUsername",
-    values: [BytesLike, string, BigNumberish]
+    values: [string]
   ): string;
 
   decodeFunctionResult(functionFragment: "addChild", data: BytesLike): Result;
@@ -118,6 +128,14 @@ interface HostInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "updateChildAvatarURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateChildUsername",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateFamilyId",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -171,7 +189,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -179,9 +196,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       };
       0: {
         username: string;
@@ -189,7 +205,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -197,9 +212,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       };
     }>;
 
@@ -214,7 +228,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -222,9 +235,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       };
       0: {
         username: string;
@@ -232,7 +244,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -240,9 +251,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       };
     }>;
 
@@ -256,7 +266,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -264,9 +273,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       }[];
     }>;
 
@@ -280,7 +288,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -288,9 +295,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       }[];
     }>;
 
@@ -302,13 +308,15 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         avatarURI: string;
+        username: string;
         owner: string;
-        numOfChildren: number;
+        children: string[];
         0: string;
         1: BigNumber;
         2: string;
         3: string;
-        4: number;
+        4: string;
+        5: string[];
       };
     }>;
 
@@ -320,13 +328,15 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         avatarURI: string;
+        username: string;
         owner: string;
-        numOfChildren: number;
+        children: string[];
         0: string;
         1: BigNumber;
         2: string;
         3: string;
-        4: number;
+        4: string;
+        5: string[];
       };
     }>;
 
@@ -377,12 +387,14 @@ export class Host extends Contract {
     registerParent(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "registerParent(bytes32,string)"(
+    "registerParent(bytes32,string,string)"(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -410,29 +422,53 @@ export class Host extends Contract {
 
     updateChildAvatarURI(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "updateChildAvatarURI(bytes32,string,uint24)"(
+    "updateChildAvatarURI(bytes32,address,string)"(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    updateChildUsername(
+      _familyId: BytesLike,
+      _child: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
     updateUsername(
-      _familyId: BytesLike,
       _username: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "updateUsername(bytes32,string,uint24)"(
-      _familyId: BytesLike,
+    "updateUsername(string)"(
       _username: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
   };
@@ -465,7 +501,6 @@ export class Host extends Contract {
     familyId: string;
     memberSince: BigNumber;
     wallet: string;
-    childId: number;
     sandboxMode: boolean;
     isActive: boolean;
     0: string;
@@ -473,9 +508,8 @@ export class Host extends Contract {
     2: string;
     3: BigNumber;
     4: string;
-    5: number;
+    5: boolean;
     6: boolean;
-    7: boolean;
   }>;
 
   "fetchChild(address,bytes32)"(
@@ -488,7 +522,6 @@ export class Host extends Contract {
     familyId: string;
     memberSince: BigNumber;
     wallet: string;
-    childId: number;
     sandboxMode: boolean;
     isActive: boolean;
     0: string;
@@ -496,9 +529,8 @@ export class Host extends Contract {
     2: string;
     3: BigNumber;
     4: string;
-    5: number;
+    5: boolean;
     6: boolean;
-    7: boolean;
   }>;
 
   fetchChildren(
@@ -511,7 +543,6 @@ export class Host extends Contract {
       familyId: string;
       memberSince: BigNumber;
       wallet: string;
-      childId: number;
       sandboxMode: boolean;
       isActive: boolean;
       0: string;
@@ -519,9 +550,8 @@ export class Host extends Contract {
       2: string;
       3: BigNumber;
       4: string;
-      5: number;
+      5: boolean;
       6: boolean;
-      7: boolean;
     }[]
   >;
 
@@ -535,7 +565,6 @@ export class Host extends Contract {
       familyId: string;
       memberSince: BigNumber;
       wallet: string;
-      childId: number;
       sandboxMode: boolean;
       isActive: boolean;
       0: string;
@@ -543,9 +572,8 @@ export class Host extends Contract {
       2: string;
       3: BigNumber;
       4: string;
-      5: number;
+      5: boolean;
       6: boolean;
-      7: boolean;
     }[]
   >;
 
@@ -556,13 +584,15 @@ export class Host extends Contract {
     familyId: string;
     memberSince: BigNumber;
     avatarURI: string;
+    username: string;
     owner: string;
-    numOfChildren: number;
+    children: string[];
     0: string;
     1: BigNumber;
     2: string;
     3: string;
-    4: number;
+    4: string;
+    5: string[];
   }>;
 
   "getFamilyByOwner(address)"(
@@ -572,13 +602,15 @@ export class Host extends Contract {
     familyId: string;
     memberSince: BigNumber;
     avatarURI: string;
+    username: string;
     owner: string;
-    numOfChildren: number;
+    children: string[];
     0: string;
     1: BigNumber;
     2: string;
     3: string;
-    4: number;
+    4: string;
+    5: string[];
   }>;
 
   getFamilyIdByOwner(
@@ -613,12 +645,14 @@ export class Host extends Contract {
   registerParent(
     _familyId: BytesLike,
     _avatarURI: string,
+    _username: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "registerParent(bytes32,string)"(
+  "registerParent(bytes32,string,string)"(
     _familyId: BytesLike,
     _avatarURI: string,
+    _username: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -646,29 +680,53 @@ export class Host extends Contract {
 
   updateChildAvatarURI(
     _familyId: BytesLike,
+    _child: string,
     _avatarURI: string,
-    _childId: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "updateChildAvatarURI(bytes32,string,uint24)"(
+  "updateChildAvatarURI(bytes32,address,string)"(
     _familyId: BytesLike,
+    _child: string,
     _avatarURI: string,
-    _childId: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  updateChildUsername(
+    _familyId: BytesLike,
+    _child: string,
+    _username: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "updateChildUsername(bytes32,address,string)"(
+    _familyId: BytesLike,
+    _child: string,
+    _username: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  updateFamilyId(
+    _owner: string,
+    _familyId: BytesLike,
+    _updatedFamilyId: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "updateFamilyId(address,bytes32,bytes32)"(
+    _owner: string,
+    _familyId: BytesLike,
+    _updatedFamilyId: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   updateUsername(
-    _familyId: BytesLike,
     _username: string,
-    _childId: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "updateUsername(bytes32,string,uint24)"(
-    _familyId: BytesLike,
+  "updateUsername(string)"(
     _username: string,
-    _childId: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -701,7 +759,6 @@ export class Host extends Contract {
       familyId: string;
       memberSince: BigNumber;
       wallet: string;
-      childId: number;
       sandboxMode: boolean;
       isActive: boolean;
       0: string;
@@ -709,9 +766,8 @@ export class Host extends Contract {
       2: string;
       3: BigNumber;
       4: string;
-      5: number;
+      5: boolean;
       6: boolean;
-      7: boolean;
     }>;
 
     "fetchChild(address,bytes32)"(
@@ -724,7 +780,6 @@ export class Host extends Contract {
       familyId: string;
       memberSince: BigNumber;
       wallet: string;
-      childId: number;
       sandboxMode: boolean;
       isActive: boolean;
       0: string;
@@ -732,9 +787,8 @@ export class Host extends Contract {
       2: string;
       3: BigNumber;
       4: string;
-      5: number;
+      5: boolean;
       6: boolean;
-      7: boolean;
     }>;
 
     fetchChildren(
@@ -747,7 +801,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -755,9 +808,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       }[]
     >;
 
@@ -771,7 +823,6 @@ export class Host extends Contract {
         familyId: string;
         memberSince: BigNumber;
         wallet: string;
-        childId: number;
         sandboxMode: boolean;
         isActive: boolean;
         0: string;
@@ -779,9 +830,8 @@ export class Host extends Contract {
         2: string;
         3: BigNumber;
         4: string;
-        5: number;
+        5: boolean;
         6: boolean;
-        7: boolean;
       }[]
     >;
 
@@ -792,13 +842,15 @@ export class Host extends Contract {
       familyId: string;
       memberSince: BigNumber;
       avatarURI: string;
+      username: string;
       owner: string;
-      numOfChildren: number;
+      children: string[];
       0: string;
       1: BigNumber;
       2: string;
       3: string;
-      4: number;
+      4: string;
+      5: string[];
     }>;
 
     "getFamilyByOwner(address)"(
@@ -808,13 +860,15 @@ export class Host extends Contract {
       familyId: string;
       memberSince: BigNumber;
       avatarURI: string;
+      username: string;
       owner: string;
-      numOfChildren: number;
+      children: string[];
       0: string;
       1: BigNumber;
       2: string;
       3: string;
-      4: number;
+      4: string;
+      5: string[];
     }>;
 
     getFamilyIdByOwner(
@@ -849,12 +903,14 @@ export class Host extends Contract {
     registerParent(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "registerParent(bytes32,string)"(
+    "registerParent(bytes32,string,string)"(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -882,29 +938,50 @@ export class Host extends Contract {
 
     updateChildAvatarURI(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "updateChildAvatarURI(bytes32,string,uint24)"(
+    "updateChildAvatarURI(bytes32,address,string)"(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    updateUsername(
+    updateChildUsername(
       _familyId: BytesLike,
+      _child: string,
       _username: string,
-      _childId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "updateUsername(bytes32,string,uint24)"(
+    "updateChildUsername(bytes32,address,string)"(
       _familyId: BytesLike,
+      _child: string,
       _username: string,
-      _childId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateUsername(_username: string, overrides?: CallOverrides): Promise<void>;
+
+    "updateUsername(string)"(
+      _username: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -994,12 +1071,14 @@ export class Host extends Contract {
     registerParent(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "registerParent(bytes32,string)"(
+    "registerParent(bytes32,string,string)"(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -1027,29 +1106,53 @@ export class Host extends Contract {
 
     updateChildAvatarURI(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "updateChildAvatarURI(bytes32,string,uint24)"(
+    "updateChildAvatarURI(bytes32,address,string)"(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    updateChildUsername(
+      _familyId: BytesLike,
+      _child: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
     updateUsername(
-      _familyId: BytesLike,
       _username: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "updateUsername(bytes32,string,uint24)"(
-      _familyId: BytesLike,
+    "updateUsername(string)"(
       _username: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
   };
@@ -1140,12 +1243,14 @@ export class Host extends Contract {
     registerParent(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "registerParent(bytes32,string)"(
+    "registerParent(bytes32,string,string)"(
       _familyId: BytesLike,
       _avatarURI: string,
+      _username: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
@@ -1173,29 +1278,53 @@ export class Host extends Contract {
 
     updateChildAvatarURI(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "updateChildAvatarURI(bytes32,string,uint24)"(
+    "updateChildAvatarURI(bytes32,address,string)"(
       _familyId: BytesLike,
+      _child: string,
       _avatarURI: string,
-      _childId: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    updateChildUsername(
+      _familyId: BytesLike,
+      _child: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     updateUsername(
-      _familyId: BytesLike,
       _username: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "updateUsername(bytes32,string,uint24)"(
-      _familyId: BytesLike,
+    "updateUsername(string)"(
       _username: string,
-      _childId: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };

@@ -72,6 +72,8 @@ const setters = (set: any) => ({
       shallow
     );
     localStorage.removeItem("defi-kids.family-id");
+    localStorage.removeItem("defi-kids.wallet-address");
+
     disconnect();
     window.location.replace("/");
   },

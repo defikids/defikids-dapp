@@ -2,30 +2,50 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { UserType } from "../services/contract";
 import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import { ethers } from "ethers";
+import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
-import { HOST_ADDRESS } from "@/store/contract/contractStore";
-import Host from "@/abis/contracts/Host.json";
+import HostContract from "@/services/contract";
 
-const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
+const Auth = ({
+  onRegisterOpen,
+  setHasCheckedUserType,
+  hasCheckedUserType,
+}: {
+  onRegisterOpen: () => void;
+  setHasCheckedUserType: (hasCheckedUserType: boolean) => void;
+  hasCheckedUserType: boolean;
+}) => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
+
   const router = useRouter();
 
   watchAccount((account) => {
     const { isConnected, address } = account;
 
     if (isConnected) {
-      localStorage.remove("defi-kids.family-id");
-      setWalletAddress(address);
+      const selectedWalletAddress = address.toLowerCase();
+
+      const storedWalletAddress = localStorage.getItem(
+        "defi-kids.wallet-address"
+      );
+      if (selectedWalletAddress !== storedWalletAddress) {
+        localStorage.setItem("defi-kids.wallet-address", selectedWalletAddress);
+        localStorage.removeItem("defi-kids.family-id");
+
+        router.push("/");
+        setHasCheckedUserType(false);
+      }
+
+      setWalletAddress(selectedWalletAddress);
       setIsLoggedIn(true);
     }
   });
 
   const {
-    isLoggedIn,
     userType,
     walletAddress,
     setUserType,
@@ -34,7 +54,6 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
   } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
-      isLoggedIn: state.isLoggedIn,
       userType: state.userType,
       setUserType: state.setUserType,
       setIsLoggedIn: state.setIsLoggedIn,
@@ -43,42 +62,38 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
     shallow
   );
 
+  const { setConnectedSigner, setProvider } = useContractStore(
+    (state) => ({
+      setConnectedSigner: state.setConnectedSigner,
+      setProvider: state.setProvider,
+    }),
+    shallow
+  );
+
   /**
-   * This hook will check for the user's wallet address and set the user type and family id
+   * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
    **/
   useEffect(() => {
-    if (!walletAddress) return;
-
     const fetchUserType = async () => {
-      // create ether provider
-      const provider = new ethers.providers.InfuraProvider(
-        "goerli",
-        process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
-      );
+      if (!walletAddress || hasCheckedUserType) return;
 
-      // create contract
-      const contract = new ethers.Contract(HOST_ADDRESS, Host.abi, provider);
+      const provider = new providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner(walletAddress);
 
-      // getUserType
+      // add provider and signer to store
+      setProvider(provider);
+      setConnectedSigner(signer);
+
+      const contract = await HostContract.fromProvider(provider);
       const getUserType = await contract.getUserType(walletAddress);
+
       setUserType(getUserType);
-
-      if (userType === UserType.PARENT) {
-        // check if familyID is set
-        const storedFamilyId = localStorage.getItem("defi-kids.family-id");
-        if (!storedFamilyId) {
-          const familyId = await contract?.getFamilyIdByOwner(walletAddress);
-          localStorage.setItem("defi-kids.family-id", familyId);
-          console.log("familyId", familyId);
-        }
-      }
-
-      navigateUser(Number(userType));
+      setHasCheckedUserType(true);
     };
 
     fetchUserType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress]);
+  }, [walletAddress, hasCheckedUserType]);
 
   /**
    * This hook will check if the user has a dark mode preference set in local storage
@@ -94,7 +109,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
    * This hook will navigate the user to the correct page based on their user type
    **/
   useEffect(() => {
-    if (isLoggedIn) {
+    if (hasCheckedUserType) {
       switch (Number(userType)) {
         case UserType.UNREGISTERED:
           onRegisterOpen();
@@ -111,28 +126,7 @@ const Auth = ({ onRegisterOpen }: { onRegisterOpen: () => void }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, userType]);
-
-  //=============================================================================
-  //                             FUNCTIONS
-  //=============================================================================
-
-  const navigateUser = (userType: number) => {
-    switch (userType) {
-      case UserType.UNREGISTERED:
-        onRegisterOpen();
-        break;
-      case UserType.PARENT:
-        router.push("/parent");
-        break;
-      case UserType.CHILD:
-        router.push("/child");
-        break;
-      default:
-        // handleLogout();
-        return;
-    }
-  };
+  }, [hasCheckedUserType]);
 
   return <></>;
 };

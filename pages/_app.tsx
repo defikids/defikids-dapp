@@ -1,7 +1,6 @@
 "use client";
 
 import Auth from "@/components/auth";
-import "react-toastify/dist/ReactToastify.css";
 import { ChakraProvider, useDisclosure, extendTheme } from "@chakra-ui/react";
 import { modalTheme } from "@/components/theme/modalTheme";
 import { switchTheme } from "@/components/theme/switchTheme";
@@ -57,26 +56,26 @@ export const theme = extendTheme({
 });
 
 function MyApp({ Component, pageProps }) {
+  const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
+  const [showStartEarning, setShowStartEarning] = useState(false);
+
   const {
     isOpen: isRegisterOpen,
     onOpen: onRegisterOpen,
     onClose: onRegisterClose,
   } = useDisclosure();
 
-  const { userType, isLoggedIn } = useAuthStore((state) => ({
+  const { userType } = useAuthStore((state) => ({
     userType: state.userType,
-    isLoggedIn: state.isLoggedIn,
   }));
 
   const router = useRouter();
 
-  const [showStartEarning, setShowStartEarning] = useState(false);
-
   useEffect(() => {
-    if (isLoggedIn && userType === UserType.UNREGISTERED) {
-      setShowStartEarning(true);
-    }
-  }, [isRegisterOpen, isLoggedIn, userType]);
+    userType === UserType.UNREGISTERED && hasCheckedUserType
+      ? setShowStartEarning(true)
+      : setShowStartEarning(false);
+  }, [isRegisterOpen, hasCheckedUserType, userType]);
 
   return (
     <ChakraProvider
@@ -91,7 +90,11 @@ function MyApp({ Component, pageProps }) {
     >
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains} modalSize="compact">
-          <Auth onRegisterOpen={onRegisterOpen} />
+          <Auth
+            onRegisterOpen={onRegisterOpen}
+            setHasCheckedUserType={setHasCheckedUserType}
+            hasCheckedUserType={hasCheckedUserType}
+          />
 
           {showStartEarning && !isRegisterOpen && (
             <RegisterBanner onRegisterOpen={onRegisterOpen} />

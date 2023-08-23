@@ -18,6 +18,7 @@ import {
 import shallow from "zustand/shallow";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useNetwork } from "wagmi";
 
 export const WalletPopover = () => {
   //=============================================================================
@@ -106,6 +107,8 @@ export const WalletPopover = () => {
   };
 
   const chainIcon = () => {
+    if (chain.id === null) return;
+
     if (chain.id === 137 || chain.id === 80001) {
       return "/logos/polygon-logo.png";
     }

@@ -16,18 +16,17 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import HostContract from "@/services/contract";
 import axios from "axios";
 import {
   RegisterChildStepper,
   steps,
 } from "@/components/steppers/RegisterChildStepper";
 import router from "next/router";
-import Web3Auth from "@/services/web3auth";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
-import { useWalletClient } from "wagmi";
+import HostContract from "@/services/contract";
+import { AvatarSelection } from "@/components/forms/AvatarSelection";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -40,11 +39,12 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const [uploadURI, setUploadURI] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [familyId, setFamilyId] = useState("");
+  // const [calculatedHash, setCalculatedHash] = useState("");
 
   const [provideUrl, setProvideUrl] = useState(false);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setIsLoading] = useState(false);
 
   const isNameError = username === "";
   const isIdError = familyId === "";
@@ -57,7 +57,16 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const toast = useToast();
   const fileInputRef = useRef(null);
   const inputUrlRef = useRef(null);
-  const { data: walletClient } = useWalletClient();
+  // const { data: walletClient } = useWalletClient();
+  // const { data, isLoading, isSuccess, write } = useRegisterParent({
+  //   familyId: calculatedHash,
+  //   avatarURI,
+  //   username,
+  // });
+  // const hashedFamilyId = useHashFamilyId({
+  //   address: wallet,
+  //   id: familyId,
+  // });
 
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
@@ -113,16 +122,9 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const handleSubmit = async () => {
     setHasSubmitted(true);
 
-    // console.log("avatarURI", avatarURI);
-
     if (username === "" || wallet === "" || isIdError || isInvalidWallet) {
       return;
     }
-
-    console.log("handleSubmit");
-    console.log("username", username);
-    console.log("wallet", wallet);
-    console.log("familyId", familyId);
 
     setIsLoading(true);
     setActiveStep(0);
@@ -146,24 +148,19 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       ipfsImageHash = ifpsHash;
     }
 
-    // const signer = await Web3Auth.getSigner();
-    const contract = await HostContract.fromProvider(
-      walletClient,
-      walletAddress
-    );
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
-    console.log("avatar", avatar);
+    const contract = await HostContract.fromProvider(connectedSigner);
 
     try {
       setActiveStep(1);
       const hash = await contract.hashFamilyId(walletAddress, familyId);
-      console.log("hash", hash);
+
       const tx = await contract.registerParent(hash, avatar, username);
 
-      const txReceipt = await tx.wait();
       setActiveStep(2);
+      const txReceipt = await tx.wait();
 
       if (txReceipt.status === 1) {
         localStorage.setItem("defi-kids.family-id", familyId);
@@ -177,7 +174,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
     } catch (e) {
       console.error(e);
       setIsLoading(false);
-      console.log("e.code", e.code);
 
       if (e.message.includes("user rejected transaction")) {
         toast({
@@ -202,7 +198,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
   // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
 
-  if (isLoading) {
+  if (loading) {
     return <RegisterChildStepper activeStep={activeStep} />;
   }
 
@@ -225,7 +221,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
               type="text"
               placeholder="Kid's Name"
               value={username}
-              disabled={isLoading}
+              disabled={loading}
               onChange={(e) => setUsername(e.target.value)}
               borderColor={isNameError && hasSubmitted ? "red.500" : "black"}
               _hover={{
@@ -249,7 +245,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
             type="text"
             placeholder="Wallet"
             value={wallet}
-            disabled={isLoading}
+            disabled={loading}
             onChange={(e) => setWallet(e.target.value)}
             borderColor={isInvalidWallet && hasSubmitted ? "red.500" : "black"}
             _hover={{
@@ -289,159 +285,23 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
           )}
         </FormControl>{" "}
         <Divider mt={5} mb={5} borderColor="black" />
-        {/* Avatar input toggle switch */}
-        <Flex direction="row" justify="space-between" align="center">
-          <Text>{`Provide avatar ${!provideUrl ? "url" : "file"}`}</Text>
-          <Switch
-            disabled={isLoading}
-            id="sandbox"
-            isChecked={provideUrl}
-            colorScheme="blue"
-            variant="outline"
-            size="lg"
-            onChange={(e) => setProvideUrl(e.target.checked)}
-          />
-        </Flex>
-        <Divider mt={5} mb={5} borderColor="black" />
-        {/* Avatar upload options */}
-        <FormControl>
-          <Flex direction="row" justify="space-between" align="center" my={5}>
-            <Heading size="xs">{`Profile avatar ${
-              provideUrl ? "url" : "file"
-            }`}</Heading>
-
-            {/* Clear avatar values */}
-            <Button
-              colorScheme="blue"
-              size="sm"
-              onClick={() => {
-                setAvatarURI("");
-                setUploadURI("");
-                inputUrlRef.current.value = "";
-              }}
-            >
-              Clear
-            </Button>
-          </Flex>
-
-          {!provideUrl ? (
-            <>
-              {/* Avatar Action */}
-              <Button
-                colorScheme="blue"
-                size="md"
-                mt={2}
-                onClick={openFileInput}
-                w="100%"
-              >
-                Upload File
-              </Button>
-
-              {/* hidden file input */}
-              <input
-                type="file"
-                style={{ display: "none" }}
-                ref={fileInputRef}
-                onChange={(e) => {
-                  e.preventDefault();
-                  const files = e.target.files;
-                  if (!files) return;
-
-                  const validTypes = ["image/png", "image/jpg", "image/jpeg"];
-
-                  if (
-                    files &&
-                    files.length > 0 &&
-                    !validTypes.includes(files[0].type)
-                  ) {
-                    toast({
-                      title: "Error",
-                      description:
-                        "Invalid file type. Only accept images with .png, .jpg or .jpeg extensions.",
-                      status: "error",
-                    });
-                  }
-
-                  if (files && files.length > 0) {
-                    const file = files[0];
-                    const reader = new FileReader();
-
-                    reader.onloadend = () => {
-                      console.log(reader.result);
-                      setAvatarURI(reader.result as string);
-                    };
-
-                    reader.readAsDataURL(file);
-
-                    const formData = new FormData();
-                    formData.append("file", file);
-                    formData.append("description", "child_avatar");
-                    setSelectedFile(formData);
-                  } else {
-                    console.log("User canceled file selection");
-                  }
-                }}
-              />
-            </>
-          ) : (
-            // URL input field and upload button
-            <Flex
-              direction="column"
-              justify="center"
-              align="center"
-              w="100%"
-              mt={5}
-            >
-              <Input
-                type="text"
-                color="black"
-                ref={inputUrlRef}
-                variant="outline" // Change the variant to "outline"
-                placeholder="Provide image url"
-                value={provideUrl ? uploadURI : avatarURI}
-                disabled={isLoading}
-                onChange={(e) => {
-                  setUploadURI(e.target.value);
-                }}
-                borderColor="black"
-                _hover={{
-                  borderColor: "gray.300",
-                }}
-                _focus={{
-                  borderColor: "blue.500",
-                }}
-              />
-              <Button
-                colorScheme="blue"
-                size="md"
-                my={5}
-                px={5}
-                w="100%"
-                onClick={async () => {
-                  try {
-                    const response = await axios.get(uploadURI);
-                    if (response.status === 200) {
-                      setAvatarURI(uploadURI);
-                    }
-                  } catch (e) {
-                    console.error(e);
-                    toast({
-                      title: "Error",
-                      description: "Invalid image url",
-                      status: "error",
-                    });
-                  }
-                }}
-              >
-                Upload Image URL
-              </Button>
-            </Flex>
-          )}
-        </FormControl>
+        <AvatarSelection
+          provideUrl={provideUrl}
+          inputUrlRef={inputUrlRef}
+          fileInputRef={fileInputRef}
+          uploadURI={uploadURI}
+          avatarURI={avatarURI}
+          isLoading={loading}
+          setAvatarURI={setAvatarURI}
+          setUploadURI={setUploadURI}
+          openFileInput={openFileInput}
+          setSelectedFile={setSelectedFile}
+          setProvideUrl={setProvideUrl}
+        />
         <Divider mt={5} mb={5} borderColor="black" />
         {/* Submit Child Button */}
         <Button
-          isLoading={isLoading}
+          isLoading={loading}
           width="full"
           size="lg"
           mt={4}

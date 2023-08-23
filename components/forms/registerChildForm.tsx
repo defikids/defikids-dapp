@@ -22,7 +22,8 @@ import {
   RegisterChildStepper,
   steps,
 } from "@/components/steppers/RegisterChildStepper";
-import Web3Auth from "@/services/web3auth";
+import { useContractStore } from "@/store/contract/contractStore";
+import shallow from "zustand/shallow";
 
 export const RegisterChildForm = ({
   onClose,
@@ -62,6 +63,13 @@ export const RegisterChildForm = ({
     index: 1,
     count: steps.length,
   });
+
+  const { connectedSigner } = useContractStore(
+    (state) => ({
+      connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
 
   //=============================================================================
   //                             FUNCTIONS
@@ -123,14 +131,11 @@ export const RegisterChildForm = ({
       ipfsImageHash = ifpsHash;
     }
 
-    const provider = new ethers.providers.Web3Provider(
-      Web3Auth.web3auth.provider
-    );
-    const contract = await HostContract.fromProvider(provider);
+    const contract = await HostContract.fromProvider(connectedSigner);
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
-    console.log("Registering parent...");
+    console.log("Registering child...");
     console.log(`Username: ${username}`);
     console.log(`Wallet: ${wallet}`);
     console.log(`Avatar URI: ${avatar}`);
@@ -304,7 +309,7 @@ export const RegisterChildForm = ({
               onClick={() => {
                 setAvatarURI("");
                 setUploadURI("");
-                inputUrlRef.current.value = "";
+                // inputUrlRef.current.value = "";
               }}
             >
               Clear

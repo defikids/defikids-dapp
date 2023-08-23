@@ -11,15 +11,15 @@ import { configureChains, createConfig } from "wagmi";
 import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { createPublicClient, http } from "viem";
 
 const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
-// const projectId = process.env.RAINBOW_PROJECT_ID;
-console.log("projectId", projectId);
 
 export const { chains, publicClient } = configureChains(
   [goerli],
   [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY_GOERLI }),
+    // alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY_GOERLI }),
+    publicProvider(),
     publicProvider(),
   ]
 );

@@ -211,7 +211,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
             mt={3}
             size="lg"
             name="Defi Kids"
-            src={avatarURI ? avatarURI : "./pig_logo.png"}
+            src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
           />
 
           {/* Name */}

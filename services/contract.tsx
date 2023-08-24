@@ -82,19 +82,24 @@ class HostContract {
   }
 
   async addChild(
-    familyId: string,
     username: string,
     avatarURI: string,
     wallet: string,
     sandboxMode: boolean
   ) {
-    return this.contract.addChild(
+    console.log("contract.tsx");
+    console.log("this.contract", this.contract);
+    console.log("this.wallet");
+    const familyId = await this.contract.getFamilyIdByOwner(this.wallet);
+    console.log("familyId", familyId);
+    const tx = await this.contract.addChild(
       familyId,
       username,
       avatarURI,
       wallet,
       sandboxMode
     );
+    return tx;
   }
 
   async changeAccess(wallet: string, childId: number) {

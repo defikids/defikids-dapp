@@ -4,6 +4,7 @@ import Auth from "@/components/auth";
 import { ChakraProvider, useDisclosure, extendTheme } from "@chakra-ui/react";
 import { modalTheme } from "@/components/theme/modalTheme";
 import { switchTheme } from "@/components/theme/switchTheme";
+import { menuTheme } from "@/components/theme/menuTheme";
 import { useAuthStore } from "@/store/auth/authStore";
 import { UserType } from "@/services/contract";
 import { MainLayout } from "@/components/main_layout";
@@ -45,7 +46,7 @@ const config = {
   useSystemColorMode: false,
 };
 
-const components = { Modal: modalTheme, Switch: switchTheme };
+const components = { Modal: modalTheme, Switch: switchTheme, Menu: menuTheme };
 
 export const theme = extendTheme({
   config,

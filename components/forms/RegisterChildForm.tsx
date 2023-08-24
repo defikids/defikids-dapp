@@ -23,6 +23,7 @@ import {
   steps,
 } from "@/components/steppers/RegisterChildStepper";
 import { useContractStore } from "@/store/contract/contractStore";
+import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 
 const RegisterChildForm = ({
@@ -67,6 +68,13 @@ const RegisterChildForm = ({
   const { connectedSigner } = useContractStore(
     (state) => ({
       connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
+
+  const { walletAddress } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
     }),
     shallow
   );
@@ -131,7 +139,10 @@ const RegisterChildForm = ({
       ipfsImageHash = ifpsHash;
     }
 
-    const contract = await HostContract.fromProvider(connectedSigner);
+    const contract = await HostContract.fromProvider(
+      connectedSigner,
+      walletAddress
+    );
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
@@ -142,20 +153,11 @@ const RegisterChildForm = ({
     console.log(`Sandbox Mode: ${sandboxMode}`);
 
     try {
-      const familyId = localStorage.getItem("defi-kids.family-id");
-      console.log(`familyId: ${familyId}`);
-
       setActiveStep(1);
-      const tx = await contract.addChild(
-        familyId,
-        username,
-        avatar,
-        wallet,
-        sandboxMode
-      );
+      const tx = await contract.addChild(username, avatar, wallet, sandboxMode);
 
-      const txReceipt = await tx.wait();
       setActiveStep(2);
+      const txReceipt = await tx.wait();
 
       if (txReceipt.status === 1) {
         toast({
@@ -203,7 +205,7 @@ const RegisterChildForm = ({
             mt={3}
             size="lg"
             name="Defi Kids"
-            src={avatarURI ? avatarURI : "./pig_logo.png"}
+            src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
           />
 
           {/* Name */}

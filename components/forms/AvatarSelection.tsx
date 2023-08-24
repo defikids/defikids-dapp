@@ -17,7 +17,6 @@ export const AvatarSelection = ({
   fileInputRef,
   uploadURI,
   avatarURI,
-  isLoading,
   setAvatarURI,
   setUploadURI,
   openFileInput,
@@ -29,7 +28,6 @@ export const AvatarSelection = ({
   fileInputRef: any;
   uploadURI: string;
   avatarURI: string;
-  isLoading: boolean;
   setAvatarURI: (uri: string) => void;
   setUploadURI: (uri: string) => void;
   openFileInput: () => void;
@@ -43,7 +41,6 @@ export const AvatarSelection = ({
       <Flex direction="row" justify="space-between" align="center">
         <Text>{`Provide avatar ${!provideUrl ? "url" : "file"}`}</Text>
         <Switch
-          disabled={isLoading}
           id="sandbox"
           isChecked={provideUrl}
           colorScheme="blue"
@@ -149,7 +146,6 @@ export const AvatarSelection = ({
               variant="outline" // Change the variant to "outline"
               placeholder="Provide image url"
               value={provideUrl ? uploadURI : avatarURI}
-              disabled={isLoading}
               onChange={(e) => {
                 setUploadURI(e.target.value);
               }}

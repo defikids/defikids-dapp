@@ -39,7 +39,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const [uploadURI, setUploadURI] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [familyId, setFamilyId] = useState("");
-  // const [calculatedHash, setCalculatedHash] = useState("");
 
   const [provideUrl, setProvideUrl] = useState(false);
 
@@ -57,16 +56,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const toast = useToast();
   const fileInputRef = useRef(null);
   const inputUrlRef = useRef(null);
-  // const { data: walletClient } = useWalletClient();
-  // const { data, isLoading, isSuccess, write } = useRegisterParent({
-  //   familyId: calculatedHash,
-  //   avatarURI,
-  //   username,
-  // });
-  // const hashedFamilyId = useHashFamilyId({
-  //   address: wallet,
-  //   id: familyId,
-  // });
 
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
@@ -291,7 +280,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
           fileInputRef={fileInputRef}
           uploadURI={uploadURI}
           avatarURI={avatarURI}
-          isLoading={loading}
           setAvatarURI={setAvatarURI}
           setUploadURI={setUploadURI}
           openFileInput={openFileInput}

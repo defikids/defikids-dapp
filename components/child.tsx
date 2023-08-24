@@ -7,6 +7,7 @@ import { getUSDCXBalance } from "../services/usdcx_contract";
 import { AiOutlinePlus } from "react-icons/ai";
 import { IoIosMore } from "react-icons/io";
 import { trimAddress } from "@/lib/web3";
+import { ChildDetails, FamilyDetails } from "@/dataSchema/hostContract";
 
 import {
   Box,
@@ -22,6 +23,7 @@ import {
   Heading,
   Image,
   Avatar,
+  AvatarBadge,
 } from "@chakra-ui/react";
 
 // interface IProps extends IChild {
@@ -78,9 +80,9 @@ const Child = ({
   sandboxMode,
   isActive,
   stakes = [],
-  onTransfer,
-  onStream,
   onOpen,
+  setSelectedChild,
+  childDetails,
 }: {
   username: string;
   avatarURI: string;
@@ -90,9 +92,9 @@ const Child = ({
   sandboxMode: boolean;
   isActive: boolean;
   stakes: IStake[];
-  onTransfer: () => void;
-  onStream: () => void;
   onOpen: () => void;
+  setSelectedChild: (childDetails: ChildDetails) => void;
+  childDetails: ChildDetails;
 }) => {
   const toast = useToast();
   const [balance, setBalance] = useState(0);
@@ -122,7 +124,10 @@ const Child = ({
       pb={6}
       alignItems="center"
       direction="column"
-      onClick={onOpen}
+      onClick={() => {
+        setSelectedChild(childDetails);
+        onOpen();
+      }}
       _hover={{
         transform: "scale(1.05)",
       }}
@@ -136,6 +141,7 @@ const Child = ({
         name="Defi Kids"
         src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
       />
+
       <Box>
         {/* Username */}
         <Flex mb={2}>

@@ -58,8 +58,8 @@ class HostContract {
     return this.contract.registerParent(hash, avatarURI, username);
   }
 
-  async fetchChildren() {
-    const familyId = await this.contract.getFamilyIdByOwner(this.wallet);
+  async fetchChildren(walletAddress: string) {
+    const familyId = await this.contract.getFamilyIdByOwner(walletAddress);
     const response = await this.contract.fetchChildren(familyId);
     let children = [];
     if (response.length)
@@ -125,6 +125,10 @@ class HostContract {
       username: response.username,
     };
     return familyDetails;
+  }
+
+  async updateAvatarURI(avatarURI: string) {
+    return this.contract.updateAvatarURI(avatarURI);
   }
 }
 

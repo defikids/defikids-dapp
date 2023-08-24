@@ -1,15 +1,11 @@
 import {
-  AbsoluteCenter,
   Avatar,
   Box,
   Button,
   Center,
-  ChakraProvider,
   Container,
-  Divider,
   Flex,
   Heading,
-  IconButton,
   Image,
   Menu,
   MenuButton,
@@ -19,34 +15,29 @@ import {
   Tooltip,
   useBreakpointValue,
   useDisclosure,
+  useSteps,
+  useToast,
 } from "@chakra-ui/react";
-import React, { use, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AnimatedNumber from "@/components/animated_number";
-import Arrow from "@/components/arrow";
 import Child from "@/components/child";
-// import TopUpModal from "@/components/topup_modal";
-// import WithdrawModal from "@/components/withdraw_modal";
-// import TransferAllModal from "@/components/transfer_all_modal";
-// import TransferModal from "@/components/transfer_modal";
-// import StreamModal from "@/components/stream_modal";
-import contract, { IChild } from "@/services/contract";
+import contract from "@/services/contract";
 import HostContract from "@/services/contract";
 import StakeContract from "@/services/stake";
-// import { flowDetails } from "@/hooks/useSuperFluid";
-import { ethers } from "ethers";
-import Plus from "@/components/plus";
-import { AddChildModal } from "@/components/Modals/AddChildModal";
-import { getUSDCXBalance } from "@/services/usdcx_contract";
 import { BiTransfer } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { trimAddress } from "@/lib/web3";
-import { FamilyDetails } from "@/dataSchema/hostContract";
+import { ChildDetails, FamilyDetails } from "@/dataSchema/hostContract";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
+import { steps } from "@/components/steppers/RegisterChildStepper";
+import axios from "axios";
+import router from "next/router";
+import { AddChildModal } from "@/components/Modals/AddChildModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -57,15 +48,12 @@ const Parent: React.FC = () => {
   const [balance, setBalance] = useState<number>();
   const [netFlow, setNetFlow] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
-  const [showTopUp, setShowTopUp] = useState(false);
-  const [showWithdraw, setShowWithdraw] = useState(false);
-  const [showTransferAll, setShowTransferAll] = useState(false);
-  const [transferChild, setTransferChild] = useState();
-  const [streamChild, setStreamChild] = useState();
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as FamilyDetails);
+  const [loading, setIsLoading] = useState(false);
+  const [selectedChild, setSelectedChild] = useState({} as ChildDetails);
 
   //=============================================================================
   //                               HOOKS
@@ -92,6 +80,8 @@ const Parent: React.FC = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const toast = useToast();
+
   const isMobileLarge = useBreakpointValue({
     lg: true,
   });
@@ -106,10 +96,19 @@ const Parent: React.FC = () => {
     onClose: onAddChildClose,
   } = useDisclosure();
 
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
+
   useEffect(() => {
     fetchFamilyDetails();
     fetchChildren();
   }, []);
+
+  useEffect(() => {
+    console.log("selectedChild", selectedChild);
+  }, [setSelectedChild]);
 
   useEffect(() => {
     if (!stakeContract || !children.length) {
@@ -140,79 +139,77 @@ const Parent: React.FC = () => {
 
   const updateNetFlow = async () => {};
 
-  const balanceActions = () => {
-    return (
-      <Flex mt="8" justifyContent="flex-end" gridGap="4">
-        <Button
-          onClick={() => setShowTopUp(true)}
-          disabled={childrenLoading} // Disable the button while loading
-          w={{ base: "100%", md: "auto" }} // Set button width
-        >
-          <Flex alignItems="center">
-            <Arrow />
-            <Text
-              ml="6"
-              fontWeight="medium"
-              fontSize="base"
-              textAlign="left"
-              px=".6rem"
-            >
-              Deposit
-            </Text>
-          </Flex>
-        </Button>
+  // const balanceActions = () => {
+  //   return (
+  //     <Flex mt="8" justifyContent="flex-end" gridGap="4">
+  //       <Button
+  //         disabled={childrenLoading} // Disable the button while loading
+  //         w={{ base: "100%", md: "auto" }} // Set button width
+  //       >
+  //         <Flex alignItems="center">
+  //           <Arrow />
+  //           <Text
+  //             ml="6"
+  //             fontWeight="medium"
+  //             fontSize="base"
+  //             textAlign="left"
+  //             px=".6rem"
+  //           >
+  //             Deposit
+  //           </Text>
+  //         </Flex>
+  //       </Button>
 
-        <Button
-          className="bg-blue-oil"
-          onClick={() => setShowWithdraw(true)}
-          disabled={childrenLoading} // Disable the button while loading
-          w={{ base: "100%", md: "auto" }} // Set button width
-          size="md"
-        >
-          <Flex alignItems="center">
-            <Arrow dir="down" />
-            <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
-              Withdraw
-            </Text>
-          </Flex>
-        </Button>
+  //       <Button
+  //         className="bg-blue-oil"
+  //         disabled={childrenLoading} // Disable the button while loading
+  //         w={{ base: "100%", md: "auto" }} // Set button width
+  //         size="md"
+  //       >
+  //         <Flex alignItems="center">
+  //           <Arrow dir="down" />
+  //           <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
+  //             Withdraw
+  //           </Text>
+  //         </Flex>
+  //       </Button>
 
-        <Menu>
-          {({ isOpen }) => (
-            <>
-              <MenuButton
-                isActive={isOpen}
-                as={Button}
-                rightIcon={<ChevronDownIcon />}
-              >
-                {isOpen ? "Less" : "More"}
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  icon={<AiOutlinePlus />}
-                  onClick={() => onAddChildOpen()}
-                >
-                  Add Child
-                </MenuItem>
-                <MenuItem
-                  icon={<BiTransfer />}
-                  onClick={() => alert("Kagebunshin")}
-                >
-                  Transfer to all kids
-                </MenuItem>
-              </MenuList>
-            </>
-          )}
-        </Menu>
-        {/* <IconButton
-          size="md"
-          aria-label="Menu Icon"
-          icon={<HamburgerIcon />}
-          // onClick={() => setMenuOpen(!menuOpen)}
-        /> */}
-      </Flex>
-    );
-  };
+  //       <Menu>
+  //         {({ isOpen }) => (
+  //           <>
+  //             <MenuButton
+  //               isActive={isOpen}
+  //               as={Button}
+  //               rightIcon={<ChevronDownIcon />}
+  //             >
+  //               {isOpen ? "Less" : "More"}
+  //             </MenuButton>
+  //             <MenuList>
+  //               <MenuItem
+  //                 icon={<AiOutlinePlus />}
+  //                 onClick={() => onAddChildOpen()}
+  //               >
+  //                 Add Child
+  //               </MenuItem>
+  //               <MenuItem
+  //                 icon={<BiTransfer />}
+  //                 onClick={() => alert("Kagebunshin")}
+  //               >
+  //                 Transfer to all kids
+  //               </MenuItem>
+  //             </MenuList>
+  //           </>
+  //         )}
+  //       </Menu>
+  //       {/* <IconButton
+  //         size="md"
+  //         aria-label="Menu Icon"
+  //         icon={<HamburgerIcon />}
+  //         // onClick={() => setMenuOpen(!menuOpen)}
+  //       /> */}
+  //     </Flex>
+  //   );
+  // };
 
   const fetchFamilyDetails = useCallback(async () => {
     if (!walletAddress) return;
@@ -241,7 +238,7 @@ const Parent: React.FC = () => {
       );
 
       setChildrenLoading(true);
-      const children = await contract.fetchChildren();
+      const children = await contract.fetchChildren(walletAddress);
       console.log("children - fetchChildren", children);
       setChildren(children);
       setChildrenLoading(false);
@@ -251,10 +248,104 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length, contract, walletAddress]);
 
+  const uploadToIpfs = async (selectedFile: File | null) => {
+    try {
+      const response = await axios.post(
+        `/api/ipfs/upload-to-ipfs`,
+        selectedFile,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e as Error);
+      return {
+        validationError: "",
+        ifpsHash: "",
+      };
+    }
+  };
+
+  const handleSubmit = async (selectedFile: File | null, avatarURI: string) => {
+    setIsLoading(true);
+    setActiveStep(0);
+
+    let ipfsImageHash = "";
+
+    if (selectedFile) {
+      const { validationError, ifpsHash } = (await uploadToIpfs(
+        selectedFile
+      )) as {
+        validationError: string;
+        ifpsHash: string;
+      };
+
+      if (validationError) {
+        toast({
+          title: "Error",
+          description: validationError,
+          status: "error",
+        });
+        return;
+      }
+      ipfsImageHash = ifpsHash;
+    }
+
+    const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
+    const avatar = ipfsImageHash ? ifpsURI : avatarURI;
+
+    const contract = await HostContract.fromProvider(connectedSigner);
+
+    try {
+      setActiveStep(1);
+      const tx = await contract.updateAvatarURI(avatar);
+
+      setActiveStep(2);
+      const txReceipt = await tx.wait();
+      await fetchFamilyDetails();
+
+      if (txReceipt.status === 1) {
+        toast({
+          title: "Avatar successfully updated",
+          status: "success",
+        });
+        onClose();
+        router.push("/parent");
+      }
+    } catch (e) {
+      console.error(e);
+      setIsLoading(false);
+
+      if (e.message.includes("user rejected transaction")) {
+        toast({
+          title: "Transaction Error",
+          description: "User rejected transaction",
+          status: "error",
+        });
+        return;
+      }
+
+      toast({
+        title: "Error",
+        description: "Network error",
+        status: "error",
+      });
+
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
+
   return (
     <Box>
       <Container maxW="container.lg" mt="8rem">
-        <Flex justifyContent="flex-start" alignItems="center" mb={10}>
+        <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
           <Tooltip label="Change Avatar">
             <Avatar
               size="xl"
@@ -272,7 +363,7 @@ const Parent: React.FC = () => {
             />
           </Tooltip>
 
-          <Heading fontSize={isMobileSmall ? "2xl" : "xl"}>
+          <Heading fontSize={isMobileSmall ? "2xl" : "xl"} ml={5}>
             {`Welcome back, ${
               familyDetails.username
                 ? familyDetails.username
@@ -294,6 +385,7 @@ const Parent: React.FC = () => {
             color="white"
             justify="space-between"
             w="100%"
+            align="center"
           >
             {/* Parent Account Details */}
             <Flex flexDir="column" alignItems="space-between" w="100%">
@@ -326,42 +418,32 @@ const Parent: React.FC = () => {
                   </Text>
                 </Heading>
               </Flex>
-              {balanceActions()}
             </Flex>
+            <Menu>
+              {({ isOpen }) => (
+                <>
+                  <MenuButton isActive={isOpen} as={Button} size="2xl">
+                    <ChevronDownIcon fontSize="3xl" />
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem
+                      icon={<AiOutlinePlus />}
+                      onClick={() => onAddChildOpen()}
+                    >
+                      Add Child
+                    </MenuItem>
+                    <MenuItem
+                      icon={<BiTransfer />}
+                      onClick={() => alert("Kagebunshin")}
+                    >
+                      Transfer to all kids
+                    </MenuItem>
+                  </MenuList>
+                </>
+              )}
+            </Menu>
           </Flex>
         </Container>
-
-        {/* <TopUpModal
-        show={showTopUp}
-        onClose={() => setShowTopUp(false)}
-        onTransfer={() => updateBalance()}
-      /> */}
-        {/* <WithdrawModal
-        show={showWithdraw}
-        onClose={() => setShowWithdraw(false)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-      />
-      <TransferAllModal
-        show={showTransferAll}
-        onClose={() => setShowTransferAll(false)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-      />
-      <TransferModal
-        show={!!transferChild}
-        onClose={() => setTransferChild(undefined)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-        child={transferChild}
-      />
-      <StreamModal
-        show={!!streamChild}
-        onClose={() => setStreamChild(undefined)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-        child={streamChild}
-      /> */}
       </Container>
 
       <Container
@@ -369,28 +451,30 @@ const Parent: React.FC = () => {
         my="16"
         className={childrenLoading && "animate-pulse"}
       >
-        <Center my="2rem">
-          <Heading fontSize="2xl">YOUR KIDS</Heading>
-        </Center>
-
         {children.length > 0 && (
-          <Flex
-            direction="row"
-            gridGap="14"
-            gridTemplateColumns="1fr"
-            justify="center"
-          >
-            {children.map((c) => (
-              <Child
-                key={c.wallet + childKey}
-                {...c}
-                {...childrenStakes[c.wallet]}
-                onTransfer={() => setTransferChild(c)}
-                onStream={() => setStreamChild(c)}
-                onOpen={onOpenChildDetails}
-              />
-            ))}
-          </Flex>
+          <>
+            <Center my="2rem">
+              <Heading fontSize="2xl">YOUR KIDS</Heading>
+            </Center>
+
+            <Flex
+              direction="row"
+              gridGap="14"
+              gridTemplateColumns="1fr"
+              justify="center"
+            >
+              {children.map((c) => (
+                <Child
+                  key={c.wallet + childKey}
+                  childDetails={c}
+                  {...c}
+                  {...childrenStakes[c.wallet]}
+                  onOpen={onOpenChildDetails}
+                  setSelectedChild={setSelectedChild}
+                />
+              ))}
+            </Flex>
+          </>
         )}
       </Container>
 
@@ -401,12 +485,20 @@ const Parent: React.FC = () => {
         onAdd={() => fetchChildren()}
       />
 
-      <ChangeAvatarModal isOpen={isOpen} onClose={onClose} />
+      <ChangeAvatarModal
+        isOpen={isOpen}
+        onClose={onClose}
+        activeStep={activeStep}
+        loading={loading}
+        handleSubmit={handleSubmit}
+        currentAvatar={familyDetails.avatarURI}
+      />
 
       <ChildDetailsDrawer
         isOpen={isOpenChildDetails}
         onClose={onCloseChildDetails}
         placement="left"
+        childDetails={selectedChild}
       />
     </Box>
   );

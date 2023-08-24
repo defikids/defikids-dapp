@@ -15,4 +15,5 @@ export type ChildDetails = {
   wallet: string;
   sandboxMode: boolean;
   isActive: boolean;
+  balance?: string;
 };

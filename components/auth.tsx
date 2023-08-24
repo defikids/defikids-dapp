@@ -6,6 +6,7 @@ import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
+import { useBalance } from "wagmi";
 import HostContract from "@/services/contract";
 
 const Auth = ({
@@ -78,6 +79,10 @@ const Auth = ({
     }),
     shallow
   );
+
+  const { data: balance } = useBalance({
+    address: walletAddress as `0x${string}`,
+  });
 
   /**
    * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store

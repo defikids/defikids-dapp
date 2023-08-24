@@ -30,15 +30,16 @@ import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { trimAddress } from "@/lib/web3";
+import { trimAddress, weiToEth } from "@/utils/web3";
 import { ChildDetails, FamilyDetails } from "@/dataSchema/hostContract";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
-import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 import { steps } from "@/components/steppers/RegisterChildStepper";
 import axios from "axios";
 import router from "next/router";
 import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { useBalance } from "wagmi";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -46,7 +47,6 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const [childKey, setChildKey] = useState<number | null>(null);
-  const [balance, setBalance] = useState<number>();
   const [netFlow, setNetFlow] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [children, setChildren] = useState([]);
@@ -79,13 +79,13 @@ const Parent: React.FC = () => {
     onClose: onCloseChildDetails,
   } = useDisclosure();
 
+  const { data } = useBalance({
+    address: walletAddress as `0x${string}`,
+  });
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toast = useToast();
-
-  const isMobileLarge = useBreakpointValue({
-    lg: true,
-  });
 
   const isMobileSmall = useBreakpointValue({
     sm: true,
@@ -108,29 +108,10 @@ const Parent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log("selectedChild", selectedChild);
-  }, [setSelectedChild]);
-
-  useEffect(() => {
     if (!stakeContract || !children.length) {
       setChildrenStakes({});
       return;
     }
-
-    // const fetchChildDetails = async () => {
-    //   const childDetails = {};
-    //   await Promise.all(
-    //     children.map(async (child) => {
-    //       const [details, stakes] = await Promise.all([
-    //         stakeContract.fetchStakerDetails(child._address),
-    //         stakeContract.fetchStakes(child._address),
-    //       ]);
-    //       childDetails[child._address] = { ...details, stakes };
-    //     })
-    //   );
-    //   setChildrenStakes(childDetails);
-    // };
-    // fetchChildDetails();
   }, [stakeContract, children]);
 
   //=============================================================================
@@ -166,7 +147,24 @@ const Parent: React.FC = () => {
       setChildrenLoading(true);
       const children = await contract.fetchChildren(walletAddress);
       console.log("children - fetchChildren", children);
-      setChildren(children);
+      const childrenWalletBalances = await axios.post(
+        `/api/etherscan/balancemulti`,
+        {
+          addresses: children.map((c) => c.wallet),
+        }
+      );
+
+      const childrenWithBalances = children.map((c) => {
+        const balance = childrenWalletBalances.data.find(
+          (b) => b.account === c.wallet
+        );
+        return {
+          ...c,
+          balance: balance ? balance.balance : 0,
+        };
+      });
+
+      setChildren(childrenWithBalances);
       setChildrenLoading(false);
     };
 
@@ -347,20 +345,18 @@ const Parent: React.FC = () => {
                   mr={3}
                 />
 
-                <Heading
-                  size={isMobileSmall ? "2xl" : "xl"}
-                  display="flex"
-                  alignItems="baseline"
-                >
-                  {balance ? (
-                    <AnimatedNumber value={balance} rate={netFlow} />
-                  ) : (
-                    104.9875521
-                  )}
-                  <Text fontSize="sm" ml="2">
-                    USDx
+                <Flex direction="row" alignItems="baseline">
+                  <Heading
+                    size={isMobileSmall ? "2xl" : "xl"}
+                    display="flex"
+                    alignItems="baseline"
+                  >
+                    {`${Number(data?.formatted).toFixed(4)}`}
+                  </Heading>
+                  <Text fontSize="sm" ml={2}>
+                    {data?.symbol}
                   </Text>
-                </Heading>
+                </Flex>
               </Flex>
             </Flex>
             <Menu>
@@ -450,6 +446,7 @@ const Parent: React.FC = () => {
         childKey={childKey}
         children={children}
         setChildKey={setChildKey}
+        fetchChildren={fetchChildren}
       />
     </Box>
   );

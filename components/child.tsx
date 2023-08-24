@@ -6,7 +6,7 @@ import { getUSDCXBalance } from "../services/usdcx_contract";
 // import Allocation from "./allocation";
 import { AiOutlinePlus } from "react-icons/ai";
 import { IoIosMore } from "react-icons/io";
-import { trimAddress } from "@/lib/web3";
+import { trimAddress } from "@/utils/web3";
 import { ChildDetails, FamilyDetails } from "@/dataSchema/hostContract";
 
 import {

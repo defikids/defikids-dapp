@@ -7,20 +7,22 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
-  Input,
   Text,
   Heading,
-  Tooltip,
   Flex,
   Avatar,
-  Container,
   Divider,
   Image,
   useToast,
+  Switch,
+  Spinner,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ChildDetails } from "@/dataSchema/hostContract";
-import { trimAddress } from "@/lib/web3";
+import { trimAddress } from "@/utils/web3";
+import HostContract from "@/services/contract";
+import { useContractStore } from "@/store/contract/contractStore";
+import shallow from "zustand/shallow";
 
 export const ChildDetailsDrawer = ({
   isOpen,
@@ -30,6 +32,7 @@ export const ChildDetailsDrawer = ({
   childKey,
   children,
   setChildKey,
+  fetchChildren,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -38,16 +41,35 @@ export const ChildDetailsDrawer = ({
   childKey: number;
   children: any;
   setChildKey: (key: number) => void;
+  fetchChildren: () => void;
 }) => {
+  const [balance, setBalance] = useState(0);
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
   const btnRef = useRef();
-
-  console.log(children[childKey]);
-  console.log("children", children);
-  console.log("childKey", childKey);
-
   const toast = useToast();
 
+  const { connectedSigner } = useContractStore(
+    (state) => ({
+      connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
+
+  //=============================================================================
+  //                               STATE
+  //=============================================================================
+  const [isLoading, setIsLoading] = useState(false);
+
   const childDetails = children[childKey] as ChildDetails;
+
+  const formatDate = () => {
+    const unixTimestamp = childDetails.memberSince * 1000; // Convert seconds to milliseconds
+    const date = new Date(unixTimestamp);
+
+    return date.toISOString().split("T")[0];
+  };
 
   if (!childDetails) return null;
 
@@ -61,6 +83,7 @@ export const ChildDetailsDrawer = ({
         size="xs"
         onCloseComplete={() => {
           setChildKey(null);
+          setIsLoading(false);
         }}
       >
         <DrawerOverlay />
@@ -79,25 +102,65 @@ export const ChildDetailsDrawer = ({
             </Flex>
             <Divider my={2} borderColor="gray.500" />
 
+            {/* Account Status */}
             <Heading size="md" mt={10} mb={2}>
               Account Status
             </Heading>
             <Flex justifyContent="space-between" align="center">
-              <Text>{childDetails.isActive ? "Active" : "Inactive"}</Text>
-              <Button size="sm" colorScheme="blue">
-                Edit
-              </Button>
+              <Text>{formatDate()}</Text>
             </Flex>
             <Divider my={2} borderColor="gray.500" />
 
+            {/* Sandbox */}
             <Heading size="md" mt={10} mb={2}>
               Sandbox Mode
             </Heading>
             <Flex justifyContent="space-between" align="center">
               <Text>{childDetails.sandboxMode ? "Enabled" : "Disabled"}</Text>
-              <Button size="sm" colorScheme="blue">
-                Edit
-              </Button>
+
+              {isLoading ? (
+                <Spinner size="md" />
+              ) : (
+                <Switch
+                  size="lg"
+                  onChange={async () => {
+                    const contract = await HostContract.fromProvider(
+                      connectedSigner
+                    );
+                    const { wallet, familyId } = childDetails;
+
+                    try {
+                      setIsLoading(true);
+                      const tx = await contract.toggleSandbox(wallet, familyId);
+                      await tx.wait();
+                      await fetchChildren();
+                      setIsLoading(false);
+                    } catch (e) {
+                      console.error(e);
+                      setIsLoading(false);
+
+                      if (e.message.includes("user rejected transaction")) {
+                        toast({
+                          title: "Transaction Error",
+                          description: "User rejected transaction",
+                          status: "error",
+                        });
+                        return;
+                      }
+
+                      toast({
+                        title: "Error",
+                        description: "Network error",
+                        status: "error",
+                      });
+
+                      onClose();
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                />
+              )}
             </Flex>
             <Divider my={2} borderColor="gray.500" />
 
@@ -115,7 +178,7 @@ export const ChildDetailsDrawer = ({
                   mr={2}
                 />
 
-                <Text fontSize="lg">12.4</Text>
+                <Text fontSize="lg">{childDetails.balance}</Text>
               </Flex>
               <Button size="sm" colorScheme="blue">
                 View

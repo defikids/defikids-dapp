@@ -143,6 +143,10 @@ class HostContract {
       avatarURI
     );
   }
+
+  async toggleSandbox(childAddress: string, familyId: string) {
+    return this.contract.toggleSandbox(childAddress, familyId);
+  }
 }
 
 export default HostContract;

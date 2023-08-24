@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import {
   Avatar,
   Box,
@@ -44,7 +45,7 @@ const Parent: React.FC = () => {
   //                               STATE
   //=============================================================================
 
-  const [childKey, setChildKey] = useState(0);
+  const [childKey, setChildKey] = useState<number | null>(null);
   const [balance, setBalance] = useState<number>();
   const [netFlow, setNetFlow] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
@@ -135,81 +136,6 @@ const Parent: React.FC = () => {
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
-  const updateBalance = () => {};
-
-  const updateNetFlow = async () => {};
-
-  // const balanceActions = () => {
-  //   return (
-  //     <Flex mt="8" justifyContent="flex-end" gridGap="4">
-  //       <Button
-  //         disabled={childrenLoading} // Disable the button while loading
-  //         w={{ base: "100%", md: "auto" }} // Set button width
-  //       >
-  //         <Flex alignItems="center">
-  //           <Arrow />
-  //           <Text
-  //             ml="6"
-  //             fontWeight="medium"
-  //             fontSize="base"
-  //             textAlign="left"
-  //             px=".6rem"
-  //           >
-  //             Deposit
-  //           </Text>
-  //         </Flex>
-  //       </Button>
-
-  //       <Button
-  //         className="bg-blue-oil"
-  //         disabled={childrenLoading} // Disable the button while loading
-  //         w={{ base: "100%", md: "auto" }} // Set button width
-  //         size="md"
-  //       >
-  //         <Flex alignItems="center">
-  //           <Arrow dir="down" />
-  //           <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
-  //             Withdraw
-  //           </Text>
-  //         </Flex>
-  //       </Button>
-
-  //       <Menu>
-  //         {({ isOpen }) => (
-  //           <>
-  //             <MenuButton
-  //               isActive={isOpen}
-  //               as={Button}
-  //               rightIcon={<ChevronDownIcon />}
-  //             >
-  //               {isOpen ? "Less" : "More"}
-  //             </MenuButton>
-  //             <MenuList>
-  //               <MenuItem
-  //                 icon={<AiOutlinePlus />}
-  //                 onClick={() => onAddChildOpen()}
-  //               >
-  //                 Add Child
-  //               </MenuItem>
-  //               <MenuItem
-  //                 icon={<BiTransfer />}
-  //                 onClick={() => alert("Kagebunshin")}
-  //               >
-  //                 Transfer to all kids
-  //               </MenuItem>
-  //             </MenuList>
-  //           </>
-  //         )}
-  //       </Menu>
-  //       {/* <IconButton
-  //         size="md"
-  //         aria-label="Menu Icon"
-  //         icon={<HamburgerIcon />}
-  //         // onClick={() => setMenuOpen(!menuOpen)}
-  //       /> */}
-  //     </Flex>
-  //   );
-  // };
 
   const fetchFamilyDetails = useCallback(async () => {
     if (!walletAddress) return;
@@ -270,6 +196,10 @@ const Parent: React.FC = () => {
   };
 
   const handleSubmit = async (selectedFile: File | null, avatarURI: string) => {
+    const activeAddress = children[childKey]?.wallet
+      ? children[childKey]?.wallet
+      : walletAddress;
+
     setIsLoading(true);
     setActiveStep(0);
 
@@ -301,11 +231,25 @@ const Parent: React.FC = () => {
 
     try {
       setActiveStep(1);
-      const tx = await contract.updateAvatarURI(avatar);
+      let tx: any;
+      if (activeAddress === walletAddress) {
+        tx = await contract.updateAvatarURI(avatar);
+      } else {
+        const childAddress = activeAddress;
+        tx = await contract.updateChildAvatarURI(
+          childAddress,
+          walletAddress,
+          avatar
+        );
+      }
 
       setActiveStep(2);
       const txReceipt = await tx.wait();
-      await fetchFamilyDetails();
+      if (activeAddress === walletAddress) {
+        await fetchFamilyDetails();
+      } else {
+        await fetchChildren();
+      }
 
       if (txReceipt.status === 1) {
         toast({
@@ -446,6 +390,7 @@ const Parent: React.FC = () => {
         </Container>
       </Container>
 
+      {/* Children */}
       <Container
         maxW="container.lg"
         my="16"
@@ -463,14 +408,15 @@ const Parent: React.FC = () => {
               gridTemplateColumns="1fr"
               justify="center"
             >
-              {children.map((c) => (
+              {children.map((c, i) => (
                 <Child
-                  key={c.wallet + childKey}
+                  key={c.wallet}
                   childDetails={c}
                   {...c}
                   {...childrenStakes[c.wallet]}
                   onOpen={onOpenChildDetails}
-                  setSelectedChild={setSelectedChild}
+                  setChildKey={setChildKey}
+                  childKey={i}
                 />
               ))}
             </Flex>
@@ -491,14 +437,19 @@ const Parent: React.FC = () => {
         activeStep={activeStep}
         loading={loading}
         handleSubmit={handleSubmit}
-        currentAvatar={familyDetails.avatarURI}
+        children={children}
+        childKey={childKey}
+        familyURI={familyDetails.avatarURI}
       />
 
       <ChildDetailsDrawer
         isOpen={isOpenChildDetails}
         onClose={onCloseChildDetails}
         placement="left"
-        childDetails={selectedChild}
+        onOpen={onOpen}
+        childKey={childKey}
+        children={children}
+        setChildKey={setChildKey}
       />
     </Box>
   );

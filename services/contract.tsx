@@ -130,6 +130,19 @@ class HostContract {
   async updateAvatarURI(avatarURI: string) {
     return this.contract.updateAvatarURI(avatarURI);
   }
+
+  async updateChildAvatarURI(
+    childAddress: string,
+    walletAddress: string,
+    avatarURI: string
+  ) {
+    const familyId = await this.contract.getFamilyIdByOwner(walletAddress);
+    return this.contract.updateChildAvatarURI(
+      familyId,
+      childAddress,
+      avatarURI
+    );
+  }
 }
 
 export default HostContract;

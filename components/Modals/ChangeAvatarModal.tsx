@@ -20,17 +20,21 @@ export const ChangeAvatarModal = ({
   activeStep,
   loading,
   handleSubmit,
-  currentAvatar,
+  familyURI,
+  children,
+  childKey,
 }: {
   isOpen: boolean;
   onClose: () => void;
   activeStep: number;
   loading: boolean;
   handleSubmit: (file: File | null, avatar: string) => void;
-  currentAvatar: string;
+  familyURI: string;
+  children: any;
+  childKey: number;
 }) => {
   const [provideUrl, setProvideUrl] = useState(false);
-  const [avatarURI, setAvatarURI] = useState(currentAvatar);
+  const [avatarURI, setAvatarURI] = useState("");
   const [uploadURI, setUploadURI] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -41,6 +45,22 @@ export const ChangeAvatarModal = ({
     fileInputRef.current.click();
   };
 
+  const displayAvatar = () => {
+    console.log("avatarURI", avatarURI);
+    console.log("uploadURI", uploadURI);
+    if (avatarURI) return avatarURI;
+
+    if (children[childKey]?.avatarURI) {
+      return children[childKey]?.avatarURI;
+    }
+
+    if (familyURI) {
+      return familyURI;
+    }
+
+    return "/images/placeholder-avatar.jpeg";
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -48,6 +68,10 @@ export const ChangeAvatarModal = ({
       size="lg"
       isCentered
       closeOnOverlayClick={false}
+      onCloseComplete={() => {
+        setAvatarURI("");
+        setUploadURI("");
+      }}
     >
       <ModalOverlay />
       <ModalContent>
@@ -65,9 +89,7 @@ export const ChangeAvatarModal = ({
                   mb={6}
                   size="2xl"
                   name="Defi Kids"
-                  src={
-                    avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"
-                  }
+                  src={displayAvatar()}
                 />
               </Flex>
 
@@ -85,7 +107,7 @@ export const ChangeAvatarModal = ({
               />
 
               <Button
-                disabled={currentAvatar === avatarURI}
+                // disabled={currentAvatar === avatarURI}
                 width="full"
                 size="md"
                 mt={4}

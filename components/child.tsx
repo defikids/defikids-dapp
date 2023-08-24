@@ -81,7 +81,8 @@ const Child = ({
   isActive,
   stakes = [],
   onOpen,
-  setSelectedChild,
+  childKey,
+  setChildKey,
   childDetails,
 }: {
   username: string;
@@ -93,7 +94,8 @@ const Child = ({
   isActive: boolean;
   stakes: IStake[];
   onOpen: () => void;
-  setSelectedChild: (childDetails: ChildDetails) => void;
+  childKey: number;
+  setChildKey: (key: number) => void;
   childDetails: ChildDetails;
 }) => {
   const toast = useToast();
@@ -125,7 +127,7 @@ const Child = ({
       alignItems="center"
       direction="column"
       onClick={() => {
-        setSelectedChild(childDetails);
+        setChildKey(childKey);
         onOpen();
       }}
       _hover={{

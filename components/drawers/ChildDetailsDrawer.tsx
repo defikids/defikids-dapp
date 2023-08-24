@@ -26,18 +26,30 @@ export const ChildDetailsDrawer = ({
   isOpen,
   onClose,
   placement,
-  childDetails,
+  onOpen,
+  childKey,
+  children,
+  setChildKey,
 }: {
   isOpen: boolean;
   onClose: () => void;
   placement: any;
-  childDetails: ChildDetails;
+  onOpen: () => void;
+  childKey: number;
+  children: any;
+  setChildKey: (key: number) => void;
 }) => {
   const btnRef = useRef();
 
-  console.log(childDetails);
+  console.log(children[childKey]);
+  console.log("children", children);
+  console.log("childKey", childKey);
 
   const toast = useToast();
+
+  const childDetails = children[childKey] as ChildDetails;
+
+  if (!childDetails) return null;
 
   return (
     <>
@@ -47,6 +59,9 @@ export const ChildDetailsDrawer = ({
         onClose={onClose}
         finalFocusRef={btnRef}
         size="xs"
+        onCloseComplete={() => {
+          setChildKey(null);
+        }}
       >
         <DrawerOverlay />
         <DrawerContent>
@@ -144,7 +159,7 @@ export const ChildDetailsDrawer = ({
                     : "/images/placeholder-avatar.jpeg"
                 }
               />
-              <Button size="sm" colorScheme="blue">
+              <Button size="sm" colorScheme="blue" onClick={onOpen}>
                 Edit
               </Button>
             </Flex>

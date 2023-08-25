@@ -31,6 +31,8 @@ const baseStyle = definePartsStyle({
   item: {
     // this will style the MenuItem and MenuItemOption components
     color: "black",
+    paddingRight: "4",
+    paddingLeft: "4",
 
     _dark: {
       bg: "white",
@@ -46,8 +48,8 @@ const baseStyle = definePartsStyle({
     // this will style the text defined by the title prop
     // in the MenuGroup and MenuOptionGroup components
     textTransform: "uppercase",
-    color: "white",
-    textAlign: "center",
+    color: "black",
+    textAlign: "left",
     letterSpacing: "wider",
     opacity: "0.7",
   },
@@ -62,8 +64,8 @@ const baseStyle = definePartsStyle({
   },
   divider: {
     // this will style the MenuDivider component
-    my: "4",
-    borderColor: "gray.200",
+    my: "4px",
+    borderColor: "black",
     borderBottom: "2px dotted",
   },
 });

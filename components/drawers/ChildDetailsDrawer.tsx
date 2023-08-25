@@ -16,6 +16,7 @@ import {
   useToast,
   Switch,
   Spinner,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { ChildDetails } from "@/dataSchema/hostContract";
@@ -23,6 +24,11 @@ import { trimAddress } from "@/utils/web3";
 import HostContract from "@/services/contract";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
+import { transactionErrors } from "@/utils/errorHanding";
+import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { getEtherscanUrl } from "@/utils/web3";
+import { EtherscanContext } from "@/dataSchema/enums";
+import { useNetwork } from "wagmi";
 
 export const ChildDetailsDrawer = ({
   isOpen,
@@ -33,6 +39,8 @@ export const ChildDetailsDrawer = ({
   children,
   setChildKey,
   fetchChildren,
+  onOpenChangeUsername,
+  onSendFundsOpen,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -42,13 +50,19 @@ export const ChildDetailsDrawer = ({
   children: any;
   setChildKey: (key: number) => void;
   fetchChildren: () => void;
+  onOpenChangeUsername: () => void;
+  onSendFundsOpen: () => void;
 }) => {
-  const [balance, setBalance] = useState(0);
   //=============================================================================
   //                               HOOKS
   //=============================================================================
   const btnRef = useRef();
   const toast = useToast();
+  const { chain } = useNetwork();
+
+  const isMobileSmall = useBreakpointValue({
+    sm: true,
+  });
 
   const { connectedSigner } = useContractStore(
     (state) => ({
@@ -64,8 +78,39 @@ export const ChildDetailsDrawer = ({
 
   const childDetails = children[childKey] as ChildDetails;
 
+  //=============================================================================
+  //                               FUNCTIONS
+  //=============================================================================
+
+  const handleSandboxToggle = async () => {
+    const contract = await HostContract.fromProvider(connectedSigner);
+    const { wallet, familyId } = childDetails;
+
+    try {
+      setIsLoading(true);
+
+      const tx = (await contract.toggleSandbox(
+        wallet,
+        familyId
+      )) as TransactionResponse;
+
+      await tx.wait();
+
+      fetchChildren();
+      setIsLoading(false);
+    } catch (e) {
+      console.error(e);
+      setIsLoading(false);
+
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+
+      onClose();
+    }
+  };
+
   const formatDate = () => {
-    const unixTimestamp = childDetails.memberSince * 1000; // Convert seconds to milliseconds
+    const unixTimestamp = childDetails.memberSince * 1000;
     const date = new Date(unixTimestamp);
 
     return date.toISOString().split("T")[0];
@@ -80,7 +125,7 @@ export const ChildDetailsDrawer = ({
         placement={placement}
         onClose={onClose}
         finalFocusRef={btnRef}
-        size="xs"
+        size={isMobileSmall ? "xs" : "full"}
         onCloseComplete={() => {
           setChildKey(null);
           setIsLoading(false);
@@ -91,26 +136,28 @@ export const ChildDetailsDrawer = ({
           <DrawerCloseButton />
           <DrawerHeader />
           <DrawerBody>
-            <Heading size="md" mt={10} mb={2}>
+            <Heading size="md" mt={5} mb={2}>
               UserName
             </Heading>
             <Flex justifyContent="space-between" align="center">
               <Text>{childDetails.username}</Text>
-              <Button size="sm" colorScheme="blue">
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={onOpenChangeUsername}
+              >
                 Edit
               </Button>
             </Flex>
             <Divider my={2} borderColor="gray.500" />
-
             {/* Account Status */}
             <Heading size="md" mt={10} mb={2}>
-              Account Status
+              Member Since
             </Heading>
             <Flex justifyContent="space-between" align="center">
               <Text>{formatDate()}</Text>
             </Flex>
             <Divider my={2} borderColor="gray.500" />
-
             {/* Sandbox */}
             <Heading size="md" mt={10} mb={2}>
               Sandbox Mode
@@ -121,49 +168,11 @@ export const ChildDetailsDrawer = ({
               {isLoading ? (
                 <Spinner size="md" />
               ) : (
-                <Switch
-                  size="lg"
-                  onChange={async () => {
-                    const contract = await HostContract.fromProvider(
-                      connectedSigner
-                    );
-                    const { wallet, familyId } = childDetails;
-
-                    try {
-                      setIsLoading(true);
-                      const tx = await contract.toggleSandbox(wallet, familyId);
-                      await tx.wait();
-                      await fetchChildren();
-                      setIsLoading(false);
-                    } catch (e) {
-                      console.error(e);
-                      setIsLoading(false);
-
-                      if (e.message.includes("user rejected transaction")) {
-                        toast({
-                          title: "Transaction Error",
-                          description: "User rejected transaction",
-                          status: "error",
-                        });
-                        return;
-                      }
-
-                      toast({
-                        title: "Error",
-                        description: "Network error",
-                        status: "error",
-                      });
-
-                      onClose();
-                    } finally {
-                      setIsLoading(false);
-                    }
-                  }}
-                />
+                <Switch size="lg" onChange={handleSandboxToggle} />
               )}
             </Flex>
             <Divider my={2} borderColor="gray.500" />
-
+            {/* Wallet Details */}
             <Heading size="md" mt={10} mb={2}>
               Wallet Details
             </Heading>
@@ -180,11 +189,23 @@ export const ChildDetailsDrawer = ({
 
                 <Text fontSize="lg">{childDetails.balance}</Text>
               </Flex>
-              <Button size="sm" colorScheme="blue">
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={() => {
+                  window.open(
+                    getEtherscanUrl(
+                      chain.id,
+                      EtherscanContext.ADDRESS,
+                      childDetails.wallet
+                    ),
+                    "_blank"
+                  );
+                }}
+              >
                 View
               </Button>
             </Flex>
-
             {/* Address */}
             <Flex justifyContent="space-between" align="center" mt={4}>
               <Text>{trimAddress(childDetails.wallet)}</Text>
@@ -205,11 +226,9 @@ export const ChildDetailsDrawer = ({
                 Copy
               </Button>
             </Flex>
-
             <Divider my={2} borderColor="gray.500" />
-
             {/* Avatar */}
-            <Heading size="md" mt={10} mb={8}>
+            <Heading size="md" mt={5} mb={4}>
               Avatar
             </Heading>
             <Flex justifyContent="space-between" align="center" ml={2}>
@@ -224,6 +243,14 @@ export const ChildDetailsDrawer = ({
               />
               <Button size="sm" colorScheme="blue" onClick={onOpen}>
                 Edit
+              </Button>
+            </Flex>
+
+            <Divider my={8} borderColor="gray.500" />
+            <Flex justifyContent="space-between" align="center">
+              <Heading size="md">Send Funds</Heading>
+              <Button size="sm" colorScheme="blue" onClick={onSendFundsOpen}>
+                Send
               </Button>
             </Flex>
           </DrawerBody>

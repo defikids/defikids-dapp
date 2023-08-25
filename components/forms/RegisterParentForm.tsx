@@ -7,28 +7,36 @@ import {
   Button,
   FormErrorMessage,
   useToast,
-  Text,
   Flex,
-  Switch,
   Divider,
   Avatar,
-  Heading,
   useSteps,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import axios from "axios";
 import {
-  RegisterChildStepper,
+  TransactionStepper,
   steps,
-} from "@/components/steppers/RegisterChildStepper";
+} from "@/components/steppers/TransactionStepper";
 import router from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 import HostContract from "@/services/contract";
 import { AvatarSelection } from "@/components/forms/AvatarSelection";
+import { StepperContext } from "@/dataSchema/enums";
+import { transactionErrors } from "@/utils/errorHanding";
+import { TransactionResponse } from "@ethersproject/abstract-provider";
 
-export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
+export const RegisterParentForm = ({
+  onClose,
+  loading,
+  setIsLoading,
+}: {
+  onClose: () => void;
+  loading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
+}) => {
   //=============================================================================
   //                             STATE
   //=============================================================================
@@ -43,7 +51,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const [provideUrl, setProvideUrl] = useState(false);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [loading, setIsLoading] = useState(false);
 
   const isNameError = username === "";
   const isIdError = familyId === "";
@@ -62,10 +69,9 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
     count: steps.length,
   });
 
-  const { walletAddress, setWalletAddress } = useAuthStore(
+  const { walletAddress } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
-      setWalletAddress: state.setWalletAddress,
     }),
     shallow
   );
@@ -144,51 +150,39 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
     try {
       setActiveStep(1);
-      const hash = await contract.hashFamilyId(walletAddress, familyId);
-
-      const tx = await contract.registerParent(hash, avatar, username);
+      const tx = (await contract.registerParent(
+        familyId,
+        wallet,
+        avatar,
+        username
+      )) as TransactionResponse;
 
       setActiveStep(2);
-      const txReceipt = await tx.wait();
+      await tx.wait();
 
-      if (txReceipt.status === 1) {
-        localStorage.setItem("defi-kids.family-id", familyId);
-        toast({
-          title: "Child successfully added",
-          status: "success",
-        });
-        onClose();
-        router.push("/parent");
-      }
-    } catch (e) {
-      console.error(e);
-      setIsLoading(false);
-
-      if (e.message.includes("user rejected transaction")) {
-        toast({
-          title: "Transaction Error",
-          description: "User rejected transaction",
-          status: "error",
-        });
-        return;
-      }
-
+      localStorage.setItem("defi-kids.family-id", familyId);
       toast({
-        title: "Error",
-        description: "Network error",
-        status: "error",
+        title: "Child successfully added",
+        status: "success",
       });
-
       onClose();
-    } finally {
-      setIsLoading(false);
+      router.push("/parent");
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
     }
   };
 
   // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
 
   if (loading) {
-    return <RegisterChildStepper activeStep={activeStep} />;
+    return (
+      <TransactionStepper
+        activeStep={activeStep}
+        context={StepperContext.AVATAR}
+      />
+    );
   }
 
   return (

@@ -53,8 +53,13 @@ class HostContract {
     return userType;
   }
 
-  async registerParent(hash: string, avatarURI: string, username: string) {
-    // @ts-ignore
+  async registerParent(
+    familyId: string,
+    walletAddress: string,
+    avatarURI: string,
+    username: string
+  ) {
+    const hash = await this.contract.hashFamilyId(walletAddress, familyId);
     return this.contract.registerParent(hash, avatarURI, username);
   }
 
@@ -146,6 +151,17 @@ class HostContract {
 
   async toggleSandbox(childAddress: string, familyId: string) {
     return this.contract.toggleSandbox(childAddress, familyId);
+  }
+
+  async updateUsername(username: string) {
+    return this.contract.updateUsername(username);
+  }
+  async updateChildUsername(
+    familyId: string,
+    childAddress: string,
+    username: string
+  ) {
+    return this.contract.updateChildUsername(familyId, childAddress, username);
   }
 }
 

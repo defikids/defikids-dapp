@@ -10,6 +10,7 @@ import {
   Image,
   Menu,
   MenuButton,
+  MenuGroup,
   MenuItem,
   MenuList,
   Text,
@@ -18,28 +19,38 @@ import {
   useDisclosure,
   useSteps,
   useToast,
+  MenuDivider,
+  Wrap,
+  WrapItem,
+  IconButton,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-import AnimatedNumber from "@/components/animated_number";
 import Child from "@/components/child";
 import contract from "@/services/contract";
 import HostContract from "@/services/contract";
 import StakeContract from "@/services/stake";
-import { BiTransfer } from "react-icons/bi";
+import { BiTransfer, BiWalletAlt } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { trimAddress, weiToEth } from "@/utils/web3";
-import { ChildDetails, FamilyDetails } from "@/dataSchema/hostContract";
+import { trimAddress, getEtherscanUrl } from "@/utils/web3";
+import { FamilyDetails } from "@/dataSchema/hostContract";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
 import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
-import { steps } from "@/components/steppers/RegisterChildStepper";
+import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import router from "next/router";
 import { AddChildModal } from "@/components/Modals/AddChildModal";
 import { useBalance } from "wagmi";
+import { UsernameModal } from "@/components/Modals/UsernameModal";
+import { RxAvatar } from "react-icons/rx";
+import { SendFundsModal } from "@/components/Modals/SendFundsModal";
+import { useNetwork } from "wagmi";
+import { EtherscanContext } from "@/dataSchema/enums";
+import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
+import { HiMenu } from "react-icons/hi";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -47,14 +58,12 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const [childKey, setChildKey] = useState<number | null>(null);
-  const [netFlow, setNetFlow] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as FamilyDetails);
   const [loading, setIsLoading] = useState(false);
-  const [selectedChild, setSelectedChild] = useState({} as ChildDetails);
 
   //=============================================================================
   //                               HOOKS
@@ -73,28 +82,49 @@ const Parent: React.FC = () => {
     shallow
   );
 
+  const { data } = useBalance({
+    address: walletAddress as `0x${string}`,
+  });
+
+  const toast = useToast();
+  const { chain } = useNetwork();
+
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isAddChildOpen,
+    onOpen: onAddChildOpen,
+    onClose: onAddChildClose,
+  } = useDisclosure();
+
   const {
     isOpen: isOpenChildDetails,
     onOpen: onOpenChildDetails,
     onClose: onCloseChildDetails,
   } = useDisclosure();
 
-  const { data } = useBalance({
-    address: walletAddress as `0x${string}`,
-  });
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const toast = useToast();
-
-  const isMobileSmall = useBreakpointValue({
-    sm: true,
-  });
+  const {
+    isOpen: isChangeUsernameOpen,
+    onOpen: onChangeUsernameOpen,
+    onClose: onChangeUsernameClose,
+  } = useDisclosure();
 
   const {
-    isOpen: isAddChildOpen,
-    onOpen: onAddChildOpen,
-    onClose: onAddChildClose,
+    isOpen: isSendFundsOpen,
+    onOpen: onSendFundsOpen,
+    onClose: onSendFundsClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isParentDetailsOpen,
+    onOpen: onParentDetailsOpen,
+    onClose: onParentDetailsClose,
   } = useDisclosure();
 
   const { activeStep, setActiveStep } = useSteps({
@@ -305,7 +335,7 @@ const Parent: React.FC = () => {
             />
           </Tooltip>
 
-          <Heading fontSize={isMobileSmall ? "2xl" : "xl"} ml={5}>
+          <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
             {`Welcome back, ${
               familyDetails.username
                 ? familyDetails.username
@@ -338,8 +368,8 @@ const Parent: React.FC = () => {
               {/* Balance */}
               <Flex alignItems="center">
                 <Image
-                  src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=018"
-                  alt="USDC logo"
+                  src="/logos/ethereum-logo.png"
+                  alt="Eth logo"
                   width={10}
                   height={10}
                   mr={3}
@@ -347,7 +377,7 @@ const Parent: React.FC = () => {
 
                 <Flex direction="row" alignItems="baseline">
                   <Heading
-                    size={isMobileSmall ? "2xl" : "xl"}
+                    size={isMobileSize ? "2xl" : "xl"}
                     display="flex"
                     alignItems="baseline"
                   >
@@ -359,29 +389,72 @@ const Parent: React.FC = () => {
                 </Flex>
               </Flex>
             </Flex>
-            <Menu>
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={Button} size="2xl">
-                    <ChevronDownIcon fontSize="3xl" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem
-                      icon={<AiOutlinePlus />}
-                      onClick={() => onAddChildOpen()}
-                    >
-                      Add Child
-                    </MenuItem>
-                    <MenuItem
-                      icon={<BiTransfer />}
-                      onClick={() => alert("Kagebunshin")}
-                    >
-                      Transfer to all kids
-                    </MenuItem>
-                  </MenuList>
-                </>
-              )}
-            </Menu>
+            {!isMobileSize ? (
+              <Menu>
+                {({ isOpen }) => (
+                  <>
+                    <MenuButton isActive={isOpen} as={Button} size="2xl">
+                      <ChevronDownIcon fontSize="3xl" />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuGroup title="Parent">
+                        <MenuItem icon={<RxAvatar />} onClick={onOpen}>
+                          Change Avatar
+                        </MenuItem>
+                        <MenuItem
+                          icon={<EditIcon />}
+                          onClick={onChangeUsernameOpen}
+                        >
+                          Change Username
+                        </MenuItem>
+                        <MenuItem
+                          icon={<BiWalletAlt />}
+                          onClick={() => {
+                            window.open(
+                              getEtherscanUrl(
+                                chain.id,
+                                EtherscanContext.ADDRESS,
+                                walletAddress
+                              ),
+                              "_blank"
+                            );
+                          }}
+                        >
+                          Transaction History
+                        </MenuItem>
+                      </MenuGroup>
+
+                      <MenuDivider />
+
+                      <MenuGroup title="Family Members">
+                        <MenuItem
+                          icon={<AiOutlinePlus />}
+                          onClick={onAddChildOpen}
+                        >
+                          Add Member
+                        </MenuItem>
+                        <MenuItem
+                          icon={<BiTransfer />}
+                          onClick={() => alert("Transfer to all kids")}
+                        >
+                          Airdrop
+                        </MenuItem>
+                      </MenuGroup>
+                    </MenuList>
+                  </>
+                )}
+              </Menu>
+            ) : (
+              <IconButton
+                variant="outline"
+                colorScheme="white"
+                aria-label="Call Sage"
+                fontSize="30px"
+                icon={<HiMenu />}
+                onClick={onParentDetailsOpen}
+                style={{ border: "1px solid transparent" }}
+              />
+            )}
           </Flex>
         </Container>
       </Container>
@@ -395,27 +468,23 @@ const Parent: React.FC = () => {
         {children.length > 0 && (
           <>
             <Center my="2rem">
-              <Heading fontSize="2xl">YOUR KIDS</Heading>
+              <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
             </Center>
 
-            <Flex
-              direction="row"
-              gridGap="14"
-              gridTemplateColumns="1fr"
-              justify="center"
-            >
+            <Wrap direction="row" justify="center" spacing="8rem">
               {children.map((c, i) => (
-                <Child
-                  key={c.wallet}
-                  childDetails={c}
-                  {...c}
-                  {...childrenStakes[c.wallet]}
-                  onOpen={onOpenChildDetails}
-                  setChildKey={setChildKey}
-                  childKey={i}
-                />
+                <WrapItem key={c.wallet}>
+                  <Child
+                    childDetails={c}
+                    {...c}
+                    {...childrenStakes[c.wallet]}
+                    onOpen={onOpenChildDetails}
+                    setChildKey={setChildKey}
+                    childKey={i}
+                  />
+                </WrapItem>
               ))}
-            </Flex>
+            </Wrap>
           </>
         )}
       </Container>
@@ -447,7 +516,40 @@ const Parent: React.FC = () => {
         children={children}
         setChildKey={setChildKey}
         fetchChildren={fetchChildren}
+        onOpenChangeUsername={onChangeUsernameOpen}
+        onSendFundsOpen={onSendFundsOpen}
       />
+
+      <UsernameModal
+        isOpen={isChangeUsernameOpen}
+        onClose={onChangeUsernameClose}
+        childKey={childKey}
+        children={children}
+        familyId={familyDetails.familyId}
+        fetchChildren={fetchChildren}
+        fetchFamilyDetails={fetchFamilyDetails}
+      />
+
+      <SendFundsModal
+        isOpen={isSendFundsOpen}
+        onClose={onSendFundsClose}
+        childKey={childKey}
+        children={children}
+        fetchChildren={fetchChildren}
+        fetchFamilyDetails={fetchFamilyDetails}
+      />
+
+      {isMobileSize && (
+        <ParentDetailsDrawer
+          isOpen={isParentDetailsOpen}
+          onClose={onParentDetailsClose}
+          placement="bottom"
+          onOpen={onOpen}
+          walletAddress={walletAddress}
+          onChangeUsernameOpen={onChangeUsernameOpen}
+          onAddChildOpen={onAddChildOpen}
+        />
+      )}
     </Box>
   );
 };

@@ -26,17 +26,6 @@ import {
   AvatarBadge,
 } from "@chakra-ui/react";
 
-// interface IProps extends IChild {
-//   details: {
-//     totalCreatedStakes: BigNumber;
-//     totalInvested: BigNumber;
-//     totalRewards: BigNumber;
-//   };
-//   stakes: IStake[];
-//   onTransfer: () => void;
-//   onStream: () => void;
-// }
-
 export const MOCK_ALLOCATIONS = [
   {
     name: "Playstation 5",
@@ -144,11 +133,8 @@ const Child = ({
         src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
       />
 
-      <Box>
-        {/* Username */}
-        <Flex mb={2}>
-          <Text>{username ? username : trimAddress(wallet)}</Text>
-        </Flex>
+      <Box mt="2rem">
+        <Text>{username ? username : trimAddress(wallet)}</Text>
       </Box>
     </Flex>
   );

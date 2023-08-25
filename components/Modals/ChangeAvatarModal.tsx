@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { AvatarSelection } from "@/components/forms/AvatarSelection";
 import { useRef, useState } from "react";
-import { RegisterChildStepper } from "../steppers/RegisterChildStepper";
+import { TransactionStepper } from "../steppers/TransactionStepper";
+import { StepperContext } from "@/dataSchema/enums";
 
 export const ChangeAvatarModal = ({
   isOpen,
@@ -80,7 +81,10 @@ export const ChangeAvatarModal = ({
 
         <ModalBody>
           {loading ? (
-            <RegisterChildStepper activeStep={activeStep} />
+            <TransactionStepper
+              activeStep={activeStep}
+              context={StepperContext.AVATAR}
+            />
           ) : (
             <>
               <Flex direction="row" align="center" justify="center">

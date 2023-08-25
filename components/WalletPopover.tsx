@@ -1,4 +1,3 @@
-import { useAuthStore } from "@/store/auth/authStore";
 import {
   Box,
   Button,
@@ -12,89 +11,26 @@ import {
   Image,
   Flex,
   Icon,
-  useToast,
   Heading,
+  Text,
+  Divider,
 } from "@chakra-ui/react";
-import shallow from "zustand/shallow";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useNetwork } from "wagmi";
+import { getEtherscanUrl } from "@/utils/web3";
+import { EtherscanContext } from "@/dataSchema/enums";
 
 export const WalletPopover = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
 
-  const toast = useToast();
   const { chain } = useNetwork();
-
-  const { walletAddress } = useAuthStore(
-    (state) => ({
-      walletAddress: state.walletAddress,
-    }),
-    shallow
-  );
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
-
-  const blockchainNameByChainId = () => {
-    switch (chain.id) {
-      case 137:
-        return "Polygon";
-      case 80001:
-        return "Polygon Mumbai Testnet";
-      case 1:
-        return "Ethereum";
-      case 5:
-        return "Goerli Testnet";
-      default:
-        return "Unknown";
-    }
-  };
-
-  const copyAddressToClipboard = (address: string) => {
-    navigator.clipboard.writeText(address);
-    toast({
-      title: "Copied to clipboard",
-      status: "success",
-    });
-  };
-
-  const getBlockchainUrl = () => {
-    if (chain.id === 137) return "https://polygonscan.com/";
-    if (chain.id === 80001) return "https://mumbai.polygonscan.com/";
-    if (chain.id === 1) return "https://etherscan.io/";
-    if (chain.id === 5) return "https://goerli.etherscan.io/";
-  };
-
-  const openWalletOnBlockchain = () => {
-    if (chain.id === 137) {
-      window.open(
-        ` https://polygonscan.com/address//${walletAddress}`,
-        "_blank"
-      );
-      return;
-    }
-    if (chain.id === 80001) {
-      window.open(
-        ` https://mumbai.polygonscan.com/address/${walletAddress}`,
-        "_blank"
-      );
-    }
-    if (chain.id === 1) {
-      window.open(` https://etherscan.io/address/${walletAddress}`, "_blank");
-      return;
-    }
-    if (chain.id === 5) {
-      window.open(
-        ` https://goerli.etherscan.io/address/${walletAddress}`,
-        "_blank"
-      );
-      return;
-    }
-  };
 
   const walletIcon = () => {
     const connectWalletType = localStorage.getItem("wagmi.wallet");
@@ -131,7 +67,15 @@ export const WalletPopover = () => {
           mx={4}
         />
       </PopoverTrigger>
-      <PopoverContent color="black" bg="#4F1B7C">
+      <PopoverContent
+        color="black"
+        // bg="white"
+        style={{
+          // opacity white background.
+          opacity: 0.9,
+          background: "white",
+        }}
+      >
         <PopoverBody mt={2} mx={2}>
           <ConnectButton.Custom>
             {({
@@ -171,7 +115,7 @@ export const WalletPopover = () => {
                           mb={5}
                           w="100%"
                           style={{ display: "flex", alignItems: "center" }}
-                          type="button"
+                          colorScheme="blue"
                         >
                           {chain.hasIcon && (
                             <Box
@@ -185,6 +129,7 @@ export const WalletPopover = () => {
                               }}
                             >
                               {chain.iconUrl && (
+                                // eslint-disable-next-line @next/next/no-img-element
                                 <img
                                   alt={chain.name ?? "Chain icon"}
                                   src={chain.iconUrl}
@@ -200,7 +145,8 @@ export const WalletPopover = () => {
                           onClick={openAccountModal}
                           type="button"
                           w="100%"
-                          mb={5}
+                          mb={2}
+                          colorScheme="blue"
                         >
                           {account.displayName}
                           {account.displayBalance
@@ -220,36 +166,37 @@ export const WalletPopover = () => {
 
         <PopoverFooter
           border="0"
-          display="flex"
           alignItems="center"
           justifyContent="space-between"
           pb={4}
         >
-          <Flex alignItems="center">
-            <Icon
-              as={Image}
-              src={chainIcon()}
-              alt="Wallet Icon"
-              width="30"
-              height="25"
-              mr={2}
-            />
-            <Heading fontSize="md" color="white">
+          <Text fontSize="sm" color="black">
+            Contracts
+          </Text>
+
+          <Divider my={2} />
+
+          <Flex alignItems="center" justify="space-between">
+            <Heading fontSize="md" color="black">
               Core Contract
             </Heading>
+            <Button
+              size="sm"
+              colorScheme="messenger"
+              onClick={() =>
+                window.open(
+                  getEtherscanUrl(
+                    chain.id,
+                    EtherscanContext.ADDRESS,
+                    HOST_ADDRESS
+                  ),
+                  "_blank"
+                )
+              }
+            >
+              <Heading size="xs">View</Heading>
+            </Button>
           </Flex>
-          <Button
-            size="sm"
-            colorScheme="messenger"
-            onClick={() =>
-              window.open(
-                `${getBlockchainUrl()}/address/${HOST_ADDRESS}`,
-                "_blank"
-              )
-            }
-          >
-            <Heading size="xs">View</Heading>
-          </Button>
         </PopoverFooter>
       </PopoverContent>
     </Popover>

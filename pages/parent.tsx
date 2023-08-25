@@ -1,64 +1,69 @@
+/* eslint-disable react/no-children-prop */
 import {
-  AbsoluteCenter,
   Avatar,
   Box,
   Button,
   Center,
-  ChakraProvider,
   Container,
-  Divider,
   Flex,
   Heading,
   Image,
+  Menu,
+  MenuButton,
+  MenuGroup,
+  MenuItem,
+  MenuList,
   Text,
   Tooltip,
   useBreakpointValue,
   useDisclosure,
+  useSteps,
+  useToast,
+  MenuDivider,
+  Wrap,
+  WrapItem,
+  IconButton,
 } from "@chakra-ui/react";
-import React, { use, useCallback, useEffect, useState } from "react";
-import AnimatedNumber from "@/components/animated_number";
-import Arrow from "@/components/arrow";
+import React, { useCallback, useEffect, useState } from "react";
 import Child from "@/components/child";
-// import TopUpModal from "@/components/topup_modal";
-// import WithdrawModal from "@/components/withdraw_modal";
-// import TransferAllModal from "@/components/transfer_all_modal";
-// import TransferModal from "@/components/transfer_modal";
-// import StreamModal from "@/components/stream_modal";
-import contract, { IChild } from "@/services/contract";
+import contract from "@/services/contract";
 import HostContract from "@/services/contract";
 import StakeContract from "@/services/stake";
-// import { flowDetails } from "@/hooks/useSuperFluid";
-import { ethers } from "ethers";
-import Plus from "@/components/plus";
-import { AddChildModal } from "@/components/Modals/AddChildModal";
-import { getUSDCXBalance } from "@/services/usdcx_contract";
-import { BiTransfer } from "react-icons/bi";
+import { BiTransfer, BiWalletAlt } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { trimAddress } from "@/lib/web3";
+import { trimAddress, getEtherscanUrl } from "@/utils/web3";
 import { FamilyDetails } from "@/dataSchema/hostContract";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
+import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
+import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
+import { steps } from "@/components/steppers/TransactionStepper";
+import axios from "axios";
+import router from "next/router";
+import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { useBalance } from "wagmi";
+import { UsernameModal } from "@/components/Modals/UsernameModal";
+import { RxAvatar } from "react-icons/rx";
+import { SendFundsModal } from "@/components/Modals/SendFundsModal";
+import { useNetwork } from "wagmi";
+import { EtherscanContext } from "@/dataSchema/enums";
+import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
+import { HiMenu } from "react-icons/hi";
 
 const Parent: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
 
-  const [childKey, setChildKey] = useState(0);
-  const [balance, setBalance] = useState<number>();
-  const [netFlow, setNetFlow] = useState<number>(0);
+  const [childKey, setChildKey] = useState<number | null>(null);
   const [childrenLoading, setChildrenLoading] = useState(false);
-  const [showTopUp, setShowTopUp] = useState(false);
-  const [showWithdraw, setShowWithdraw] = useState(false);
-  const [showTransferAll, setShowTransferAll] = useState(false);
-  const [transferChild, setTransferChild] = useState();
-  const [streamChild, setStreamChild] = useState();
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as FamilyDetails);
+  const [loading, setIsLoading] = useState(false);
 
   //=============================================================================
   //                               HOOKS
@@ -77,21 +82,55 @@ const Parent: React.FC = () => {
     shallow
   );
 
+  const { data } = useBalance({
+    address: walletAddress as `0x${string}`,
+  });
+
+  const toast = useToast();
+  const { chain } = useNetwork();
+
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
+
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const isMobileLarge = useBreakpointValue({
-    lg: true,
-  });
-
-  const isMobileSmall = useBreakpointValue({
-    sm: true,
-  });
-
   const {
     isOpen: isAddChildOpen,
     onOpen: onAddChildOpen,
     onClose: onAddChildClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isOpenChildDetails,
+    onOpen: onOpenChildDetails,
+    onClose: onCloseChildDetails,
+  } = useDisclosure();
+
+  const {
+    isOpen: isChangeUsernameOpen,
+    onOpen: onChangeUsernameOpen,
+    onClose: onChangeUsernameClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isSendFundsOpen,
+    onOpen: onSendFundsOpen,
+    onClose: onSendFundsClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isParentDetailsOpen,
+    onOpen: onParentDetailsOpen,
+    onClose: onParentDetailsClose,
+  } = useDisclosure();
+
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
 
   useEffect(() => {
     fetchFamilyDetails();
@@ -103,68 +142,11 @@ const Parent: React.FC = () => {
       setChildrenStakes({});
       return;
     }
-
-    // const fetchChildDetails = async () => {
-    //   const childDetails = {};
-    //   await Promise.all(
-    //     children.map(async (child) => {
-    //       const [details, stakes] = await Promise.all([
-    //         stakeContract.fetchStakerDetails(child._address),
-    //         stakeContract.fetchStakes(child._address),
-    //       ]);
-    //       childDetails[child._address] = { ...details, stakes };
-    //     })
-    //   );
-    //   setChildrenStakes(childDetails);
-    // };
-    // fetchChildDetails();
   }, [stakeContract, children]);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
-  const updateBalance = () => {};
-
-  const updateNetFlow = async () => {};
-
-  const balanceActions = () => {
-    return (
-      <Flex mt="8" justifyContent="flex-end" gridGap="4">
-        <Button
-          onClick={() => setShowTopUp(true)}
-          disabled={childrenLoading} // Disable the button while loading
-          w={{ base: "100%", md: "auto" }} // Set button width
-        >
-          <Flex alignItems="center">
-            <Arrow />
-            <Text
-              ml="6"
-              fontWeight="medium"
-              fontSize="base"
-              textAlign="left"
-              px=".6rem"
-            >
-              Deposit
-            </Text>
-          </Flex>
-        </Button>
-
-        <Button
-          className="bg-blue-oil"
-          onClick={() => setShowWithdraw(true)}
-          disabled={childrenLoading} // Disable the button while loading
-          w={{ base: "100%", md: "auto" }} // Set button width
-        >
-          <Flex alignItems="center">
-            <Arrow dir="down" />
-            <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
-              Withdraw
-            </Text>
-          </Flex>
-        </Button>
-      </Flex>
-    );
-  };
 
   const fetchFamilyDetails = useCallback(async () => {
     if (!walletAddress) return;
@@ -193,9 +175,26 @@ const Parent: React.FC = () => {
       );
 
       setChildrenLoading(true);
-      const children = await contract.fetchChildren();
+      const children = await contract.fetchChildren(walletAddress);
       console.log("children - fetchChildren", children);
-      setChildren(children);
+      const childrenWalletBalances = await axios.post(
+        `/api/etherscan/balancemulti`,
+        {
+          addresses: children.map((c) => c.wallet),
+        }
+      );
+
+      const childrenWithBalances = children.map((c) => {
+        const balance = childrenWalletBalances.data.find(
+          (b) => b.account === c.wallet
+        );
+        return {
+          ...c,
+          balance: balance ? balance.balance : 0,
+        };
+      });
+
+      setChildren(childrenWithBalances);
       setChildrenLoading(false);
     };
 
@@ -203,189 +202,355 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length, contract, walletAddress]);
 
+  const uploadToIpfs = async (selectedFile: File | null) => {
+    try {
+      const response = await axios.post(
+        `/api/ipfs/upload-to-ipfs`,
+        selectedFile,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e as Error);
+      return {
+        validationError: "",
+        ifpsHash: "",
+      };
+    }
+  };
+
+  const handleSubmit = async (selectedFile: File | null, avatarURI: string) => {
+    const activeAddress = children[childKey]?.wallet
+      ? children[childKey]?.wallet
+      : walletAddress;
+
+    setIsLoading(true);
+    setActiveStep(0);
+
+    let ipfsImageHash = "";
+
+    if (selectedFile) {
+      const { validationError, ifpsHash } = (await uploadToIpfs(
+        selectedFile
+      )) as {
+        validationError: string;
+        ifpsHash: string;
+      };
+
+      if (validationError) {
+        toast({
+          title: "Error",
+          description: validationError,
+          status: "error",
+        });
+        return;
+      }
+      ipfsImageHash = ifpsHash;
+    }
+
+    const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
+    const avatar = ipfsImageHash ? ifpsURI : avatarURI;
+
+    const contract = await HostContract.fromProvider(connectedSigner);
+
+    try {
+      setActiveStep(1);
+      let tx: any;
+      if (activeAddress === walletAddress) {
+        tx = await contract.updateAvatarURI(avatar);
+      } else {
+        const childAddress = activeAddress;
+        tx = await contract.updateChildAvatarURI(
+          childAddress,
+          walletAddress,
+          avatar
+        );
+      }
+
+      setActiveStep(2);
+      const txReceipt = await tx.wait();
+      if (activeAddress === walletAddress) {
+        await fetchFamilyDetails();
+      } else {
+        await fetchChildren();
+      }
+
+      if (txReceipt.status === 1) {
+        toast({
+          title: "Avatar successfully updated",
+          status: "success",
+        });
+        onClose();
+        router.push("/parent");
+      }
+    } catch (e) {
+      console.error(e);
+      setIsLoading(false);
+
+      if (e.message.includes("user rejected transaction")) {
+        toast({
+          title: "Transaction Error",
+          description: "User rejected transaction",
+          status: "error",
+        });
+        return;
+      }
+
+      toast({
+        title: "Error",
+        description: "Network error",
+        status: "error",
+      });
+
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
+
   return (
-    <Container maxW="container.lg" mt="8rem">
-      <Flex justifyContent="flex-start" alignItems="center" mb={10}>
-        <Tooltip label="Change Avatar">
-          <Avatar
-            size="xl"
-            name={
+    <Box>
+      <Container maxW="container.lg" mt="8rem">
+        <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
+          <Tooltip label="Change Avatar">
+            <Avatar
+              size="xl"
+              name={
+                familyDetails.username
+                  ? familyDetails.username
+                  : trimAddress(walletAddress)
+              }
+              src={familyDetails.avatarURI}
+              style={{ cursor: "pointer" }}
+              onClick={onOpen}
+              _hover={{
+                transform: "scale(1.05)",
+              }}
+            />
+          </Tooltip>
+
+          <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
+            {`Welcome back, ${
               familyDetails.username
                 ? familyDetails.username
                 : trimAddress(walletAddress)
-            }
-            src={familyDetails.avatarURI}
-            style={{ cursor: "pointer" }}
-            onClick={onOpen}
-          />
-        </Tooltip>
-
-        <Heading fontSize={isMobileSmall ? "2xl" : "xl"}>
-          {`Welcome back, ${
-            familyDetails.username
-              ? familyDetails.username
-              : trimAddress(walletAddress)
-          }`}
-        </Heading>
-      </Flex>
-      {/* Account Balance */}
-      <Container
-        maxW="container.md"
-        centerContent
-        bgGradient={["linear(to-b, #4F1B7C, black)"]}
-        borderRadius={20}
-      >
-        <Flex
-          py="8"
-          rounded="xl"
-          color="white"
-          justify="space-between"
-          w="100%"
-        >
-          {/* Parent Account Details */}
-          <Flex flexDir="column" alignItems="space-between" w="100%">
-            <Text fontSize="xs" mb={2}>
-              AVAILABLE FUNDS
-            </Text>
-
-            {/* Balance */}
-            <Flex alignItems="center">
-              <Image
-                src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=018"
-                alt="USDC logo"
-                width={10}
-                height={10}
-                mr={3}
-              />
-
-              <Heading
-                size={isMobileSmall ? "2xl" : "xl"}
-                display="flex"
-                alignItems="baseline"
-              >
-                {balance ? (
-                  <AnimatedNumber value={balance} rate={netFlow} />
-                ) : (
-                  104.9875521
-                )}
-                <Text fontSize="sm" ml="2">
-                  USDx
-                </Text>
-              </Heading>
-            </Flex>
-            {balanceActions()}
-          </Flex>
+            }`}
+          </Heading>
         </Flex>
-      </Container>
-      {/* {!isMobileLarge && balanceActions()} */}
-      <Center mt="5rem">
-        <Heading fontSize="2xl">YOUR KIDS</Heading>
-      </Center>
-      {/* Kids Action Buttons */}
-      <Flex
-        mt="8"
-        flexDirection={{ base: "column", md: "row" }}
-        justifyContent="center"
-        alignItems={{ base: "center", md: "flex-start" }}
-        gridGap="4"
-      >
-        <Button
-          className="bg-blue-oil"
-          onClick={() => {
-            onAddChildOpen();
-          }}
-          disabled={childrenLoading} // Disable the button while loading
-          w={{ base: "100%", md: "auto" }} // Set button width
-        >
-          {/* Add a new kid */}
-          <Flex alignItems="center">
-            <AiOutlinePlus size={30} />
-            <Text
-              ml="6"
-              fontWeight="medium"
-              fontSize="base"
-              textAlign="left"
-              px=".6rem"
-            >
-              {children.length === 0 ? "Add a new kid" : "Add more kids"}
-            </Text>
-          </Flex>
-        </Button>
 
-        {/* Transfer to all kids */}
-        <Button
-          className="bg-blue-oil"
-          onClick={() => setShowWithdraw(true)}
-          disabled={childrenLoading} // Disable the button while loading
-          w={{ base: "100%", md: "auto" }} // Set button width
+        {/* Account Balance */}
+        <Container
+          maxW="container.md"
+          centerContent
+          bgGradient={["linear(to-b, #4F1B7C, black)"]}
+          borderRadius={20}
         >
           <Flex
-            alignItems="center"
-            onClick={() => {
-              setShowTransferAll(true);
-            }}
+            py="8"
+            rounded="xl"
+            color="white"
+            justify="space-between"
+            w="100%"
+            align="center"
           >
-            <BiTransfer size={40} />
-            <Text ml="6" fontWeight="medium" fontSize="base" textAlign="left">
-              Transfer to all kids
-            </Text>
-          </Flex>
-        </Button>
-      </Flex>
-      <Box my="16" className={childrenLoading && "animate-pulse"}>
-        {children.length > 0 && (
-          <Flex direction="column" gridGap="14" gridTemplateColumns="1fr">
-            {children.map((c) => (
-              <Child
-                key={c._address + childKey}
-                {...c}
-                {...childrenStakes[c._address]}
-                onTransfer={() => setTransferChild(c)}
-                onStream={() => setStreamChild(c)}
+            {/* Parent Account Details */}
+            <Flex flexDir="column" alignItems="space-between" w="100%">
+              <Text fontSize="xs" mb={2}>
+                AVAILABLE FUNDS
+              </Text>
+
+              {/* Balance */}
+              <Flex alignItems="center">
+                <Image
+                  src="/logos/ethereum-logo.png"
+                  alt="Eth logo"
+                  width={10}
+                  height={10}
+                  mr={3}
+                />
+
+                <Flex direction="row" alignItems="baseline">
+                  <Heading
+                    size={isMobileSize ? "2xl" : "xl"}
+                    display="flex"
+                    alignItems="baseline"
+                  >
+                    {`${Number(data?.formatted).toFixed(4)}`}
+                  </Heading>
+                  <Text fontSize="sm" ml={2}>
+                    {data?.symbol}
+                  </Text>
+                </Flex>
+              </Flex>
+            </Flex>
+            {!isMobileSize ? (
+              <Menu>
+                {({ isOpen }) => (
+                  <>
+                    <MenuButton isActive={isOpen} as={Button} size="2xl">
+                      <ChevronDownIcon fontSize="3xl" />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuGroup title="Parent">
+                        <MenuItem icon={<RxAvatar />} onClick={onOpen}>
+                          Change Avatar
+                        </MenuItem>
+                        <MenuItem
+                          icon={<EditIcon />}
+                          onClick={onChangeUsernameOpen}
+                        >
+                          Change Username
+                        </MenuItem>
+                        <MenuItem
+                          icon={<BiWalletAlt />}
+                          onClick={() => {
+                            window.open(
+                              getEtherscanUrl(
+                                chain.id,
+                                EtherscanContext.ADDRESS,
+                                walletAddress
+                              ),
+                              "_blank"
+                            );
+                          }}
+                        >
+                          Transaction History
+                        </MenuItem>
+                      </MenuGroup>
+
+                      <MenuDivider />
+
+                      <MenuGroup title="Family Members">
+                        <MenuItem
+                          icon={<AiOutlinePlus />}
+                          onClick={onAddChildOpen}
+                        >
+                          Add Member
+                        </MenuItem>
+                        <MenuItem
+                          icon={<BiTransfer />}
+                          onClick={() => alert("Transfer to all kids")}
+                        >
+                          Airdrop
+                        </MenuItem>
+                      </MenuGroup>
+                    </MenuList>
+                  </>
+                )}
+              </Menu>
+            ) : (
+              <IconButton
+                variant="outline"
+                colorScheme="white"
+                aria-label="Call Sage"
+                fontSize="30px"
+                icon={<HiMenu />}
+                onClick={onParentDetailsOpen}
+                style={{ border: "1px solid transparent" }}
               />
-            ))}
+            )}
           </Flex>
+        </Container>
+      </Container>
+
+      {/* Children */}
+      <Container
+        maxW="container.lg"
+        my="16"
+        className={childrenLoading && "animate-pulse"}
+      >
+        {children.length > 0 && (
+          <>
+            <Center my="2rem">
+              <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
+            </Center>
+
+            <Wrap direction="row" justify="center" spacing="8rem">
+              {children.map((c, i) => (
+                <WrapItem key={c.wallet}>
+                  <Child
+                    childDetails={c}
+                    {...c}
+                    {...childrenStakes[c.wallet]}
+                    onOpen={onOpenChildDetails}
+                    setChildKey={setChildKey}
+                    childKey={i}
+                  />
+                </WrapItem>
+              ))}
+            </Wrap>
+          </>
         )}
-      </Box>
+      </Container>
+
+      {/* Modals */}
       <AddChildModal
         isOpen={isAddChildOpen}
         onClose={onAddChildClose}
         onAdd={() => fetchChildren()}
       />
 
-      <ChangeAvatarModal isOpen={isOpen} onClose={onClose} />
-      {/* <TopUpModal
-        show={showTopUp}
-        onClose={() => setShowTopUp(false)}
-        onTransfer={() => updateBalance()}
-      /> */}
-      {/* <WithdrawModal
-        show={showWithdraw}
-        onClose={() => setShowWithdraw(false)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
+      <ChangeAvatarModal
+        isOpen={isOpen}
+        onClose={onClose}
+        activeStep={activeStep}
+        loading={loading}
+        handleSubmit={handleSubmit}
+        children={children}
+        childKey={childKey}
+        familyURI={familyDetails.avatarURI}
       />
-      <TransferAllModal
-        show={showTransferAll}
-        onClose={() => setShowTransferAll(false)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
+
+      <ChildDetailsDrawer
+        isOpen={isOpenChildDetails}
+        onClose={onCloseChildDetails}
+        placement="left"
+        onOpen={onOpen}
+        childKey={childKey}
+        children={children}
+        setChildKey={setChildKey}
+        fetchChildren={fetchChildren}
+        onOpenChangeUsername={onChangeUsernameOpen}
+        onSendFundsOpen={onSendFundsOpen}
       />
-      <TransferModal
-        show={!!transferChild}
-        onClose={() => setTransferChild(undefined)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-        child={transferChild}
+
+      <UsernameModal
+        isOpen={isChangeUsernameOpen}
+        onClose={onChangeUsernameClose}
+        childKey={childKey}
+        children={children}
+        familyId={familyDetails.familyId}
+        fetchChildren={fetchChildren}
+        fetchFamilyDetails={fetchFamilyDetails}
       />
-      <StreamModal
-        show={!!streamChild}
-        onClose={() => setStreamChild(undefined)}
-        onTransfer={() => updateBalance()}
-        balance={Math.floor(balance)}
-        child={streamChild}
-      /> */}
-    </Container>
+
+      <SendFundsModal
+        isOpen={isSendFundsOpen}
+        onClose={onSendFundsClose}
+        childKey={childKey}
+        children={children}
+        fetchChildren={fetchChildren}
+        fetchFamilyDetails={fetchFamilyDetails}
+      />
+
+      {isMobileSize && (
+        <ParentDetailsDrawer
+          isOpen={isParentDetailsOpen}
+          onClose={onParentDetailsClose}
+          placement="bottom"
+          onOpen={onOpen}
+          walletAddress={walletAddress}
+          onChangeUsernameOpen={onChangeUsernameOpen}
+          onAddChildOpen={onAddChildOpen}
+        />
+      )}
+    </Box>
   );
 };
 

@@ -11,24 +11,40 @@ import {
   Stepper,
   Spinner,
 } from "@chakra-ui/react";
+import { StepperContext } from "@/dataSchema/enums";
 
-export const steps = [
-  {
-    title: "Step 1",
-    description: "Saving your avatar on IPFS",
-  },
-  { title: "Step 2", description: "Approve Wallet Transaction" },
-  { title: "Step 3", description: "Processing Transaction" },
-];
+export const steps = (context: StepperContext) => {
+  if (context === StepperContext.AVATAR) {
+    return [
+      {
+        title: "Step 1",
+        description: "Saving your avatar on IPFS",
+      },
+      { title: "Step 2", description: "Approve Wallet Transaction" },
+      { title: "Step 3", description: "Processing Transaction" },
+    ];
+  }
 
-export const RegisterChildStepper = ({
+  if (context === StepperContext.DEFAULT) {
+    return [
+      { title: "Step 1", description: "Approve Wallet Transaction" },
+      { title: "Step 2", description: "Processing Transaction" },
+    ];
+  }
+
+  return [];
+};
+
+export const TransactionStepper = ({
   activeStep,
+  context,
 }: {
   activeStep: number;
+  context: StepperContext;
 }) => {
   return (
     <Stepper size="lg" index={activeStep} orientation="vertical">
-      {steps.map((step, index) => (
+      {steps(context).map((step, index) => (
         <Step key={index}>
           <StepIndicator>
             <StepStatus

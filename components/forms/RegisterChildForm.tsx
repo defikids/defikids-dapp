@@ -19,18 +19,26 @@ import { ethers } from "ethers";
 import HostContract from "@/services/contract";
 import axios from "axios";
 import {
-  RegisterChildStepper,
+  TransactionStepper,
   steps,
-} from "@/components/steppers/RegisterChildStepper";
+} from "@/components/steppers/TransactionStepper";
 import { useContractStore } from "@/store/contract/contractStore";
+import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
+import { transactionErrors } from "@/utils/errorHanding";
+import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { StepperContext } from "@/dataSchema/enums";
 
 const RegisterChildForm = ({
   onClose,
   onAdd,
+  isLoading,
+  setIsLoading,
 }: {
   onClose: () => void;
   onAdd: () => void;
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }) => {
   //=============================================================================
   //                             STATE
@@ -46,7 +54,6 @@ const RegisterChildForm = ({
   const [provideUrl, setProvideUrl] = useState(false);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const isNameError = username === "";
   const isInvalidWallet = !ethers.utils.isAddress(wallet);
@@ -67,6 +74,13 @@ const RegisterChildForm = ({
   const { connectedSigner } = useContractStore(
     (state) => ({
       connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
+
+  const { walletAddress } = useAuthStore(
+    (state) => ({
+      walletAddress: state.walletAddress,
     }),
     shallow
   );
@@ -131,67 +145,47 @@ const RegisterChildForm = ({
       ipfsImageHash = ifpsHash;
     }
 
-    const contract = await HostContract.fromProvider(connectedSigner);
+    const contract = await HostContract.fromProvider(
+      connectedSigner,
+      walletAddress
+    );
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
-    console.log("Registering child...");
-    console.log(`Username: ${username}`);
-    console.log(`Wallet: ${wallet}`);
-    console.log(`Avatar URI: ${avatar}`);
-    console.log(`Sandbox Mode: ${sandboxMode}`);
-
     try {
-      const familyId = localStorage.getItem("defi-kids.family-id");
-      console.log(`familyId: ${familyId}`);
-
       setActiveStep(1);
-      const tx = await contract.addChild(
-        familyId,
+      const tx = (await contract.addChild(
         username,
         avatar,
         wallet,
         sandboxMode
-      );
+      )) as TransactionResponse;
 
-      const txReceipt = await tx.wait();
       setActiveStep(2);
-
-      if (txReceipt.status === 1) {
-        toast({
-          title: "Child successfully added",
-          status: "success",
-        });
-        onAdd();
-        onClose();
-      }
-    } catch (e) {
-      setIsLoading(false);
-      if (e.code === 4001) {
-        toast({
-          title: "Transaction Error",
-          description: "User rejected transaction",
-          status: "error",
-        });
-        return;
-      }
+      await tx.wait();
 
       toast({
-        title: "Error",
-        description: "Network error",
-        status: "error",
+        title: "Child successfully added",
+        status: "success",
       });
-
+      onAdd();
       onClose();
-    } finally {
-      setIsLoading(false);
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
     }
   };
 
   // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
 
   if (isLoading) {
-    return <RegisterChildStepper activeStep={activeStep} />;
+    return (
+      <TransactionStepper
+        activeStep={activeStep}
+        context={StepperContext.AVATAR}
+      />
+    );
   }
 
   return (
@@ -203,7 +197,7 @@ const RegisterChildForm = ({
             mt={3}
             size="lg"
             name="Defi Kids"
-            src={avatarURI ? avatarURI : "./pig_logo.png"}
+            src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
           />
 
           {/* Name */}

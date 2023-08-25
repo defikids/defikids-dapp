@@ -53,13 +53,18 @@ class HostContract {
     return userType;
   }
 
-  async registerParent(hash: string, avatarURI: string, username: string) {
-    // @ts-ignore
+  async registerParent(
+    familyId: string,
+    walletAddress: string,
+    avatarURI: string,
+    username: string
+  ) {
+    const hash = await this.contract.hashFamilyId(walletAddress, familyId);
     return this.contract.registerParent(hash, avatarURI, username);
   }
 
-  async fetchChildren() {
-    const familyId = await this.contract.getFamilyIdByOwner(this.wallet);
+  async fetchChildren(walletAddress: string) {
+    const familyId = await this.contract.getFamilyIdByOwner(walletAddress);
     const response = await this.contract.fetchChildren(familyId);
     let children = [];
     if (response.length)
@@ -82,19 +87,24 @@ class HostContract {
   }
 
   async addChild(
-    familyId: string,
     username: string,
     avatarURI: string,
     wallet: string,
     sandboxMode: boolean
   ) {
-    return this.contract.addChild(
+    console.log("contract.tsx");
+    console.log("this.contract", this.contract);
+    console.log("this.wallet");
+    const familyId = await this.contract.getFamilyIdByOwner(this.wallet);
+    console.log("familyId", familyId);
+    const tx = await this.contract.addChild(
       familyId,
       username,
       avatarURI,
       wallet,
       sandboxMode
     );
+    return tx;
   }
 
   async changeAccess(wallet: string, childId: number) {
@@ -120,6 +130,38 @@ class HostContract {
       username: response.username,
     };
     return familyDetails;
+  }
+
+  async updateAvatarURI(avatarURI: string) {
+    return this.contract.updateAvatarURI(avatarURI);
+  }
+
+  async updateChildAvatarURI(
+    childAddress: string,
+    walletAddress: string,
+    avatarURI: string
+  ) {
+    const familyId = await this.contract.getFamilyIdByOwner(walletAddress);
+    return this.contract.updateChildAvatarURI(
+      familyId,
+      childAddress,
+      avatarURI
+    );
+  }
+
+  async toggleSandbox(childAddress: string, familyId: string) {
+    return this.contract.toggleSandbox(childAddress, familyId);
+  }
+
+  async updateUsername(username: string) {
+    return this.contract.updateUsername(username);
+  }
+  async updateChildUsername(
+    familyId: string,
+    childAddress: string,
+    username: string
+  ) {
+    return this.contract.updateChildUsername(familyId, childAddress, username);
   }
 }
 

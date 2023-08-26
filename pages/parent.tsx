@@ -176,25 +176,31 @@ const Parent: React.FC = () => {
 
       setChildrenLoading(true);
       const children = await contract.fetchChildren(walletAddress);
-      console.log("children - fetchChildren", children);
-      const childrenWalletBalances = await axios.post(
-        `/api/etherscan/balancemulti`,
-        {
-          addresses: children.map((c) => c.wallet),
-        }
-      );
 
-      const childrenWithBalances = children.map((c) => {
-        const balance = childrenWalletBalances.data.find(
-          (b) => b.account === c.wallet
+      if (children.length) {
+        console.log("children - fetchChildren", children);
+        const childrenWalletBalances = await axios.post(
+          `/api/etherscan/balancemulti`,
+          {
+            addresses: children.map((c) => c.wallet),
+          }
         );
-        return {
-          ...c,
-          balance: balance ? balance.balance : 0,
-        };
-      });
 
-      setChildren(childrenWithBalances);
+        const childrenWithBalances = children.map((c) => {
+          const balance = childrenWalletBalances.data.find(
+            (b) => b.account === c.wallet
+          );
+          return {
+            ...c,
+            balance: balance ? balance.balance : 0,
+          };
+        });
+
+        setChildren(childrenWithBalances);
+      } else {
+        setChildren(children);
+      }
+
       setChildrenLoading(false);
     };
 

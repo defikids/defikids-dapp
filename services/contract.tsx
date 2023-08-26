@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 //@ts-ignore
 import { Host } from "../types/ethers-contracts";
-import HOST_ABI from "../abis/contracts/Host.json";
+import HOST from "../artifacts/src/Host.sol/Host.json";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
 import { ChildDetails } from "@/dataSchema/hostContract";
 
@@ -41,7 +41,7 @@ class HostContract {
   ) {
     const contract = new ethers.Contract(
       HOST_ADDRESS,
-      HOST_ABI.abi,
+      HOST.abi,
       provider
     ) as Host;
 

@@ -1,12 +1,8 @@
-# DefiKids
-
-An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
-
-<img src="public/defikids-cover.png" href="https://allocate.vercel.app" alt="Logo" >
+![defikids-image](https://github.com/NathanTarbert/defikids/assets/66887028/8d7844b3-270b-4197-8ec8-2ee0bec091dc)
 
 ## Simplified Platform Overview:
 
-Discover the world of cryptocurrency with ease through the DefiKids platform. This platform is designed to guide you and your family in using crypto confidently in your daily life, and it's tailored for kids while being supervised by parents.
+Discover the world of cryptocurrency with ease through the DefiKids platform. An empowering platform aimed at equipping the upcoming generation with De-Fi tools. Designed to guide you and your family in using crypto confidently in your daily life, and it's tailored for kids while being supervised by parents.
 
 ## Common Challenge:
 

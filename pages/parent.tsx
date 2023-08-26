@@ -51,6 +51,7 @@ import { useNetwork } from "wagmi";
 import { EtherscanContext } from "@/dataSchema/enums";
 import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
 import { HiMenu } from "react-icons/hi";
+import { transactionErrors } from "@/utils/errorHanding";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -158,7 +159,6 @@ const Parent: React.FC = () => {
     const family = (await contract.getFamilyByOwner(
       walletAddress
     )) as FamilyDetails;
-    console.log("family - fetchFamilyDetails", family);
     setFamilyDetails(family);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress]);
@@ -166,8 +166,6 @@ const Parent: React.FC = () => {
   const fetchChildren = useCallback(async () => {
     const getChildren = async () => {
       if (!walletAddress) return;
-
-      console.log("fetchChildren", walletAddress);
 
       const contract = await HostContract.fromProvider(
         connectedSigner,
@@ -178,7 +176,6 @@ const Parent: React.FC = () => {
       const children = await contract.fetchChildren(walletAddress);
 
       if (children.length) {
-        console.log("children - fetchChildren", children);
         const childrenWalletBalances = await axios.post(
           `/api/etherscan/balancemulti`,
           {
@@ -262,6 +259,7 @@ const Parent: React.FC = () => {
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
     const contract = await HostContract.fromProvider(connectedSigner);
+    const familyId = await contract.getFamilyIdByOwner(walletAddress);
 
     try {
       setActiveStep(1);
@@ -272,49 +270,30 @@ const Parent: React.FC = () => {
         const childAddress = activeAddress;
         tx = await contract.updateChildAvatarURI(
           childAddress,
-          walletAddress,
-          avatar
+          avatar,
+          familyId
         );
       }
 
       setActiveStep(2);
-      const txReceipt = await tx.wait();
       if (activeAddress === walletAddress) {
         await fetchFamilyDetails();
       } else {
         await fetchChildren();
       }
 
-      if (txReceipt.status === 1) {
-        toast({
-          title: "Avatar successfully updated",
-          status: "success",
-        });
-        onClose();
-        router.push("/parent");
-      }
-    } catch (e) {
-      console.error(e);
-      setIsLoading(false);
-
-      if (e.message.includes("user rejected transaction")) {
-        toast({
-          title: "Transaction Error",
-          description: "User rejected transaction",
-          status: "error",
-        });
-        return;
-      }
-
       toast({
-        title: "Error",
-        description: "Network error",
-        status: "error",
+        title: "Avatar successfully updated",
+        status: "success",
       });
 
       onClose();
-    } finally {
+      router.push("/parent");
+    } catch (e) {
       setIsLoading(false);
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
     }
   };
 
@@ -332,7 +311,9 @@ const Parent: React.FC = () => {
                   ? familyDetails.username
                   : trimAddress(walletAddress)
               }
-              src={familyDetails.avatarURI}
+              src={
+                familyDetails.avatarURI || "/images/placeholders-avatar.jpeg"
+              }
               style={{ cursor: "pointer" }}
               onClick={onOpen}
               _hover={{
@@ -471,7 +452,7 @@ const Parent: React.FC = () => {
         my="16"
         className={childrenLoading && "animate-pulse"}
       >
-        {children.length > 0 && (
+        {children.length > 0 ? (
           <>
             <Center my="2rem">
               <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
@@ -492,6 +473,10 @@ const Parent: React.FC = () => {
               ))}
             </Wrap>
           </>
+        ) : (
+          <Center my="2rem">
+            <Heading fontSize="2xl">No Family Members</Heading>
+          </Center>
         )}
       </Container>
 

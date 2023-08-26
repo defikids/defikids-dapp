@@ -27,7 +27,6 @@ const Auth = ({
     const { isConnected, address, isDisconnected } = account;
 
     if (isDisconnected) {
-      console.log("disconnected");
       setLogout();
       setHasCheckedUserType(false);
     }

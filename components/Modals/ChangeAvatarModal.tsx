@@ -47,8 +47,6 @@ export const ChangeAvatarModal = ({
   };
 
   const displayAvatar = () => {
-    console.log("avatarURI", avatarURI);
-    console.log("uploadURI", uploadURI);
     if (avatarURI) return avatarURI;
 
     if (children[childKey]?.avatarURI) {

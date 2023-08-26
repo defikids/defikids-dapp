@@ -114,7 +114,6 @@ export const AvatarSelection = ({
                   const reader = new FileReader();
 
                   reader.onloadend = () => {
-                    console.log(reader.result);
                     setAvatarURI(reader.result as string);
                   };
 

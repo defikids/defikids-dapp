@@ -27,7 +27,7 @@ import {
   PinInput,
   PinInputField,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 // import Child from "@/components/child";
 import contract from "@/services/contract";
 import HostContract from "@/services/contract";
@@ -54,6 +54,9 @@ import { useNetwork } from "wagmi";
 import { EtherscanContext } from "@/dataSchema/enums";
 import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
 import { HiMenu } from "react-icons/hi";
+import { PasswordInput } from "@/components/PasswordInput";
+import { transactionErrors } from "@/utils/errorHanding";
+import { TransactionResponse } from "@ethersproject/abstract-provider";
 
 const Child: React.FC = () => {
   //=============================================================================
@@ -142,70 +145,52 @@ const Child: React.FC = () => {
   //   fetchChildren();
   // }, []);
 
-  useEffect(() => {
-    if (!stakeContract || !children.length) {
-      setChildrenStakes({});
-      return;
-    }
-  }, [stakeContract, children]);
+  // useEffect(() => {
+  //   if (!stakeContract || !children.length) {
+  //     setChildrenStakes({});
+  //     return;
+  //   }
+  // }, [stakeContract, children]);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
 
-  const fetchFamilyDetails = useCallback(async () => {
-    if (!walletAddress) return;
+  // const fetchChild = useCallback(async () => {
+  //   const getChild = async () => {
+  //     if (!walletAddress) return;
 
-    const contract = await HostContract.fromProvider(
-      connectedSigner,
-      walletAddress
-    );
-    const family = (await contract.getFamilyByOwner(
-      walletAddress
-    )) as FamilyDetails;
-    console.log("family - fetchFamilyDetails", family);
-    setFamilyDetails(family);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress]);
+  //     const contract = await HostContract.fromProvider(
+  //       connectedSigner,
+  //       walletAddress
+  //     );
 
-  const fetchChildren = useCallback(async () => {
-    const getChildren = async () => {
-      if (!walletAddress) return;
+  //     setChildrenLoading(true);
+  //     const children = await contract.fetchChild(familyId, walletAddress);
+  //     const childrenWalletBalances = await axios.post(
+  //       `/api/etherscan/balancemulti`,
+  //       {
+  //         addresses: children.map((c) => c.wallet),
+  //       }
+  //     );
 
-      console.log("fetchChildren", walletAddress);
+  //     const childrenWithBalances = children.map((c) => {
+  //       const balance = childrenWalletBalances.data.find(
+  //         (b) => b.account === c.wallet
+  //       );
+  //       return {
+  //         ...c,
+  //         balance: balance ? balance.balance : 0,
+  //       };
+  //     });
 
-      const contract = await HostContract.fromProvider(
-        connectedSigner,
-        walletAddress
-      );
+  //     setChildren(childrenWithBalances);
+  //     setChildrenLoading(false);
+  //   };
 
-      setChildrenLoading(true);
-      const children = await contract.fetchChildren(walletAddress);
-      console.log("children - fetchChildren", children);
-      const childrenWalletBalances = await axios.post(
-        `/api/etherscan/balancemulti`,
-        {
-          addresses: children.map((c) => c.wallet),
-        }
-      );
-
-      const childrenWithBalances = children.map((c) => {
-        const balance = childrenWalletBalances.data.find(
-          (b) => b.account === c.wallet
-        );
-        return {
-          ...c,
-          balance: balance ? balance.balance : 0,
-        };
-      });
-
-      setChildren(childrenWithBalances);
-      setChildrenLoading(false);
-    };
-
-    await getChildren();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length, contract, walletAddress]);
+  //   await getChild();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [children.length, contract, walletAddress]);
 
   const uploadToIpfs = async (selectedFile: File | null) => {
     try {
@@ -229,10 +214,6 @@ const Child: React.FC = () => {
   };
 
   const handleSubmit = async (selectedFile: File | null, avatarURI: string) => {
-    const activeAddress = children[childKey]?.wallet
-      ? children[childKey]?.wallet
-      : walletAddress;
-
     setIsLoading(true);
     setActiveStep(0);
 
@@ -260,105 +241,72 @@ const Child: React.FC = () => {
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
+    console.log("avatar", avatar);
+    console.log("walletAddress", walletAddress);
+    console.log("connectedSigner", connectedSigner);
+
     const contract = await HostContract.fromProvider(connectedSigner);
+
+    console.log("contract", contract);
 
     try {
       setActiveStep(1);
-      let tx: any;
-      if (activeAddress === walletAddress) {
-        tx = await contract.updateAvatarURI(avatar);
-      } else {
-        const childAddress = activeAddress;
-        tx = await contract.updateChildAvatarURI(
-          childAddress,
-          walletAddress,
-          avatar
-        );
-      }
+
+      const familyId = childDetails.familyId;
+      const tx = (await contract.updateChildAvatarURI(
+        walletAddress,
+        avatar,
+        familyId
+      )) as TransactionResponse;
 
       setActiveStep(2);
-      const txReceipt = await tx.wait();
-      if (activeAddress === walletAddress) {
-        await fetchFamilyDetails();
-      } else {
-        await fetchChildren();
-      }
+      await tx.wait();
 
-      if (txReceipt.status === 1) {
-        toast({
-          title: "Avatar successfully updated",
-          status: "success",
-        });
-        onClose();
-        router.push("/parent");
-      }
-    } catch (e) {
-      console.error(e);
-      setIsLoading(false);
-
-      if (e.message.includes("user rejected transaction")) {
-        toast({
-          title: "Transaction Error",
-          description: "User rejected transaction",
-          status: "error",
-        });
-        return;
-      }
+      setChildDetails({
+        ...childDetails,
+        avatarURI: avatar,
+      });
 
       toast({
-        title: "Error",
-        description: "Network error",
-        status: "error",
+        title: "Avatar successfully updated",
+        status: "success",
       });
 
       onClose();
-    } finally {
+    } catch (e) {
       setIsLoading(false);
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
     }
   };
 
-  const handleChange = async (value, index) => {
-    // Update the corresponding index of the family ID
-    const newFamilyId = familyId.split("");
-    newFamilyId[index] = value;
-
-    console.log("newFamilyId", newFamilyId);
-
-    setFamilyId(newFamilyId.join(""));
-
-    if (index === 3) {
-      console.log("fetching child details");
-      console.log("walletAddress", walletAddress);
-      console.log("newFamilyId.join('')", newFamilyId.join(""));
-      const contract = await HostContract.fromProvider(connectedSigner);
-
-      const hashFamilyId = await contract.hashFamilyId(
-        walletAddress,
-        newFamilyId.join("")
-      );
-
-      const childDetails = await contract.fetchChild(
-        hashFamilyId,
-        walletAddress
-      );
-
-      console.log("childDetails", childDetails);
-
-      if (!childDetails) {
-        toast({
-          title: "Error",
-          description: "Invalid Family ID",
-          status: "error",
-        });
-        return;
-      }
-
-      setChildDetails(childDetails);
-      setFamilyIdSubmitted(true);
+  const onFamilyIdSubmit = async (id: string, parentWallet: string) => {
+    if (!id || !parentWallet) {
+      toast({
+        title: "Error",
+        description: "Enter family id and parent address",
+        status: "error",
+      });
+      return;
     }
-  };
 
-  // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
+    const contract = await HostContract.fromProvider(connectedSigner);
+    const hashFamilyId = await contract.hashFamilyId(parentWallet, id);
+    const childDetails = await contract.fetchChild(hashFamilyId, walletAddress);
+
+    if (!childDetails.username) {
+      toast({
+        title: "Error",
+        description: "Invalid family id or parent address",
+        status: "error",
+      });
+      return;
+    }
+
+    setChildDetails(childDetails);
+    setFamilyIdSubmitted(true);
+  };
 
   if (!familyIdSubmitted) {
     return (
@@ -368,263 +316,242 @@ const Child: React.FC = () => {
         h="100vh"
         direction="column"
       >
-        <Heading fontSize={isMobileSize ? "2xl" : "xl"} mb={5}>
-          Enter Family ID
-        </Heading>
-
-        <HStack>
-          <PinInput type="alphanumeric" size="lg">
-            {[0, 1, 2, 3].map((index) => (
-              <PinInputField
-                key={index}
-                value={familyId[index] || ""}
-                onChange={(e) => handleChange(e.target.value, index)}
-              />
-            ))}
-          </PinInput>
-        </HStack>
+        <Center w="md">
+          <PasswordInput onFamilyIdSubmit={onFamilyIdSubmit} />
+        </Center>
       </Flex>
     );
   }
 
-  // return (
-  //   <Box>
-  //     <Container maxW="container.lg" mt="8rem">
-  //       <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
-  //         <Tooltip label="Change Avatar">
-  //           <Avatar
-  //             size="xl"
-  //             name={
-  //               familyDetails.username
-  //                 ? familyDetails.username
-  //                 : trimAddress(walletAddress)
-  //             }
-  //             src={familyDetails.avatarURI}
-  //             style={{ cursor: "pointer" }}
-  //             onClick={onOpen}
-  //             _hover={{
-  //               transform: "scale(1.05)",
-  //             }}
-  //           />
-  //         </Tooltip>
+  return (
+    <Box>
+      <Container maxW="container.lg" mt="8rem">
+        <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
+          <Tooltip label="Change Avatar">
+            <Avatar
+              size="xl"
+              name={
+                childDetails.username
+                  ? childDetails.username
+                  : trimAddress(walletAddress)
+              }
+              src={childDetails.avatarURI || "/images/placeholder-avatar.jpeg"}
+              style={{ cursor: "pointer" }}
+              onClick={onOpen}
+              _hover={{
+                transform: "scale(1.05)",
+              }}
+            />
+          </Tooltip>
 
-  //         <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
-  //           {`Welcome back, ${
-  //             familyDetails.username
-  //               ? familyDetails.username
-  //               : trimAddress(walletAddress)
-  //           }`}
-  //         </Heading>
-  //       </Flex>
+          <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
+            {`Welcome back, ${
+              childDetails.username
+                ? childDetails.username
+                : trimAddress(walletAddress)
+            }`}
+          </Heading>
+        </Flex>
 
-  //       {/* Account Balance */}
-  //       <Container
-  //         maxW="container.md"
-  //         centerContent
-  //         bgGradient={["linear(to-b, #4F1B7C, black)"]}
-  //         borderRadius={20}
-  //       >
-  //         <Flex
-  //           py="8"
-  //           rounded="xl"
-  //           color="white"
-  //           justify="space-between"
-  //           w="100%"
-  //           align="center"
-  //         >
-  //           {/* Parent Account Details */}
-  //           <Flex flexDir="column" alignItems="space-between" w="100%">
-  //             <Text fontSize="xs" mb={2}>
-  //               AVAILABLE FUNDS
-  //             </Text>
+        {/* Account Balance */}
+        <Container
+          maxW="container.md"
+          centerContent
+          bgGradient={["linear(to-b, #4F1B7C, black)"]}
+          borderRadius={20}
+        >
+          <Flex
+            py="8"
+            rounded="xl"
+            color="white"
+            justify="space-between"
+            w="100%"
+            align="center"
+          >
+            {/* Parent Account Details */}
+            <Flex flexDir="column" alignItems="space-between" w="100%">
+              <Text fontSize="xs" mb={2}>
+                AVAILABLE FUNDS
+              </Text>
 
-  //             {/* Balance */}
-  //             <Flex alignItems="center">
-  //               <Image
-  //                 src="/logos/ethereum-logo.png"
-  //                 alt="Eth logo"
-  //                 width={10}
-  //                 height={10}
-  //                 mr={3}
-  //               />
+              {/* Balance */}
+              <Flex alignItems="center">
+                <Image
+                  src="/logos/ethereum-logo.png"
+                  alt="Eth logo"
+                  width={10}
+                  height={10}
+                  mr={3}
+                />
 
-  //               <Flex direction="row" alignItems="baseline">
-  //                 <Heading
-  //                   size={isMobileSize ? "2xl" : "xl"}
-  //                   display="flex"
-  //                   alignItems="baseline"
-  //                 >
-  //                   {`${Number(data?.formatted).toFixed(4)}`}
-  //                 </Heading>
-  //                 <Text fontSize="sm" ml={2}>
-  //                   {data?.symbol}
-  //                 </Text>
-  //               </Flex>
-  //             </Flex>
-  //           </Flex>
-  //           {!isMobileSize ? (
-  //             <Menu>
-  //               {({ isOpen }) => (
-  //                 <>
-  //                   <MenuButton isActive={isOpen} as={Button} size="2xl">
-  //                     <ChevronDownIcon fontSize="3xl" />
-  //                   </MenuButton>
-  //                   <MenuList>
-  //                     <MenuGroup title="Parent">
-  //                       <MenuItem icon={<RxAvatar />} onClick={onOpen}>
-  //                         Change Avatar
-  //                       </MenuItem>
-  //                       <MenuItem
-  //                         icon={<EditIcon />}
-  //                         onClick={onChangeUsernameOpen}
-  //                       >
-  //                         Change Username
-  //                       </MenuItem>
-  //                       <MenuItem
-  //                         icon={<BiWalletAlt />}
-  //                         onClick={() => {
-  //                           window.open(
-  //                             getEtherscanUrl(
-  //                               chain.id,
-  //                               EtherscanContext.ADDRESS,
-  //                               walletAddress
-  //                             ),
-  //                             "_blank"
-  //                           );
-  //                         }}
-  //                       >
-  //                         Transaction History
-  //                       </MenuItem>
-  //                     </MenuGroup>
+                <Flex direction="row" alignItems="baseline">
+                  <Heading
+                    size={isMobileSize ? "2xl" : "xl"}
+                    display="flex"
+                    alignItems="baseline"
+                  >
+                    {`${Number(data?.formatted).toFixed(4)}`}
+                  </Heading>
+                  <Text fontSize="sm" ml={2}>
+                    {data?.symbol}
+                  </Text>
+                </Flex>
+              </Flex>
+            </Flex>
+            {/* {!isMobileSize ? (
+              <Menu>
+                {({ isOpen }) => (
+                  <>
+                    <MenuButton isActive={isOpen} as={Button} size="2xl">
+                      <ChevronDownIcon fontSize="3xl" />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuGroup title="Parent">
+                        <MenuItem icon={<RxAvatar />} onClick={onOpen}>
+                          Change Avatar
+                        </MenuItem>
+                        <MenuItem
+                          icon={<EditIcon />}
+                          onClick={onChangeUsernameOpen}
+                        >
+                          Change Username
+                        </MenuItem>
+                        <MenuItem
+                          icon={<BiWalletAlt />}
+                          onClick={() => {
+                            window.open(
+                              getEtherscanUrl(
+                                chain.id,
+                                EtherscanContext.ADDRESS,
+                                walletAddress
+                              ),
+                              "_blank"
+                            );
+                          }}
+                        >
+                          Transaction History
+                        </MenuItem>
+                      </MenuGroup>
 
-  //                     <MenuDivider />
+                      <MenuDivider />
 
-  //                     <MenuGroup title="Family Members">
-  //                       <MenuItem
-  //                         icon={<AiOutlinePlus />}
-  //                         onClick={onAddChildOpen}
-  //                       >
-  //                         Add Member
-  //                       </MenuItem>
-  //                       <MenuItem
-  //                         icon={<BiTransfer />}
-  //                         onClick={() => alert("Transfer to all kids")}
-  //                       >
-  //                         Airdrop
-  //                       </MenuItem>
-  //                     </MenuGroup>
-  //                   </MenuList>
-  //                 </>
-  //               )}
-  //             </Menu>
-  //           ) : (
-  //             <IconButton
-  //               variant="outline"
-  //               colorScheme="white"
-  //               aria-label="Call Sage"
-  //               fontSize="30px"
-  //               icon={<HiMenu />}
-  //               onClick={onParentDetailsOpen}
-  //               style={{ border: "1px solid transparent" }}
-  //             />
-  //           )}
-  //         </Flex>
-  //       </Container>
-  //     </Container>
+                      <MenuGroup title="Family Members">
+                        <MenuItem
+                          icon={<AiOutlinePlus />}
+                          onClick={onAddChildOpen}
+                        >
+                          Add Member
+                        </MenuItem>
+                        <MenuItem
+                          icon={<BiTransfer />}
+                          onClick={() => alert("Transfer to all kids")}
+                        >
+                          Airdrop
+                        </MenuItem>
+                      </MenuGroup>
+                    </MenuList>
+                  </>
+                )}
+              </Menu>
+            ) : (
+              <IconButton
+                variant="outline"
+                colorScheme="white"
+                aria-label="Call Sage"
+                fontSize="30px"
+                icon={<HiMenu />}
+                onClick={onParentDetailsOpen}
+                style={{ border: "1px solid transparent" }}
+              />
+            )} */}
+          </Flex>
+        </Container>
+      </Container>
 
-  //     {/* Children */}
-  //     <Container
-  //       maxW="container.lg"
-  //       my="16"
-  //       className={childrenLoading && "animate-pulse"}
-  //     >
-  //       {children.length > 0 && (
-  //         <>
-  //           <Center my="2rem">
-  //             <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
-  //           </Center>
+      {/* Children */}
+      {/* <Container
+        maxW="container.lg"
+        my="16"
+        className={childrenLoading && "animate-pulse"}
+      >
+        {children.length > 0 && (
+          <>
+            <Center my="2rem">
+              <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
+            </Center>
 
-  //           <Wrap direction="row" justify="center" spacing="8rem">
-  //             {children.map((c, i) => (
-  //               <WrapItem key={c.wallet}>
-  //                 <Child
-  //                   childDetails={c}
-  //                   {...c}
-  //                   {...childrenStakes[c.wallet]}
-  //                   onOpen={onOpenChildDetails}
-  //                   setChildKey={setChildKey}
-  //                   childKey={i}
-  //                 />
-  //               </WrapItem>
-  //             ))}
-  //           </Wrap>
-  //         </>
-  //       )}
-  //     </Container>
+            <Wrap direction="row" justify="center" spacing="8rem">
+              {children.map((c, i) => (
+                <WrapItem key={c.wallet}>
+                  <Child
+                    childDetails={c}
+                    {...c}
+                    {...childrenStakes[c.wallet]}
+                    onOpen={onOpenChildDetails}
+                    setChildKey={setChildKey}
+                    childKey={i}
+                  />
+                </WrapItem>
+              ))}
+            </Wrap>
+          </>
+        )}
+      </Container> */}
 
-  //     {/* Modals */}
-  //     <AddChildModal
-  //       isOpen={isAddChildOpen}
-  //       onClose={onAddChildClose}
-  //       onAdd={() => fetchChildren()}
-  //     />
+      {/* Modals */}
 
-  //     <ChangeAvatarModal
-  //       isOpen={isOpen}
-  //       onClose={onClose}
-  //       activeStep={activeStep}
-  //       loading={loading}
-  //       handleSubmit={handleSubmit}
-  //       children={children}
-  //       childKey={childKey}
-  //       familyURI={familyDetails.avatarURI}
-  //     />
+      <ChangeAvatarModal
+        isOpen={isOpen}
+        onClose={onClose}
+        activeStep={activeStep}
+        loading={loading}
+        handleSubmit={handleSubmit}
+        children={children}
+        childKey={childKey}
+        familyURI={childDetails.avatarURI}
+      />
+      {/* 
+      <ChildDetailsDrawer
+        isOpen={isOpenChildDetails}
+        onClose={onCloseChildDetails}
+        placement="left"
+        onOpen={onOpen}
+        childKey={childKey}
+        children={children}
+        setChildKey={setChildKey}
+        // fetchChildren={fetchChildren}
+        onOpenChangeUsername={onChangeUsernameOpen}
+        onSendFundsOpen={onSendFundsOpen}
+      /> */}
 
-  //     <ChildDetailsDrawer
-  //       isOpen={isOpenChildDetails}
-  //       onClose={onCloseChildDetails}
-  //       placement="left"
-  //       onOpen={onOpen}
-  //       childKey={childKey}
-  //       children={children}
-  //       setChildKey={setChildKey}
-  //       fetchChildren={fetchChildren}
-  //       onOpenChangeUsername={onChangeUsernameOpen}
-  //       onSendFundsOpen={onSendFundsOpen}
-  //     />
+      <UsernameModal
+        isOpen={isChangeUsernameOpen}
+        onClose={onChangeUsernameClose}
+        childDetails={childDetails}
+        setChildDetails={setChildDetails}
+      />
+      {/* 
+      <SendFundsModal
+        isOpen={isSendFundsOpen}
+        onClose={onSendFundsClose}
+        childKey={childKey}
+        children={children}
+        fetchChildren={fetchChildren}
+      /> */}
 
-  //     <UsernameModal
-  //       isOpen={isChangeUsernameOpen}
-  //       onClose={onChangeUsernameClose}
-  //       childKey={childKey}
-  //       children={children}
-  //       familyId={familyDetails.familyId}
-  //       fetchChildren={fetchChildren}
-  //       fetchFamilyDetails={fetchFamilyDetails}
-  //     />
-
-  //     <SendFundsModal
-  //       isOpen={isSendFundsOpen}
-  //       onClose={onSendFundsClose}
-  //       childKey={childKey}
-  //       children={children}
-  //       fetchChildren={fetchChildren}
-  //       fetchFamilyDetails={fetchFamilyDetails}
-  //     />
-
-  //     {isMobileSize && (
-  //       <ParentDetailsDrawer
-  //         isOpen={isParentDetailsOpen}
-  //         onClose={onParentDetailsClose}
-  //         placement="bottom"
-  //         onOpen={onOpen}
-  //         walletAddress={walletAddress}
-  //         onChangeUsernameOpen={onChangeUsernameOpen}
-  //         onAddChildOpen={onAddChildOpen}
-  //       />
-  //     )}
-  //   </Box>
-  // );
+      {/* {isMobileSize && (
+        <ParentDetailsDrawer
+          isOpen={isParentDetailsOpen}
+          onClose={onParentDetailsClose}
+          placement="bottom"
+          onOpen={onOpen}
+          walletAddress={walletAddress}
+          onChangeUsernameOpen={onChangeUsernameOpen}
+          onAddChildOpen={onAddChildOpen}
+        />
+      )} */}
+    </Box>
+  );
 };
 
 export default Child;

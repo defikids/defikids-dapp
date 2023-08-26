@@ -14,6 +14,5 @@ export type ChildDetails = {
   memberSince: number;
   wallet: string;
   sandboxMode: boolean;
-  isActive: boolean;
   balance?: string;
 };

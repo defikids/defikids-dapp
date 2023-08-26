@@ -81,8 +81,6 @@ class HostContract {
         };
       });
 
-    console.log("children", children);
-
     return children;
   }
 
@@ -92,11 +90,7 @@ class HostContract {
     wallet: string,
     sandboxMode: boolean
   ) {
-    console.log("contract.tsx");
-    console.log("this.contract", this.contract);
-    console.log("this.wallet");
     const familyId = await this.contract.getFamilyIdByOwner(this.wallet);
-    console.log("familyId", familyId);
     const tx = await this.contract.addChild(
       familyId,
       username,
@@ -138,10 +132,9 @@ class HostContract {
 
   async updateChildAvatarURI(
     childAddress: string,
-    walletAddress: string,
-    avatarURI: string
+    avatarURI: string,
+    familyId: string
   ) {
-    const familyId = await this.contract.getFamilyIdByOwner(walletAddress);
     return this.contract.updateChildAvatarURI(
       familyId,
       childAddress,
@@ -174,7 +167,6 @@ class HostContract {
       memberSince: response.memberSince.toString(),
       wallet: response.wallet,
       sandboxMode: response.sandboxMode,
-      isActive: response.isActive,
     };
     return childDetails;
   }

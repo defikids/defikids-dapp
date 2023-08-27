@@ -1,8 +1,9 @@
 export const menuCards = [
   {
     title: "Community",
-    description: "Engage with our community on our social channels",
-    link: "/community",
+    description:
+      "Join our community and start learning about crypto/defi today",
+    link: "https://discord.gg/bDGMYNa8Ng",
   },
 
   {

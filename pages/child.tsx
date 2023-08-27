@@ -26,6 +26,18 @@ import {
   HStack,
   PinInput,
   PinInputField,
+  StatGroup,
+  Stat,
+  StatNumber,
+  StatHelpText,
+  StatArrow,
+  StatLabel,
+  ButtonGroup,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // import Child from "@/components/child";
@@ -57,6 +69,11 @@ import { HiMenu } from "react-icons/hi";
 import { PasswordInput } from "@/components/PasswordInput";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { ChildDefiOptionsDrawer } from "@/components/drawers/ChildDefiOptionsDrawer";
+import { GrGrow } from "react-icons/gr";
+import { BiTimeFive } from "react-icons/bi";
+import { kv } from "@vercel/kv";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const Child: React.FC = () => {
   //=============================================================================
@@ -72,6 +89,7 @@ const Child: React.FC = () => {
   const [loading, setIsLoading] = useState(false);
   const [familyId, setFamilyId] = useState<string>("");
   const [familyIdSubmitted, setFamilyIdSubmitted] = useState<boolean>(false);
+  const [isBackground, setIsBackground] = useState<boolean>(false);
 
   //=============================================================================
   //                               HOOKS
@@ -130,9 +148,9 @@ const Child: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isParentDetailsOpen,
-    onOpen: onParentDetailsOpen,
-    onClose: onParentDetailsClose,
+    isOpen: isChildDefiOptionsOpen,
+    onOpen: onChildDefiOptionsOpen,
+    onClose: onChildDefiOptionsClose,
   } = useDisclosure();
 
   const { activeStep, setActiveStep } = useSteps({
@@ -191,6 +209,36 @@ const Child: React.FC = () => {
   //   await getChild();
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [children.length, contract, walletAddress]);
+
+  const testPostKV = async () => {
+    const body = {
+      address: walletAddress,
+      value: {
+        avatarURI:
+          "https://purple-ripe-cuckoo-537.mypinata.cloud/ipfs/QmYZ8KHQDupvfU5Bu6qCsPuStMqm1EyEK9hYTtxmLyTUV3",
+        backgroundURI:
+          "https://cdn.pixabay.com/photo/2021/02/01/06/48/geometric-5969508_1280.png",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(`/api/vercel/set-user`, body);
+      console.log("data", data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const testGetKV = async () => {
+    try {
+      const { data } = await axios.get(
+        `/api/vercel/get-user?address=${walletAddress}`
+      );
+      console.log("data", data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   const uploadToIpfs = async (selectedFile: File | null) => {
     try {
@@ -273,6 +321,7 @@ const Child: React.FC = () => {
       });
 
       onClose();
+      setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
       const errorDetails = transactionErrors(e);
@@ -322,27 +371,51 @@ const Child: React.FC = () => {
       </Flex>
     );
   }
-
   return (
-    <Box>
+    <Box
+      mt={isBackground ? "-7.5rem" : "0"}
+      h="100vh"
+      bgImage={
+        isBackground
+          ? `linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ), url(${childDetails.avatarURI || "/images/placeholder-avatar.jpeg"})`
+          : ""
+      }
+      bgRepeat="no-repeat"
+      bgPosition="center"
+    >
       <Container maxW="container.lg" mt="8rem">
+        <Button variant="outline" onClick={testPostKV}>
+          KV Post test
+        </Button>
+        <Button variant="outline" onClick={testGetKV}>
+          KV get test
+        </Button>
         <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
-          <Tooltip label="Change Avatar">
-            <Avatar
-              size="xl"
-              name={
-                childDetails.username
-                  ? childDetails.username
-                  : trimAddress(walletAddress)
-              }
-              src={childDetails.avatarURI || "/images/placeholder-avatar.jpeg"}
-              style={{ cursor: "pointer" }}
-              onClick={onOpen}
-              _hover={{
-                transform: "scale(1.05)",
-              }}
-            />
-          </Tooltip>
+          {!isBackground && (
+            <Tooltip label="Change Avatar">
+              <Image
+                // size="xl"
+                w={isMobileSize ? "200px" : "200px"}
+                alt={
+                  childDetails.username
+                    ? childDetails.username
+                    : trimAddress(walletAddress)
+                }
+                src={
+                  childDetails.avatarURI || "/images/placeholder-avatar.jpeg"
+                }
+                style={{ cursor: "pointer" }}
+                onClick={onOpen}
+                _hover={{
+                  transform: "scale(1.05)",
+                }}
+              />
+            </Tooltip>
+          )}
 
           <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
             {`Welcome back, ${
@@ -398,104 +471,140 @@ const Child: React.FC = () => {
                 </Flex>
               </Flex>
             </Flex>
-            {/* {!isMobileSize ? (
-              <Menu>
-                {({ isOpen }) => (
-                  <>
-                    <MenuButton isActive={isOpen} as={Button} size="2xl">
-                      <ChevronDownIcon fontSize="3xl" />
-                    </MenuButton>
-                    <MenuList>
-                      <MenuGroup title="Parent">
-                        <MenuItem icon={<RxAvatar />} onClick={onOpen}>
-                          Change Avatar
-                        </MenuItem>
-                        <MenuItem
-                          icon={<EditIcon />}
-                          onClick={onChangeUsernameOpen}
-                        >
-                          Change Username
-                        </MenuItem>
-                        <MenuItem
-                          icon={<BiWalletAlt />}
-                          onClick={() => {
-                            window.open(
-                              getEtherscanUrl(
-                                chain.id,
-                                EtherscanContext.ADDRESS,
-                                walletAddress
-                              ),
-                              "_blank"
-                            );
-                          }}
-                        >
-                          Transaction History
-                        </MenuItem>
-                      </MenuGroup>
+            {!isMobileSize && (
+              <>
+                <Flex>
+                  <Button
+                    leftIcon={<GrGrow />}
+                    colorScheme="blue"
+                    size="lg"
+                    mr={3}
+                  >
+                    Stake
+                  </Button>
+                  <Button
+                    leftIcon={<BiTimeFive />}
+                    colorScheme="blue"
+                    size="lg"
+                    variant="outline"
+                  >
+                    Timelock
+                  </Button>
+                </Flex>
 
-                      <MenuDivider />
+                <Menu>
+                  {({ isOpen }) => (
+                    <Box ml={5}>
+                      <MenuButton isActive={isOpen} as={Button} size="2xl">
+                        <ChevronDownIcon fontSize="3xl" />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuGroup title="Parent">
+                          <MenuItem icon={<RxAvatar />} onClick={onOpen}>
+                            Change Avatar
+                          </MenuItem>
+                          <MenuItem
+                            icon={<EditIcon />}
+                            onClick={onChangeUsernameOpen}
+                          >
+                            Change Username
+                          </MenuItem>
+                          <MenuItem
+                            icon={<EditIcon />}
+                            onClick={() => setIsBackground(!isBackground)}
+                          >
+                            Avatar as background
+                          </MenuItem>
 
-                      <MenuGroup title="Family Members">
-                        <MenuItem
-                          icon={<AiOutlinePlus />}
-                          onClick={onAddChildOpen}
-                        >
-                          Add Member
-                        </MenuItem>
-                        <MenuItem
-                          icon={<BiTransfer />}
-                          onClick={() => alert("Transfer to all kids")}
-                        >
-                          Airdrop
-                        </MenuItem>
-                      </MenuGroup>
-                    </MenuList>
-                  </>
-                )}
-              </Menu>
-            ) : (
-              <IconButton
-                variant="outline"
-                colorScheme="white"
-                aria-label="Call Sage"
-                fontSize="30px"
-                icon={<HiMenu />}
-                onClick={onParentDetailsOpen}
-                style={{ border: "1px solid transparent" }}
-              />
-            )} */}
+                          <MenuItem
+                            icon={<BiWalletAlt />}
+                            onClick={() => {
+                              window.open(
+                                getEtherscanUrl(
+                                  chain.id,
+                                  EtherscanContext.ADDRESS,
+                                  walletAddress
+                                ),
+                                "_blank"
+                              );
+                            }}
+                          >
+                            Transaction History
+                          </MenuItem>
+                        </MenuGroup>
+
+                        <MenuDivider />
+
+                        <MenuGroup title="Family Members">
+                          <MenuItem
+                            icon={<AiOutlinePlus />}
+                            onClick={onAddChildOpen}
+                          >
+                            Add Member
+                          </MenuItem>
+                          <MenuItem
+                            icon={<BiTransfer />}
+                            onClick={() => alert("Transfer to all kids")}
+                          >
+                            Airdrop
+                          </MenuItem>
+                        </MenuGroup>
+                      </MenuList>
+                    </Box>
+                  )}
+                </Menu>
+                {/* <IconButton
+                  variant="outline"
+                  colorScheme="white"
+                  aria-label="Call Sage"
+                  fontSize="30px"
+                  icon={<HiMenu />}
+                  onClick={onChildDefiOptionsOpen}
+                  style={{ border: "1px solid transparent" }}
+                /> */}
+              </>
+            )}
           </Flex>
         </Container>
       </Container>
 
-      {/* Children */}
-      {/* <Container
-        maxW="container.lg"
-        my="16"
-        className={childrenLoading && "animate-pulse"}
-      >
-        {children.length > 0 && (
-          <>
-            <Center my="2rem">
-              <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
-            </Center>
+      <Container maxW="container.md" mt="2rem">
+        <Tabs variant="soft-rounded" colorScheme="blue">
+          <TabList>
+            <Tab>Earning</Tab>
+            <Tab>Saving</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <p>one!</p>
+            </TabPanel>
+            <TabPanel>
+              <p>two!</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Container>
 
-            <Wrap direction="row" justify="center" spacing="8rem">
-              {children.map((c, i) => (
-                <WrapItem key={c.wallet}>
-                  <Child
-                    childDetails={c}
-                    {...c}
-                    {...childrenStakes[c.wallet]}
-                    onOpen={onOpenChildDetails}
-                    setChildKey={setChildKey}
-                    childKey={i}
-                  />
-                </WrapItem>
-              ))}
-            </Wrap>
-          </>
-        )}
+      {/* <Container maxW="container.lg" mt="8rem">
+        <StatGroup>
+          <Stat>
+            <StatLabel>Sent</StatLabel>
+            <StatNumber>345,670</StatNumber>
+            <StatHelpText>
+              <StatArrow type="increase" />
+              23.36%
+            </StatHelpText>
+          </Stat>
+
+          <Stat>
+            <StatLabel>Clicked</StatLabel>
+            <StatNumber>45</StatNumber>
+            <StatHelpText>
+              <StatArrow type="decrease" />
+              9.05%
+            </StatHelpText>
+          </Stat>
+        </StatGroup>
       </Container> */}
 
       {/* Modals */}
@@ -539,17 +648,13 @@ const Child: React.FC = () => {
         fetchChildren={fetchChildren}
       /> */}
 
-      {/* {isMobileSize && (
-        <ParentDetailsDrawer
-          isOpen={isParentDetailsOpen}
-          onClose={onParentDetailsClose}
+      {isMobileSize && (
+        <ChildDefiOptionsDrawer
+          isOpen={isChildDefiOptionsOpen}
+          onClose={onChildDefiOptionsClose}
           placement="bottom"
-          onOpen={onOpen}
-          walletAddress={walletAddress}
-          onChangeUsernameOpen={onChangeUsernameOpen}
-          onAddChildOpen={onAddChildOpen}
         />
-      )} */}
+      )}
     </Box>
   );
 };

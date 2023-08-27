@@ -164,10 +164,10 @@ export const AvatarSelection = ({
               w="100%"
               onClick={async () => {
                 try {
-                  const response = await axios.get(uploadURI);
-                  if (response.status === 200) {
-                    setAvatarURI(uploadURI);
-                  }
+                  // const response = await axios.get(uploadURI);
+                  // if (response.status === 200) {
+                  setAvatarURI(uploadURI);
+                  // }
                 } catch (e) {
                   console.error(e);
                   toast({

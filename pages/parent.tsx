@@ -311,9 +311,7 @@ const Parent: React.FC = () => {
                   ? familyDetails.username
                   : trimAddress(walletAddress)
               }
-              src={
-                familyDetails.avatarURI || "/images/placeholders-avatar.jpeg"
-              }
+              src={familyDetails.avatarURI || "/images/placeholder-avatar.jpeg"}
               style={{ cursor: "pointer" }}
               onClick={onOpen}
               _hover={{

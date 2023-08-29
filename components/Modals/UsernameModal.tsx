@@ -25,6 +25,7 @@ import HostContract from "@/services/contract";
 import { StepperContext } from "@/dataSchema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { ChildDetails } from "@/dataSchema/types";
 
 export const UsernameModal = ({
   isOpen,
@@ -34,14 +35,18 @@ export const UsernameModal = ({
   familyId,
   fetchChildren,
   fetchFamilyDetails,
+  childDetails,
+  setChildDetails,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  childKey: number;
-  children: any;
-  familyId: string;
-  fetchChildren: () => void;
-  fetchFamilyDetails: () => void;
+  childKey?: number;
+  children?: any;
+  familyId?: string;
+  fetchChildren?: () => void;
+  fetchFamilyDetails?: () => void;
+  childDetails?: ChildDetails;
+  setChildDetails?: (childDetails: ChildDetails) => void;
 }) => {
   //=============================================================================
   //                               STATE
@@ -78,9 +83,14 @@ export const UsernameModal = ({
   //=============================================================================
 
   const onSubmit = async () => {
-    const activeAddress = children[childKey]?.wallet
+    let activeAddress: string = "";
+
+    activeAddress = children[childKey]?.wallet
       ? children[childKey]?.wallet
       : walletAddress;
+
+    console.log("activeAddress", activeAddress);
+    console.log("walletAddress", walletAddress);
 
     const contract = await HostContract.fromProvider(connectedSigner);
     setIsLoading(true);
@@ -89,7 +99,13 @@ export const UsernameModal = ({
       setActiveStep(0);
       let tx: TransactionResponse;
 
-      if (activeAddress === walletAddress) {
+      if (!activeAddress) {
+        tx = await contract.updateChildUsername(
+          familyId,
+          childDetails.wallet,
+          username
+        );
+      } else if (activeAddress === walletAddress) {
         tx = await contract.updateUsername(username);
       } else {
         const childAddress = activeAddress;
@@ -103,7 +119,12 @@ export const UsernameModal = ({
       setActiveStep(1);
       await tx.wait();
 
-      if (activeAddress === walletAddress) {
+      if (!activeAddress) {
+        setChildDetails({
+          ...childDetails,
+          username: username,
+        });
+      } else if (activeAddress === walletAddress) {
         fetchFamilyDetails();
       } else {
         fetchChildren();

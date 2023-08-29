@@ -17,7 +17,7 @@ import { WalletPopover } from "@/components/WalletPopover";
 import { MenuPopover } from "@/components/MenuPopover";
 import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
-import { UserType } from "@/services/contract";
+import { UserType } from "@/dataSchema/enums";
 import { BiSolidUserRectangle } from "react-icons/bi";
 import { useAccount } from "wagmi";
 

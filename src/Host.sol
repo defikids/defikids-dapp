@@ -30,7 +30,6 @@ contract Host {
         uint256 memberSince;
         address wallet;
         bool sandboxMode;
-        bool isActive;
     }
 
     struct Family {
@@ -157,8 +156,7 @@ contract Host {
             familyId: _familyId,
             memberSince: block.timestamp,
             wallet: _child,
-            sandboxMode: _sandboxMode,
-            isActive: true
+            sandboxMode: _sandboxMode
         });
 
         _childByFamilyId[_familyId][_child] = child;
@@ -204,13 +202,7 @@ contract Host {
     function fetchChild(
         address _child,
         bytes32 _familyId
-    )
-        public
-        view
-        onlyParent
-        isRegistered(_child)
-        returns (Child memory fetchedChild)
-    {
+    ) public view isRegistered(_child) returns (Child memory fetchedChild) {
         return _childByFamilyId[_familyId][_child];
     }
 

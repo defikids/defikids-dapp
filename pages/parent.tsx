@@ -35,7 +35,7 @@ import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { trimAddress, getEtherscanUrl } from "@/utils/web3";
-import { FamilyDetails } from "@/dataSchema/hostContract";
+import { User, ChildDetails } from "@/dataSchema/types";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
 import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
 import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
@@ -51,6 +51,7 @@ import { useNetwork } from "wagmi";
 import { EtherscanContext } from "@/dataSchema/enums";
 import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
 import { HiMenu } from "react-icons/hi";
+import { transactionErrors } from "@/utils/errorHanding";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -62,7 +63,7 @@ const Parent: React.FC = () => {
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
-  const [familyDetails, setFamilyDetails] = useState({} as FamilyDetails);
+  const [familyDetails, setFamilyDetails] = useState({} as User);
   const [loading, setIsLoading] = useState(false);
 
   //=============================================================================
@@ -151,50 +152,51 @@ const Parent: React.FC = () => {
   const fetchFamilyDetails = useCallback(async () => {
     if (!walletAddress) return;
 
-    const contract = await HostContract.fromProvider(
-      connectedSigner,
-      walletAddress
+    const { data } = await axios.get(
+      `/api/vercel/get-json?key=${walletAddress}`
     );
-    const family = (await contract.getFamilyByOwner(
-      walletAddress
-    )) as FamilyDetails;
-    console.log("family - fetchFamilyDetails", family);
-    setFamilyDetails(family);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const user = data as User;
+    setFamilyDetails(user);
   }, [walletAddress]);
 
   const fetchChildren = useCallback(async () => {
     const getChildren = async () => {
       if (!walletAddress) return;
 
-      console.log("fetchChildren", walletAddress);
+      const children = [] as ChildDetails[];
 
-      const contract = await HostContract.fromProvider(
-        connectedSigner,
-        walletAddress
-      );
-
-      setChildrenLoading(true);
-      const children = await contract.fetchChildren(walletAddress);
-      console.log("children - fetchChildren", children);
-      const childrenWalletBalances = await axios.post(
-        `/api/etherscan/balancemulti`,
-        {
-          addresses: children.map((c) => c.wallet),
-        }
-      );
-
-      const childrenWithBalances = children.map((c) => {
-        const balance = childrenWalletBalances.data.find(
-          (b) => b.account === c.wallet
+      familyDetails.children?.forEach(async (child) => {
+        const { data } = await axios.get(
+          `/api/vercel/get-json?key=${walletAddress}`
         );
-        return {
-          ...c,
-          balance: balance ? balance.balance : 0,
-        };
+
+        children.push(data as ChildDetails);
       });
 
-      setChildren(childrenWithBalances);
+      if (children.length) {
+        const childrenWalletBalances = await axios.post(
+          `/api/etherscan/balancemulti`,
+          {
+            addresses: children.map((c) => c.wallet),
+          }
+        );
+
+        const childrenWithBalances = children.map((c) => {
+          const balance = childrenWalletBalances.data.find(
+            (b) => b.account === c.wallet
+          );
+          return {
+            ...c,
+            balance: balance ? balance.balance : 0,
+          };
+        });
+
+        setChildren(childrenWithBalances);
+      } else {
+        setChildren(children);
+      }
+
       setChildrenLoading(false);
     };
 
@@ -256,6 +258,7 @@ const Parent: React.FC = () => {
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
     const contract = await HostContract.fromProvider(connectedSigner);
+    const familyId = await contract.getFamilyIdByOwner(walletAddress);
 
     try {
       setActiveStep(1);
@@ -266,49 +269,30 @@ const Parent: React.FC = () => {
         const childAddress = activeAddress;
         tx = await contract.updateChildAvatarURI(
           childAddress,
-          walletAddress,
-          avatar
+          avatar,
+          familyId
         );
       }
 
       setActiveStep(2);
-      const txReceipt = await tx.wait();
       if (activeAddress === walletAddress) {
         await fetchFamilyDetails();
       } else {
         await fetchChildren();
       }
 
-      if (txReceipt.status === 1) {
-        toast({
-          title: "Avatar successfully updated",
-          status: "success",
-        });
-        onClose();
-        router.push("/parent");
-      }
-    } catch (e) {
-      console.error(e);
-      setIsLoading(false);
-
-      if (e.message.includes("user rejected transaction")) {
-        toast({
-          title: "Transaction Error",
-          description: "User rejected transaction",
-          status: "error",
-        });
-        return;
-      }
-
       toast({
-        title: "Error",
-        description: "Network error",
-        status: "error",
+        title: "Avatar successfully updated",
+        status: "success",
       });
 
       onClose();
-    } finally {
+      router.push("/parent");
+    } catch (e) {
       setIsLoading(false);
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
     }
   };
 
@@ -326,7 +310,7 @@ const Parent: React.FC = () => {
                   ? familyDetails.username
                   : trimAddress(walletAddress)
               }
-              src={familyDetails.avatarURI}
+              src={familyDetails.avatarURI || "/images/placeholder-avatar.jpeg"}
               style={{ cursor: "pointer" }}
               onClick={onOpen}
               _hover={{
@@ -465,7 +449,7 @@ const Parent: React.FC = () => {
         my="16"
         className={childrenLoading && "animate-pulse"}
       >
-        {children.length > 0 && (
+        {children.length > 0 ? (
           <>
             <Center my="2rem">
               <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
@@ -486,6 +470,10 @@ const Parent: React.FC = () => {
               ))}
             </Wrap>
           </>
+        ) : (
+          <Center my="2rem">
+            <Heading fontSize="2xl">No Family Members</Heading>
+          </Center>
         )}
       </Container>
 

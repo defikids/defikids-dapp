@@ -38,7 +38,7 @@ export const SendFundsModal = ({
   childKey: number;
   children: any;
   fetchChildren: () => void;
-  fetchFamilyDetails: () => void;
+  fetchFamilyDetails?: () => void;
 }) => {
   //=============================================================================
   //                               STATE

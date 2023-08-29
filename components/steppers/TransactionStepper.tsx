@@ -17,11 +17,8 @@ export const steps = (context: StepperContext) => {
   if (context === StepperContext.AVATAR) {
     return [
       {
-        title: "Step 1",
-        description: "Saving your avatar on IPFS",
+        title: "Saving your avatar on IPFS",
       },
-      { title: "Step 2", description: "Approve Wallet Transaction" },
-      { title: "Step 3", description: "Processing Transaction" },
     ];
   }
 

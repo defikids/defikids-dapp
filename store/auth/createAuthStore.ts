@@ -3,7 +3,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
-import { UserType } from "../../services/contract";
+import { UserType } from "@/dataSchema/enums";
 import { disconnect } from "@wagmi/core";
 
 type State = {

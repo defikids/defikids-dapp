@@ -21,7 +21,6 @@ import { RegisterParentForm } from "@/components/forms/RegisterParentForm";
 
 const RegisterModal = ({ isOpen, onClose }) => {
   const [isStarted, setIsStarted] = useState(false);
-  const [loading, setIsLoading] = useState(false);
 
   const isMobileSize = useBreakpointValue({
     base: true,
@@ -74,13 +73,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
   };
 
   const register = () => {
-    return (
-      <RegisterParentForm
-        onClose={onClose}
-        loading={loading}
-        setIsLoading={setIsLoading}
-      />
-    );
+    return <RegisterParentForm onClose={onClose} />;
   };
 
   return (
@@ -89,7 +82,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
       onClose={onClose}
       onCloseComplete={() => {
         setIsStarted(false);
-        setIsLoading(false);
       }}
       size={!isMobileSize ? (isStarted ? "md" : "6xl") : "md"}
       isCentered

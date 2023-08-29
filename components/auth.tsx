@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { UserType } from "../services/contract";
+import { UserType } from "@/dataSchema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
-import HostContract from "@/services/contract";
+import axios from "axios";
+import { User } from "@/dataSchema/types";
 
 const Auth = ({
   onRegisterOpen,
@@ -27,27 +28,12 @@ const Auth = ({
     const { isConnected, address, isDisconnected } = account;
 
     if (isDisconnected) {
-      console.log("disconnected");
       setLogout();
       setHasCheckedUserType(false);
     }
 
     if (isConnected) {
-      const selectedWalletAddress = address.toLowerCase();
-
-      const storedWalletAddress = localStorage.getItem(
-        "defi-kids.wallet-address"
-      );
-
-      if (selectedWalletAddress !== storedWalletAddress) {
-        localStorage.setItem("defi-kids.wallet-address", selectedWalletAddress);
-        localStorage.removeItem("defi-kids.family-id");
-
-        router.push("/");
-        setHasCheckedUserType(false);
-      }
-
-      setWalletAddress(selectedWalletAddress);
+      setWalletAddress(address);
       setIsLoggedIn(true);
     }
   });
@@ -94,10 +80,16 @@ const Auth = ({
       setProvider(provider);
       setConnectedSigner(signer);
 
-      const contract = await HostContract.fromProvider(provider);
-      const getUserType = await contract.getUserType(walletAddress);
+      const { data } = await axios.get(
+        `/api/vercel/get-json?key=${walletAddress}`
+      );
 
-      setUserType(getUserType);
+      const user: User = data;
+      console.log("data - kv user", data);
+
+      if (user) {
+        setUserType(user.userType);
+      }
       setHasCheckedUserType(true);
     };
 
@@ -119,8 +111,13 @@ const Auth = ({
    * This hook will navigate the user to the correct page based on their user type
    **/
   useEffect(() => {
+    if (router.pathname === "/admin") {
+      router.push("/admin");
+      return;
+    }
+
     if (hasCheckedUserType) {
-      switch (Number(userType)) {
+      switch (userType) {
         case UserType.UNREGISTERED:
           onRegisterOpen();
           break;

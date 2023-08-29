@@ -19,3 +19,24 @@ export enum ChainId {
   MAINNET = 1,
   GOERLI = 5,
 }
+
+export enum UserType {
+  UNREGISTERED = "UNREGISTERED",
+  PARENT = "PARENT",
+  CHILD = "CHILD",
+}
+
+export enum AccountStatus {
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+  PENDING = "Pending",
+}
+
+export enum AccountPackage {
+  BASIC = "Basic",
+  PREMIUM = "Premium",
+}
+export enum Explaination {
+  NONE = "NONE",
+  FAMILY_ID = "FAMILY_ID",
+}

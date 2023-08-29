@@ -7,7 +7,7 @@ import { switchTheme } from "@/components/theme/switchTheme";
 import { menuTheme } from "@/components/theme/menuTheme";
 import { drawerTheme } from "@/components/theme/drawerTheme";
 import { useAuthStore } from "@/store/auth/authStore";
-import { UserType } from "@/services/contract";
+import { UserType } from "@/dataSchema/enums";
 import { MainLayout } from "@/components/main_layout";
 import RegisterModal from "@/components/Modals/RegisterModal";
 import Footer from "@/components/footer";
@@ -111,6 +111,7 @@ function MyApp({ Component, pageProps }) {
             showStartEarning={showStartEarning}
             isRegisterOpen={isRegisterOpen}
           />
+
           <Component {...pageProps} />
 
           {router.pathname === "/" && <Footer />}

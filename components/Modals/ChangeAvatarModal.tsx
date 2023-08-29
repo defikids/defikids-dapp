@@ -24,6 +24,7 @@ export const ChangeAvatarModal = ({
   familyURI,
   children,
   childKey,
+  dBData,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -33,6 +34,7 @@ export const ChangeAvatarModal = ({
   familyURI: string;
   children: any;
   childKey: number;
+  dBData?: any;
 }) => {
   const [provideUrl, setProvideUrl] = useState(false);
   const [avatarURI, setAvatarURI] = useState("");
@@ -47,19 +49,17 @@ export const ChangeAvatarModal = ({
   };
 
   const displayAvatar = () => {
-    console.log("avatarURI", avatarURI);
-    console.log("uploadURI", uploadURI);
-    if (avatarURI) return avatarURI;
+    // if (avatarURI) return avatarURI;
 
-    if (children[childKey]?.avatarURI) {
-      return children[childKey]?.avatarURI;
-    }
+    // if (children[childKey]?.avatarURI) {
+    //   return childDBData?.avatarURI;
+    // }
 
-    if (familyURI) {
-      return familyURI;
-    }
+    // if (familyURI) {
+    //   return familyURI;
+    // }
 
-    return "/images/placeholder-avatar.jpeg";
+    return dBData ? dBData : "/images/placeholder-avatar.jpeg";
   };
 
   return (

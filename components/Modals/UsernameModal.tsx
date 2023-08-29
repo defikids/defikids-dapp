@@ -25,7 +25,7 @@ import HostContract from "@/services/contract";
 import { StepperContext } from "@/dataSchema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { ChildDetails } from "@/dataSchema/hostContract";
+import { ChildDetails } from "@/dataSchema/types";
 
 export const UsernameModal = ({
   isOpen,

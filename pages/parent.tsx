@@ -35,7 +35,7 @@ import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { trimAddress, getEtherscanUrl } from "@/utils/web3";
-import { FamilyDetails } from "@/dataSchema/hostContract";
+import { User, ChildDetails } from "@/dataSchema/types";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
 import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
 import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
@@ -63,7 +63,7 @@ const Parent: React.FC = () => {
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
-  const [familyDetails, setFamilyDetails] = useState({} as FamilyDetails);
+  const [familyDetails, setFamilyDetails] = useState({} as User);
   const [loading, setIsLoading] = useState(false);
 
   //=============================================================================
@@ -152,28 +152,27 @@ const Parent: React.FC = () => {
   const fetchFamilyDetails = useCallback(async () => {
     if (!walletAddress) return;
 
-    const contract = await HostContract.fromProvider(
-      connectedSigner,
-      walletAddress
+    const { data } = await axios.get(
+      `/api/vercel/get-json?key=${walletAddress}`
     );
-    const family = (await contract.getFamilyByOwner(
-      walletAddress
-    )) as FamilyDetails;
-    setFamilyDetails(family);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const user = data as User;
+    setFamilyDetails(user);
   }, [walletAddress]);
 
   const fetchChildren = useCallback(async () => {
     const getChildren = async () => {
       if (!walletAddress) return;
 
-      const contract = await HostContract.fromProvider(
-        connectedSigner,
-        walletAddress
-      );
+      const children = [] as ChildDetails[];
 
-      setChildrenLoading(true);
-      const children = await contract.fetchChildren(walletAddress);
+      familyDetails.children?.forEach(async (child) => {
+        const { data } = await axios.get(
+          `/api/vercel/get-json?key=${walletAddress}`
+        );
+
+        children.push(data as ChildDetails);
+      });
 
       if (children.length) {
         const childrenWalletBalances = await axios.post(

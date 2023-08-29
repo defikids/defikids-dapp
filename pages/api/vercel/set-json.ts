@@ -6,10 +6,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const { address, value } = req.body;
+    const { key, value } = req.body as {
+      key: string;
+      value: string;
+    };
 
     const formatted = JSON.stringify(value);
-    const result = await kv.json.set(`${address}`, "$", formatted);
+    const result = await kv.json.set(key, "$", formatted);
 
     return res.status(200).json(result);
   } catch (error) {

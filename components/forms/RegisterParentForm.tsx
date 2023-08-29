@@ -1,84 +1,60 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   FormControl,
-  FormLabel,
   Input,
   Button,
   FormErrorMessage,
   useToast,
   Flex,
-  Divider,
-  Avatar,
-  useSteps,
+  Text,
+  Switch,
+  Link,
 } from "@chakra-ui/react";
-import { ethers } from "ethers";
 import axios from "axios";
-import {
-  TransactionStepper,
-  steps,
-} from "@/components/steppers/TransactionStepper";
-import router from "next/router";
-import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
-import shallow from "zustand/shallow";
-import HostContract from "@/services/contract";
-import { AvatarSelection } from "@/components/forms/AvatarSelection";
-import { StepperContext } from "@/dataSchema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
-import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { User, AccountDetails } from "@/dataSchema/types";
+import NextLink from "next/link";
+import {
+  UserType,
+  AccountPackage,
+  Explaination,
+  AccountStatus,
+} from "@/dataSchema/enums";
+import { hashedFamilyId } from "@/utils/web3";
+import { v4 as uuidv4 } from "uuid";
+import { timestampInSeconds } from "@/utils/dateTime";
+import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
+import router from "next/router";
 
-export const RegisterParentForm = ({
-  onClose,
-  loading,
-  setIsLoading,
-}: {
-  onClose: () => void;
-  loading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-}) => {
+export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
   //                             STATE
   //=============================================================================
 
   const [username, setUsername] = useState("");
-  const [wallet, setWallet] = useState("");
-  const [avatarURI, setAvatarURI] = useState("");
-  const [uploadURI, setUploadURI] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [termsAgreed, setTermsAgreed] = useState(false);
   const [familyId, setFamilyId] = useState("");
-
-  const [provideUrl, setProvideUrl] = useState(false);
-
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const isNameError = username === "";
   const isIdError = familyId === "";
-  const isInvalidWallet = !ethers.utils.isAddress(wallet);
+
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [explaination, setExplaination] = useState(Explaination.NONE);
 
   //=============================================================================
   //                             HOOKS
   //=============================================================================
 
   const toast = useToast();
-  const fileInputRef = useRef(null);
-  const inputUrlRef = useRef(null);
 
-  const { activeStep, setActiveStep } = useSteps({
-    index: 1,
-    count: steps.length,
-  });
-
-  const { walletAddress } = useAuthStore(
+  const { walletAddress, setUserType } = useAuthStore(
     (state) => ({
       walletAddress: state.walletAddress,
-    }),
-    shallow
-  );
-
-  const { connectedSigner } = useContractStore(
-    (state) => ({
-      connectedSigner: state.connectedSigner,
+      setUserType: state.setUserType,
     }),
     shallow
   );
@@ -87,84 +63,54 @@ export const RegisterParentForm = ({
   //                             FUNCTIONS
   //=============================================================================
 
-  const openFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const uploadToIpfs = async () => {
-    try {
-      const response = await axios.post(
-        `/api/ipfs/upload-to-ipfs`,
-        selectedFile,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data;
-    } catch (e) {
-      console.error(e as Error);
-      return {
-        validationError: "",
-        ifpsHash: "",
-      };
-    }
-  };
-
   const handleSubmit = async () => {
     setHasSubmitted(true);
 
-    if (username === "" || wallet === "" || isIdError || isInvalidWallet) {
+    if (!termsAgreed) {
+      toast({
+        description: "Please agree to the terms and conditions.",
+        status: "error",
+      });
       return;
     }
 
-    setIsLoading(true);
-    setActiveStep(0);
-
-    let ipfsImageHash = "";
-
-    if (selectedFile) {
-      const { validationError, ifpsHash } = (await uploadToIpfs()) as {
-        validationError: string;
-        ifpsHash: string;
-      };
-
-      if (validationError) {
-        toast({
-          title: "Error",
-          description: validationError,
-          status: "error",
-        });
-        return;
-      }
-      ipfsImageHash = ifpsHash;
+    if (username === "" || isIdError) {
+      return;
     }
 
-    const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
-    const avatar = ipfsImageHash ? ifpsURI : avatarURI;
-
-    const contract = await HostContract.fromProvider(connectedSigner);
-
     try {
-      setActiveStep(1);
-      const tx = (await contract.registerParent(
-        familyId,
-        wallet,
-        avatar,
-        username
-      )) as TransactionResponse;
+      const accountDetails = {
+        id: uuidv4(),
+        status: AccountStatus.ACTIVE,
+        memberSince: timestampInSeconds(Date.now()),
+        package: AccountPackage.BASIC,
+      } as AccountDetails;
 
-      setActiveStep(2);
-      await tx.wait();
+      const body = {
+        account: accountDetails,
+        familyId: hashedFamilyId(familyId),
+        wallet: walletAddress,
+        avatarURI: "",
+        backgroundURI: "",
+        username,
+        userType: UserType.PARENT,
+        children: [],
+      } as User;
 
-      localStorage.setItem("defi-kids.family-id", familyId);
+      const payload = {
+        key: walletAddress,
+        value: body,
+      };
+
+      await axios.post(`/api/vercel/set-json`, payload);
+
+      setUserType(UserType.PARENT);
+
       toast({
-        title: "Child successfully added",
+        title: "Registration successful",
         status: "success",
       });
+
       onClose();
       router.push("/parent");
     } catch (e) {
@@ -174,37 +120,26 @@ export const RegisterParentForm = ({
     }
   };
 
-  // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
-
-  if (loading) {
+  if (showExplanation) {
     return (
-      <TransactionStepper
-        activeStep={activeStep}
-        context={StepperContext.AVATAR}
+      <ExplainFamilyId
+        explaination={explaination}
+        setShowExplanation={setShowExplanation}
       />
     );
   }
 
   return (
-    <Box textAlign="left">
+    <Box textAlign="left" px={3}>
       <form>
         {/* Name and avatar */}
-        <Flex direction="row" align="center">
-          <Avatar
-            mt={3}
-            size="lg"
-            name="Defi Kids"
-            src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
-          />
-
+        <Flex direction="row" align="center" mt={5}>
           {/* Name */}
-          <FormControl isInvalid={isNameError && hasSubmitted} ml={5}>
-            <FormLabel>{`Username`}</FormLabel>
+          <FormControl isInvalid={isNameError && hasSubmitted}>
             <Input
               type="text"
-              placeholder="Kid's Name"
+              placeholder="Username"
               value={username}
-              disabled={loading}
               onChange={(e) => setUsername(e.target.value)}
               borderColor={isNameError && hasSubmitted ? "red.500" : "black"}
               _hover={{
@@ -212,6 +147,11 @@ export const RegisterParentForm = ({
               }}
               _focus={{
                 borderColor: "blue.500",
+              }}
+              sx={{
+                "::placeholder": {
+                  color: "gray.400", // Set the placeholder text color to gray
+                },
               }}
             />
             {isNameError && hasSubmitted && (
@@ -221,36 +161,29 @@ export const RegisterParentForm = ({
             )}
           </FormControl>
         </Flex>
-        {/* Wallet */}
-        <FormControl isInvalid={isInvalidWallet && hasSubmitted} mt={5}>
-          <FormLabel>Wallet Address</FormLabel>
-          <Input
-            type="text"
-            placeholder="Wallet"
-            value={wallet}
-            disabled={loading}
-            onChange={(e) => setWallet(e.target.value)}
-            borderColor={isInvalidWallet && hasSubmitted ? "red.500" : "black"}
-            _hover={{
-              borderColor: "gray.300",
-            }}
-            _focus={{
-              borderColor: "blue.500",
-            }}
-          />
-          {isInvalidWallet && hasSubmitted && (
-            <FormErrorMessage color="red.500">
-              Invalid wallet address.
-            </FormErrorMessage>
-          )}
-        </FormControl>
+
         {/* Family Id */}
-        <FormControl isInvalid={isIdError && hasSubmitted}>
-          <FormLabel mt={3} color="black">{`Family ID`}</FormLabel>
+        <FormControl isInvalid={isIdError && hasSubmitted} mt={5}>
+          <Flex direction="row" justify="flex-end" align="center">
+            <Text fontSize="xs" ml={3}>
+              <Link
+                as={NextLink}
+                color="blue.500"
+                href="#"
+                onClick={() => {
+                  setExplaination(Explaination.FAMILY_ID);
+                  setShowExplanation(true);
+                }}
+              >
+                What is this?
+              </Link>
+            </Text>
+          </Flex>
+
           <Input
             type="text"
             color="black"
-            placeholder="Create a family id."
+            placeholder="Create Family Id"
             value={familyId}
             onChange={(e) => setFamilyId(e.target.value)}
             borderColor={isIdError && hasSubmitted ? "red.500" : "black"}
@@ -260,39 +193,43 @@ export const RegisterParentForm = ({
             _focus={{
               borderColor: "blue.500",
             }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400",
+              },
+            }}
           />
           {isIdError && hasSubmitted && (
             <FormErrorMessage color="red.500">
               Family Id is required.
             </FormErrorMessage>
           )}
-        </FormControl>{" "}
-        <Divider mt={5} mb={5} borderColor="black" />
-        <AvatarSelection
-          provideUrl={provideUrl}
-          inputUrlRef={inputUrlRef}
-          fileInputRef={fileInputRef}
-          uploadURI={uploadURI}
-          avatarURI={avatarURI}
-          setAvatarURI={setAvatarURI}
-          setUploadURI={setUploadURI}
-          openFileInput={openFileInput}
-          setSelectedFile={setSelectedFile}
-          setProvideUrl={setProvideUrl}
-        />
-        <Divider mt={5} mb={5} borderColor="black" />
-        {/* Submit Child Button */}
+        </FormControl>
+
+        <Flex direction="row" justify="flex-start" align="center" mt={4}>
+          <Switch
+            id="terms"
+            isChecked={termsAgreed}
+            variant="outline"
+            size="md"
+            onChange={(e) => setTermsAgreed(e.target.checked)}
+          />
+          <Text fontSize="xs" ml={3}>
+            I agree with{" "}
+            <Link as={NextLink} color="blue.500" href="#">
+              terms and conditions
+            </Link>
+          </Text>
+        </Flex>
         <Button
-          isLoading={loading}
-          width="full"
-          size="lg"
-          mt={4}
-          bgColor="blue.500"
-          color="white"
+          mt="2rem"
+          variant="solid"
+          colorScheme="blue"
+          onClick={handleSubmit}
+          w="100%"
           _hover={{
             bgColor: "blue.600",
           }}
-          onClick={handleSubmit}
         >
           Register Parent
         </Button>

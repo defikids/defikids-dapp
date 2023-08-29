@@ -50,7 +50,7 @@ import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { trimAddress, getEtherscanUrl } from "@/utils/web3";
-import { FamilyDetails, ChildDetails } from "@/dataSchema/hostContract";
+import { ChildDetails } from "@/dataSchema/types";
 import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
 import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
 import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
@@ -73,7 +73,8 @@ import { ChildDefiOptionsDrawer } from "@/components/drawers/ChildDefiOptionsDra
 import { GrGrow } from "react-icons/gr";
 import { BiTimeFive } from "react-icons/bi";
 import { kv } from "@vercel/kv";
-import { NextApiRequest, NextApiResponse } from "next";
+
+// import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 
 const Child: React.FC = () => {
   //=============================================================================
@@ -90,6 +91,7 @@ const Child: React.FC = () => {
   const [familyId, setFamilyId] = useState<string>("");
   const [familyIdSubmitted, setFamilyIdSubmitted] = useState<boolean>(false);
   const [isBackground, setIsBackground] = useState<boolean>(false);
+  const [childDBData, setChildDBData] = useState<any>({});
 
   //=============================================================================
   //                               HOOKS
@@ -158,10 +160,22 @@ const Child: React.FC = () => {
     count: steps.length,
   });
 
-  // useEffect(() => {
-  //   fetchFamilyDetails();
-  //   fetchChildren();
-  // }, []);
+  useEffect(() => {
+    if (!walletAddress) return;
+
+    const getUserDBData = async () => {
+      try {
+        const { data } = await axios.get(
+          `/api/vercel/get-json?key=${walletAddress}`
+        );
+        console.log("data", data);
+        setChildDBData(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    getUserDBData();
+  }, [walletAddress]);
 
   // useEffect(() => {
   //   if (!stakeContract || !children.length) {
@@ -222,7 +236,7 @@ const Child: React.FC = () => {
     };
 
     try {
-      const { data } = await axios.post(`/api/vercel/set-user`, body);
+      const { data } = await axios.post(`/api/vercel/set-json`, body);
       console.log("data", data);
     } catch (err) {
       console.log(err);
@@ -232,7 +246,7 @@ const Child: React.FC = () => {
   const testGetKV = async () => {
     try {
       const { data } = await axios.get(
-        `/api/vercel/get-user?address=${walletAddress}`
+        `/api/vercel/get-json?key=${walletAddress}`
       );
       console.log("data", data);
     } catch (error) {
@@ -293,27 +307,44 @@ const Child: React.FC = () => {
     console.log("walletAddress", walletAddress);
     console.log("connectedSigner", connectedSigner);
 
-    const contract = await HostContract.fromProvider(connectedSigner);
+    // const contract = await HostContract.fromProvider(connectedSigner);
 
-    console.log("contract", contract);
+    // console.log("contract", contract);
 
     try {
       setActiveStep(1);
 
-      const familyId = childDetails.familyId;
-      const tx = (await contract.updateChildAvatarURI(
-        walletAddress,
-        avatar,
-        familyId
-      )) as TransactionResponse;
+      // const familyId = childDetails.familyId;
+      // const tx = (await contract.updateChildAvatarURI(
+      //   walletAddress,
+      //   avatar,
+      //   familyId
+      // )) as TransactionResponse;
 
-      setActiveStep(2);
-      await tx.wait();
+      // setActiveStep(2);
+      // await tx.wait();
 
-      setChildDetails({
-        ...childDetails,
-        avatarURI: avatar,
-      });
+      // setChildDetails({
+      //   ...childDetails,
+      //   avatarURI: avatar,
+      // });
+
+      const body = {
+        address: walletAddress,
+        value: {
+          ...childDBData,
+          avatarURI: avatar,
+        },
+      };
+
+      console.log("body", body);
+
+      await axios.post(`/api/vercel/set-json`, body);
+      const { data } = await axios.get(
+        `/api/vercel/get-json?key=${walletAddress}`
+      );
+      console.log("data", data);
+      setChildDBData(data);
 
       toast({
         title: "Avatar successfully updated",
@@ -381,272 +412,13 @@ const Child: React.FC = () => {
       to bottom,
       rgba(0, 0, 0, 0.5),
       rgba(0, 0, 0, 0.5)
-    ), url(${childDetails.avatarURI || "/images/placeholder-avatar.jpeg"})`
+    ), url(${childDBData.avatarURI || "/images/placeholder-avatar.jpeg"})`
           : ""
       }
       bgRepeat="no-repeat"
       bgPosition="center"
     >
-      <Container maxW="container.lg" mt="8rem">
-        <Button variant="outline" onClick={testPostKV}>
-          KV Post test
-        </Button>
-        <Button variant="outline" onClick={testGetKV}>
-          KV get test
-        </Button>
-        <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
-          {!isBackground && (
-            <Tooltip label="Change Avatar">
-              <Image
-                // size="xl"
-                w={isMobileSize ? "200px" : "200px"}
-                alt={
-                  childDetails.username
-                    ? childDetails.username
-                    : trimAddress(walletAddress)
-                }
-                src={
-                  childDetails.avatarURI || "/images/placeholder-avatar.jpeg"
-                }
-                style={{ cursor: "pointer" }}
-                onClick={onOpen}
-                _hover={{
-                  transform: "scale(1.05)",
-                }}
-              />
-            </Tooltip>
-          )}
-
-          <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
-            {`Welcome back, ${
-              childDetails.username
-                ? childDetails.username
-                : trimAddress(walletAddress)
-            }`}
-          </Heading>
-        </Flex>
-
-        {/* Account Balance */}
-        <Container
-          maxW="container.md"
-          centerContent
-          bgGradient={["linear(to-b, #4F1B7C, black)"]}
-          borderRadius={20}
-        >
-          <Flex
-            py="8"
-            rounded="xl"
-            color="white"
-            justify="space-between"
-            w="100%"
-            align="center"
-          >
-            {/* Parent Account Details */}
-            <Flex flexDir="column" alignItems="space-between" w="100%">
-              <Text fontSize="xs" mb={2}>
-                AVAILABLE FUNDS
-              </Text>
-
-              {/* Balance */}
-              <Flex alignItems="center">
-                <Image
-                  src="/logos/ethereum-logo.png"
-                  alt="Eth logo"
-                  width={10}
-                  height={10}
-                  mr={3}
-                />
-
-                <Flex direction="row" alignItems="baseline">
-                  <Heading
-                    size={isMobileSize ? "2xl" : "xl"}
-                    display="flex"
-                    alignItems="baseline"
-                  >
-                    {`${Number(data?.formatted).toFixed(4)}`}
-                  </Heading>
-                  <Text fontSize="sm" ml={2}>
-                    {data?.symbol}
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
-            {!isMobileSize && (
-              <>
-                <Flex>
-                  <Button
-                    leftIcon={<GrGrow />}
-                    colorScheme="blue"
-                    size="lg"
-                    mr={3}
-                  >
-                    Stake
-                  </Button>
-                  <Button
-                    leftIcon={<BiTimeFive />}
-                    colorScheme="blue"
-                    size="lg"
-                    variant="outline"
-                  >
-                    Timelock
-                  </Button>
-                </Flex>
-
-                <Menu>
-                  {({ isOpen }) => (
-                    <Box ml={5}>
-                      <MenuButton isActive={isOpen} as={Button} size="2xl">
-                        <ChevronDownIcon fontSize="3xl" />
-                      </MenuButton>
-                      <MenuList>
-                        <MenuGroup title="Parent">
-                          <MenuItem icon={<RxAvatar />} onClick={onOpen}>
-                            Change Avatar
-                          </MenuItem>
-                          <MenuItem
-                            icon={<EditIcon />}
-                            onClick={onChangeUsernameOpen}
-                          >
-                            Change Username
-                          </MenuItem>
-                          <MenuItem
-                            icon={<EditIcon />}
-                            onClick={() => setIsBackground(!isBackground)}
-                          >
-                            Avatar as background
-                          </MenuItem>
-
-                          <MenuItem
-                            icon={<BiWalletAlt />}
-                            onClick={() => {
-                              window.open(
-                                getEtherscanUrl(
-                                  chain.id,
-                                  EtherscanContext.ADDRESS,
-                                  walletAddress
-                                ),
-                                "_blank"
-                              );
-                            }}
-                          >
-                            Transaction History
-                          </MenuItem>
-                        </MenuGroup>
-
-                        <MenuDivider />
-
-                        <MenuGroup title="Family Members">
-                          <MenuItem
-                            icon={<AiOutlinePlus />}
-                            onClick={onAddChildOpen}
-                          >
-                            Add Member
-                          </MenuItem>
-                          <MenuItem
-                            icon={<BiTransfer />}
-                            onClick={() => alert("Transfer to all kids")}
-                          >
-                            Airdrop
-                          </MenuItem>
-                        </MenuGroup>
-                      </MenuList>
-                    </Box>
-                  )}
-                </Menu>
-                {/* <IconButton
-                  variant="outline"
-                  colorScheme="white"
-                  aria-label="Call Sage"
-                  fontSize="30px"
-                  icon={<HiMenu />}
-                  onClick={onChildDefiOptionsOpen}
-                  style={{ border: "1px solid transparent" }}
-                /> */}
-              </>
-            )}
-          </Flex>
-        </Container>
-      </Container>
-
-      <Container maxW="container.md" mt="2rem">
-        <Tabs variant="soft-rounded" colorScheme="blue">
-          <TabList>
-            <Tab>Earning</Tab>
-            <Tab>Saving</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <p>one!</p>
-            </TabPanel>
-            <TabPanel>
-              <p>two!</p>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Container>
-
-      {/* <Container maxW="container.lg" mt="8rem">
-        <StatGroup>
-          <Stat>
-            <StatLabel>Sent</StatLabel>
-            <StatNumber>345,670</StatNumber>
-            <StatHelpText>
-              <StatArrow type="increase" />
-              23.36%
-            </StatHelpText>
-          </Stat>
-
-          <Stat>
-            <StatLabel>Clicked</StatLabel>
-            <StatNumber>45</StatNumber>
-            <StatHelpText>
-              <StatArrow type="decrease" />
-              9.05%
-            </StatHelpText>
-          </Stat>
-        </StatGroup>
-      </Container> */}
-
-      {/* Modals */}
-
-      <ChangeAvatarModal
-        isOpen={isOpen}
-        onClose={onClose}
-        activeStep={activeStep}
-        loading={loading}
-        handleSubmit={handleSubmit}
-        children={children}
-        childKey={childKey}
-        familyURI={childDetails.avatarURI}
-      />
-      {/* 
-      <ChildDetailsDrawer
-        isOpen={isOpenChildDetails}
-        onClose={onCloseChildDetails}
-        placement="left"
-        onOpen={onOpen}
-        childKey={childKey}
-        children={children}
-        setChildKey={setChildKey}
-        // fetchChildren={fetchChildren}
-        onOpenChangeUsername={onChangeUsernameOpen}
-        onSendFundsOpen={onSendFundsOpen}
-      /> */}
-
-      <UsernameModal
-        isOpen={isChangeUsernameOpen}
-        onClose={onChangeUsernameClose}
-        childDetails={childDetails}
-        setChildDetails={setChildDetails}
-      />
-      {/* 
-      <SendFundsModal
-        isOpen={isSendFundsOpen}
-        onClose={onSendFundsClose}
-        childKey={childKey}
-        children={children}
-        fetchChildren={fetchChildren}
-      /> */}
+      <Container maxW="container.lg" mt="8rem"></Container>
 
       {isMobileSize && (
         <ChildDefiOptionsDrawer
@@ -655,6 +427,15 @@ const Child: React.FC = () => {
           placement="bottom"
         />
       )}
+
+      {/* <ChildDetailsDrawer
+        isOpen={isOpenChildDetails}
+        onClose={onCloseChildDetails}
+        placement="right"
+        childDetails={childDetails}
+        setChildDetails={setChildDetails}
+        childDBData={childDBData}
+      /> */}
     </Box>
   );
 };

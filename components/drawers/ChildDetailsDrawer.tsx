@@ -17,9 +17,10 @@ import {
   Switch,
   Spinner,
   useBreakpointValue,
+  Box,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { ChildDetails } from "@/dataSchema/hostContract";
+import { ChildDetails } from "@/dataSchema/types";
 import { trimAddress } from "@/utils/web3";
 import HostContract from "@/services/contract";
 import { useContractStore } from "@/store/contract/contractStore";
@@ -29,6 +30,7 @@ import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { getEtherscanUrl } from "@/utils/web3";
 import { EtherscanContext } from "@/dataSchema/enums";
 import { useNetwork } from "wagmi";
+import { ChildOverviewParentDashboard } from "@/components/drawers/ChildOverviewParentDashboard";
 
 export const ChildDetailsDrawer = ({
   isOpen,
@@ -136,123 +138,14 @@ export const ChildDetailsDrawer = ({
           <DrawerCloseButton />
           <DrawerHeader />
           <DrawerBody>
-            <Heading size="md" mt={5} mb={2}>
-              UserName
-            </Heading>
-            <Flex justifyContent="space-between" align="center">
-              <Text>{childDetails.username}</Text>
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={onOpenChangeUsername}
-              >
-                Edit
-              </Button>
-            </Flex>
-            <Divider my={2} borderColor="gray.500" />
-            {/* Account Status */}
-            <Heading size="md" mt={10} mb={2}>
-              Member Since
-            </Heading>
-            <Flex justifyContent="space-between" align="center">
-              <Text>{formatDate()}</Text>
-            </Flex>
-            <Divider my={2} borderColor="gray.500" />
-            {/* Sandbox */}
-            <Heading size="md" mt={10} mb={2}>
-              Sandbox Mode
-            </Heading>
-            <Flex justifyContent="space-between" align="center">
-              <Text>{childDetails.sandboxMode ? "Enabled" : "Disabled"}</Text>
-
-              {isLoading ? (
-                <Spinner size="md" />
-              ) : (
-                <Switch size="lg" onChange={handleSandboxToggle} />
-              )}
-            </Flex>
-            <Divider my={2} borderColor="gray.500" />
-            {/* Wallet Details */}
-            <Heading size="md" mt={10} mb={2}>
-              Wallet Details
-            </Heading>
-            {/* Balance */}
-            <Flex justifyContent="space-between" align="center">
-              <Flex justify="flex-start" align="center">
-                <Image
-                  src="/logos/ethereum-eth-logo.png"
-                  alt="USDCX"
-                  width={10}
-                  height={10}
-                  mr={2}
-                />
-
-                <Text fontSize="lg">{childDetails.balance}</Text>
-              </Flex>
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={() => {
-                  window.open(
-                    getEtherscanUrl(
-                      chain.id,
-                      EtherscanContext.ADDRESS,
-                      childDetails.wallet
-                    ),
-                    "_blank"
-                  );
-                }}
-              >
-                View
-              </Button>
-            </Flex>
-            {/* Address */}
-            <Flex justifyContent="space-between" align="center" mt={4}>
-              <Text>{trimAddress(childDetails.wallet)}</Text>
-
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={() => {
-                  navigator.clipboard.writeText(childDetails.wallet);
-                  toast({
-                    title: "Address Copied",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true,
-                  });
-                }}
-              >
-                Copy
-              </Button>
-            </Flex>
-            <Divider my={2} borderColor="gray.500" />
-            {/* Avatar */}
-            <Heading size="md" mt={5} mb={4}>
-              Avatar
-            </Heading>
-            <Flex justifyContent="space-between" align="center" ml={2}>
-              <Avatar
-                size="2xl"
-                name={childDetails.username}
-                src={
-                  childDetails.avatarURI
-                    ? childDetails.avatarURI
-                    : "/images/placeholder-avatar.jpeg"
-                }
-              />
-              <Button size="sm" colorScheme="blue" onClick={onOpen}>
-                Edit
-              </Button>
-            </Flex>
-
-            <Divider my={8} borderColor="gray.500" />
-            <Flex justifyContent="space-between" align="center">
-              <Heading size="md">Send Funds</Heading>
-              <Button size="sm" colorScheme="blue" onClick={onSendFundsOpen}>
-                Send
-              </Button>
-            </Flex>
+            <ChildOverviewParentDashboard
+              childDetails={childDetails}
+              onOpenChangeUsername={onOpenChangeUsername}
+              isLoading={isLoading}
+              handleSandboxToggle={handleSandboxToggle}
+              onOpen={onOpen}
+              onSendFundsOpen={onSendFundsOpen}
+            />
           </DrawerBody>
           <DrawerFooter />
         </DrawerContent>

@@ -159,18 +159,18 @@ class HostContract {
     return this.contract.updateChildUsername(familyId, childAddress, username);
   }
 
-  async fetchChild(familyId: string, childAddress: string) {
-    const response = await this.contract.fetchChild(childAddress, familyId);
-    let childDetails: ChildDetails = {
-      username: response.username,
-      avatarURI: response.avatarURI,
-      familyId: response.familyId,
-      memberSince: response.memberSince.toString(),
-      wallet: response.wallet,
-      sandboxMode: response.sandboxMode,
-    };
-    return childDetails;
-  }
+  //   async fetchChild(familyId: string, childAddress: string) {
+  //     const response = await this.contract.fetchChild(childAddress, familyId);
+  //     let childDetails: ChildDetails = {
+  //       username: response.username,
+  //       avatarURI: response.avatarURI,
+  //       familyId: response.familyId,
+  //       memberSince: response.memberSince.toString(),
+  //       wallet: response.wallet,
+  //       sandboxMode: response.sandboxMode,
+  //     };
+  //     return childDetails;
+  //   }
 }
 
 export default HostContract;

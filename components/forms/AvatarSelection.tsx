@@ -13,7 +13,10 @@ export const AvatarSelection = ({
   openFileInput: () => void;
   setSelectedFile: (file: any) => void;
 }) => {
+  console.log("AvatarSelection", avatarURI);
   const toast = useToast();
+  // console.log("familyDetails ", familyDetails);
+  // console.log("familyDetails.avatarURI ", familyDetails?.avatarURI);
   return (
     <>
       <Flex

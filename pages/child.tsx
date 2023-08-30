@@ -371,21 +371,21 @@ const Child: React.FC = () => {
       return;
     }
 
-    const contract = await HostContract.fromProvider(connectedSigner);
-    const hashFamilyId = await contract.hashFamilyId(parentWallet, id);
-    const childDetails = await contract.fetchChild(hashFamilyId, walletAddress);
+    // const contract = await HostContract.fromProvider(connectedSigner);
+    // const hashFamilyId = await contract.hashFamilyId(parentWallet, id);
+    // const childDetails = await contract.fetchChild(hashFamilyId, walletAddress);
 
-    if (!childDetails.username) {
-      toast({
-        title: "Error",
-        description: "Invalid family id or parent address",
-        status: "error",
-      });
-      return;
-    }
+    // if (!childDetails.username) {
+    //   toast({
+    //     title: "Error",
+    //     description: "Invalid family id or parent address",
+    //     status: "error",
+    //   });
+    //   return;
+    // }
 
-    setChildDetails(childDetails);
-    setFamilyIdSubmitted(true);
+    // setChildDetails(childDetails);
+    // setFamilyIdSubmitted(true);
   };
 
   if (!familyIdSubmitted) {

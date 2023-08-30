@@ -24,7 +24,6 @@ export const ChangeAvatarModal = ({
   familyURI,
   children,
   childKey,
-  dBData,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -34,44 +33,29 @@ export const ChangeAvatarModal = ({
   familyURI: string;
   children: any;
   childKey: number;
-  dBData?: any;
 }) => {
-  const [provideUrl, setProvideUrl] = useState(false);
-  const [avatarURI, setAvatarURI] = useState("");
-  const [uploadURI, setUploadURI] = useState("");
+  console.log("ChangeAvatarModal", familyURI);
+  const [avatarURI, setAvatarURI] = useState(
+    familyURI || "/images/placeholder-avatar.jpeg"
+  );
   const [selectedFile, setSelectedFile] = useState(null);
 
   const fileInputRef = useRef(null);
-  const inputUrlRef = useRef(null);
 
   const openFileInput = () => {
     fileInputRef.current.click();
   };
-
-  const displayAvatar = () => {
-    // if (avatarURI) return avatarURI;
-
-    // if (children[childKey]?.avatarURI) {
-    //   return childDBData?.avatarURI;
-    // }
-
-    // if (familyURI) {
-    //   return familyURI;
-    // }
-
-    return dBData ? dBData : "/images/placeholder-avatar.jpeg";
-  };
+  console.log("ChangeAvatarModal - avatarURI", avatarURI);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="lg"
+      size={loading ? "md" : "xs"}
       isCentered
       closeOnOverlayClick={false}
       onCloseComplete={() => {
         setAvatarURI("");
-        setUploadURI("");
       }}
     >
       <ModalOverlay />
@@ -87,31 +71,16 @@ export const ChangeAvatarModal = ({
             />
           ) : (
             <>
-              <Flex direction="row" align="center" justify="center">
-                <Avatar
-                  mt={3}
-                  mb={6}
-                  size="2xl"
-                  name="Defi Kids"
-                  src={displayAvatar()}
-                />
-              </Flex>
-
               <AvatarSelection
-                provideUrl={provideUrl}
-                inputUrlRef={inputUrlRef}
                 fileInputRef={fileInputRef}
-                uploadURI={uploadURI}
-                avatarURI={avatarURI}
-                setAvatarURI={setAvatarURI}
-                setUploadURI={setUploadURI}
+                avatarURI={familyURI}
                 openFileInput={openFileInput}
                 setSelectedFile={setSelectedFile}
-                setProvideUrl={setProvideUrl}
+                setAvatarURI={setAvatarURI}
               />
 
               <Button
-                // disabled={currentAvatar === avatarURI}
+                disabled={avatarURI === familyURI}
                 width="full"
                 size="md"
                 mt={4}

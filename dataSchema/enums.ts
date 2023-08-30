@@ -1,3 +1,5 @@
+import Parent from "@/pages/parent";
+
 export enum SandboxFeatures {
   riskFree = "Risk Free",
   handsOn = "Hands On",
@@ -39,4 +41,11 @@ export enum AccountPackage {
 export enum Explaination {
   NONE = "NONE",
   FAMILY_ID = "FAMILY_ID",
+}
+
+export enum ParentDashboardTabs {
+  DASHBOARD = "DASHBOARD",
+  MEMBER_PROFILES = "MEMBER_PROFILES",
+  SUPPORT = "SUPPORT",
+  SETTINGS = "SETTINGS",
 }

@@ -20,6 +20,7 @@ import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/dataSchema/enums";
 import { BiSolidUserRectangle } from "react-icons/bi";
 import { useAccount } from "wagmi";
+import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 
 type ConnectedUser = {
   success: boolean;
@@ -97,28 +98,7 @@ export default function NavBar({
           justifyContent={"space-between"}
           mx={2}
         >
-          {/* DefiKids Logo */}
-          <Flex
-            align="center"
-            cursor={"pointer"}
-            onClick={() => {
-              localStorage.removeItem("defi-kids.family-id");
-              router.push("/");
-            }}
-          >
-            {!isMobileSize && (
-              <Image
-                src={"/pig_logo.png"}
-                alt="Loader"
-                width="50"
-                height="50"
-              />
-            )}
-
-            <Heading size="lg" ml={isMobileSize ? 0 : 5}>
-              Defikids
-            </Heading>
-          </Flex>
+          <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
             {/* Connect Button */}

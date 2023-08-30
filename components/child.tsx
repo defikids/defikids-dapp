@@ -7,7 +7,7 @@ import { getUSDCXBalance } from "../services/usdcx_contract";
 import { AiOutlinePlus } from "react-icons/ai";
 import { IoIosMore } from "react-icons/io";
 import { trimAddress } from "@/utils/web3";
-import { ChildDetails, FamilyDetails } from "@/dataSchema/types";
+import { ChildDetails, User } from "@/dataSchema/types";
 
 import {
   Box,

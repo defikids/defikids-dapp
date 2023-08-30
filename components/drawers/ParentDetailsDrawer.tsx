@@ -21,13 +21,14 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { EditIcon } from "@chakra-ui/icons";
 import { RxAvatar } from "react-icons/rx";
 import { BiTransfer, BiWalletAlt } from "react-icons/bi";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
 
 export const ParentDetailsDrawer = ({
   isOpen,
   onClose,
   placement,
   onOpen,
-  walletAddress,
   onChangeUsernameOpen,
   onAddChildOpen,
 }: {
@@ -35,7 +36,6 @@ export const ParentDetailsDrawer = ({
   onClose: () => void;
   placement: any;
   onOpen: () => void;
-  walletAddress: string;
   onChangeUsernameOpen: () => void;
   onAddChildOpen: () => void;
 }) => {
@@ -44,6 +44,13 @@ export const ParentDetailsDrawer = ({
   //=============================================================================
   const btnRef = useRef();
   const { chain } = useNetwork();
+
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
+  );
 
   //=============================================================================
   //                               FUNCTIONS
@@ -94,7 +101,7 @@ export const ParentDetailsDrawer = ({
                         getEtherscanUrl(
                           chain.id,
                           EtherscanContext.ADDRESS,
-                          walletAddress
+                          userDetails?.wallet
                         ),
                         "_blank"
                       );

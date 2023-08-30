@@ -7,12 +7,12 @@ const ParentAvatar = ({ familyDetails }: { familyDetails: User }) => {
       <Tooltip label="Edit" aria-label="Edit">
         <Avatar
           size="2xl"
-          name={familyDetails.avatarURI}
+          name={familyDetails?.avatarURI}
           sx={{
-            bgColor: `${!familyDetails.avatarURI && "purple.500"}`,
+            bgColor: `${!familyDetails?.avatarURI && "purple.500"}`,
           }}
           _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
-          src={familyDetails.avatarURI || "/images/placeholder-avatar.jpeg"}
+          src={familyDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
         />
       </Tooltip>
     </Flex>

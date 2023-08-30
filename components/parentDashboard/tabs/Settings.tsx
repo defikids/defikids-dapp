@@ -1,13 +1,18 @@
 import { CardGroup } from "@/components/CardGroup";
-import { Box, Center, Flex, Heading } from "@chakra-ui/react";
-import Head from "next/head";
+import { ParentDashboardTabs } from "@/dataSchema/enums";
+import { User } from "@/dataSchema/types";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 
 export const Settings = ({
   onOpenAvatar,
   onChangeUsernameOpen,
+  familyDetails,
+  fetchFamilyDetails,
 }: {
   onOpenAvatar: () => void;
   onChangeUsernameOpen: () => void;
+  familyDetails: User;
+  fetchFamilyDetails: () => void;
 }) => {
   const data = [
     {
@@ -15,7 +20,6 @@ export const Settings = ({
       description:
         "Avatars offer a dynamic way to represent yourself in the digital world. They enhance personal identity, allowing creative expression while maintaining privacy.",
       buttonTitle: "Change Avatar",
-      action: onOpenAvatar,
     },
     {
       title: "Username",
@@ -40,12 +44,19 @@ export const Settings = ({
     },
   ];
   return (
-    <Box>
-      <Heading size="xl" mb="3rem">
-        Settings
-      </Heading>
+    <Box h="100%" overflowY="scroll">
+      <Flex direction="row" justify="center">
+        <Heading size="xl" mb="3rem" mt={2}>
+          Settings
+        </Heading>
+      </Flex>
       <Flex direction="column" justify="center" alignContent="center">
-        <CardGroup data={data} columns={2} />
+        <CardGroup
+          data={data}
+          columns={2}
+          familyDetails={familyDetails}
+          fetchFamilyDetails={fetchFamilyDetails}
+        />
       </Flex>
     </Box>
   );

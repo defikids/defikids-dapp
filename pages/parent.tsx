@@ -26,7 +26,7 @@ import {
   VStack,
   AvatarGroup,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Child from "@/components/child";
 import contract from "@/services/contract";
 import HostContract from "@/services/contract";
@@ -82,9 +82,10 @@ const Parent: React.FC = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { walletAddress } = useAuthStore(
+
+  const { userDetails } = useAuthStore(
     (state) => ({
-      walletAddress: state.walletAddress,
+      userDetails: state.userDetails,
     }),
     shallow
   );
@@ -97,11 +98,12 @@ const Parent: React.FC = () => {
   );
 
   const { data } = useBalance({
-    address: walletAddress as `0x${string}`,
+    address: userDetails?.wallet as `0x${string}`,
   });
 
   const toast = useToast();
   const { chain } = useNetwork();
+  const parentRef = useRef(null);
 
   const isMobileSize = useBreakpointValue({
     base: true,
@@ -162,28 +164,56 @@ const Parent: React.FC = () => {
     }
   }, [stakeContract, children]);
 
+  // const [scrollOffset, setScrollOffset] = useState(0);
+  // const innerHeightRef = useRef(window.innerHeight);
+
+  // const handleResizeAndScroll = () => {
+  //   const newInnerHeight = window.innerHeight;
+  //   const distanceFromZero = Math.abs(newInnerHeight);
+  //   const newScrollOffset = window.scrollY;
+
+  //   setScrollOffset(newScrollOffset); // Update the scroll offset state
+
+  //   console.log("Distance from zero:", distanceFromZero);
+  //   console.log("Scroll offset:", newScrollOffset);
+
+  //   innerHeightRef.current = newInnerHeight;
+  // };
+
+  // useEffect(() => {
+  //   handleResizeAndScroll(); // Initial setup
+
+  //   window.addEventListener("resize", handleResizeAndScroll);
+  //   window.addEventListener("scroll", handleResizeAndScroll); // Add scroll event listener
+
+  //   return () => {
+  //     window.removeEventListener("resize", handleResizeAndScroll);
+  //     window.removeEventListener("scroll", handleResizeAndScroll); // Remove scroll event listener
+  //   };
+  // }, []);
+
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
 
   const fetchFamilyDetails = useCallback(async () => {
-    if (!walletAddress) return;
+    if (!userDetails?.wallet) return;
 
     const { data } = await axios.get(
-      `/api/vercel/get-json?key=${walletAddress}`
+      `/api/vercel/get-json?key=${userDetails?.wallet}`
     );
 
     const user = data as User;
     setFamilyDetails(user);
-  }, [walletAddress]);
+  }, [userDetails?.wallet]);
 
   const fetchChildren = useCallback(async () => {
     const getChildren = async () => {
-      if (!walletAddress) return;
+      if (!userDetails?.wallet) return;
 
       const children = [] as ChildDetails[];
 
-      familyDetails.children?.forEach(async (child) => {
+      familyDetails.children?.forEach(async (walletAddress) => {
         const { data } = await axios.get(
           `/api/vercel/get-json?key=${walletAddress}`
         );
@@ -219,85 +249,85 @@ const Parent: React.FC = () => {
 
     await getChildren();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length, contract, walletAddress]);
+  }, [children.length, contract, userDetails?.wallet]);
 
-  const uploadToIpfs = async (selectedFile: File | null) => {
-    try {
-      const response = await axios.post(
-        `/api/ipfs/upload-to-ipfs`,
-        selectedFile,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data;
-    } catch (e) {
-      console.error(e as Error);
-      return {
-        validationError: "",
-        ifpsHash: "",
-      };
-    }
-  };
+  // const uploadToIpfs = async (selectedFile: File | null) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `/api/ipfs/upload-to-ipfs`,
+  //       selectedFile,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+  //     return response.data;
+  //   } catch (e) {
+  //     console.error(e as Error);
+  //     return {
+  //       validationError: "",
+  //       ifpsHash: "",
+  //     };
+  //   }
+  // };
 
-  const handleSubmit = async (selectedFile: File | null) => {
-    setIsLoading(true);
-    setActiveStep(0);
+  // const handleSubmit = async (selectedFile: File | null) => {
+  //   setIsLoading(true);
+  //   setActiveStep(0);
 
-    try {
-      const { validationError, ifpsHash } = (await uploadToIpfs(
-        selectedFile
-      )) as {
-        validationError: string;
-        ifpsHash: string;
-      };
+  //   try {
+  //     const { validationError, ifpsHash } = (await uploadToIpfs(
+  //       selectedFile
+  //     )) as {
+  //       validationError: string;
+  //       ifpsHash: string;
+  //     };
 
-      if (validationError) {
-        toast({
-          title: "Error",
-          description: validationError,
-          status: "error",
-        });
-        return;
-      }
+  //     if (validationError) {
+  //       toast({
+  //         title: "Error",
+  //         description: validationError,
+  //         status: "error",
+  //       });
+  //       return;
+  //     }
 
-      setActiveStep(1);
+  //     setActiveStep(1);
 
-      const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
-      console.log(avatar);
+  //     const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
+  //     console.log(avatar);
 
-      const body = {
-        ...familyDetails,
-        avatarURI: avatar,
-      };
+  //     const body = {
+  //       ...familyDetails,
+  //       avatarURI: avatar,
+  //     };
 
-      const payload = {
-        key: walletAddress,
-        value: body,
-      };
+  //     const payload = {
+  //       key: walletAddress,
+  //       value: body,
+  //     };
 
-      await axios.post(`/api/vercel/set-json`, payload);
+  //     await axios.post(`/api/vercel/set-json`, payload);
 
-      setFamilyDetails(body);
+  //     setFamilyDetails(body);
 
-      toast({
-        title: "Avatar successfully updated",
-        status: "success",
-      });
+  //     toast({
+  //       title: "Avatar successfully updated",
+  //       status: "success",
+  //     });
 
-      onClose();
-      setIsLoading(false);
+  //     onClose();
+  //     setIsLoading(false);
 
-      router.push("/parent");
-    } catch (e) {
-      setIsLoading(false);
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
-      onClose();
-    }
-  };
+  //     router.push("/parent");
+  //   } catch (e) {
+  //     setIsLoading(false);
+  //     const errorDetails = transactionErrors(e);
+  //     toast(errorDetails);
+  //     onClose();
+  //   }
+  // };
 
   return (
     <Box>
@@ -312,11 +342,13 @@ const Parent: React.FC = () => {
             borderRadius="1.5rem"
             style={{
               boxShadow: "0px 0px 10px 15px rgba(0,0,0,0.75)",
+              // marginTop: `${scrollOffset}px`,
             }}
+            // have the margintop adjust based on the window height
           >
             <Username familyDetails={familyDetails} />
             <ParentAvatar familyDetails={familyDetails} />
-            <AccountBalance walletAddress={walletAddress} />
+            <AccountBalance walletAddress={userDetails?.wallet} />
 
             <ButtonMenu
               onOpen={onOpenAvatar}
@@ -360,8 +392,9 @@ const Parent: React.FC = () => {
 
         <Flex
           width={!isMobileSize ? "75%" : "100%"}
-          height="100vh"
+          height="100%"
           p={!isMobileSize ? "3rem" : "1rem"}
+          overflowY="scroll"
         >
           {isMobileSize && (
             <IconButton
@@ -377,12 +410,14 @@ const Parent: React.FC = () => {
           )}
 
           {selectedTab === ParentDashboardTabs.SETTINGS && (
-            <Flex justify="center" alignItems="center">
-              <Settings
-                onOpenAvatar={onOpenAvatar}
-                onChangeUsernameOpen={onChangeUsernameOpen}
-              />
-            </Flex>
+            // <Flex justify="center" alignItems="center" h="100%">
+            <Settings
+              familyDetails={familyDetails}
+              onOpenAvatar={onOpenAvatar}
+              onChangeUsernameOpen={onChangeUsernameOpen}
+              fetchFamilyDetails={fetchFamilyDetails}
+            />
+            // </Flex>
           )}
         </Flex>
       </Flex>

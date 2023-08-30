@@ -78,9 +78,9 @@ const RegisterChildForm = ({
     shallow
   );
 
-  const { walletAddress } = useAuthStore(
+  const { userDetails } = useAuthStore(
     (state) => ({
-      walletAddress: state.walletAddress,
+      userDetails: state.userDetails,
     }),
     shallow
   );
@@ -147,7 +147,7 @@ const RegisterChildForm = ({
 
     const contract = await HostContract.fromProvider(
       connectedSigner,
-      walletAddress
+      userDetails?.wallet
     );
     const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;

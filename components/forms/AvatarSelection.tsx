@@ -1,22 +1,149 @@
-import { Flex, useToast, Avatar, Box } from "@chakra-ui/react";
+import { User } from "@/dataSchema/types";
+import { useAuthStore } from "@/store/auth/authStore";
+import {
+  Flex,
+  useToast,
+  Avatar,
+  Box,
+  useSteps,
+  Button,
+} from "@chakra-ui/react";
+import axios from "axios";
+import { useRef, useState } from "react";
+import shallow from "zustand/shallow";
+import { TransactionStepper, steps } from "../steppers/TransactionStepper";
+import { StepperContext } from "@/dataSchema/enums";
+import { transactionErrors } from "@/utils/errorHanding";
 
 export const AvatarSelection = ({
-  fileInputRef,
-  avatarURI,
-  setAvatarURI,
-  openFileInput,
-  setSelectedFile,
+  familyDetails,
+  fetchFamilyDetails,
 }: {
-  fileInputRef: any;
-  avatarURI: string;
-  setAvatarURI: (uri: string) => void;
-  openFileInput: () => void;
-  setSelectedFile: (file: any) => void;
+  familyDetails: User;
+  fetchFamilyDetails: () => void;
 }) => {
-  console.log("AvatarSelection", avatarURI);
+  //=============================================================================
+  //                               STATE
+  //=============================================================================
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [avatar, setAvatar] = useState(familyDetails?.avatarURI);
+  const [loading, setIsLoading] = useState(false);
+
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
+  const fileInputRef = useRef(null);
+
+  const openFileInput = () => {
+    fileInputRef.current.click();
+  };
+
   const toast = useToast();
-  // console.log("familyDetails ", familyDetails);
-  // console.log("familyDetails.avatarURI ", familyDetails?.avatarURI);
+
+  const { userDetails, setUserDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+      setUserDetails: state.setUserDetails,
+    }),
+    shallow
+  );
+
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps(StepperContext.AVATAR).length,
+  });
+
+  //=============================================================================
+  //                               FUNCTIONS
+  //=============================================================================
+
+  const uploadToIpfs = async (selectedFile: File | null) => {
+    try {
+      const response = await axios.post(
+        `/api/ipfs/upload-to-ipfs`,
+        selectedFile,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e as Error);
+      return {
+        validationError: "",
+        ifpsHash: "",
+      };
+    }
+  };
+
+  const handleSubmit = async () => {
+    console.log("selectedFile", selectedFile);
+    setIsLoading(true);
+    setActiveStep(0);
+
+    try {
+      const { validationError, ifpsHash } = (await uploadToIpfs(
+        selectedFile
+      )) as {
+        validationError: string;
+        ifpsHash: string;
+      };
+
+      if (validationError) {
+        toast({
+          title: "Error",
+          description: validationError,
+          status: "error",
+        });
+        return;
+      }
+
+      setActiveStep(1);
+
+      const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
+      console.log(avatar);
+
+      const body = {
+        ...familyDetails,
+        avatarURI: avatar,
+      };
+
+      const payload = {
+        key: userDetails?.wallet,
+        value: body,
+      };
+
+      await axios.post(`/api/vercel/set-json`, payload);
+      setUserDetails(body);
+      fetchFamilyDetails();
+
+      toast({
+        title: "Avatar successfully updated",
+        status: "success",
+      });
+
+      setIsLoading(false);
+      setSelectedFile(null);
+    } catch (e) {
+      setIsLoading(false);
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Flex direction="row" justify="center" align="center" mt="3rem">
+        <TransactionStepper
+          activeStep={activeStep}
+          context={StepperContext.AVATAR}
+        />
+      </Flex>
+    );
+  }
   return (
     <>
       <Flex
@@ -27,11 +154,16 @@ export const AvatarSelection = ({
       >
         <Avatar
           size="2xl"
-          name="Dan Abrahmov"
-          src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
-          _hover={{ cursor: "pointer" }}
+          name={familyDetails?.username ? familyDetails?.username : "Avatar"}
+          src={avatar ? avatar : "/images/placeholder-avatar.jpeg"}
+          _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
           onClick={openFileInput}
         />
+        {selectedFile && (
+          <Button size={"xs"} onClick={handleSubmit} mt={4}>
+            Submit
+          </Button>
+        )}
       </Flex>
 
       <Box>
@@ -66,7 +198,7 @@ export const AvatarSelection = ({
               const reader = new FileReader();
 
               reader.onloadend = () => {
-                setAvatarURI(reader.result as string);
+                setAvatar(reader.result as string);
               };
 
               reader.readAsDataURL(file);

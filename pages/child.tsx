@@ -96,9 +96,9 @@ const Child: React.FC = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { walletAddress } = useAuthStore(
+  const { userDetails } = useAuthStore(
     (state) => ({
-      walletAddress: state.walletAddress,
+      userDetails: state.userDetails,
     }),
     shallow
   );
@@ -111,7 +111,7 @@ const Child: React.FC = () => {
   );
 
   const { data } = useBalance({
-    address: walletAddress as `0x${string}`,
+    address: userDetails?.wallet as `0x${string}`,
   });
 
   const toast = useToast();
@@ -161,12 +161,12 @@ const Child: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!walletAddress) return;
+    if (!userDetails?.wallet) return;
 
     const getUserDBData = async () => {
       try {
         const { data } = await axios.get(
-          `/api/vercel/get-json?key=${walletAddress}`
+          `/api/vercel/get-json?key=${userDetails?.wallet}`
         );
         console.log("data", data);
         setChildDBData(data);
@@ -175,7 +175,7 @@ const Child: React.FC = () => {
       }
     };
     getUserDBData();
-  }, [walletAddress]);
+  }, [userDetails?.wallet]);
 
   // useEffect(() => {
   //   if (!stakeContract || !children.length) {
@@ -226,7 +226,7 @@ const Child: React.FC = () => {
 
   const testPostKV = async () => {
     const body = {
-      address: walletAddress,
+      address: userDetails?.wallet,
       value: {
         avatarURI:
           "https://purple-ripe-cuckoo-537.mypinata.cloud/ipfs/QmYZ8KHQDupvfU5Bu6qCsPuStMqm1EyEK9hYTtxmLyTUV3",
@@ -246,7 +246,7 @@ const Child: React.FC = () => {
   const testGetKV = async () => {
     try {
       const { data } = await axios.get(
-        `/api/vercel/get-json?key=${walletAddress}`
+        `/api/vercel/get-json?key=${userDetails?.wallet}`
       );
       console.log("data", data);
     } catch (error) {
@@ -304,7 +304,7 @@ const Child: React.FC = () => {
     const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
     console.log("avatar", avatar);
-    console.log("walletAddress", walletAddress);
+    console.log("walletAddress", userDetails?.wallet);
     console.log("connectedSigner", connectedSigner);
 
     // const contract = await HostContract.fromProvider(connectedSigner);
@@ -330,7 +330,7 @@ const Child: React.FC = () => {
       // });
 
       const body = {
-        address: walletAddress,
+        address: userDetails?.wallet,
         value: {
           ...childDBData,
           avatarURI: avatar,
@@ -341,7 +341,7 @@ const Child: React.FC = () => {
 
       await axios.post(`/api/vercel/set-json`, body);
       const { data } = await axios.get(
-        `/api/vercel/get-json?key=${walletAddress}`
+        `/api/vercel/get-json?key=${userDetails?.wallet}`
       );
       console.log("data", data);
       setChildDBData(data);

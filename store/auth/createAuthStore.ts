@@ -5,6 +5,8 @@ import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
 import { UserType } from "@/dataSchema/enums";
 import { disconnect } from "@wagmi/core";
+import { User } from "@/dataSchema/types";
+import { AccountStatus, AccountPackage } from "@/dataSchema/enums";
 
 type State = {
   walletAddress: "";
@@ -12,6 +14,7 @@ type State = {
   userType: UserType;
   navigationSection: string;
   logout: () => void;
+  userDetails: User;
 };
 
 type Actions = {
@@ -20,6 +23,7 @@ type Actions = {
   setUserType: (userType: UserType) => void;
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
+  setUserDetails: (userDetails: User) => void;
 };
 
 type MyStore = State & Actions;
@@ -30,6 +34,22 @@ const initialState: State = {
   userType: UserType.UNREGISTERED,
   navigationSection: "DefiKids",
   logout: () => {},
+  userDetails: {
+    account: {
+      id: "",
+      status: AccountStatus.INACTIVE,
+      memberSince: 0,
+      package: AccountPackage.BASIC,
+    },
+    familyId: "",
+    wallet: "",
+    avatarURI: "",
+    backgroundURI: "",
+    username: "",
+    termsAgreed: false,
+    userType: UserType.UNREGISTERED,
+    children: [],
+  },
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -79,6 +99,11 @@ const setters = (set: any) => ({
     }
 
     disconnect();
+  },
+  setUserDetails: (userDetails: User) => {
+    set((state: { userDetails: User }) => {
+      state.userDetails = userDetails;
+    }, shallow);
   },
 });
 

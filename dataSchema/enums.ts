@@ -9,6 +9,7 @@ export enum SandboxFeatures {
 
 export enum StepperContext {
   AVATAR = "AVATAR",
+  BACKGROUND = "BACKGROUND",
   DEFAULT = "DEFAULT",
 }
 

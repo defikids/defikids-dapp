@@ -22,6 +22,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { AvatarSelection } from "./AvatarSelection";
 import { EditUsername } from "@/components/forms/UserNameForm";
 import { EditFamilyId } from "@/components/forms/FamilyIdForm";
+import { BackgroundSelection } from "@/components/BackgroundSelection";
 
 interface CardProps {
   title: string;
@@ -44,11 +45,13 @@ export const CardGroup = ({
   columns,
   familyDetails,
   fetchFamilyDetails,
+  onOpenBackgroundDefaults,
 }: {
   data: CardProps[];
   columns?: number;
   familyDetails: User;
   fetchFamilyDetails: () => void;
+  onOpenBackgroundDefaults: () => void;
 }) => {
   const isMobileSize = useBreakpointValue({
     base: true,
@@ -96,14 +99,14 @@ export const CardGroup = ({
                   <CardBody>
                     <Text>{item.description}</Text>
                   </CardBody>
-                  <Flex justify="flex-end" pr={5} my={2}>
+                  <Flex justify="flex-end" pr={3} mb={3}>
                     <Button
                       id={`flipbutton${index}`}
                       onClick={(e) => {
                         handleCardFlip(e, index.toString());
                       }}
                     >
-                      Change
+                      Edit
                     </Button>
                   </Flex>
                 </Card>
@@ -145,6 +148,14 @@ export const CardGroup = ({
                       <EditFamilyId
                         familyDetails={familyDetails}
                         fetchFamilyDetails={fetchFamilyDetails}
+                      />
+                    )}
+
+                    {item.title === SelectedSetting.BACKGROUND && (
+                      <BackgroundSelection
+                        familyDetails={familyDetails}
+                        fetchFamilyDetails={fetchFamilyDetails}
+                        onOpenBackgroundDefaults={onOpenBackgroundDefaults}
                       />
                     )}
                   </CardBody>

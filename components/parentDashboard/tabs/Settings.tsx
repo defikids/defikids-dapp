@@ -8,11 +8,13 @@ export const Settings = ({
   onChangeUsernameOpen,
   familyDetails,
   fetchFamilyDetails,
+  onOpenBackgroundDefaults,
 }: {
   onOpenAvatar: () => void;
   onChangeUsernameOpen: () => void;
   familyDetails: User;
   fetchFamilyDetails: () => void;
+  onOpenBackgroundDefaults: () => void;
 }) => {
   const data = [
     {
@@ -56,6 +58,7 @@ export const Settings = ({
           columns={2}
           familyDetails={familyDetails}
           fetchFamilyDetails={fetchFamilyDetails}
+          onOpenBackgroundDefaults={onOpenBackgroundDefaults}
         />
       </Flex>
     </Box>

@@ -61,6 +61,7 @@ import ButtonMenu from "@/components/parentDashboard/ButtonMenu";
 import AccountBalance from "@/components/parentDashboard/AccountBalance";
 import ChildAvatarGroup from "@/components/parentDashboard/ChildAvatarGroup";
 import { Settings } from "@/components/parentDashboard/tabs/Settings";
+import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -147,6 +148,12 @@ const Parent: React.FC = () => {
     onClose: onParentDetailsClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenBackgroundDefaults,
+    onOpen: onOpenBackgroundDefaults,
+    onClose: onCloseBackgroundDefaults,
+  } = useDisclosure();
+
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
     count: steps.length,
@@ -163,34 +170,6 @@ const Parent: React.FC = () => {
       return;
     }
   }, [stakeContract, children]);
-
-  // const [scrollOffset, setScrollOffset] = useState(0);
-  // const innerHeightRef = useRef(window.innerHeight);
-
-  // const handleResizeAndScroll = () => {
-  //   const newInnerHeight = window.innerHeight;
-  //   const distanceFromZero = Math.abs(newInnerHeight);
-  //   const newScrollOffset = window.scrollY;
-
-  //   setScrollOffset(newScrollOffset); // Update the scroll offset state
-
-  //   console.log("Distance from zero:", distanceFromZero);
-  //   console.log("Scroll offset:", newScrollOffset);
-
-  //   innerHeightRef.current = newInnerHeight;
-  // };
-
-  // useEffect(() => {
-  //   handleResizeAndScroll(); // Initial setup
-
-  //   window.addEventListener("resize", handleResizeAndScroll);
-  //   window.addEventListener("scroll", handleResizeAndScroll); // Add scroll event listener
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleResizeAndScroll);
-  //     window.removeEventListener("scroll", handleResizeAndScroll); // Remove scroll event listener
-  //   };
-  // }, []);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -251,84 +230,6 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length, contract, userDetails?.wallet]);
 
-  // const uploadToIpfs = async (selectedFile: File | null) => {
-  //   try {
-  //     const response = await axios.post(
-  //       `/api/ipfs/upload-to-ipfs`,
-  //       selectedFile,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-  //     return response.data;
-  //   } catch (e) {
-  //     console.error(e as Error);
-  //     return {
-  //       validationError: "",
-  //       ifpsHash: "",
-  //     };
-  //   }
-  // };
-
-  // const handleSubmit = async (selectedFile: File | null) => {
-  //   setIsLoading(true);
-  //   setActiveStep(0);
-
-  //   try {
-  //     const { validationError, ifpsHash } = (await uploadToIpfs(
-  //       selectedFile
-  //     )) as {
-  //       validationError: string;
-  //       ifpsHash: string;
-  //     };
-
-  //     if (validationError) {
-  //       toast({
-  //         title: "Error",
-  //         description: validationError,
-  //         status: "error",
-  //       });
-  //       return;
-  //     }
-
-  //     setActiveStep(1);
-
-  //     const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
-  //     console.log(avatar);
-
-  //     const body = {
-  //       ...familyDetails,
-  //       avatarURI: avatar,
-  //     };
-
-  //     const payload = {
-  //       key: walletAddress,
-  //       value: body,
-  //     };
-
-  //     await axios.post(`/api/vercel/set-json`, payload);
-
-  //     setFamilyDetails(body);
-
-  //     toast({
-  //       title: "Avatar successfully updated",
-  //       status: "success",
-  //     });
-
-  //     onClose();
-  //     setIsLoading(false);
-
-  //     router.push("/parent");
-  //   } catch (e) {
-  //     setIsLoading(false);
-  //     const errorDetails = transactionErrors(e);
-  //     toast(errorDetails);
-  //     onClose();
-  //   }
-  // };
-
   return (
     <Box>
       <Flex direction="row">
@@ -342,9 +243,7 @@ const Parent: React.FC = () => {
             borderRadius="1.5rem"
             style={{
               boxShadow: "0px 0px 10px 15px rgba(0,0,0,0.75)",
-              // marginTop: `${scrollOffset}px`,
             }}
-            // have the margintop adjust based on the window height
           >
             <Username familyDetails={familyDetails} />
             <ParentAvatar familyDetails={familyDetails} />
@@ -391,10 +290,16 @@ const Parent: React.FC = () => {
         )}
 
         <Flex
+          bgImage={
+            familyDetails?.backgroundURI
+              ? familyDetails?.backgroundURI
+              : "/images/backgrounds/city-center.png"
+          }
           width={!isMobileSize ? "75%" : "100%"}
-          height="100%"
+          height="100vh"
           p={!isMobileSize ? "3rem" : "1rem"}
-          overflowY="scroll"
+          bgPosition="center"
+          bgRepeat="no-repeat"
         >
           {isMobileSize && (
             <IconButton
@@ -416,6 +321,7 @@ const Parent: React.FC = () => {
               onOpenAvatar={onOpenAvatar}
               onChangeUsernameOpen={onChangeUsernameOpen}
               fetchFamilyDetails={fetchFamilyDetails}
+              onOpenBackgroundDefaults={onOpenBackgroundDefaults}
             />
             // </Flex>
           )}
@@ -442,6 +348,13 @@ const Parent: React.FC = () => {
         familyId={familyDetails.familyId}
         fetchChildren={fetchChildren}
         fetchFamilyDetails={fetchFamilyDetails}
+      />
+
+      <BackgroundDefaults
+        isOpen={isOpenBackgroundDefaults}
+        onClose={onCloseBackgroundDefaults}
+        // familyDetails={familyDetails}
+        // fetchFamilyDetails={fetchFamilyDetails}
       />
 
       {/* <ChangeAvatarModal

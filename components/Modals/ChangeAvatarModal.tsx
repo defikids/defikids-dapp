@@ -10,7 +10,7 @@ import {
   Flex,
   ModalFooter,
 } from "@chakra-ui/react";
-import { AvatarSelection } from "@/components/forms/AvatarSelection";
+import { AvatarSelection } from "@/components/AvatarSelection";
 import { useRef, useState } from "react";
 import { TransactionStepper } from "../steppers/TransactionStepper";
 import { StepperContext } from "@/dataSchema/enums";

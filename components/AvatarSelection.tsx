@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { useRef, useState } from "react";
 import shallow from "zustand/shallow";
-import { TransactionStepper, steps } from "../steppers/TransactionStepper";
+import { TransactionStepper, steps } from "./steppers/TransactionStepper";
 import { StepperContext } from "@/dataSchema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 

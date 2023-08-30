@@ -19,7 +19,9 @@ import { useState } from "react";
 // import Avatar from "@/components/parentDashboard/Avatar";
 import { User } from "@/dataSchema/types";
 import { CloseIcon } from "@chakra-ui/icons";
-import { AvatarSelection } from "./forms/AvatarSelection";
+import { AvatarSelection } from "./AvatarSelection";
+import { EditUsername } from "@/components/forms/UserNameForm";
+import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 
 interface CardProps {
   title: string;
@@ -128,6 +130,19 @@ export const CardGroup = ({
                   <CardBody>
                     {item.title === SelectedSetting.AVATAR && (
                       <AvatarSelection
+                        familyDetails={familyDetails}
+                        fetchFamilyDetails={fetchFamilyDetails}
+                      />
+                    )}
+
+                    {item.title === SelectedSetting.USERNAME && (
+                      <EditUsername
+                        familyDetails={familyDetails}
+                        fetchFamilyDetails={fetchFamilyDetails}
+                      />
+                    )}
+                    {item.title === SelectedSetting.FAMILY_ID && (
+                      <EditFamilyId
                         familyDetails={familyDetails}
                         fetchFamilyDetails={fetchFamilyDetails}
                       />

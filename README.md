@@ -1,8 +1,6 @@
-# DefiKids
 
+![defikids](https://github.com/NathanTarbert/defikids/assets/66887028/5f89ee84-e66c-4909-b386-c489fe7387f0)
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
-
-<img src="public/defikids-cover.png" href="https://allocate.vercel.app" alt="Logo" >
 
 ## Simplified Platform Overview:
 

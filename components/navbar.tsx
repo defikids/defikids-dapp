@@ -8,10 +8,8 @@ import {
   Collapse,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { WalletPopover } from "@/components/WalletPopover";
 import { MenuPopover } from "@/components/MenuPopover";
@@ -19,13 +17,7 @@ import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/dataSchema/enums";
 import { BiSolidUserRectangle } from "react-icons/bi";
-import { useAccount } from "wagmi";
-
-type ConnectedUser = {
-  success: boolean;
-  userType?: number;
-  accountAddress?: string;
-};
+import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 
 export default function NavBar({
   showStartEarning,
@@ -38,7 +30,6 @@ export default function NavBar({
   //                               HOOKS
   //============================================================================
   const router = useRouter();
-  const { isConnected } = useAccount();
 
   const isMobileSize = useBreakpointValue({
     base: true,
@@ -47,20 +38,11 @@ export default function NavBar({
     lg: false,
   });
 
-  const { userType, isLoggedIn, walletAddress, navigationSection } =
-    useAuthStore(
-      (state) => ({
-        userType: state.userType,
-        isLoggedIn: state.isLoggedIn,
-        walletAddress: state.walletAddress,
-        navigationSection: state.navigationSection,
-      }),
-      shallow
-    );
-
-  const { setConnectedSigner } = useContractStore(
+  const { isLoggedIn, navigationSection, userDetails } = useAuthStore(
     (state) => ({
-      setConnectedSigner: state.setConnectedSigner,
+      isLoggedIn: state.isLoggedIn,
+      navigationSection: state.navigationSection,
+      userDetails: state.userDetails,
     }),
     shallow
   );
@@ -97,41 +79,21 @@ export default function NavBar({
           justifyContent={"space-between"}
           mx={2}
         >
-          {/* DefiKids Logo */}
-          <Flex
-            align="center"
-            cursor={"pointer"}
-            onClick={() => {
-              localStorage.removeItem("defi-kids.family-id");
-              router.push("/");
-            }}
-          >
-            {!isMobileSize && (
-              <Image
-                src={"/pig_logo.png"}
-                alt="Loader"
-                width="50"
-                height="50"
-              />
-            )}
-
-            <Heading size="lg" ml={isMobileSize ? 0 : 5}>
-              Defikids
-            </Heading>
-          </Flex>
+          <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
             {/* Connect Button */}
             {!isLoggedIn && <CustomConnectButton />}
 
-            {userType === UserType.PARENT && router.pathname !== "/parent" && (
-              <IconButton
-                size="lg"
-                aria-label="Parent Icon"
-                icon={<BiSolidUserRectangle size={30} />}
-                onClick={() => router.push("/parent")}
-              />
-            )}
+            {userDetails?.userType === UserType.PARENT &&
+              router.pathname !== "/parent" && (
+                <IconButton
+                  size="lg"
+                  aria-label="Parent Icon"
+                  icon={<BiSolidUserRectangle size={30} />}
+                  onClick={() => router.push("/parent")}
+                />
+              )}
 
             {/* Wallet Menu */}
             {isLoggedIn && <WalletPopover />}

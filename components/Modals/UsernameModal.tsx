@@ -64,9 +64,9 @@ export const UsernameModal = ({
     shallow
   );
 
-  const { walletAddress } = useAuthStore(
+  const { userDetails } = useAuthStore(
     (state) => ({
-      walletAddress: state.walletAddress,
+      userDetails: state.userDetails,
     }),
     shallow
   );
@@ -87,10 +87,7 @@ export const UsernameModal = ({
 
     activeAddress = children[childKey]?.wallet
       ? children[childKey]?.wallet
-      : walletAddress;
-
-    console.log("activeAddress", activeAddress);
-    console.log("walletAddress", walletAddress);
+      : userDetails.wallet;
 
     const contract = await HostContract.fromProvider(connectedSigner);
     setIsLoading(true);
@@ -105,7 +102,7 @@ export const UsernameModal = ({
           childDetails.wallet,
           username
         );
-      } else if (activeAddress === walletAddress) {
+      } else if (activeAddress === userDetails?.wallet) {
         tx = await contract.updateUsername(username);
       } else {
         const childAddress = activeAddress;
@@ -124,7 +121,7 @@ export const UsernameModal = ({
           ...childDetails,
           username: username,
         });
-      } else if (activeAddress === walletAddress) {
+      } else if (activeAddress === userDetails?.wallet) {
         fetchFamilyDetails();
       } else {
         fetchChildren();

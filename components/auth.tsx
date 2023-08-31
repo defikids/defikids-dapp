@@ -39,20 +39,20 @@ const Auth = ({
   });
 
   const {
-    userType,
-    walletAddress,
-    setUserType,
+    userDetails,
     setIsLoggedIn,
-    setWalletAddress,
     setLogout,
+    setUserDetails,
+    walletAddress,
+    setWalletAddress,
   } = useAuthStore(
     (state) => ({
-      walletAddress: state.walletAddress,
-      userType: state.userType,
-      setUserType: state.setUserType,
+      userDetails: state.userDetails,
       setIsLoggedIn: state.setIsLoggedIn,
-      setWalletAddress: state.setWalletAddress,
       setLogout: state.setLogout,
+      setUserDetails: state.setUserDetails,
+      walletAddress: state.walletAddress,
+      setWalletAddress: state.setWalletAddress,
     }),
     shallow
   );
@@ -88,7 +88,8 @@ const Auth = ({
       console.log("data - kv user", data);
 
       if (user) {
-        setUserType(user.userType);
+        console.log("user", user);
+        setUserDetails(user);
       }
       setHasCheckedUserType(true);
     };
@@ -117,7 +118,7 @@ const Auth = ({
     }
 
     if (hasCheckedUserType) {
-      switch (userType) {
+      switch (userDetails?.userType) {
         case UserType.UNREGISTERED:
           onRegisterOpen();
           break;

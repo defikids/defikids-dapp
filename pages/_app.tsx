@@ -72,17 +72,17 @@ function MyApp({ Component, pageProps }) {
     onClose: onRegisterClose,
   } = useDisclosure();
 
-  const { userType } = useAuthStore((state) => ({
-    userType: state.userType,
+  const { userDetails } = useAuthStore((state) => ({
+    userDetails: state.userDetails,
   }));
 
   const router = useRouter();
 
   useEffect(() => {
-    userType === UserType.UNREGISTERED && hasCheckedUserType
+    userDetails?.userType === UserType.UNREGISTERED && hasCheckedUserType
       ? setShowStartEarning(true)
       : setShowStartEarning(false);
-  }, [isRegisterOpen, hasCheckedUserType, userType]);
+  }, [isRegisterOpen, hasCheckedUserType, userDetails?.userType]);
 
   return (
     <ChakraProvider

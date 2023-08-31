@@ -3,6 +3,7 @@ import Navbar from "./navbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 export const MainLayout = ({
   showStartEarning,
@@ -29,6 +30,7 @@ export const MainLayout = ({
   );
 
   const { onToggle } = useDisclosure();
+  const router = useRouter();
 
   useEffect(() => {
     if (navigationSection === "DefiKids") {
@@ -48,14 +50,16 @@ export const MainLayout = ({
       top="0"
       left="0"
       width="100%"
-      p={1}
+      p={router.pathname === "/parent" ? 0 : 5}
       zIndex={5}
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
-        <Navbar
-          showStartEarning={showStartEarning}
-          isRegisterOpen={isRegisterOpen}
-        />
+        {router.pathname !== "/parent" && (
+          <Navbar
+            showStartEarning={showStartEarning}
+            isRegisterOpen={isRegisterOpen}
+          />
+        )}
       </Box>
     </Box>
   );

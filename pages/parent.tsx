@@ -1,59 +1,26 @@
 /* eslint-disable react/no-children-prop */
 import {
-  Avatar,
   Box,
   Button,
-  Center,
-  Container,
   Flex,
-  Heading,
-  Image,
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuItem,
-  MenuList,
-  Text,
-  Tooltip,
   useBreakpointValue,
   useDisclosure,
   useSteps,
-  useToast,
-  MenuDivider,
-  Wrap,
-  WrapItem,
   IconButton,
   VStack,
-  AvatarGroup,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Child from "@/components/child";
+import React, { useCallback, useEffect, useState } from "react";
 import contract from "@/services/contract";
-import HostContract from "@/services/contract";
 import StakeContract from "@/services/stake";
-import { BiTransfer, BiWalletAlt } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { trimAddress, getEtherscanUrl } from "@/utils/web3";
 import { User, ChildDetails } from "@/dataSchema/types";
-import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
-import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
-import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
-import router from "next/router";
-import { AddChildModal } from "@/components/Modals/AddChildModal";
-import { useBalance } from "wagmi";
 import { UsernameModal } from "@/components/Modals/UsernameModal";
-import { RxAvatar } from "react-icons/rx";
-import { SendFundsModal } from "@/components/Modals/SendFundsModal";
-import { useNetwork } from "wagmi";
-import { EtherscanContext, ParentDashboardTabs } from "@/dataSchema/enums";
-import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
+import { ParentDashboardTabs } from "@/dataSchema/enums";
 import { HiMenu } from "react-icons/hi";
-import { transactionErrors } from "@/utils/errorHanding";
 
 import Username from "@/components/parentDashboard/Username";
 import ParentAvatar from "@/components/parentDashboard/Avatar";
@@ -74,11 +41,12 @@ const Parent: React.FC = () => {
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
-  const [loading, setIsLoading] = useState(false);
 
   const [selectedTab, setSelectedTab] = useState<ParentDashboardTabs>(
     ParentDashboardTabs.DASHBOARD
   );
+  const [cardOpacity, setCardOpacity] = useState(0);
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -98,14 +66,6 @@ const Parent: React.FC = () => {
     shallow
   );
 
-  const { data } = useBalance({
-    address: userDetails?.wallet as `0x${string}`,
-  });
-
-  const toast = useToast();
-  const { chain } = useNetwork();
-  const parentRef = useRef(null);
-
   const isMobileSize = useBreakpointValue({
     base: true,
     sm: false,
@@ -113,11 +73,6 @@ const Parent: React.FC = () => {
     lg: false,
   });
 
-  const {
-    isOpen: isOpenAvatar,
-    onOpen: onOpenAvatar,
-    onClose: onCloseAvatar,
-  } = useDisclosure();
   const {
     isOpen: isAddChildOpen,
     onOpen: onAddChildOpen,
@@ -250,7 +205,7 @@ const Parent: React.FC = () => {
             <AccountBalance walletAddress={userDetails?.wallet} />
 
             <ButtonMenu
-              onOpen={onOpenAvatar}
+              // onOpen={onOpenAvatar}
               onChangeUsernameOpen={onChangeUsernameOpen}
               onAddChildOpen={onAddChildOpen}
               children={children}
@@ -290,41 +245,57 @@ const Parent: React.FC = () => {
         )}
 
         <Flex
-          bgImage={
-            familyDetails?.backgroundURI
-              ? familyDetails?.backgroundURI
-              : "/images/backgrounds/city-center.png"
-          }
           width={!isMobileSize ? "75%" : "100%"}
           height="100vh"
           p={!isMobileSize ? "3rem" : "1rem"}
           bgPosition="center"
           bgRepeat="no-repeat"
         >
-          {isMobileSize && (
-            <IconButton
-              size="lg"
-              variant="outline"
-              colorScheme="white"
-              aria-label="Call Sage"
-              fontSize="50px"
-              icon={<HiMenu />}
-              onClick={onParentDetailsOpen}
-              style={{ border: "1px solid transparent" }}
-            />
-          )}
+          <Box
+            position="absolute"
+            top={0}
+            left={0}
+            width="100%"
+            height="100%"
+            bgPosition="center"
+            bgSize="cover"
+            bgImage={
+              familyDetails?.backgroundURI
+                ? familyDetails?.backgroundURI
+                : "/images/backgrounds/city-center.png"
+            }
+            opacity={
+              backgroundOpacity || familyDetails?.opacity?.background || 1
+            }
+            zIndex={-1}
+          />
 
-          {selectedTab === ParentDashboardTabs.SETTINGS && (
-            // <Flex justify="center" alignItems="center" h="100%">
-            <Settings
-              familyDetails={familyDetails}
-              onOpenAvatar={onOpenAvatar}
-              onChangeUsernameOpen={onChangeUsernameOpen}
-              fetchFamilyDetails={fetchFamilyDetails}
-              onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-            />
-            // </Flex>
-          )}
+          <Box>
+            {isMobileSize && (
+              <IconButton
+                size="lg"
+                variant="outline"
+                colorScheme="white"
+                aria-label="Call Sage"
+                fontSize="50px"
+                icon={<HiMenu />}
+                onClick={onParentDetailsOpen}
+                style={{ border: "1px solid transparent" }}
+              />
+            )}
+
+            {selectedTab === ParentDashboardTabs.SETTINGS && (
+              <Settings
+                familyDetails={familyDetails}
+                onChangeUsernameOpen={onChangeUsernameOpen}
+                fetchFamilyDetails={fetchFamilyDetails}
+                onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+                setBackgroundOpacity={setBackgroundOpacity}
+                setCardOpacity={setCardOpacity}
+                cardOpacity={cardOpacity}
+              />
+            )}
+          </Box>
         </Flex>
       </Flex>
 
@@ -353,8 +324,7 @@ const Parent: React.FC = () => {
       <BackgroundDefaults
         isOpen={isOpenBackgroundDefaults}
         onClose={onCloseBackgroundDefaults}
-        // familyDetails={familyDetails}
-        // fetchFamilyDetails={fetchFamilyDetails}
+        fetchFamilyDetails={fetchFamilyDetails}
       />
 
       {/* <ChangeAvatarModal

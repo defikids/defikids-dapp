@@ -3,13 +3,13 @@ import { ChildDetails } from "@/dataSchema/types";
 import { ParentDashboardTabs } from "@/dataSchema/enums";
 
 const ButtonMenu = ({
-  onOpen,
+  // onOpen,
   onChangeUsernameOpen,
   onAddChildOpen,
   setSelectedTab,
   children,
 }: {
-  onOpen: () => void;
+  // onOpen: () => void;
   onChangeUsernameOpen: () => void;
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;

@@ -3,38 +3,41 @@ import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
   useToast,
-  Avatar,
   Box,
   useSteps,
   Button,
-  Grid,
-  GridItem,
-  Center,
+  Text,
+  Switch,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import shallow from "zustand/shallow";
 import { TransactionStepper, steps } from "./steppers/TransactionStepper";
 import { StepperContext } from "@/dataSchema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
-import { GrAddCircle } from "react-icons/gr";
+import { BgOpacitySliderThumbWithTooltip } from "@/components/BgOpacitySliderThumbWithTooltip";
+import { CardOpacitySliderThumbWithTooltip } from "@/components/CardOpacitySliderThumbWithTooltip";
+import { OpacityContext } from "@/dataSchema/enums";
 
 export const BackgroundSelection = ({
   familyDetails,
   fetchFamilyDetails,
   onOpenBackgroundDefaults,
+  setBackgroundOpacity,
+  setCardOpacity,
 }: {
   familyDetails: User;
   fetchFamilyDetails: () => void;
   onOpenBackgroundDefaults: () => void;
+  setBackgroundOpacity: (opacity: number) => void;
+  setCardOpacity: (opacity: number) => void;
 }) => {
   //=============================================================================
   //                               STATE
   //=============================================================================
 
   const [loading, setIsLoading] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState(null);
-  // const [background, setBackground] = useState(familyDetails?.backgroundURI);
+  const [opacityType, setOpacityType] = useState(OpacityContext.BACKGROUND);
 
   //=============================================================================
   //                               HOOKS
@@ -43,10 +46,11 @@ export const BackgroundSelection = ({
 
   const toast = useToast();
 
-  const { userDetails, setUserDetails } = useAuthStore(
+  const { userDetails, setUserDetails, opacity } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
       setUserDetails: state.setUserDetails,
+      opacity: state.opacity,
     }),
     shallow
   );
@@ -65,7 +69,6 @@ export const BackgroundSelection = ({
   };
 
   const uploadToIpfs = async (selectedFile: File | null) => {
-    console.log("selectedFile", selectedFile);
     try {
       const response = await axios.post(
         `/api/ipfs/upload-to-ipfs`,
@@ -114,7 +117,6 @@ export const BackgroundSelection = ({
       setActiveStep(1);
 
       const background = `https://ipfs.io/ipfs/${ifpsHash}`;
-      console.log(background);
 
       const body = {
         ...familyDetails,
@@ -125,8 +127,6 @@ export const BackgroundSelection = ({
         key: userDetails?.wallet,
         value: body,
       };
-
-      console.log("payload", payload);
 
       await axios.post(`/api/vercel/set-json`, payload);
       setUserDetails(body);
@@ -145,6 +145,60 @@ export const BackgroundSelection = ({
     }
   };
 
+  const handleOpacityChange = async () => {
+    console.log("opacity", opacity);
+    try {
+      if (opacityType === OpacityContext.BACKGROUND) {
+        const body = {
+          ...familyDetails,
+          opacity: {
+            ...familyDetails.opacity,
+            background: opacity,
+          },
+        };
+
+        const payload = {
+          key: userDetails?.wallet,
+          value: body,
+        };
+
+        await axios.post(`/api/vercel/set-json`, payload);
+        setUserDetails(body);
+        fetchFamilyDetails();
+
+        toast({
+          title: "Background opacity successfully updated",
+          status: "success",
+        });
+      } else {
+        const body = {
+          ...familyDetails,
+          opacity: {
+            ...familyDetails.opacity,
+            card: opacity,
+          },
+        };
+
+        const payload = {
+          key: userDetails?.wallet,
+          value: body,
+        };
+
+        await axios.post(`/api/vercel/set-json`, payload);
+        setUserDetails(body);
+        fetchFamilyDetails();
+
+        toast({
+          title: "Card opacity successfully updated",
+          status: "success",
+        });
+      }
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+    }
+  };
+
   if (loading) {
     return (
       <Flex direction="row" justify="center" align="center" mt="3rem">
@@ -157,80 +211,84 @@ export const BackgroundSelection = ({
   }
   return (
     <>
-      <Grid templateColumns="repeat(2, 1fr)" gap={6} h="100%">
-        <GridItem
-          w="100%"
-          h="100%"
-          bgImage="/images/backgrounds/city-center.png"
-          bgSize="contain"
-          cursor="pointer"
-          style={{
-            borderRadius: "10px",
-          }}
-          _hover={{
-            transform: "scale(1.05)",
-          }}
-          onClick={onOpenBackgroundDefaults}
-        />
-        <Flex
-          justify="center"
-          alignItems="center"
-          w="100%"
-          h="100%"
-          style={{
-            border: "1px solid lightgray",
-            borderRadius: "10px",
-          }}
-          _hover={{
-            transform: "scale(1.05)",
-          }}
-          onClick={openFileInput}
-          cursor="pointer"
-        >
-          <GrAddCircle size={100} />
-        </Flex>
-      </Grid>
-      {/* <Grid templateColumns="repeat(2, 2fr)" gap={6}>
-        <GridItem
-          w="100%"
-          h="20"
-          bgImage="/images/backgrounds/city-center.png"
-          bgSize="contain"
-          cursor="pointer"
-          onClick={() => {
-            fetch("/images/backgrounds/city-center.png")
-              .then((res) => res.blob())
-              .then((blob) => {
-                const file = new File([blob], "city-center.png", {
-                  type: "image/png",
-                });
-                handleSubmit(file);
-              });
-          }}
-        />
-        <GridItem w="100%" h="20" bgImage="/images/backgrounds/Flashbots.png" />
-        <GridItem w="100%" h="20" bg="blue.500" />
-        <GridItem w="100%" h="20" bg="blue.500" />
-      </Grid> */}
-      {/* <Flex
-        direction="column"
-        justify="center"
-        align="center"
-        borderRadius={10}
-      >
-        <
-          size="2xl"
-          name={familyDetails?.username ? familyDetails?.username : "Avatar"}
-          src={background ? background : "/images/placeholder-avatar.jpeg"}
-          _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
-          onClick={openFileInput}
-        />
-        {selectedFile && (
-          <Button size={"xs"} onClick={handleSubmit} mt={4}>
-            Submit
+      <Flex direction="column" justify="center" align="center">
+        <Flex direction="row" justify="center" align="center">
+          <Button
+            cursor="pointer"
+            variant="outline"
+            colorScheme="blue"
+            size="md"
+            style={{
+              borderRadius: "10px",
+            }}
+            w="100%"
+            mr={2}
+            onClick={onOpenBackgroundDefaults}
+          >
+            Default Backgrounds
           </Button>
+
+          <Button
+            cursor="pointer"
+            onClick={openFileInput}
+            variant="outline"
+            colorScheme="blue"
+            size="md"
+            style={{
+              borderRadius: "10px",
+            }}
+            w="100%"
+            ml={2}
+          >
+            Add Custom Background
+          </Button>
+        </Flex>
+
+        <Flex w="100%" my={4}>
+          {opacityType === OpacityContext.BACKGROUND
+            ? "Background Opacity"
+            : "Card Opacity"}
+        </Flex>
+
+        {opacityType === OpacityContext.CARD ? (
+          <Flex w="100%">
+            <CardOpacitySliderThumbWithTooltip
+              setCardOpacity={setCardOpacity}
+            />
+          </Flex>
+        ) : (
+          <Flex w="100%">
+            <BgOpacitySliderThumbWithTooltip
+              setBackgroundOpacity={setBackgroundOpacity}
+            />
+          </Flex>
         )}
-      </Flex> */}
+
+        <Flex justify="space-between" alignItems="center" w="100%" mt={10}>
+          <Button
+            cursor="pointer"
+            variant="outline"
+            colorScheme="blue"
+            size="sm"
+            onClick={handleOpacityChange}
+          >
+            Save
+          </Button>
+
+          <Flex direction="row" justify="center" align="center">
+            <Text mr={2}>{OpacityContext.BACKGROUND}</Text>
+            <Switch
+              size="md"
+              onChange={() => {
+                opacityType === OpacityContext.BACKGROUND
+                  ? setOpacityType(OpacityContext.CARD)
+                  : setOpacityType(OpacityContext.BACKGROUND);
+              }}
+            />
+            <Text ml={2}>{OpacityContext.CARD}</Text>
+          </Flex>
+        </Flex>
+      </Flex>
 
       <Box>
         {/* Avatar Action */}
@@ -262,7 +320,6 @@ export const BackgroundSelection = ({
 
             if (files && files.length > 0) {
               const file = files[0];
-              console.log("Hidden", file);
               const reader = new FileReader();
 
               // reader.onloadend = () => {

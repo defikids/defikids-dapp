@@ -6,25 +6,68 @@ import {
   ModalBody,
   ModalCloseButton,
   Grid,
-  GridItem,
   Box,
   ModalFooter,
-  useBreakpointValue,
+  Image,
+  useToast,
 } from "@chakra-ui/react";
+import { images } from "@/data/defaultBackgrounds";
+import { transactionErrors } from "@/utils/errorHanding";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
+import axios from "axios";
 
-const BackgroundDefaults = ({ isOpen, onClose }) => {
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
+const BackgroundDefaults = ({
+  isOpen,
+  onClose,
+  fetchFamilyDetails,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  fetchFamilyDetails: () => void;
+}) => {
+  const toast = useToast();
+
+  const { userDetails, setUserDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+      setUserDetails: state.setUserDetails,
+    }),
+    shallow
+  );
+
+  const handleSelectedBackground = async (src: string) => {
+    try {
+      const body = {
+        ...userDetails,
+        backgroundURI: src,
+      };
+
+      const payload = {
+        key: userDetails?.wallet,
+        value: body,
+      };
+
+      await axios.post(`/api/vercel/set-json`, payload);
+      setUserDetails(body);
+      fetchFamilyDetails();
+      onClose();
+
+      toast({
+        title: "Background successfully updated",
+        status: "success",
+      });
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+    }
+  };
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       onCloseComplete={() => {}}
-      size="full"
+      size="2xl"
       isCentered
       closeOnOverlayClick={false}
     >
@@ -34,13 +77,11 @@ const BackgroundDefaults = ({ isOpen, onClose }) => {
         backdropInvert="10%"
         backdropBlur="4px"
       />
-      <ModalContent
-        style={{ maxHeight: "calc(100vh - 40px)" }} // Adjust as needed
-      >
-        <ModalHeader>Register</ModalHeader>
+      <ModalContent>
+        <ModalHeader>Default Backgrounds</ModalHeader>
         <ModalCloseButton />
-        <ModalBody h="100vh">
-          <Box h="100vh" overflowY="scroll">
+        <ModalBody>
+          <Box>
             <Grid
               templateColumns={{
                 base: "repeat(1, 1fr)",
@@ -51,55 +92,26 @@ const BackgroundDefaults = ({ isOpen, onClose }) => {
               gap={6}
               columnGap={6}
               mx={2}
+              gridAutoRows="1fr" // Distribute height evenly
             >
-              <GridItem
-                w="100%"
-                h="20rem"
-                minH={isMobileSize ? "auto" : "375px"} // Adjust for mobile
-                bgImage="/images/backgrounds/egypt.jpeg"
-                bgSize="cover"
-                bgRepeat="no-repeat"
-                cursor="pointer"
-                style={{
-                  borderRadius: "10px",
-                }}
-              />
-              <GridItem
-                w="100%"
-                h="20rem"
-                minH={isMobileSize ? "auto" : "375px"} // Adjust for mobile
-                bgImage="/images/backgrounds/synthwave.jpeg"
-                bgSize="cover"
-                bgRepeat="no-repeat"
-                cursor="pointer"
-                style={{
-                  borderRadius: "10px",
-                }}
-              />
-              <GridItem
-                w="100%"
-                h="20rem"
-                minH={isMobileSize ? "auto" : "375px"} // Adjust for mobile
-                bgImage="/images/backgrounds/technology.jpeg"
-                bgSize="cover"
-                bgRepeat="no-repeat"
-                cursor="pointer"
-                style={{
-                  borderRadius: "10px",
-                }}
-              />
-              <GridItem
-                w="100%"
-                h="20rem"
-                minH={isMobileSize ? "auto" : "375px"} // Adjust for mobile
-                bgImage="/images/backgrounds/urban.jpeg"
-                bgSize="cover"
-                bgRepeat="no-repeat"
-                cursor="pointer"
-                style={{
-                  borderRadius: "10px",
-                }}
-              />
+              {images.map((image, index) => (
+                <Image
+                  key={index}
+                  src={image.src}
+                  alt={image.alt}
+                  width="100%"
+                  height="100%"
+                  objectFit="cover"
+                  borderRadius="10px"
+                  cursor="pointer"
+                  _hover={{
+                    boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
+                  }}
+                  onClick={() => {
+                    handleSelectedBackground(image.src);
+                  }}
+                />
+              ))}
             </Grid>
           </Box>
         </ModalBody>

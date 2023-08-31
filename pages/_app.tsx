@@ -91,7 +91,7 @@ function MyApp({ Component, pageProps }) {
         defaultOptions: {
           position: "bottom",
           isClosable: true,
-          duration: 9000,
+          duration: 4000,
         },
       }}
     >

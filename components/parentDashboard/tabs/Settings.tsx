@@ -1,20 +1,23 @@
 import { CardGroup } from "@/components/CardGroup";
-import { ParentDashboardTabs } from "@/dataSchema/enums";
 import { User } from "@/dataSchema/types";
 import { Box, Flex, Heading } from "@chakra-ui/react";
 
 export const Settings = ({
-  onOpenAvatar,
   onChangeUsernameOpen,
   familyDetails,
   fetchFamilyDetails,
   onOpenBackgroundDefaults,
+  cardOpacity,
+  setCardOpacity,
+  setBackgroundOpacity,
 }: {
-  onOpenAvatar: () => void;
   onChangeUsernameOpen: () => void;
   familyDetails: User;
   fetchFamilyDetails: () => void;
   onOpenBackgroundDefaults: () => void;
+  cardOpacity: number;
+  setCardOpacity: (value: number) => void;
+  setBackgroundOpacity: (value: number) => void;
 }) => {
   const data = [
     {
@@ -35,14 +38,12 @@ export const Settings = ({
       description:
         "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
       buttonTitle: "Change Background",
-      action: onOpenAvatar,
     },
     {
       title: "Family Id",
       description:
         "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
       buttonTitle: "Change Family Id",
-      action: onOpenAvatar,
     },
   ];
   return (
@@ -59,6 +60,10 @@ export const Settings = ({
           familyDetails={familyDetails}
           fetchFamilyDetails={fetchFamilyDetails}
           onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+          cardOpacity={cardOpacity}
+          backgroundOpacity={cardOpacity}
+          setCardOpacity={setCardOpacity}
+          setBackgroundOpacity={setBackgroundOpacity}
         />
       </Flex>
     </Box>

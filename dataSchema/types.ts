@@ -18,6 +18,10 @@ export type User = {
   wallet: string;
   avatarURI: string;
   backgroundURI: string;
+  opacity: {
+    background: number;
+    card: number;
+  };
   username: string;
   termsAgreed: boolean;
   userType: UserType;

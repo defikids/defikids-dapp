@@ -50,3 +50,8 @@ export enum ParentDashboardTabs {
   SUPPORT = "SUPPORT",
   SETTINGS = "SETTINGS",
 }
+
+export enum OpacityContext {
+  BACKGROUND = "BACKGROUND",
+  CARD = "CARD",
+}

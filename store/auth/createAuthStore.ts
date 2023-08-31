@@ -15,6 +15,7 @@ type State = {
   navigationSection: string;
   logout: () => void;
   userDetails: User;
+  opacity: 0;
 };
 
 type Actions = {
@@ -24,6 +25,7 @@ type Actions = {
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
   setUserDetails: (userDetails: User) => void;
+  setOpacity: (opacity: number) => void;
 };
 
 type MyStore = State & Actions;
@@ -41,6 +43,10 @@ const initialState: State = {
       memberSince: 0,
       package: AccountPackage.BASIC,
     },
+    opacity: {
+      background: 0,
+      card: 0,
+    },
     familyId: "",
     wallet: "",
     avatarURI: "",
@@ -50,6 +56,7 @@ const initialState: State = {
     userType: UserType.UNREGISTERED,
     children: [],
   },
+  opacity: 0,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -103,6 +110,11 @@ const setters = (set: any) => ({
   setUserDetails: (userDetails: User) => {
     set((state: { userDetails: User }) => {
       state.userDetails = userDetails;
+    }, shallow);
+  },
+  setOpacity: (opacity: number) => {
+    set((state: { opacity: number }) => {
+      state.opacity = opacity;
     }, shallow);
   },
 });

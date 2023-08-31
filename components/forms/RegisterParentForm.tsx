@@ -51,10 +51,11 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
   const toast = useToast();
 
-  const { userDetails, setUserDetails } = useAuthStore(
+  const { userDetails, setUserDetails, walletAddress } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
       setUserDetails: state.setUserDetails,
+      walletAddress: state.walletAddress,
     }),
     shallow
   );
@@ -89,18 +90,24 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       const body = {
         account: accountDetails,
         familyId: hashedFamilyId(familyId),
-        wallet: userDetails?.wallet,
+        wallet: walletAddress,
         avatarURI: "",
         backgroundURI: "",
+        opacity: {
+          background: 1,
+          card: 1,
+        },
         username,
         userType: UserType.PARENT,
         children: [],
       } as User;
 
       const payload = {
-        key: userDetails?.wallet,
+        key: walletAddress,
         value: body,
       };
+
+      console.log("payload", payload);
 
       await axios.post(`/api/vercel/set-json`, payload);
 

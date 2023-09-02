@@ -96,7 +96,7 @@ export default function NavBar({
               )}
 
             {/* Wallet Menu */}
-            {isLoggedIn && <WalletPopover />}
+            {/* {isLoggedIn && <WalletPopover />} */}
 
             {/* Main Menu */}
             <IconButton

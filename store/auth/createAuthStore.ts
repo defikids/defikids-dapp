@@ -86,24 +86,25 @@ const setters = (set: any) => ({
     }, shallow);
   },
   setLogout: () => {
-    set(
-      (state: {
-        walletAddress: string;
-        isLoggedIn: boolean;
-        userType: UserType;
-      }) => {
-        state.walletAddress = "";
-        state.isLoggedIn = false;
-        state.userType = UserType.UNREGISTERED;
-      },
-      shallow
-    );
-
     if (window.location.pathname !== "/") {
       window.location.href = "/";
     }
 
-    disconnect();
+    setTimeout(() => {
+      set(
+        (state: {
+          walletAddress: string;
+          isLoggedIn: boolean;
+          userType: UserType;
+        }) => {
+          state.walletAddress = "";
+          state.isLoggedIn = false;
+          state.userType = UserType.UNREGISTERED;
+        },
+        shallow
+      );
+      disconnect();
+    }, 100);
   },
   setUserDetails: (userDetails: User | ChildDetails) => {
     set((state: { userDetails: User | ChildDetails }) => {

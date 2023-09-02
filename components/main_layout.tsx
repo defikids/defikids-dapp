@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Navbar from "./navbar";
+import LoggedInNavBar from "./LoggedInNavbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
@@ -22,9 +23,10 @@ export const MainLayout = ({
     lg: false,
   });
 
-  const { navigationSection } = useAuthStore(
+  const { navigationSection, isLoggedIn } = useAuthStore(
     (state) => ({
       navigationSection: state.navigationSection,
+      isLoggedIn: state.isLoggedIn,
     }),
     shallow
   );
@@ -43,15 +45,15 @@ export const MainLayout = ({
   //                             FUNCTIONS
   //=============================================================================
 
-  const showNavbar = () => {
-    if (router.pathname === "/") {
-      return true;
-    }
+  // const showNavbar = () => {
+  //   if (router.pathname === "/") {
+  //     return true;
+  //   }
 
-    if (isMobileSize) {
-      return true;
-    }
-  };
+  //   if (isMobileSize) {
+  //     return true;
+  //   }
+  // };
 
   return (
     <Box
@@ -64,11 +66,13 @@ export const MainLayout = ({
       zIndex={5}
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
-        {showNavbar() && (
+        {!isLoggedIn ? (
           <Navbar
             showStartEarning={showStartEarning}
             isRegisterOpen={isRegisterOpen}
           />
+        ) : (
+          <LoggedInNavBar />
         )}
       </Box>
     </Box>

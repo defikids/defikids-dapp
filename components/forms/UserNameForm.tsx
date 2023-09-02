@@ -91,7 +91,6 @@ export const EditUsername = ({
         <FormControl>
           <FormLabel>New Username</FormLabel>
           <Input
-            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             style={{
@@ -99,7 +98,13 @@ export const EditUsername = ({
             }}
           />
         </FormControl>
-        <Button size={"xs"} onClick={handleSubmit} mt={4}>
+        <Button
+          variant="outline"
+          colorScheme="blue"
+          size={"sm"}
+          onClick={handleSubmit}
+          mt={4}
+        >
           Submit
         </Button>
       </Flex>

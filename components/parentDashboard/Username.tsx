@@ -1,9 +1,15 @@
 import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
 import { User } from "@/dataSchema/types";
 
-const Username = ({ familyDetails }: { familyDetails: User }) => {
+const Username = ({
+  familyDetails,
+  mt,
+}: {
+  familyDetails: User;
+  mt?: number;
+}) => {
   return (
-    <Flex align="center" mt="2rem" ml={4}>
+    <Flex align="center" mt={mt || 0} ml={4}>
       <Avatar
         size="md"
         name={familyDetails.username}
@@ -13,7 +19,9 @@ const Username = ({ familyDetails }: { familyDetails: User }) => {
         }}
       />
       <Flex direction="column" ml={2}>
-        <Heading fontSize="lg">{familyDetails.username}</Heading>
+        <Heading fontSize="lg" display="flex">
+          {familyDetails.username}
+        </Heading>
         <Text fontSize="md">{familyDetails.userType}</Text>
       </Flex>
     </Flex>

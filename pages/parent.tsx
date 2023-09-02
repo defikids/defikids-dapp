@@ -1,67 +1,31 @@
 /* eslint-disable react/no-children-prop */
 import {
-  Avatar,
   Box,
-  Button,
-  Center,
-  Container,
   Flex,
-  Heading,
-  Image,
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuItem,
-  MenuList,
-  Text,
-  Tooltip,
-  useBreakpointValue,
   useDisclosure,
   useSteps,
-  useToast,
-  MenuDivider,
-  Wrap,
-  WrapItem,
-  IconButton,
-  VStack,
-  AvatarGroup,
+  CloseButton,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Child from "@/components/child";
+import React, { useCallback, useEffect, useState } from "react";
 import contract from "@/services/contract";
-import HostContract from "@/services/contract";
 import StakeContract from "@/services/stake";
-import { BiTransfer, BiWalletAlt } from "react-icons/bi";
-import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { trimAddress, getEtherscanUrl } from "@/utils/web3";
 import { User, ChildDetails } from "@/dataSchema/types";
-import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
-import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
-import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
-import router from "next/router";
-import { AddChildModal } from "@/components/Modals/AddChildModal";
-import { useBalance } from "wagmi";
 import { UsernameModal } from "@/components/Modals/UsernameModal";
-import { RxAvatar } from "react-icons/rx";
-import { SendFundsModal } from "@/components/Modals/SendFundsModal";
-import { useNetwork } from "wagmi";
-import { EtherscanContext, ParentDashboardTabs } from "@/dataSchema/enums";
-import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
-import { HiMenu } from "react-icons/hi";
-import { transactionErrors } from "@/utils/errorHanding";
+import { ParentDashboardTabs } from "@/dataSchema/enums";
 
-import Username from "@/components/parentDashboard/Username";
-import ParentAvatar from "@/components/parentDashboard/Avatar";
-import ButtonMenu from "@/components/parentDashboard/ButtonMenu";
-import AccountBalance from "@/components/parentDashboard/AccountBalance";
-import ChildAvatarGroup from "@/components/parentDashboard/ChildAvatarGroup";
 import { Settings } from "@/components/parentDashboard/tabs/Settings";
 import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
+import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
+import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
+import { useWindowSize } from "usehooks-ts";
+import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { EtherscanModal } from "@/components/Modals/EtherscanModal";
+import { colors } from "@/services/chakra/theme";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -74,11 +38,12 @@ const Parent: React.FC = () => {
   const [childrenStakes, setChildrenStakes] = useState({});
   const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
-  const [loading, setIsLoading] = useState(false);
 
   const [selectedTab, setSelectedTab] = useState<ParentDashboardTabs>(
     ParentDashboardTabs.DASHBOARD
   );
+  const [cardOpacity, setCardOpacity] = useState(0);
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -98,30 +63,26 @@ const Parent: React.FC = () => {
     shallow
   );
 
-  const { data } = useBalance({
-    address: userDetails?.wallet as `0x${string}`,
-  });
+  const { width, height } = useWindowSize();
 
-  const toast = useToast();
-  const { chain } = useNetwork();
-  const parentRef = useRef(null);
+  const isMobileSize = width < 768;
 
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
+  const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
+    useDisclosure();
 
-  const {
-    isOpen: isOpenAvatar,
-    onOpen: onOpenAvatar,
-    onClose: onCloseAvatar,
-  } = useDisclosure();
+  const { isOpen: isOpenCollapsedMenu, onToggle: onToggleCollapsedMenu } =
+    useDisclosure();
+
   const {
     isOpen: isAddChildOpen,
     onOpen: onAddChildOpen,
     onClose: onAddChildClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenEtherScan,
+    onOpen: onOpenEtherScan,
+    onClose: onCloseEtherScan,
   } = useDisclosure();
 
   const {
@@ -230,104 +191,87 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length, contract, userDetails?.wallet]);
 
+  const closeTab = () => {
+    setSelectedTab(ParentDashboardTabs.DASHBOARD);
+  };
+
   return (
-    <Box>
-      <Flex direction="row">
+    <Flex>
+      <>
+        <Box zIndex={1}>
+          <ExpandedDashboardMenu
+            familyDetails={familyDetails}
+            children={children}
+            onAddChildOpen={onAddChildOpen}
+            setSelectedTab={setSelectedTab}
+            onToggleCollapsedMenu={onToggleCollapsedMenu}
+            onToggleExtendedMenu={onToggleExtendedMenu}
+            isOpenExtendedMenu={isOpenExtendedMenu}
+            onOpenEtherScan={onOpenEtherScan}
+            isMobileSize={isMobileSize}
+          />
+        </Box>
         {!isMobileSize && (
-          <Box
-            bgGradient={["linear(to-b, black,#4F1B7C)"]}
-            width="25%"
-            height="100vh"
-            pt={!children.length ? "3rem" : "1rem"}
-            ml=".5rem"
-            borderRadius="1.5rem"
-            style={{
-              boxShadow: "0px 0px 10px 15px rgba(0,0,0,0.75)",
-            }}
-          >
-            <Username familyDetails={familyDetails} />
-            <ParentAvatar familyDetails={familyDetails} />
-            <AccountBalance walletAddress={userDetails?.wallet} />
-
-            <ButtonMenu
-              onOpen={onOpenAvatar}
-              onChangeUsernameOpen={onChangeUsernameOpen}
-              onAddChildOpen={onAddChildOpen}
-              children={children}
-              setSelectedTab={setSelectedTab}
+          <Box zIndex={100}>
+            <CollapsedDashboardMenu
+              onToggleCollapsedMenu={onToggleCollapsedMenu}
+              onToggleExtendedMenu={onToggleExtendedMenu}
+              isOpenCollapsedMenu={isOpenCollapsedMenu}
+              isMobileSize={isMobileSize}
             />
-
-            <ChildAvatarGroup children={children} />
-
-            <VStack
-              spacing={4}
-              align="stretch"
-              justify="space-between"
-              mt={10}
-              mx={5}
-            >
-              {children.length && (
-                <Button
-                  variant="outline"
-                  colorScheme="white"
-                  onClick={onAddChildOpen}
-                  _hover={{ borderColor: "gray" }}
-                >
-                  Member Profiles
-                </Button>
-              )}
-
-              <Button
-                w="100%"
-                variant="solid"
-                colorScheme="blue"
-                _hover={{ transform: "scale(1.05)" }}
-              >
-                Disconnect
-              </Button>
-            </VStack>
           </Box>
         )}
+      </>
 
-        <Flex
+      {/* handles the background image and opacity */}
+      <Flex
+        width="100%"
+        height="100vh"
+        bgPosition="center"
+        bgRepeat="no-repeat"
+      >
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          width="100%"
+          height="100%"
+          bgPosition="center"
+          bgSize="cover"
           bgImage={
             familyDetails?.backgroundURI
               ? familyDetails?.backgroundURI
               : "/images/backgrounds/city-center.png"
           }
-          width={!isMobileSize ? "75%" : "100%"}
-          height="100vh"
-          p={!isMobileSize ? "3rem" : "1rem"}
-          bgPosition="center"
-          bgRepeat="no-repeat"
-        >
-          {isMobileSize && (
-            <IconButton
-              size="lg"
-              variant="outline"
-              colorScheme="white"
-              aria-label="Call Sage"
-              fontSize="50px"
-              icon={<HiMenu />}
-              onClick={onParentDetailsOpen}
-              style={{ border: "1px solid transparent" }}
-            />
-          )}
-
-          {selectedTab === ParentDashboardTabs.SETTINGS && (
-            // <Flex justify="center" alignItems="center" h="100%">
-            <Settings
-              familyDetails={familyDetails}
-              onOpenAvatar={onOpenAvatar}
-              onChangeUsernameOpen={onChangeUsernameOpen}
-              fetchFamilyDetails={fetchFamilyDetails}
-              onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-            />
-            // </Flex>
-          )}
-        </Flex>
+          opacity={backgroundOpacity || familyDetails?.opacity?.background || 1}
+          zIndex={-1}
+        />
+        <Box width="100vw">
+          <Flex
+            height="100vh"
+            justify="center"
+            align="center"
+            bgColor={
+              selectedTab === ParentDashboardTabs.SETTINGS && "transparent"
+            }
+          >
+            {selectedTab === ParentDashboardTabs.SETTINGS && (
+              <Settings
+                familyDetails={familyDetails}
+                onChangeUsernameOpen={onChangeUsernameOpen}
+                fetchFamilyDetails={fetchFamilyDetails}
+                onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+                setBackgroundOpacity={setBackgroundOpacity}
+                setCardOpacity={setCardOpacity}
+                cardOpacity={cardOpacity}
+                isMobileSize={isMobileSize}
+                isOpenExtendedMenu={isOpenExtendedMenu}
+                closeTab={closeTab}
+              />
+            )}
+          </Flex>
+        </Box>
       </Flex>
-
       {/* {isMobileSize && (
         <ParentDetailsDrawer
           isOpen={isParentDetailsOpen}
@@ -339,7 +283,6 @@ const Parent: React.FC = () => {
           onAddChildOpen={onAddChildOpen}
         />
       )} */}
-
       <UsernameModal
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
@@ -349,25 +292,18 @@ const Parent: React.FC = () => {
         fetchChildren={fetchChildren}
         fetchFamilyDetails={fetchFamilyDetails}
       />
-
       <BackgroundDefaults
         isOpen={isOpenBackgroundDefaults}
         onClose={onCloseBackgroundDefaults}
-        // familyDetails={familyDetails}
-        // fetchFamilyDetails={fetchFamilyDetails}
+        fetchFamilyDetails={fetchFamilyDetails}
       />
-
-      {/* <ChangeAvatarModal
-        isOpen={isOpen}
-        onClose={onClose}
-        activeStep={activeStep}
-        loading={loading}
-        handleSubmit={handleSubmit}
-        children={children}
-        childKey={childKey}
-        familyURI={familyDetails?.avatarURI}
-      /> */}
-    </Box>
+      <AddChildModal
+        isOpen={isAddChildOpen}
+        onClose={onAddChildClose}
+        onAdd={() => fetchChildren()}
+      />
+      <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
+    </Flex>
   );
 };
 

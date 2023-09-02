@@ -1,18 +1,26 @@
 import { Avatar, Flex, Tooltip } from "@chakra-ui/react";
 import { User } from "@/dataSchema/types";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
 
 const ParentAvatar = ({ familyDetails }: { familyDetails: User }) => {
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
+  );
   return (
     <Flex align="center" mt="4rem" justify="center" ml={4}>
       <Tooltip label="Edit" aria-label="Edit">
         <Avatar
           size="2xl"
-          name={familyDetails?.avatarURI}
+          name={userDetails?.avatarURI}
           sx={{
-            bgColor: `${!familyDetails?.avatarURI && "purple.500"}`,
+            bgColor: `${!userDetails?.avatarURI && "purple.500"}`,
           }}
           _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
-          src={familyDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
+          src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
         />
       </Tooltip>
     </Flex>

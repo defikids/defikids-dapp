@@ -1,11 +1,8 @@
 "use client";
 
 import Auth from "@/components/auth";
-import { ChakraProvider, useDisclosure, extendTheme } from "@chakra-ui/react";
-import { modalTheme } from "@/components/theme/modalTheme";
-import { switchTheme } from "@/components/theme/switchTheme";
-import { menuTheme } from "@/components/theme/menuTheme";
-import { drawerTheme } from "@/components/theme/drawerTheme";
+import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
+import { theme } from "@/services/chakra/theme";
 import { useAuthStore } from "@/store/auth/authStore";
 import { UserType } from "@/dataSchema/enums";
 import { MainLayout } from "@/components/main_layout";
@@ -20,47 +17,6 @@ import { chains, wagmiConfig } from "@/services/wagmi/wagmiConfig";
 import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiConfig } from "wagmi";
-
-const colors = {
-  brand: {
-    900: "#1a365d",
-    800: "#153e75",
-    700: "#2a69ac",
-  },
-};
-
-const fonts = {
-  heading: `'Slackey', sans-serif`,
-  body: `'JetBrains Mono', monospace`,
-};
-
-const breakpoints = {
-  sm: "48em",
-  md: "62em",
-  lg: "80em",
-  xl: "96em",
-  "2xl": "120em",
-};
-
-const config = {
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-};
-
-const components = {
-  Modal: modalTheme,
-  Switch: switchTheme,
-  Menu: menuTheme,
-  Drawer: drawerTheme,
-};
-
-export const theme = extendTheme({
-  config,
-  colors,
-  fonts,
-  components,
-  breakpoints,
-});
 
 function MyApp({ Component, pageProps }) {
   const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
@@ -91,7 +47,7 @@ function MyApp({ Component, pageProps }) {
         defaultOptions: {
           position: "bottom",
           isClosable: true,
-          duration: 9000,
+          duration: 4000,
         },
       }}
     >

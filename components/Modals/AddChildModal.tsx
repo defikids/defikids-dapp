@@ -9,7 +9,8 @@ import {
   ModalFooter,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import RegisterChildForm from "@/components/forms/RegisterChildForm";
+// import RegisterChildForm from "@/components/forms/RegisterChildForm";
+import { RegisterChildForm } from "@/components/forms/RegisterChildForm2";
 import { useState } from "react";
 
 export const AddChildModal = ({
@@ -48,7 +49,7 @@ export const AddChildModal = ({
       />
       <ModalContent>
         <ModalHeader>
-          <Heading size="md">New Kid</Heading>
+          <Heading size="md">Register Member</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>

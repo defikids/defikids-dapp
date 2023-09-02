@@ -94,7 +94,6 @@ export const EditFamilyId = ({
           <FormLabel>New Family Id</FormLabel>
           <Input
             type="password"
-            placeholder="Family Id"
             value={familyId}
             onChange={(e) => setFamilyId(e.target.value)}
             style={{
@@ -102,7 +101,13 @@ export const EditFamilyId = ({
             }}
           />
         </FormControl>
-        <Button size={"xs"} onClick={handleSubmit} mt={4}>
+        <Button
+          variant="outline"
+          colorScheme="blue"
+          size={"sm"}
+          onClick={handleSubmit}
+          mt={4}
+        >
           Submit
         </Button>
       </Flex>

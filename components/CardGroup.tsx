@@ -1,22 +1,15 @@
 import {
-  Box,
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Flex,
   Heading,
   SimpleGrid,
   Text,
-  Avatar,
   IconButton,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import CardFlip from "@/styles/CardFlip.module.css";
-import { ParentDashboardTabs } from "@/dataSchema/enums";
-import { useState } from "react";
-// import Avatar from "@/components/parentDashboard/Avatar";
 import { User } from "@/dataSchema/types";
 import { CloseIcon } from "@chakra-ui/icons";
 import { AvatarSelection } from "./AvatarSelection";
@@ -46,32 +39,26 @@ export const CardGroup = ({
   familyDetails,
   fetchFamilyDetails,
   onOpenBackgroundDefaults,
+  cardOpacity,
+  setCardOpacity,
+  setBackgroundOpacity,
 }: {
   data: CardProps[];
   columns?: number;
   familyDetails: User;
   fetchFamilyDetails: () => void;
   onOpenBackgroundDefaults: () => void;
+  cardOpacity: number;
+  setCardOpacity: (value: number) => void;
+  setBackgroundOpacity: (value: number) => void;
 }) => {
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
-
   const handleCardFlip = (e: any, index: string) => {
-    console.log(e);
-    console.log(index);
     e.preventDefault();
     const innerCard = document.getElementById(index);
-    // const flipbutton = document.getElementById("flipbutton" + index);
     if (innerCard.style.transform === "") {
-      //   flipbutton.innerHTML = "Continue";
       innerCard.style.transform = "rotateY(180deg)";
     } else {
       innerCard.style.transform = "";
-      //   flipbutton.innerHTML = <CloseIcon />;
     }
   };
 
@@ -88,7 +75,11 @@ export const CardGroup = ({
     >
       {data.length &&
         data.map((item, index) => (
-          <Card key={index} className={CardFlip.flipcard}>
+          <Card
+            key={index}
+            className={CardFlip.flipcard}
+            opacity={cardOpacity || familyDetails?.opacity?.card || 1}
+          >
             <div className={CardFlip.flipcardinner} id={index.toString()}>
               <div className={CardFlip.flipcardfront}>
                 {/* FRONT CONTENT */}
@@ -156,6 +147,8 @@ export const CardGroup = ({
                         familyDetails={familyDetails}
                         fetchFamilyDetails={fetchFamilyDetails}
                         onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+                        setBackgroundOpacity={setBackgroundOpacity}
+                        setCardOpacity={setCardOpacity}
                       />
                     )}
                   </CardBody>

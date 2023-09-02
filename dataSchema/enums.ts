@@ -42,6 +42,9 @@ export enum AccountPackage {
 export enum Explaination {
   NONE = "NONE",
   FAMILY_ID = "FAMILY_ID",
+  SANDBOX = "SANDBOX",
+  FAMILY_NAME = "FAMILY_NAME",
+  BLOCKCHAIN = "BLOCKCHAIN",
 }
 
 export enum ParentDashboardTabs {
@@ -49,4 +52,9 @@ export enum ParentDashboardTabs {
   MEMBER_PROFILES = "MEMBER_PROFILES",
   SUPPORT = "SUPPORT",
   SETTINGS = "SETTINGS",
+}
+
+export enum OpacityContext {
+  BACKGROUND = "BACKGROUND",
+  CARD = "CARD",
 }

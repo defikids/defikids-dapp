@@ -1,20 +1,48 @@
+import { AvatarSelection } from "@/components/AvatarSelection";
+import { BackgroundSelection } from "@/components/BackgroundSelection";
 import { CardGroup } from "@/components/CardGroup";
-import { ParentDashboardTabs } from "@/dataSchema/enums";
+import { EditFamilyId } from "@/components/forms/FamilyIdForm";
+import { EditUsername } from "@/components/forms/UserNameForm";
 import { User } from "@/dataSchema/types";
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Center,
+  CloseButton,
+  Container,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
+import { colors } from "@/services/chakra/theme";
+import { ParentDashboardTabs } from "@/dataSchema/enums";
 
 export const Settings = ({
-  onOpenAvatar,
   onChangeUsernameOpen,
   familyDetails,
   fetchFamilyDetails,
   onOpenBackgroundDefaults,
+  cardOpacity,
+  setCardOpacity,
+  setBackgroundOpacity,
+  isMobileSize,
+  isOpenExtendedMenu,
+  closeTab,
 }: {
-  onOpenAvatar: () => void;
   onChangeUsernameOpen: () => void;
   familyDetails: User;
   fetchFamilyDetails: () => void;
   onOpenBackgroundDefaults: () => void;
+  cardOpacity: number;
+  setCardOpacity: (value: number) => void;
+  setBackgroundOpacity: (value: number) => void;
+  isMobileSize: boolean;
+  isOpenExtendedMenu: boolean;
+  closeTab: () => void;
 }) => {
   const data = [
     {
@@ -35,32 +63,93 @@ export const Settings = ({
       description:
         "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
       buttonTitle: "Change Background",
-      action: onOpenAvatar,
     },
     {
       title: "Family Id",
       description:
         "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
       buttonTitle: "Change Family Id",
-      action: onOpenAvatar,
     },
   ];
+
+  // These are the title labels for the settings
+  enum SelectedSetting {
+    AVATAR = "Avatar",
+    BACKGROUND = "Background",
+    USERNAME = "Username",
+    FAMILY_ID = "Family Id",
+  }
+  function setSelectedTab(DASHBOARD: any): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
-    <Box h="100%" overflowY="scroll">
-      <Flex direction="row" justify="center">
-        <Heading size="xl" mb="3rem" mt={2}>
-          Settings
-        </Heading>
-      </Flex>
-      <Flex direction="column" justify="center" alignContent="center">
-        <CardGroup
-          data={data}
-          columns={2}
-          familyDetails={familyDetails}
-          fetchFamilyDetails={fetchFamilyDetails}
-          onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-        />
-      </Flex>
-    </Box>
+    <>
+      <Container
+        overflowY="scroll"
+        bgColor="#121212"
+        borderRadius={isMobileSize && isOpenExtendedMenu ? "0px" : "20px"}
+      >
+        <Flex justify="flex-end" mt={3} onClick={closeTab}>
+          <CloseButton />
+        </Flex>
+
+        <Flex direction="row" justify="center">
+          <Heading size="2xl" my="2rem">
+            Settings
+          </Heading>
+        </Flex>
+
+        <Flex direction="column" justify="center" alignContent="center" mb={5}>
+          <Accordion allowToggle>
+            {data.map(({ title, description, buttonTitle }) => (
+              <AccordionItem key={title}>
+                <h2>
+                  <AccordionButton>
+                    <Box as="span" flex="1" textAlign="left">
+                      <Heading as="h3" size="lg" color="white">
+                        {title}
+                      </Heading>
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel my={5}>
+                  {title === SelectedSetting.AVATAR && (
+                    <AvatarSelection
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                    />
+                  )}
+
+                  {title === SelectedSetting.USERNAME && (
+                    <EditUsername
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                    />
+                  )}
+                  {title === SelectedSetting.FAMILY_ID && (
+                    <EditFamilyId
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                    />
+                  )}
+
+                  {title === SelectedSetting.BACKGROUND && (
+                    <BackgroundSelection
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                      onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+                      setBackgroundOpacity={setBackgroundOpacity}
+                      setCardOpacity={setCardOpacity}
+                    />
+                  )}
+                </AccordionPanel>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </Flex>
+      </Container>
+    </>
   );
 };

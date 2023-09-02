@@ -25,6 +25,7 @@ import { hashedFamilyId } from "@/utils/web3";
 import { v4 as uuidv4 } from "uuid";
 import { timestampInSeconds } from "@/utils/dateTime";
 import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
+import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import router from "next/router";
@@ -35,12 +36,16 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
 
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [familyId, setFamilyId] = useState("");
+  const [familyName, setFamilyName] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const isNameError = username === "";
   const isIdError = familyId === "";
+  const isEmailError = email === "";
+  const isFamilyNameError = familyName === "";
 
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);
@@ -51,10 +56,11 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
   const toast = useToast();
 
-  const { userDetails, setUserDetails } = useAuthStore(
+  const { userDetails, setUserDetails, walletAddress } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
       setUserDetails: state.setUserDetails,
+      walletAddress: state.walletAddress,
     }),
     shallow
   );
@@ -74,7 +80,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    if (username === "" || isIdError) {
+    if (isNameError || isIdError || isEmailError || isFamilyNameError) {
       return;
     }
 
@@ -88,19 +94,27 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
       const body = {
         account: accountDetails,
+        familyName,
+        email,
         familyId: hashedFamilyId(familyId),
-        wallet: userDetails?.wallet,
+        wallet: walletAddress,
         avatarURI: "",
         backgroundURI: "",
+        opacity: {
+          background: 1,
+          card: 1,
+        },
         username,
         userType: UserType.PARENT,
         children: [],
       } as User;
 
       const payload = {
-        key: userDetails?.wallet,
+        key: walletAddress,
         value: body,
       };
+
+      console.log("payload", payload);
 
       await axios.post(`/api/vercel/set-json`, payload);
 
@@ -120,9 +134,18 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
-  if (showExplanation) {
+  if (showExplanation && explaination === Explaination.FAMILY_ID) {
     return (
       <ExplainFamilyId
+        explaination={explaination}
+        setShowExplanation={setShowExplanation}
+      />
+    );
+  }
+
+  if (showExplanation && explaination === Explaination.FAMILY_NAME) {
+    return (
+      <ExplainFamilyName
         explaination={explaination}
         setShowExplanation={setShowExplanation}
       />
@@ -161,6 +184,78 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
             )}
           </FormControl>
         </Flex>
+
+        {/* Email */}
+        <FormControl isInvalid={isEmailError && hasSubmitted} my={5}>
+          <Input
+            type="text"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            borderColor={isEmailError && hasSubmitted ? "red.500" : "black"}
+            _hover={{
+              borderColor: "gray.300",
+            }}
+            _focus={{
+              borderColor: "blue.500",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400", // Set the placeholder text color to gray
+              },
+            }}
+          />
+          {isEmailError && hasSubmitted && (
+            <FormErrorMessage color="red.500">
+              Email is required
+            </FormErrorMessage>
+          )}
+        </FormControl>
+
+        {/* Family Name */}
+        <FormControl isInvalid={isFamilyNameError && hasSubmitted}>
+          <Flex direction="row" justify="flex-end" align="center">
+            <Text fontSize="xs" ml={3}>
+              <Link
+                as={NextLink}
+                color="blue.500"
+                href="#"
+                onClick={() => {
+                  setExplaination(Explaination.FAMILY_NAME);
+                  setShowExplanation(true);
+                }}
+              >
+                What is this?
+              </Link>
+            </Text>
+          </Flex>
+
+          <Input
+            type="text"
+            placeholder="Family Name"
+            value={familyName}
+            onChange={(e) => setFamilyName(e.target.value)}
+            borderColor={
+              isFamilyNameError && hasSubmitted ? "red.500" : "black"
+            }
+            _hover={{
+              borderColor: "gray.300",
+            }}
+            _focus={{
+              borderColor: "blue.500",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400", // Set the placeholder text color to gray
+              },
+            }}
+          />
+          {isFamilyNameError && hasSubmitted && (
+            <FormErrorMessage color="red.500">
+              Family name is required
+            </FormErrorMessage>
+          )}
+        </FormControl>
 
         {/* Family Id */}
         <FormControl isInvalid={isIdError && hasSubmitted} mt={5}>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { UserType } from "@/dataSchema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -23,22 +23,26 @@ const Auth = ({
   //=============================================================================
 
   const router = useRouter();
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
   watchAccount((account) => {
-    const { isConnected, address, isDisconnected } = account;
+    const { isConnected, address } = account;
 
-    if (isDisconnected) {
-      setLogout();
+    if (walletAddress && address && walletAddress !== (address as string)) {
+      console.log("walletAddress", walletAddress);
+      console.log("address", address);
       setHasCheckedUserType(false);
+      setLogout();
     }
-
     if (isConnected) {
-      setWalletAddress(address);
-      setIsLoggedIn(true);
+      console.log("connected", account);
+      setHasCheckedUserType(false);
+      setSelectedAddress(address);
     }
   });
 
   const {
+    isLoggedIn,
     userDetails,
     setIsLoggedIn,
     setLogout,
@@ -47,6 +51,7 @@ const Auth = ({
     setWalletAddress,
   } = useAuthStore(
     (state) => ({
+      isLoggedIn: state.isLoggedIn,
       userDetails: state.userDetails,
       setIsLoggedIn: state.setIsLoggedIn,
       setLogout: state.setLogout,
@@ -70,33 +75,33 @@ const Auth = ({
    **/
   useEffect(() => {
     const fetchUserType = async () => {
-      if (!walletAddress || hasCheckedUserType) return;
+      if (!selectedAddress || hasCheckedUserType) return;
 
       // @ts-ignore
       const provider = new providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner(walletAddress);
+      const signer = provider.getSigner(selectedAddress);
 
       // add provider and signer to store
       setProvider(provider);
       setConnectedSigner(signer);
 
       const { data } = await axios.get(
-        `/api/vercel/get-json?key=${walletAddress}`
+        `/api/vercel/get-json?key=${selectedAddress}`
       );
 
       const user: User = data;
-      console.log("data - kv user", data);
+      setHasCheckedUserType(true);
 
       if (user) {
-        console.log("user", user);
         setUserDetails(user);
+        setIsLoggedIn(true);
+        setWalletAddress(selectedAddress);
       }
-      setHasCheckedUserType(true);
     };
 
     fetchUserType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress, hasCheckedUserType]);
+  }, [selectedAddress, hasCheckedUserType]);
 
   /**
    * This hook will check if the user has a dark mode preference set in local storage
@@ -134,7 +139,7 @@ const Auth = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasCheckedUserType]);
+  }, [selectedAddress, hasCheckedUserType]);
 
   return <></>;
 };

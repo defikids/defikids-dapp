@@ -5,6 +5,7 @@ import {
   useDisclosure,
   useSteps,
   IconButton,
+  CloseButton,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import contract from "@/services/contract";
@@ -26,6 +27,7 @@ import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { AddChildModal } from "@/components/Modals/AddChildModal";
 import { EtherscanModal } from "@/components/Modals/EtherscanModal";
+import { colors } from "@/services/chakra/theme";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -274,9 +276,7 @@ const Parent: React.FC = () => {
       {/* handles the background image and opacity */}
       <Flex
         width="100%"
-        // width={handleMainPanelWidth()}
         height="100vh"
-        // py={!isMobileSize ? "3rem" : "1rem"}
         bgPosition="center"
         bgRepeat="no-repeat"
       >
@@ -296,21 +296,41 @@ const Parent: React.FC = () => {
           opacity={backgroundOpacity || familyDetails?.opacity?.background || 1}
           zIndex={-1}
         />
-
-        <Box>
+        <Box width="100vw">
           {selectedTab === ParentDashboardTabs.SETTINGS && (
-            <Settings
-              familyDetails={familyDetails}
-              onChangeUsernameOpen={onChangeUsernameOpen}
-              fetchFamilyDetails={fetchFamilyDetails}
-              onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-              setBackgroundOpacity={setBackgroundOpacity}
-              setCardOpacity={setCardOpacity}
-              cardOpacity={cardOpacity}
-              isMobileSize={isMobileSize}
-              isOpenExtendedMenu={isOpenExtendedMenu}
-            />
+            <Flex
+              justify="flex-end"
+              mt={5}
+              mr={5}
+              position={isMobileSize ? "absolute" : "relative"}
+              top={isMobileSize && "6rem"}
+              right={isMobileSize && "1rem"}
+              onClick={() => setSelectedTab(ParentDashboardTabs.DASHBOARD)}
+            >
+              <CloseButton />
+            </Flex>
           )}
+
+          <Flex
+            height="100vh"
+            justify="center"
+            align="center"
+            bgColor={selectedTab === ParentDashboardTabs.SETTINGS && "#121212"}
+          >
+            {selectedTab === ParentDashboardTabs.SETTINGS && (
+              <Settings
+                familyDetails={familyDetails}
+                onChangeUsernameOpen={onChangeUsernameOpen}
+                fetchFamilyDetails={fetchFamilyDetails}
+                onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+                setBackgroundOpacity={setBackgroundOpacity}
+                setCardOpacity={setCardOpacity}
+                cardOpacity={cardOpacity}
+                isMobileSize={isMobileSize}
+                isOpenExtendedMenu={isOpenExtendedMenu}
+              />
+            )}
+          </Flex>
         </Box>
       </Flex>
       {/* {isMobileSize && (

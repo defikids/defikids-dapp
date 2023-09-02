@@ -20,15 +20,23 @@ export const CollapsedDashboardMenu = ({
     shallow
   );
   return (
-    <Slide in={isOpenCollapsedMenu} direction="left">
+    <Slide
+      in={isOpenCollapsedMenu}
+      direction="left"
+      style={{
+        width: "auto",
+        height: "12vh",
+        position: "absolute",
+      }}
+    >
       <Flex
-        position={"absolute"}
+        // position={"absolute"}
         bgGradient={["linear(to-b, #4F1B7C, black)"]}
-        width="auto"
-        height="12vh"
-        ml="1rem"
+        // width="auto"
+        // height="12vh"
+        // ml="1rem"
         mt={5}
-        pr={5}
+        p={5}
         borderRadius="1.5rem"
         justify="space-between"
         align="center"
@@ -45,7 +53,7 @@ export const CollapsedDashboardMenu = ({
           }, 500);
         }}
       >
-        <Flex align="center" ml={4}>
+        <Flex align="center">
           <Avatar
             size="lg"
             name={userDetails?.username}

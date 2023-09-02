@@ -4,8 +4,9 @@ import { switchTheme } from "@/components/theme/switchTheme";
 import { menuTheme } from "@/components/theme/menuTheme";
 import { drawerTheme } from "@/components/theme/drawerTheme";
 
-const colors = {
+export const colors = {
   brand: {
+    purple: "#4F1B7C",
     900: "#1a365d",
     800: "#153e75",
     700: "#2a69ac",

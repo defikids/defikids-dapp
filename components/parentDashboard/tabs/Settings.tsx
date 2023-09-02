@@ -1,6 +1,24 @@
+import { AvatarSelection } from "@/components/AvatarSelection";
+import { BackgroundSelection } from "@/components/BackgroundSelection";
 import { CardGroup } from "@/components/CardGroup";
+import { EditFamilyId } from "@/components/forms/FamilyIdForm";
+import { EditUsername } from "@/components/forms/UserNameForm";
 import { User } from "@/dataSchema/types";
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Center,
+  CloseButton,
+  Container,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
+import { colors } from "@/services/chakra/theme";
 
 export const Settings = ({
   onChangeUsernameOpen,
@@ -50,19 +68,23 @@ export const Settings = ({
       buttonTitle: "Change Family Id",
     },
   ];
+
+  // These are the title labels for the settings
+  enum SelectedSetting {
+    AVATAR = "Avatar",
+    BACKGROUND = "Background",
+    USERNAME = "Username",
+    FAMILY_ID = "Family Id",
+  }
   return (
-    <Box h="100%" overflowY="scroll" bgColor="yellow">
-      <Flex direction="row" justify="center">
-        <Heading
-          size="xl"
-          mb="3rem"
-          mt="10rem"
-          // mt="10rem"
-        >
-          Settings
-        </Heading>
-      </Flex>
-      <Flex direction="column" justify="center" alignContent="center">
+    <>
+      <Container overflowY="scroll" bgColor="#121212">
+        <Flex direction="row" justify="center">
+          <Heading size="2xl" mb="5rem">
+            Settings
+          </Heading>
+        </Flex>
+        {/* <Flex direction="column" justify="center" alignContent="center">
         <CardGroup
           data={data}
           columns={2}
@@ -74,7 +96,58 @@ export const Settings = ({
           setCardOpacity={setCardOpacity}
           setBackgroundOpacity={setBackgroundOpacity}
         />
-      </Flex>
-    </Box>
+      </Flex> */}
+
+        <Flex direction="column" justify="center" alignContent="center">
+          <Accordion allowToggle>
+            {data.map(({ title, description, buttonTitle }) => (
+              <AccordionItem key={title}>
+                <h2>
+                  <AccordionButton>
+                    <Box as="span" flex="1" textAlign="left">
+                      <Heading as="h3" size="lg" color="white">
+                        {title}
+                      </Heading>
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel my={5}>
+                  {title === SelectedSetting.AVATAR && (
+                    <AvatarSelection
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                    />
+                  )}
+
+                  {title === SelectedSetting.USERNAME && (
+                    <EditUsername
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                    />
+                  )}
+                  {title === SelectedSetting.FAMILY_ID && (
+                    <EditFamilyId
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                    />
+                  )}
+
+                  {title === SelectedSetting.BACKGROUND && (
+                    <BackgroundSelection
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
+                      onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+                      setBackgroundOpacity={setBackgroundOpacity}
+                      setCardOpacity={setCardOpacity}
+                    />
+                  )}
+                </AccordionPanel>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </Flex>
+      </Container>
+    </>
   );
 };

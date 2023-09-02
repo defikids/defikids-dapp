@@ -14,6 +14,7 @@ import { ChildDetails, User } from "@/dataSchema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
+import { colors } from "@/services/chakra/theme";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -48,9 +49,7 @@ export const ExpandedDashboardMenu = ({
   return (
     <Slide in={!isOpenExtendedMenu} direction="left">
       <Box
-        bgGradient={["linear(to-b, black,#4F1B7C)"]}
-        // width="12rem"
-        // width="25%"
+        bgGradient={[`linear(to-b, black,${colors.brand.purple})`]}
         maxWidth="350px"
         height="96vh"
         ml="1rem"
@@ -144,7 +143,6 @@ export const ExpandedDashboardMenu = ({
                     fill="white"
                     width="22px"
                     height="22px"
-                    // style={{ margin: "5px" }}
                   />
                 }
               />
@@ -171,6 +169,8 @@ export const ExpandedDashboardMenu = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedTab(ParentDashboardTabs.SETTINGS);
+                  onToggleCollapsedMenu();
+                  onToggleExtendedMenu();
                 }}
                 icon={
                   <SettingsIcon style={{ width: "22px", height: "22px" }} />

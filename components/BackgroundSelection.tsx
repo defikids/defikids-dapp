@@ -212,7 +212,7 @@ export const BackgroundSelection = ({
   return (
     <>
       <Flex direction="column" justify="center" align="center">
-        <Flex direction="row" justify="center" align="center">
+        <Flex direction="row" justify="center" align="center" w="100%">
           <Button
             cursor="pointer"
             variant="outline"
@@ -225,7 +225,7 @@ export const BackgroundSelection = ({
             mr={2}
             onClick={onOpenBackgroundDefaults}
           >
-            Default Backgrounds
+            Default
           </Button>
 
           <Button
@@ -240,7 +240,7 @@ export const BackgroundSelection = ({
             w="100%"
             ml={2}
           >
-            Add Custom Background
+            Custom
           </Button>
         </Flex>
 

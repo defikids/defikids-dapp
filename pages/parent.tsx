@@ -191,6 +191,10 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length, contract, userDetails?.wallet]);
 
+  const closeTab = () => {
+    setSelectedTab(ParentDashboardTabs.DASHBOARD);
+  };
+
   return (
     <Flex>
       <>
@@ -243,25 +247,13 @@ const Parent: React.FC = () => {
           zIndex={-1}
         />
         <Box width="100vw">
-          {selectedTab === ParentDashboardTabs.SETTINGS && (
-            <Flex
-              justify="flex-end"
-              mt={5}
-              mr={5}
-              position={isMobileSize ? "absolute" : "relative"}
-              top={isMobileSize && "6rem"}
-              right={isMobileSize && "1rem"}
-              onClick={() => setSelectedTab(ParentDashboardTabs.DASHBOARD)}
-            >
-              <CloseButton />
-            </Flex>
-          )}
-
           <Flex
             height="100vh"
             justify="center"
             align="center"
-            bgColor={selectedTab === ParentDashboardTabs.SETTINGS && "#121212"}
+            bgColor={
+              selectedTab === ParentDashboardTabs.SETTINGS && "transparent"
+            }
           >
             {selectedTab === ParentDashboardTabs.SETTINGS && (
               <Settings
@@ -274,6 +266,7 @@ const Parent: React.FC = () => {
                 cardOpacity={cardOpacity}
                 isMobileSize={isMobileSize}
                 isOpenExtendedMenu={isOpenExtendedMenu}
+                closeTab={closeTab}
               />
             )}
           </Flex>

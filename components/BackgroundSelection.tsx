@@ -275,7 +275,7 @@ export const BackgroundSelection = ({
             Save
           </Button>
 
-          <Flex direction="row" justify="center" align="center">
+          {/* <Flex direction="row" justify="center" align="center">
             <Text mr={2}>{OpacityContext.BACKGROUND}</Text>
             <Switch
               size="md"
@@ -286,7 +286,7 @@ export const BackgroundSelection = ({
               }}
             />
             <Text ml={2}>{OpacityContext.CARD}</Text>
-          </Flex>
+          </Flex> */}
         </Flex>
       </Flex>
 

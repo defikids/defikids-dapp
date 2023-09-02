@@ -19,6 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { colors } from "@/services/chakra/theme";
+import { ParentDashboardTabs } from "@/dataSchema/enums";
 
 export const Settings = ({
   onChangeUsernameOpen,
@@ -30,6 +31,7 @@ export const Settings = ({
   setBackgroundOpacity,
   isMobileSize,
   isOpenExtendedMenu,
+  closeTab,
 }: {
   onChangeUsernameOpen: () => void;
   familyDetails: User;
@@ -40,6 +42,7 @@ export const Settings = ({
   setBackgroundOpacity: (value: number) => void;
   isMobileSize: boolean;
   isOpenExtendedMenu: boolean;
+  closeTab: () => void;
 }) => {
   const data = [
     {
@@ -76,29 +79,28 @@ export const Settings = ({
     USERNAME = "Username",
     FAMILY_ID = "Family Id",
   }
+  function setSelectedTab(DASHBOARD: any): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
-      <Container overflowY="scroll" bgColor="#121212">
+      <Container
+        overflowY="scroll"
+        bgColor="#121212"
+        borderRadius={isMobileSize && isOpenExtendedMenu ? "0px" : "20px"}
+      >
+        <Flex justify="flex-end" mt={3} onClick={closeTab}>
+          <CloseButton />
+        </Flex>
+
         <Flex direction="row" justify="center">
-          <Heading size="2xl" mb="5rem">
+          <Heading size="2xl" my="2rem">
             Settings
           </Heading>
         </Flex>
-        {/* <Flex direction="column" justify="center" alignContent="center">
-        <CardGroup
-          data={data}
-          columns={2}
-          familyDetails={familyDetails}
-          fetchFamilyDetails={fetchFamilyDetails}
-          onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-          cardOpacity={cardOpacity}
-          backgroundOpacity={cardOpacity}
-          setCardOpacity={setCardOpacity}
-          setBackgroundOpacity={setBackgroundOpacity}
-        />
-      </Flex> */}
 
-        <Flex direction="column" justify="center" alignContent="center">
+        <Flex direction="column" justify="center" alignContent="center" mb={5}>
           <Accordion allowToggle>
             {data.map(({ title, description, buttonTitle }) => (
               <AccordionItem key={title}>

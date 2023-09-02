@@ -11,6 +11,9 @@ import ButtonMenu from "./parentDashboard/ButtonMenu";
 import ChildAvatarGroup from "./parentDashboard/ChildAvatarGroup";
 import { ParentDashboardTabs } from "@/dataSchema/enums";
 import { ChildDetails, User } from "@/dataSchema/types";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
+import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -33,11 +36,20 @@ export const ExpandedDashboardMenu = ({
   onToggleExtendedMenu: () => void;
   isOpenExtendedMenu: boolean;
 }) => {
+  const { setLogout } = useAuthStore(
+    (state) => ({
+      setLogout: state.setLogout,
+    }),
+    shallow
+  );
+
   return (
     <Slide in={!isOpenExtendedMenu} direction="left">
       <Box
         bgGradient={["linear(to-b, black,#4F1B7C)"]}
-        width="25%"
+        // width="12rem"
+        // width="25%"
+        maxWidth="350px"
         height="96vh"
         ml="1rem"
         mt={5}
@@ -90,8 +102,8 @@ export const ExpandedDashboardMenu = ({
                   variant="outline"
                   colorScheme="white"
                   onClick={(e) => {
+                    onAddChildOpen();
                     e.stopPropagation();
-                    onAddChildOpen;
                   }}
                   _hover={{ borderColor: "gray" }}
                 >
@@ -100,35 +112,67 @@ export const ExpandedDashboardMenu = ({
               )}
             </VStack>
           </Box>
-          <Box
-            m={5}
-            //  bgColor="yellow"
-          >
+
+          {/* Footer Buttons */}
+          <Box m={5}>
             <Flex direction="row" justify="flex-end" align="center">
-              <Button w="100%" variant="solid" colorScheme="gray">
+              <Button
+                w="100%"
+                variant="solid"
+                colorScheme="gray"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLogout();
+                }}
+              >
                 Disconnect
               </Button>
 
               <IconButton
-                mx={5}
+                ml={4}
                 colorScheme="gray"
                 aria-label="button"
-                size="md"
+                size="lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedTab(ParentDashboardTabs.SETTINGS);
                 }}
-                icon={<QuestionOutlineIcon />}
+                icon={
+                  <EtherscanLogoCircle
+                    fill="white"
+                    width="22px"
+                    height="22px"
+                    // style={{ margin: "5px" }}
+                  />
+                }
+              />
+
+              <IconButton
+                mx={4}
+                colorScheme="gray"
+                aria-label="button"
+                size="lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedTab(ParentDashboardTabs.SETTINGS);
+                }}
+                icon={
+                  <QuestionOutlineIcon
+                    style={{ width: "22px", height: "22px" }}
+                  />
+                }
               />
               <IconButton
                 colorScheme="gray"
                 aria-label="button"
-                size="md"
+                size="lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedTab(ParentDashboardTabs.SETTINGS);
                 }}
-                icon={<SettingsIcon />}
+                icon={
+                  <SettingsIcon style={{ width: "22px", height: "22px" }} />
+                }
               />
             </Flex>
           </Box>

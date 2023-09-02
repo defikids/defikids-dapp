@@ -19,7 +19,9 @@ const Username = ({
         }}
       />
       <Flex direction="column" ml={2}>
-        <Heading fontSize="lg">{familyDetails.username}</Heading>
+        <Heading fontSize="lg" display="flex">
+          {familyDetails.username}
+        </Heading>
         <Text fontSize="md">{familyDetails.userType}</Text>
       </Flex>
     </Flex>

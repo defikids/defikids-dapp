@@ -6,10 +6,12 @@ export const CollapsedDashboardMenu = ({
   onToggleCollapsedMenu,
   onToggleExtendedMenu,
   isOpenCollapsedMenu,
+  isMobileSize,
 }: {
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
   isOpenCollapsedMenu: boolean;
+  isMobileSize: boolean;
 }) => {
   const { userDetails } = useAuthStore(
     (state) => ({
@@ -20,7 +22,7 @@ export const CollapsedDashboardMenu = ({
   return (
     <Slide in={isOpenCollapsedMenu} direction="left">
       <Flex
-        position={!isOpenCollapsedMenu ? "fixed" : "absolute"}
+        position={"absolute"}
         bgGradient={["linear(to-b, #4F1B7C, black)"]}
         width="auto"
         height="12vh"
@@ -31,8 +33,12 @@ export const CollapsedDashboardMenu = ({
         justify="space-between"
         align="center"
         cursor={isOpenCollapsedMenu ? "pointer" : "default"}
-        _hover={{ transform: "scale(1.1)" }}
+        _hover={{ transform: `${isMobileSize && "scale(1.1)"}` }}
         onClick={() => {
+          if (isMobileSize) {
+            console.log("mobile size");
+            return;
+          }
           onToggleCollapsedMenu();
           setTimeout(() => {
             onToggleExtendedMenu();

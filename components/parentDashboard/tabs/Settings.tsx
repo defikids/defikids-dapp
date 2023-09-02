@@ -10,6 +10,8 @@ export const Settings = ({
   cardOpacity,
   setCardOpacity,
   setBackgroundOpacity,
+  isMobileSize,
+  isOpenExtendedMenu,
 }: {
   onChangeUsernameOpen: () => void;
   familyDetails: User;
@@ -18,6 +20,8 @@ export const Settings = ({
   cardOpacity: number;
   setCardOpacity: (value: number) => void;
   setBackgroundOpacity: (value: number) => void;
+  isMobileSize: boolean;
+  isOpenExtendedMenu: boolean;
 }) => {
   const data = [
     {
@@ -47,9 +51,14 @@ export const Settings = ({
     },
   ];
   return (
-    <Box h="100%" overflowY="scroll">
+    <Box h="100%" overflowY="scroll" bgColor="yellow">
       <Flex direction="row" justify="center">
-        <Heading size="xl" mb="3rem" mt={2}>
+        <Heading
+          size="xl"
+          mb="3rem"
+          mt="10rem"
+          // mt="10rem"
+        >
           Settings
         </Heading>
       </Flex>

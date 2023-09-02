@@ -24,6 +24,7 @@ import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
+import { AddChildModal } from "@/components/Modals/AddChildModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -63,7 +64,7 @@ const Parent: React.FC = () => {
 
   const { width, height } = useWindowSize();
 
-  const isMobileSize = width < 300;
+  const isMobileSize = width < 768;
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
     useDisclosure();
@@ -195,35 +196,79 @@ const Parent: React.FC = () => {
     }
   };
 
+  // if (width < 600) {
+  //   return (
+  //     <IconButton
+  //       size="lg"
+  //       variant="outline"
+  //       colorScheme="white"
+  //       aria-label="Call Sage"
+  //       fontSize="50px"
+  //       icon={<HiMenu />}
+  //       onClick={onParentDetailsOpen}
+  //       style={{ border: "1px solid transparent" }}
+  //     />
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   if (isMobileSize && isOpenCollapsedMenu) {
+  //     onToggleCollapsedMenu();
+  //     onToggleExtendedMenu();
+  //   } else {
+  //     onToggleCollapsedMenu();
+  //     onToggleExtendedMenu();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isMobileSize]);
+
+  const showCollapsedMenu = () => {
+    if (!isOpenCollapsedMenu) {
+      return true;
+    }
+    if (isMobileSize) {
+      return true;
+    }
+    return false;
+  };
+
   return (
-    <Flex direction="row">
-      <Box>
-        <ExpandedDashboardMenu
-          familyDetails={familyDetails}
-          userDetails={userDetails}
-          children={children}
-          onChangeUsernameOpen={onChangeUsernameOpen}
-          onAddChildOpen={onAddChildOpen}
-          setSelectedTab={setSelectedTab}
-          onToggleCollapsedMenu={onToggleCollapsedMenu}
-          onToggleExtendedMenu={onToggleExtendedMenu}
-          isOpenExtendedMenu={isOpenExtendedMenu}
-        />
-      </Box>
+    <Flex
+    // direction="row"
+    // width={!isMobileSize && !isOpenCollapsedMenu ? "25%" : "0"}
+    >
+      {!isMobileSize && (
+        <Box zIndex={1}>
+          <ExpandedDashboardMenu
+            familyDetails={familyDetails}
+            userDetails={userDetails}
+            children={children}
+            onChangeUsernameOpen={onChangeUsernameOpen}
+            onAddChildOpen={onAddChildOpen}
+            setSelectedTab={setSelectedTab}
+            onToggleCollapsedMenu={onToggleCollapsedMenu}
+            onToggleExtendedMenu={onToggleExtendedMenu}
+            isOpenExtendedMenu={isOpenExtendedMenu}
+          />
+        </Box>
+      )}
 
-      <Box width={!isMobileSize && !isOpenCollapsedMenu ? "25%" : "0%"}>
-        <CollapsedDashboardMenu
-          onToggleCollapsedMenu={onToggleCollapsedMenu}
-          onToggleExtendedMenu={onToggleExtendedMenu}
-          isOpenCollapsedMenu={isOpenCollapsedMenu}
-        />
-      </Box>
-
+      {!isMobileSize && !isOpenCollapsedMenu && (
+        <Box zIndex={100}>
+          <CollapsedDashboardMenu
+            onToggleCollapsedMenu={onToggleCollapsedMenu}
+            onToggleExtendedMenu={onToggleExtendedMenu}
+            isOpenCollapsedMenu={isOpenCollapsedMenu}
+            isMobileSize={isMobileSize}
+          />
+        </Box>
+      )}
       {/* handles the background image and opacity */}
       <Flex
-        width={handleMainPanelWidth()}
+        width="100%"
+        // width={handleMainPanelWidth()}
         height="100vh"
-        py={!isMobileSize ? "3rem" : "1rem"}
+        // py={!isMobileSize ? "3rem" : "1rem"}
         bgPosition="center"
         bgRepeat="no-repeat"
       >
@@ -245,19 +290,6 @@ const Parent: React.FC = () => {
         />
 
         <Box>
-          {isMobileSize && (
-            <IconButton
-              size="lg"
-              variant="outline"
-              colorScheme="white"
-              aria-label="Call Sage"
-              fontSize="50px"
-              icon={<HiMenu />}
-              onClick={onParentDetailsOpen}
-              style={{ border: "1px solid transparent" }}
-            />
-          )}
-
           {selectedTab === ParentDashboardTabs.SETTINGS && (
             <Settings
               familyDetails={familyDetails}
@@ -267,11 +299,12 @@ const Parent: React.FC = () => {
               setBackgroundOpacity={setBackgroundOpacity}
               setCardOpacity={setCardOpacity}
               cardOpacity={cardOpacity}
+              isMobileSize={isMobileSize}
+              isOpenExtendedMenu={isOpenExtendedMenu}
             />
           )}
         </Box>
       </Flex>
-
       {/* {isMobileSize && (
         <ParentDetailsDrawer
           isOpen={isParentDetailsOpen}
@@ -283,7 +316,6 @@ const Parent: React.FC = () => {
           onAddChildOpen={onAddChildOpen}
         />
       )} */}
-
       <UsernameModal
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
@@ -293,11 +325,15 @@ const Parent: React.FC = () => {
         fetchChildren={fetchChildren}
         fetchFamilyDetails={fetchFamilyDetails}
       />
-
       <BackgroundDefaults
         isOpen={isOpenBackgroundDefaults}
         onClose={onCloseBackgroundDefaults}
         fetchFamilyDetails={fetchFamilyDetails}
+      />
+      <AddChildModal
+        isOpen={isAddChildOpen}
+        onClose={onAddChildClose}
+        onAdd={() => fetchChildren()}
       />
     </Flex>
   );

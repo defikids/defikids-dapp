@@ -5,7 +5,7 @@ import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
 import { UserType } from "@/dataSchema/enums";
 import { disconnect } from "@wagmi/core";
-import { User } from "@/dataSchema/types";
+import { User, ChildDetails } from "@/dataSchema/types";
 import { AccountStatus, AccountPackage } from "@/dataSchema/enums";
 
 type State = {
@@ -14,7 +14,7 @@ type State = {
   userType: UserType;
   navigationSection: string;
   logout: () => void;
-  userDetails: User;
+  userDetails: User | ChildDetails;
   opacity: 0;
 };
 
@@ -24,7 +24,7 @@ type Actions = {
   setUserType: (userType: UserType) => void;
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
-  setUserDetails: (userDetails: User) => void;
+  setUserDetails: (userDetails: User | ChildDetails) => void;
   setOpacity: (opacity: number) => void;
 };
 
@@ -98,8 +98,6 @@ const setters = (set: any) => ({
       },
       shallow
     );
-    localStorage.removeItem("defi-kids.family-id");
-    localStorage.removeItem("defi-kids.wallet-address");
 
     if (window.location.pathname !== "/") {
       window.location.href = "/";
@@ -107,8 +105,8 @@ const setters = (set: any) => ({
 
     disconnect();
   },
-  setUserDetails: (userDetails: User) => {
-    set((state: { userDetails: User }) => {
+  setUserDetails: (userDetails: User | ChildDetails) => {
+    set((state: { userDetails: User | ChildDetails }) => {
       state.userDetails = userDetails;
     }, shallow);
   },

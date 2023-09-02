@@ -42,6 +42,8 @@ export enum AccountPackage {
 export enum Explaination {
   NONE = "NONE",
   FAMILY_ID = "FAMILY_ID",
+  SANDBOX = "SANDBOX",
+  FAMILY_NAME = "FAMILY_NAME",
 }
 
 export enum ParentDashboardTabs {

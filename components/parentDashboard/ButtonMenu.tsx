@@ -43,6 +43,7 @@ const ButtonMenu = ({
           colorScheme="white"
           onClick={(e) => {
             e.stopPropagation();
+            onAddChildOpen();
             setSelectedTab(ParentDashboardTabs.MEMBER_PROFILES);
           }}
           _hover={{ borderColor: "gray" }}

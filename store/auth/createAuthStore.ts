@@ -16,6 +16,7 @@ type State = {
   logout: () => void;
   userDetails: User | ChildDetails;
   opacity: 0;
+  mobileMenuOpen: boolean;
 };
 
 type Actions = {
@@ -26,6 +27,7 @@ type Actions = {
   setLogout: () => void;
   setUserDetails: (userDetails: User | ChildDetails) => void;
   setOpacity: (opacity: number) => void;
+  setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
 };
 
 type MyStore = State & Actions;
@@ -47,6 +49,8 @@ const initialState: State = {
       background: 0,
       card: 0,
     },
+    familyName: "",
+    email: "",
     familyId: "",
     wallet: "",
     avatarURI: "",
@@ -57,6 +61,7 @@ const initialState: State = {
     children: [],
   },
   opacity: 0,
+  mobileMenuOpen: false,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -114,6 +119,11 @@ const setters = (set: any) => ({
   setOpacity: (opacity: number) => {
     set((state: { opacity: number }) => {
       state.opacity = opacity;
+    }, shallow);
+  },
+  setMobileMenuOpen: (mobileMenuOpen: boolean) => {
+    set((state: { mobileMenuOpen: boolean }) => {
+      state.mobileMenuOpen = mobileMenuOpen;
     }, shallow);
   },
 });

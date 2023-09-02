@@ -4,7 +4,6 @@ import {
   Flex,
   useDisclosure,
   useSteps,
-  IconButton,
   CloseButton,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
@@ -18,7 +17,6 @@ import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import { UsernameModal } from "@/components/Modals/UsernameModal";
 import { ParentDashboardTabs } from "@/dataSchema/enums";
-import { HiMenu } from "react-icons/hi";
 
 import { Settings } from "@/components/parentDashboard/tabs/Settings";
 import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
@@ -193,76 +191,23 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length, contract, userDetails?.wallet]);
 
-  const handleMainPanelWidth = () => {
-    if (isMobileSize) {
-      return "100%";
-    } else {
-      if (!isOpenCollapsedMenu) {
-        return "75%";
-      } else {
-        return "100%";
-      }
-    }
-  };
-
-  // if (width < 600) {
-  //   return (
-  //     <IconButton
-  //       size="lg"
-  //       variant="outline"
-  //       colorScheme="white"
-  //       aria-label="Call Sage"
-  //       fontSize="50px"
-  //       icon={<HiMenu />}
-  //       onClick={onParentDetailsOpen}
-  //       style={{ border: "1px solid transparent" }}
-  //     />
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   if (isMobileSize && isOpenCollapsedMenu) {
-  //     onToggleCollapsedMenu();
-  //     onToggleExtendedMenu();
-  //   } else {
-  //     onToggleCollapsedMenu();
-  //     onToggleExtendedMenu();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isMobileSize]);
-
-  const showCollapsedMenu = () => {
-    if (!isOpenCollapsedMenu) {
-      return true;
-    }
-    if (isMobileSize) {
-      return true;
-    }
-    return false;
-  };
-
   return (
-    <Flex
-    // direction="row"
-    // width={!isMobileSize && !isOpenCollapsedMenu ? "25%" : "0"}
-    >
-      {!isMobileSize && (
-        <>
-          <Box zIndex={1}>
-            <ExpandedDashboardMenu
-              familyDetails={familyDetails}
-              userDetails={userDetails}
-              children={children}
-              onChangeUsernameOpen={onChangeUsernameOpen}
-              onAddChildOpen={onAddChildOpen}
-              setSelectedTab={setSelectedTab}
-              onToggleCollapsedMenu={onToggleCollapsedMenu}
-              onToggleExtendedMenu={onToggleExtendedMenu}
-              isOpenExtendedMenu={isOpenExtendedMenu}
-              onOpenEtherScan={onOpenEtherScan}
-            />
-          </Box>
-
+    <Flex>
+      <>
+        <Box zIndex={1}>
+          <ExpandedDashboardMenu
+            familyDetails={familyDetails}
+            children={children}
+            onAddChildOpen={onAddChildOpen}
+            setSelectedTab={setSelectedTab}
+            onToggleCollapsedMenu={onToggleCollapsedMenu}
+            onToggleExtendedMenu={onToggleExtendedMenu}
+            isOpenExtendedMenu={isOpenExtendedMenu}
+            onOpenEtherScan={onOpenEtherScan}
+            isMobileSize={isMobileSize}
+          />
+        </Box>
+        {!isMobileSize && (
           <Box zIndex={100}>
             <CollapsedDashboardMenu
               onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -271,8 +216,9 @@ const Parent: React.FC = () => {
               isMobileSize={isMobileSize}
             />
           </Box>
-        </>
-      )}
+        )}
+      </>
+
       {/* handles the background image and opacity */}
       <Flex
         width="100%"

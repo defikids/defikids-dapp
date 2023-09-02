@@ -1,19 +1,26 @@
 import React, { useState } from "react";
-import { Box, Flex, Heading, Avatar, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Avatar, Text, Slide } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
+import { useWindowSize } from "usehooks-ts";
 
 export default function LoggedInNavBar() {
   //=============================================================================
   //                               HOOKS
   //============================================================================
 
-  const { userDetails } = useAuthStore(
+  const { userDetails, mobileMenuOpen, setMobileMenuOpen } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
+      mobileMenuOpen: state.mobileMenuOpen,
+      setMobileMenuOpen: state.setMobileMenuOpen,
     }),
     shallow
   );
+
+  const { width, height } = useWindowSize();
+
+  const isMobileSize = width < 768;
 
   //=============================================================================
   //                             STATE
@@ -22,9 +29,9 @@ export default function LoggedInNavBar() {
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
-
+  if (mobileMenuOpen || !isMobileSize) return null;
   return (
-    <>
+    <Slide in={!mobileMenuOpen} direction={"top"}>
       <Box
         zIndex={5}
         bgGradient={["linear(to-b, black,#4F1B7C)"]}
@@ -52,9 +59,12 @@ export default function LoggedInNavBar() {
                 ? userDetails?.avatarURI
                 : "/images/placeholder-avatar.png"
             }
+            onClick={() => {
+              setMobileMenuOpen(!mobileMenuOpen);
+            }}
           />
         </Flex>
       </Box>
-    </>
+    </Slide>
   );
 }

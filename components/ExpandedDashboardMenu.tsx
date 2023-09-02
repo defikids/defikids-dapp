@@ -25,6 +25,7 @@ export const ExpandedDashboardMenu = ({
   onToggleCollapsedMenu,
   onToggleExtendedMenu,
   isOpenExtendedMenu,
+  onOpenEtherScan,
 }: {
   familyDetails: User;
   userDetails: User;
@@ -35,6 +36,7 @@ export const ExpandedDashboardMenu = ({
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
   isOpenExtendedMenu: boolean;
+  onOpenEtherScan: () => void;
 }) => {
   const { setLogout } = useAuthStore(
     (state) => ({
@@ -135,7 +137,7 @@ export const ExpandedDashboardMenu = ({
                 size="lg"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedTab(ParentDashboardTabs.SETTINGS);
+                  onOpenEtherScan();
                 }}
                 icon={
                   <EtherscanLogoCircle

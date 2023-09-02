@@ -25,6 +25,7 @@ import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { EtherscanModal } from "@/components/Modals/EtherscanModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -76,6 +77,12 @@ const Parent: React.FC = () => {
     isOpen: isAddChildOpen,
     onOpen: onAddChildOpen,
     onClose: onAddChildClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenEtherScan,
+    onOpen: onOpenEtherScan,
+    onClose: onCloseEtherScan,
   } = useDisclosure();
 
   const {
@@ -238,30 +245,31 @@ const Parent: React.FC = () => {
     // width={!isMobileSize && !isOpenCollapsedMenu ? "25%" : "0"}
     >
       {!isMobileSize && (
-        <Box zIndex={1}>
-          <ExpandedDashboardMenu
-            familyDetails={familyDetails}
-            userDetails={userDetails}
-            children={children}
-            onChangeUsernameOpen={onChangeUsernameOpen}
-            onAddChildOpen={onAddChildOpen}
-            setSelectedTab={setSelectedTab}
-            onToggleCollapsedMenu={onToggleCollapsedMenu}
-            onToggleExtendedMenu={onToggleExtendedMenu}
-            isOpenExtendedMenu={isOpenExtendedMenu}
-          />
-        </Box>
-      )}
+        <>
+          <Box zIndex={1}>
+            <ExpandedDashboardMenu
+              familyDetails={familyDetails}
+              userDetails={userDetails}
+              children={children}
+              onChangeUsernameOpen={onChangeUsernameOpen}
+              onAddChildOpen={onAddChildOpen}
+              setSelectedTab={setSelectedTab}
+              onToggleCollapsedMenu={onToggleCollapsedMenu}
+              onToggleExtendedMenu={onToggleExtendedMenu}
+              isOpenExtendedMenu={isOpenExtendedMenu}
+              onOpenEtherScan={onOpenEtherScan}
+            />
+          </Box>
 
-      {!isMobileSize && !isOpenCollapsedMenu && (
-        <Box zIndex={100}>
-          <CollapsedDashboardMenu
-            onToggleCollapsedMenu={onToggleCollapsedMenu}
-            onToggleExtendedMenu={onToggleExtendedMenu}
-            isOpenCollapsedMenu={isOpenCollapsedMenu}
-            isMobileSize={isMobileSize}
-          />
-        </Box>
+          <Box zIndex={100}>
+            <CollapsedDashboardMenu
+              onToggleCollapsedMenu={onToggleCollapsedMenu}
+              onToggleExtendedMenu={onToggleExtendedMenu}
+              isOpenCollapsedMenu={isOpenCollapsedMenu}
+              isMobileSize={isMobileSize}
+            />
+          </Box>
+        </>
       )}
       {/* handles the background image and opacity */}
       <Flex
@@ -335,6 +343,7 @@ const Parent: React.FC = () => {
         onClose={onAddChildClose}
         onAdd={() => fetchChildren()}
       />
+      <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
     </Flex>
   );
 };

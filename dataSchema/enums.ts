@@ -44,6 +44,7 @@ export enum Explaination {
   FAMILY_ID = "FAMILY_ID",
   SANDBOX = "SANDBOX",
   FAMILY_NAME = "FAMILY_NAME",
+  BLOCKCHAIN = "BLOCKCHAIN",
 }
 
 export enum ParentDashboardTabs {

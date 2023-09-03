@@ -29,16 +29,14 @@ Parents can activate full-access mode, enabling children to withdraw funds for u
 ## Technical Architecture:
 
 - Contracts are deployed on the Polygon network for reduced gas fees.
-- Sequence streamlines the onboarding and authentication processes.
-- Superfluid technology facilitates real-time fund streaming to children.
 - Next.js powers the user-friendly frontend.
-- Solidity development involves Truffle and Remix.
+- Solidity development deploys using Hardhat.
 
 ## Understanding Staking:
 
 Children initiate the staking process by approving the USDCx contract to manage their coins.
 
-## The Allocate Contract:
+## The DifiKids Contract:
 
 - Transfers the staked amount to a secure holding wallet.
 - Calculates and transfers the earned rewards to the Allocate wallet.
@@ -51,8 +49,7 @@ Embrace the user-friendly DefiKids platform to unlock the world of crypto for yo
 
 ## Contracts
 
-- Host Contract: 0xC92A93D03cFA2b34A904fE5A48c20Aa86aE54396
-- Staking Contract: 0xfF3BcC9d56c9733bdb91604df59497C402F99D47
+- Deployed contracts are being written
 
 <!-- GETTING STARTED -->
 

@@ -7,6 +7,9 @@ import {
   Stack,
   Container,
   useBreakpointValue,
+  VStack,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import Head from "next/head";
 
@@ -22,47 +25,47 @@ const Community = () => {
   const discordLink = "https://discord.gg/bDGMYNa8Ng";
   return (
     <>
-      <Center mt={150}>
-        <Box>
-          <Heading
-            size={isMobileSize ? "2xl" : "xl"}
-            display="flex"
-            alignItems="baseline"
-            justifyContent="center"
-            mb={10}
-            color="#90cdf4"
-          >
-            Join our communities!
-          </Heading>
-
-          <Stack direction="row">
+      <Center mt={40}>
+        <Heading
+          size={isMobileSize ? "2xl" : "xl"}
+          display="flex"
+          alignItems="baseline"
+          justifyContent="center"
+          mb={5}
+          color="#90cdf4"
+        >
+          Join our community of DefiKids!
+        </Heading>
+      </Center>
+      <VStack mt={50}>
+        <Container maxW="60%" centerContent mb={-90} mt={-58}>
+          <Box padding="4" maxW="100%">
+            <Image
+              boxSize="100%"
+              src="/images/defikids-community-graphic.gif"
+              alt="Dan Abramov"
+              mr={5}
+            />
+          </Box>
+        </Container>
+        <Grid templateColumns="repeat(2, 1fr)" gap={10} mt={20}>
+          <GridItem>
             <Link href={twitterLink} passHref target="_blank">
-              <Center fontSize={20}>
+              <Center fontSize={20} color="#90cdf4">
                 <h1>Twitter</h1>
               </Center>
-              <Image
-                borderRadius="20px"
-                boxSize="450px"
-                src="/images/backgrounds/robot-to-human.svg"
-                alt="Dan Abramov"
-                mr={5}
-              />
             </Link>
+          </GridItem>
 
+          <GridItem>
             <Link href={discordLink} passHref target="_blank">
-              <Center fontSize={20}>
+              <Center fontSize={20} color="#90cdf4">
                 <h1>Discord</h1>
               </Center>
-              <Image
-                borderRadius="20px"
-                boxSize="450px"
-                src="/images/backgrounds/robot-to-human.svg"
-                alt="Dan Abramov"
-              />
             </Link>
-          </Stack>
-        </Box>
-      </Center>
+          </GridItem>
+        </Grid>
+      </VStack>
     </>
   );
 };

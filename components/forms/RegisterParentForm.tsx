@@ -69,6 +69,22 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //                             FUNCTIONS
   //=============================================================================
 
+  const sendEmailConfirmation = async () => {
+    try {
+      const payload = {
+        username,
+        email,
+        walletAddress,
+      };
+
+      await axios.post(`/api/emails/confirm-email-address`, payload);
+      return true;
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+    }
+  };
+
   const handleSubmit = async () => {
     setHasSubmitted(true);
 
@@ -117,8 +133,12 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       console.log("payload", payload);
 
       await axios.post(`/api/vercel/set-json`, payload);
-
       setUserDetails(body);
+
+      const emailSent = await sendEmailConfirmation();
+      if (!emailSent) {
+        return;
+      }
 
       toast({
         title: "Registration successful",
@@ -128,6 +148,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       onClose();
       router.push("/parent");
     } catch (e) {
+      await axios.delete(`/api/vercel/delete-json-data?key=${walletAddress}`);
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
       onClose();

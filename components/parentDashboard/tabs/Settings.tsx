@@ -1,8 +1,8 @@
 import { AvatarSelection } from "@/components/AvatarSelection";
 import { BackgroundSelection } from "@/components/BackgroundSelection";
-import { CardGroup } from "@/components/CardGroup";
 import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 import { EditUsername } from "@/components/forms/UserNameForm";
+import { EditEmail } from "@/components/forms/EmailForm";
 import { User } from "@/dataSchema/types";
 import {
   Accordion,
@@ -11,15 +11,11 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  Center,
   CloseButton,
   Container,
   Flex,
   Heading,
-  Text,
 } from "@chakra-ui/react";
-import { colors } from "@/services/chakra/theme";
-import { ParentDashboardTabs } from "@/dataSchema/enums";
 
 export const Settings = ({
   onChangeUsernameOpen,
@@ -70,6 +66,12 @@ export const Settings = ({
         "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
       buttonTitle: "Change Family Id",
     },
+    {
+      title: "Email",
+      description:
+        "Your email is used to verify your account and to send you notifications.",
+      buttonTitle: "Change Email",
+    },
   ];
 
   // These are the title labels for the settings
@@ -78,9 +80,7 @@ export const Settings = ({
     BACKGROUND = "Background",
     USERNAME = "Username",
     FAMILY_ID = "Family Id",
-  }
-  function setSelectedTab(DASHBOARD: any): void {
-    throw new Error("Function not implemented.");
+    EMAIL = "Email",
   }
 
   return (
@@ -142,6 +142,12 @@ export const Settings = ({
                       onOpenBackgroundDefaults={onOpenBackgroundDefaults}
                       setBackgroundOpacity={setBackgroundOpacity}
                       setCardOpacity={setCardOpacity}
+                    />
+                  )}
+                  {title === SelectedSetting.EMAIL && (
+                    <EditEmail
+                      familyDetails={familyDetails}
+                      fetchFamilyDetails={fetchFamilyDetails}
                     />
                   )}
                 </AccordionPanel>

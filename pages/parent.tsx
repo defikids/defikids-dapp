@@ -23,7 +23,7 @@ import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
-import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { AddMemberModal } from "@/components/Modals/AddMemberModal";
 import { EtherscanModal } from "@/components/Modals/EtherscanModal";
 import { colors } from "@/services/chakra/theme";
 
@@ -297,7 +297,7 @@ const Parent: React.FC = () => {
         onClose={onCloseBackgroundDefaults}
         fetchFamilyDetails={fetchFamilyDetails}
       />
-      <AddChildModal
+      <AddMemberModal
         isOpen={isAddChildOpen}
         onClose={onAddChildClose}
         onAdd={() => fetchChildren()}

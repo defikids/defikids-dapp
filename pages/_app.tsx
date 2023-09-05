@@ -53,20 +53,24 @@ function MyApp({ Component, pageProps }) {
     >
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains} modalSize="compact">
-          <Auth
-            onRegisterOpen={onRegisterOpen}
-            setHasCheckedUserType={setHasCheckedUserType}
-            hasCheckedUserType={hasCheckedUserType}
-          />
+          {!router.pathname.includes("/confirm-email") && (
+            <>
+              <Auth
+                onRegisterOpen={onRegisterOpen}
+                setHasCheckedUserType={setHasCheckedUserType}
+                hasCheckedUserType={hasCheckedUserType}
+              />
 
-          {showStartEarning && !isRegisterOpen && (
-            <RegisterBanner onRegisterOpen={onRegisterOpen} />
+              {showStartEarning && !isRegisterOpen && (
+                <RegisterBanner onRegisterOpen={onRegisterOpen} />
+              )}
+
+              <MainLayout
+                showStartEarning={showStartEarning}
+                isRegisterOpen={isRegisterOpen}
+              />
+            </>
           )}
-
-          <MainLayout
-            showStartEarning={showStartEarning}
-            isRegisterOpen={isRegisterOpen}
-          />
 
           <Component {...pageProps} />
 

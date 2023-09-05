@@ -45,16 +45,6 @@ export const MainLayout = ({
   //                             FUNCTIONS
   //=============================================================================
 
-  // const showNavbar = () => {
-  //   if (router.pathname === "/") {
-  //     return true;
-  //   }
-
-  //   if (isMobileSize) {
-  //     return true;
-  //   }
-  // };
-
   return (
     <Box
       bgGradient={["linear(to-b, black,#4F1B7C)"]}

@@ -8,9 +8,9 @@ export default async function inviteMember(
   res: NextApiResponse
 ) {
   try {
-    const { email, firstName, lastName, familyId } = req.body;
+    const { email, firstName, lastName, address } = req.body;
 
-    const token = jwt.sign({ familyId }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ address }, process.env.JWT_SECRET, {
       expiresIn: "48hr",
     });
 

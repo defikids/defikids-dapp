@@ -35,7 +35,6 @@ const Auth = ({
       setLogout();
     }
     if (isConnected) {
-      console.log("connected", account);
       setHasCheckedUserType(false);
       setSelectedAddress(address);
     }
@@ -70,9 +69,27 @@ const Auth = ({
     shallow
   );
 
-  /**
+  /*
+   * This hook will listen for the beforeunload event (when the user refreshes the page) and navigate the user to the home page
+   */
+  // useEffect(() => {
+  //   const handleBeforeUnload = (e) => {
+  //     e.preventDefault();
+  //     router.push("/");
+  //   };
+
+  //   // Add the event listener
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   // Clean up the event listener when the component unmounts
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [router]);
+
+  /*
    * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
-   **/
+   */
   useEffect(() => {
     const fetchUserType = async () => {
       if (!selectedAddress || hasCheckedUserType) return;
@@ -94,18 +111,18 @@ const Auth = ({
 
       if (user) {
         setUserDetails(user);
-        setIsLoggedIn(true);
-        setWalletAddress(selectedAddress);
       }
+      setIsLoggedIn(true);
+      setWalletAddress(selectedAddress);
     };
 
     fetchUserType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAddress, hasCheckedUserType]);
 
-  /**
+  /*
    * This hook will check if the user has a dark mode preference set in local storage
-   **/
+   */
   useEffect(() => {
     const colorMode = localStorage.getItem("chakra-ui-color-mode");
     if (colorMode !== "dark") {
@@ -113,31 +130,33 @@ const Auth = ({
     }
   }, []);
 
-  /**
+  /*
    * This hook will navigate the user to the correct page based on their user type
-   **/
+   */
   useEffect(() => {
-    if (router.pathname === "/admin") {
-      router.push("/admin");
-      return;
-    }
-
-    if (hasCheckedUserType) {
-      switch (userDetails?.userType) {
-        case UserType.UNREGISTERED:
-          onRegisterOpen();
-          break;
-        case UserType.PARENT:
-          router.push("/parent");
-          break;
-        case UserType.CHILD:
-          router.push("/child");
-          break;
-        default:
-          router.push("/");
-          return;
+    setTimeout(() => {
+      if (router.pathname === "/admin") {
+        router.push("/admin");
+        return;
       }
-    }
+
+      if (hasCheckedUserType) {
+        switch (userDetails?.userType) {
+          case UserType.UNREGISTERED:
+            onRegisterOpen();
+            break;
+          case UserType.PARENT:
+            router.push("/parent");
+            break;
+          case UserType.CHILD:
+            router.push("/child");
+            break;
+          default:
+            router.push("/");
+            return;
+        }
+      }
+    }, 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAddress, hasCheckedUserType]);
 

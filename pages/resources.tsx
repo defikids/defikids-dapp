@@ -1,11 +1,16 @@
-import { Center } from "@chakra-ui/react";
+import { Center, Flex, Box } from "@chakra-ui/react";
+import ResourcesModal from "@/components/Modals/ResourcesModal";
 
-const Resources = () => {
+const Community = () => {
   return (
-    <Center mt="10rem">
-      <h1>Resources</h1>
-    </Center>
+    <Box height="100vh" bgGradient={["linear(to-b, black,#4F1B7C)"]}>
+      <Center mt="1rem">
+        <Flex>
+          <ResourcesModal />
+        </Flex>
+      </Center>
+    </Box>
   );
 };
 
-export default Resources;
+export default Community;

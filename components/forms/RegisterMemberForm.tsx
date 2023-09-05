@@ -30,7 +30,7 @@ import shallow from "zustand/shallow";
 import router from "next/router";
 import { ExplainSandbox } from "@/components/explainations/Sandbox";
 
-export const RegisterChildForm = ({ onClose }: { onClose: () => void }) => {
+export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
   //                             STATE
   //=============================================================================
@@ -95,13 +95,11 @@ export const RegisterChildForm = ({ onClose }: { onClose: () => void }) => {
 
       // console.log("payload", payload);
 
-      const { email, firstName, lastName, familyId } = req.body;
-
       const payload = {
-        email,
+        email: emailAddress,
         firstName: "",
         lastName: "",
-        familyId: hashedFamilyId(familyId),
+        familyId: userDetails?.familyId || "",
       };
 
       await axios.post(`/api/emails/invite-member`, payload);

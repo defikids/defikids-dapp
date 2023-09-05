@@ -9,11 +9,14 @@ import {
   ModalFooter,
   useBreakpointValue,
 } from "@chakra-ui/react";
-// import RegisterChildForm from "@/components/forms/RegisterChildForm";
-import { RegisterChildForm } from "@/components/forms/RegisterChildForm2";
+import { RegisterMemberForm } from "@/components/forms/RegisterMemberForm";
+import { EmailVerificationRequired } from "@/components/email/EmailVerificationRequired";
 import { useState } from "react";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
+import { User } from "@/dataSchema/types";
 
-export const AddChildModal = ({
+export const AddMemberModal = ({
   isOpen,
   onClose,
   onAdd,
@@ -23,6 +26,14 @@ export const AddChildModal = ({
   onAdd: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const { userDetails } = useAuthStore(
+    (state) =>
+      ({
+        userDetails: state.userDetails,
+      } as { userDetails: User }),
+    shallow
+  );
 
   const isMobileSize = useBreakpointValue({
     base: true,
@@ -53,12 +64,11 @@ export const AddChildModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <RegisterChildForm
-            onClose={onClose}
-            onAdd={onAdd}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
+          {!userDetails?.emailVerified ? (
+            <EmailVerificationRequired userDetails={userDetails} />
+          ) : (
+            <RegisterMemberForm onClose={onClose} />
+          )}
         </ModalBody>
         <ModalFooter />
       </ModalContent>

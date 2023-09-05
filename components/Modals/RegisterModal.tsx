@@ -83,7 +83,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
       onCloseComplete={() => {
         setIsStarted(false);
       }}
-      size={!isMobileSize ? (isStarted ? "md" : "6xl") : "md"}
+      size={!isMobileSize ? (isStarted ? "md" : "4xl") : "md"}
       isCentered
       closeOnOverlayClick={false}
     >

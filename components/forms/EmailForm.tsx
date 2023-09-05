@@ -14,7 +14,7 @@ import { useState } from "react";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
 
-export const EditUsername = ({
+export const EditEmail = ({
   familyDetails,
   fetchFamilyDetails,
 }: {
@@ -24,7 +24,7 @@ export const EditUsername = ({
   //=============================================================================
   //                               STATE
   //=============================================================================
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   //=============================================================================
   //                               HOOKS
@@ -46,10 +46,10 @@ export const EditUsername = ({
 
   const handleSubmit = async () => {
     try {
-      if (!username) {
+      if (!email) {
         toast({
           title: "Error",
-          description: "Username cannot be empty",
+          description: "Email cannot be empty",
           status: "error",
         });
         return;
@@ -57,7 +57,8 @@ export const EditUsername = ({
 
       const body = {
         ...familyDetails,
-        username,
+        email,
+        emailVerified: false,
       };
 
       const payload = {
@@ -68,10 +69,10 @@ export const EditUsername = ({
       await axios.post(`/api/vercel/set-json`, payload);
       setUserDetails(body);
       fetchFamilyDetails();
-      setUsername("");
+      setEmail("");
 
       toast({
-        title: "Username successfully updated",
+        title: "Email successfully updated",
         status: "success",
       });
     } catch (e) {
@@ -89,11 +90,12 @@ export const EditUsername = ({
         borderRadius={10}
       >
         <FormControl>
-          <FormLabel>New Username</FormLabel>
+          <FormLabel>Edit email</FormLabel>
           <Input
-            placeholder={familyDetails?.username || ""}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder={familyDetails?.email}
+            defaultValue={familyDetails?.email}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{
               border: "1px solid lightgray",
             }}

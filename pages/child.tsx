@@ -57,7 +57,7 @@ import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import router from "next/router";
-import { AddChildModal } from "@/components/Modals/AddChildModal";
+import { AddChildModal } from "@/components/Modals/AddMemberModal";
 import { useBalance } from "wagmi";
 import { UsernameModal } from "@/components/Modals/UsernameModal";
 import { RxAvatar } from "react-icons/rx";

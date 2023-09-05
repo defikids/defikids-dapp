@@ -32,6 +32,7 @@ export type User = {
   username: string;
   termsAgreed: boolean;
   userType: UserType;
+  emailVerified?: boolean;
   children?: string[];
 };
 

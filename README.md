@@ -1,42 +1,44 @@
 
 ![defikids](https://github.com/NathanTarbert/defikids/assets/66887028/5f89ee84-e66c-4909-b386-c489fe7387f0)
+
+⭐️ Why DefiKids?
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
-## Simplified Platform Overview:
+## ✨ Simplified Platform Overview:
 
 Discover the world of cryptocurrency with ease through the DefiKids platform. This platform is designed to guide you and your family in using crypto confidently in your daily life, and it's tailored for kids while being supervised by parents.
 
-## Common Challenge:
+## 💻 Common Challenge:
 
 How do you teach your children to use crypto safely and confidently.
 
-## Our Approach:
+## ⚡ Our Approach:
 
 Parents can establish a secure family sandbox within the platform. They allocate funds for allowances and set aside a portion for staking. This staked amount generates rewards over time.
 
 An exciting feature is that funds automatically flow to the child, providing a real-time understanding of finances.
 
-## De-Fi Tools for Learning:
+## 📚 De-Fi Tools for Learning:
 
 Children gain access to valuable De-Fi tools like staking and time-locks. These tools introduce them to concepts like savings, interest, and compound interest.
 
 Moreover, funds can be reserved for future purchases through time-locks, guaranteeing that children have funds accessible when needed.
 
-## Empowering Parents:
+## 💌 Empowering Parents:
 
 Parents can activate full-access mode, enabling children to withdraw funds for use in various crypto markets. By default, withdrawals are sent to parents, who can then convert them to fiat for their children.
 
-## Technical Architecture:
+## 🔥Technical Architecture:
 
 - Contracts are deployed on the Polygon network for reduced gas fees.
 - Next.js powers the user-friendly frontend.
 - Solidity development deploys using Hardhat.
 
-## Understanding Staking:
+## 💡 Understanding Staking:
 
 Children initiate the staking process by approving the USDCx contract to manage their coins.
 
-## The DifiKids Contract:
+## 🪢 The DifiKids Contract:
 
 - Transfers the staked amount to a secure holding wallet.
 - Calculates and transfers the earned rewards to the Allocate wallet.
@@ -47,13 +49,13 @@ Children initiate the staking process by approving the USDCx contract to manage 
 
 Embrace the user-friendly DefiKids platform to unlock the world of crypto for your family, while ensuring safety, learning, and financial exploration.
 
-## Contracts
+## 🎁 Contracts
 
 - Deployed contracts are being written
 
 <!-- GETTING STARTED -->
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites:
 
@@ -79,7 +81,7 @@ Embrace the user-friendly DefiKids platform to unlock the world of crypto for yo
 
 <!-- CONTRIBUTING -->
 
-## Contributing:
+## ⚜️ Contributing:
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
 
@@ -98,17 +100,17 @@ Please try to create bug reports that are:
 5. Open a Pull Request
 
 
-## Community
+## 💪 Community
 
 Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individuals looking to teach their kids about crypto.
 
 Follow us on [Twitter](https://twitter.com/defikids_)
 
-## Run the app
+## 💻 Run the app
 
 Check it out [here](https://defikids-nathantarbert.vercel.app/)
 
-## Contact Us
+## 📬 Contact Us
 
-[📬 Email](https://defikidsproject@gmail.com)
+[Email](https://defikidsproject@gmail.com)
 

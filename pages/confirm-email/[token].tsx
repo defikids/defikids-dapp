@@ -171,7 +171,6 @@ const ConfirmEmail = () => {
                 `/api/vercel/get-json?key=${walletAddress}`
               );
 
-              console.log("user", user.data);
               setUser(user.data);
 
               if (user.data?.emailVerified) {

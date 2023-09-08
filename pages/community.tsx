@@ -4,14 +4,13 @@ import {
   Heading,
   Box,
   Image,
-  Stack,
   Container,
   useBreakpointValue,
   VStack,
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import Head from "next/head";
+import Navbar from "@/components/navbar";
 
 const Community = () => {
   const isMobileSize = useBreakpointValue({
@@ -25,6 +24,7 @@ const Community = () => {
   const discordLink = "https://discord.gg/bDGMYNa8Ng";
   return (
     <>
+      <Navbar />
       <Center mt={40}>
         <Heading
           size={isMobileSize ? "2xl" : "xl"}

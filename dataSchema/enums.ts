@@ -52,6 +52,7 @@ export enum ParentDashboardTabs {
   MEMBER_PROFILES = "MEMBER_PROFILES",
   SUPPORT = "SUPPORT",
   SETTINGS = "SETTINGS",
+  INFORMATION = "INFORMATION",
 }
 
 export enum OpacityContext {

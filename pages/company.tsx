@@ -1,10 +1,14 @@
 import { Center } from "@chakra-ui/react";
+import Navbar from "@/components/navbar";
 
 const Company = () => {
   return (
-    <Center mt="10rem">
-      <h1>Company</h1>
-    </Center>
+    <>
+      <Navbar />
+      <Center mt="10rem">
+        <h1>Company</h1>
+      </Center>
+    </>
   );
 };
 

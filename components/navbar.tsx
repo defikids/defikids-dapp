@@ -22,15 +22,7 @@ import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 import { useAccount } from "wagmi";
 import { BiLogOut } from "react-icons/bi";
 
-export default function NavBar({
-  showStartEarning,
-  isRegisterOpen,
-  onRegisterOpen,
-}: {
-  showStartEarning: boolean;
-  isRegisterOpen: boolean;
-  onRegisterOpen: () => void;
-}) {
+export default function NavBar() {
   //=============================================================================
   //                               HOOKS
   //============================================================================
@@ -80,7 +72,6 @@ export default function NavBar({
     switch (userDetails?.userType) {
       case UserType.UNREGISTERED:
         setIsLoggedIn(false);
-        onRegisterOpen();
         break;
       case UserType.PARENT:
         setIsLoggedIn(true);
@@ -122,7 +113,7 @@ export default function NavBar({
               <CustomConnectButton />
             ) : (
               <Button mr={5} size="lg" onClick={navigateUser}>
-                <Heading size="md">Enter</Heading>
+                <Heading size="md">Dashboard</Heading>
               </Button>
             )}
 
@@ -140,7 +131,7 @@ export default function NavBar({
             {/* {isLoggedIn && <WalletPopover />} */}
 
             {/* Main Menu */}
-            {isLoggedIn && (
+            {/* {isLoggedIn && (
               <IconButton
                 size="lg"
                 aria-label="Menu Icon"
@@ -149,7 +140,7 @@ export default function NavBar({
                 mr={5}
                 pr={2}
               />
-            )}
+            )} */}
 
             <IconButton
               size="lg"

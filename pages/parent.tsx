@@ -19,6 +19,7 @@ import { UsernameModal } from "@/components/Modals/UsernameModal";
 import { ParentDashboardTabs } from "@/dataSchema/enums";
 
 import { Settings } from "@/components/parentDashboard/tabs/Settings";
+import { Info } from "@/components/parentDashboard/tabs/Info";
 import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
@@ -264,6 +265,14 @@ const Parent: React.FC = () => {
                 setBackgroundOpacity={setBackgroundOpacity}
                 setCardOpacity={setCardOpacity}
                 cardOpacity={cardOpacity}
+                isMobileSize={isMobileSize}
+                isOpenExtendedMenu={isOpenExtendedMenu}
+                closeTab={closeTab}
+              />
+            )}
+
+            {selectedTab === ParentDashboardTabs.INFORMATION && (
+              <Info
                 isMobileSize={isMobileSize}
                 isOpenExtendedMenu={isOpenExtendedMenu}
                 closeTab={closeTab}

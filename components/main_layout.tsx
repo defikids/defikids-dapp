@@ -67,15 +67,7 @@ export const MainLayout = ({
       zIndex={5}
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
-        {!isLoggedIn ? (
-          <Navbar
-            showStartEarning={showStartEarning}
-            isRegisterOpen={isRegisterOpen}
-            onRegisterOpen={onRegisterOpen}
-          />
-        ) : (
-          <LoggedInNavBar />
-        )}
+        {!isLoggedIn ? <Navbar /> : <LoggedInNavBar />}
       </Box>
     </Box>
   );

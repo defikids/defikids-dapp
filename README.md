@@ -1,25 +1,116 @@
-# DefiKids
 
-A platform to empower the next generation with the use of de-fi tools. It is designed for kids, managed by parents.
+![defikids](https://github.com/NathanTarbert/defikids/assets/66887028/5f89ee84-e66c-4909-b386-c489fe7387f0)
 
-<img src="public/defikids-cover.png" href="https://allocate.vercel.app" alt="Logo" >
+⭐️ Why DefiKids?
+An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
-## Description
+## ✨ Simplified Platform Overview:
 
-Crypto doesn't have to be complicated. The DefiKids platform is designed to help you and your family learn how to comfortably use crypto in your everyday life. It's designed for kids, managed by parents.
+Discover the world of cryptocurrency with ease through the DefiKids platform. This platform is designed to guide you and your family in using crypto confidently in your daily life, and it's tailored for kids while being supervised by parents.
 
-## Problem
+## 💻 Common Challenge:
 
 How do you teach your children to use crypto safely and confidently.
 
-## Our solution
+## ⚡ Our Approach:
 
-- Parents create a family sandbox. They allocate funds to be used for allowance. A percentage of funds will be allocated to a staking contract in order to distribute rewards.
+Parents can establish a secure family sandbox within the platform. They allocate funds for allowances and set aside a portion for staking. This staked amount generates rewards over time.
 
-- Funds automatically stream to the child creating real-time cash flow.
+An exciting feature is that funds automatically flow to the child, providing a real-time understanding of finances.
 
-- Children will have the ability to use De-Fi tools such as staking & time-locks. This introduces the concepts of savings, interest and compound interest.
+## 📚 De-Fi Tools for Learning:
 
-- Funds can be allocated for the purchase of future goods and services through the use of time-locks. This ensures that children have the funds they need when they need it.
+Children gain access to valuable De-Fi tools like staking and time-locks. These tools introduce them to concepts like savings, interest, and compound interest.
 
-- The parent has the ability to enable full-access mode that will allow the child to withdraw funds to be used across crypto markets. By default, withdraws are sent back to the parent who can then payout the child with fiat.
+Moreover, funds can be reserved for future purchases through time-locks, guaranteeing that children have funds accessible when needed.
+
+## 💌 Empowering Parents:
+
+Parents can activate full-access mode, enabling children to withdraw funds for use in various crypto markets. By default, withdrawals are sent to parents, who can then convert them to fiat for their children.
+
+## 🔥Technical Architecture:
+
+- Contracts are deployed on the Polygon network for reduced gas fees.
+- Next.js powers the user-friendly frontend.
+- Solidity development deploys using Hardhat.
+
+## 💡 Understanding Staking:
+
+Children initiate the staking process by approving the USDCx contract to manage their coins.
+
+## 🪢 The DifiKids Contract:
+
+- Transfers the staked amount to a secure holding wallet.
+- Calculates and transfers the earned rewards to the Allocate wallet.
+- Preserves the initial stake for the agreed-upon locked duration.
+- Remaining lock duration is visible to the child at any time.
+- Withdrawal of the initial stake is possible only after the lock duration expires.
+- The reward, equivalent to 5% of the initial funds multiplied by the duration, is granted in Allocate tokens.
+
+Embrace the user-friendly DefiKids platform to unlock the world of crypto for your family, while ensuring safety, learning, and financial exploration.
+
+## 🎁 Contracts
+
+- Deployed contracts are being written
+
+<!-- GETTING STARTED -->
+
+## 🚀 Getting Started
+
+### Prerequisites:
+
+- npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+### Installation:
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/your_username_/Project-Name.git
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. Run Dev Server
+   ```sh
+   npm start
+   ```
+
+<!-- CONTRIBUTING -->
+
+## ⚜️ Contributing:
+
+Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
+
+Please try to create bug reports that are:
+- <i>Reproducible:</i> Include steps to reproduce the problem.
+- <i>Specific</i> Include as much detail as possible: which version, what environment, etc.
+- <i>Unique:</i> Do not duplicate existing opened issues.
+- <i>Scoped to a Single Bug</i> One bug per report.
+
+### Steps:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+## 💪 Community
+
+Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individuals looking to teach their kids about crypto.
+
+Follow us on [Twitter](https://twitter.com/defikids_)
+
+## 💻 Run the app
+
+Check it out [here](https://defikids-nathantarbert.vercel.app/)
+
+## 📬 Contact Us
+
+[Email](https://defikidsproject@gmail.com)
+

@@ -1,6 +1,7 @@
 import { UserType, AccountStatus, AccountPackage } from "./enums";
 
 export type ChildDetails = {
+  familyName: string;
   familyId: string;
   email: string;
   username: string;
@@ -34,6 +35,7 @@ export type User = {
   userType: UserType;
   emailVerified?: boolean;
   children?: string[];
+  invitations?: string[];
 };
 
 export type AccountDetails = {

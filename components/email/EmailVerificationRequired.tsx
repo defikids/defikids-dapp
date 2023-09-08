@@ -10,6 +10,7 @@ export const EmailVerificationRequired = ({
 }) => {
   const [emailSent, setEmailSent] = useState(false);
   const toast = useToast();
+
   const resendEmail = async () => {
     try {
       const { username, email, wallet } = userDetails;
@@ -23,6 +24,7 @@ export const EmailVerificationRequired = ({
         `/api/emails/confirm-email-address`,
         payload
       );
+
       if (!data.error) {
         setEmailSent(true);
       } else {
@@ -40,7 +42,7 @@ export const EmailVerificationRequired = ({
   if (emailSent) {
     return (
       <Flex direction="column">
-        <Text mb={3}>Email Sent.</Text>
+        <Text mb={3}>{`Email Sent to ${userDetails?.email}.`}</Text>
         <Text mb={3}>{`If you don't see it, check your spam folder.`}</Text>
       </Flex>
     );
@@ -48,10 +50,11 @@ export const EmailVerificationRequired = ({
 
   return (
     <Flex direction="column">
-      <Text mb={3}>
-        Please verify your email address before continuing. Check your inbox for
-        an email from us.
+      <Text mb={5}>
+        In order to add members to your family you will first have to verify
+        your email address.
       </Text>
+      <Text mb={5}>Check your inbox for an email from us.</Text>
       <Button colorScheme="blue" onClick={resendEmail}>
         Resend Email
       </Button>

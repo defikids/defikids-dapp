@@ -8,19 +8,37 @@ export default async function inviteMember(
   res: NextApiResponse
 ) {
   try {
-    const { email, firstName, lastName, address } = req.body;
+    const { parentAddress, sandboxMode, familyId, familyName, email } =
+      req.body as {
+        parentAddress: string;
+        sandboxMode: boolean;
+        familyId: string;
+        familyName: string;
+        email: string;
+      };
 
-    const token = jwt.sign({ address }, process.env.JWT_SECRET, {
-      expiresIn: "48hr",
-    });
+    const token = jwt.sign(
+      {
+        parentAddress,
+        sandboxMode,
+        familyId,
+        familyName,
+        email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "24hr",
+        jwtid: Date.now().toString(),
+      }
+    );
 
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: email,
       from: process.env.SENDGRID_TRANSPORTER_EMAIL_ADDRESS,
-      subject: "DefiKids: New Member Invitaton.",
-      text: `${firstName} ${lastName} has invited you to DefiKids`,
-      html: inviteMemberHTML(token, firstName, lastName),
+      subject: "New Member Invitaton",
+      text: `${familyName} has invited you to DefiKids`,
+      html: inviteMemberHTML(token, familyName),
     };
 
     sgMail

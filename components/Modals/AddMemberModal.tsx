@@ -60,7 +60,7 @@ export const AddMemberModal = ({
       />
       <ModalContent>
         <ModalHeader>
-          <Heading size="md">Register Member</Heading>
+          <Heading size="md">Invite Member</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>

@@ -193,7 +193,7 @@ export default function confirmEmailAddressHTML(
           color: #999999;
           font-family: sans-serif;" class="footer">
     
-            This email was sent to you because you registered an account with DefiKids Inc. 
+            This email was sent to you because you registered an account with DefiKids Inc. If you did not create an account, please ignore this email.
     
             <!-- ANALYTICS -->
             <!-- https://www.google-analytics.com/collect?v=1&tid={{UA-Tracking-ID}}&cid={{Client-ID}}&t=event&ec=email&ea=open&cs={{Campaign-Source}}&cm=email&cn={{Campaign-Name}} -->

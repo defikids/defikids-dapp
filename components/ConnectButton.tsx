@@ -1,4 +1,4 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export const CustomConnectButton = () => {
@@ -41,7 +41,7 @@ export const CustomConnectButton = () => {
                     mr={5}
                     size="lg"
                   >
-                    Connect Wallet
+                    <Heading size="md">Connect </Heading>
                   </Button>
                 );
               }

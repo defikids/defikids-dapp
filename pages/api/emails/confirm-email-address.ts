@@ -17,7 +17,7 @@ export default async function confirmEmail(
   const msg = {
     to: email,
     from: process.env.SENDGRID_TRANSPORTER_EMAIL_ADDRESS,
-    subject: "Please confirm your email address",
+    subject: "Email Confirmation Request",
     html: confirmEmailAddressHTML(username, token),
   };
   sgMail

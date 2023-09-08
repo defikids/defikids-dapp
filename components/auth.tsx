@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { UserType } from "@/dataSchema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
@@ -10,11 +10,9 @@ import axios from "axios";
 import { User } from "@/dataSchema/types";
 
 const Auth = ({
-  onRegisterOpen,
   setHasCheckedUserType,
   hasCheckedUserType,
 }: {
-  onRegisterOpen: () => void;
   setHasCheckedUserType: (hasCheckedUserType: boolean) => void;
   hasCheckedUserType: boolean;
 }) => {
@@ -22,44 +20,37 @@ const Auth = ({
   //                               HOOKS
   //=============================================================================
 
-  const router = useRouter();
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
   watchAccount((account) => {
     const { isConnected, address } = account;
 
-    if (walletAddress && address && walletAddress !== (address as string)) {
-      console.log("walletAddress", walletAddress);
-      console.log("address", address);
+    if (
+      userDetails?.wallet &&
+      address &&
+      userDetails?.wallet !== (address as string)
+    ) {
       setHasCheckedUserType(false);
+      setWalletConnected(false);
       setLogout();
     }
     if (isConnected) {
       setHasCheckedUserType(false);
       setSelectedAddress(address);
+      setWalletConnected(true);
     }
   });
 
-  const {
-    isLoggedIn,
-    userDetails,
-    setIsLoggedIn,
-    setLogout,
-    setUserDetails,
-    walletAddress,
-    setWalletAddress,
-  } = useAuthStore(
-    (state) => ({
-      isLoggedIn: state.isLoggedIn,
-      userDetails: state.userDetails,
-      setIsLoggedIn: state.setIsLoggedIn,
-      setLogout: state.setLogout,
-      setUserDetails: state.setUserDetails,
-      walletAddress: state.walletAddress,
-      setWalletAddress: state.setWalletAddress,
-    }),
-    shallow
-  );
+  const { setWalletConnected, setLogout, setUserDetails, userDetails } =
+    useAuthStore(
+      (state) => ({
+        userDetails: state.userDetails,
+        setWalletConnected: state.setWalletConnected,
+        setLogout: state.setLogout,
+        setUserDetails: state.setUserDetails,
+      }),
+      shallow
+    );
 
   const { setConnectedSigner, setProvider } = useContractStore(
     (state) => ({
@@ -68,24 +59,6 @@ const Auth = ({
     }),
     shallow
   );
-
-  /*
-   * This hook will listen for the beforeunload event (when the user refreshes the page) and navigate the user to the home page
-   */
-  // useEffect(() => {
-  //   const handleBeforeUnload = (e) => {
-  //     e.preventDefault();
-  //     router.push("/");
-  //   };
-
-  //   // Add the event listener
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-
-  //   // Clean up the event listener when the component unmounts
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [router]);
 
   /*
    * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
@@ -112,12 +85,9 @@ const Auth = ({
       if (user) {
         setUserDetails(user);
       }
-      setIsLoggedIn(true);
-      setWalletAddress(selectedAddress);
     };
 
     fetchUserType();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAddress, hasCheckedUserType]);
 
   /*
@@ -129,36 +99,6 @@ const Auth = ({
       localStorage.setItem("chakra-ui-color-mode", "dark");
     }
   }, []);
-
-  /*
-   * This hook will navigate the user to the correct page based on their user type
-   */
-  useEffect(() => {
-    setTimeout(() => {
-      if (router.pathname === "/admin") {
-        router.push("/admin");
-        return;
-      }
-
-      if (hasCheckedUserType) {
-        switch (userDetails?.userType) {
-          case UserType.UNREGISTERED:
-            onRegisterOpen();
-            break;
-          case UserType.PARENT:
-            router.push("/parent");
-            break;
-          case UserType.CHILD:
-            router.push("/child");
-            break;
-          default:
-            router.push("/");
-            return;
-        }
-      }
-    }, 1000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAddress, hasCheckedUserType]);
 
   return <></>;
 };

@@ -1,274 +1,442 @@
-import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
-import Button from "../components/button";
-import { StoreAction, useStore } from "../services/store";
-import { getUSDCXBalance } from "../services/usdcx_contract";
-import Plus from "../components/plus";
-import Arrow from "../components/arrow";
-import TopUpModal from "../components/topup_modal";
-import WithdrawModal from "../components/withdraw_modal";
-import AnimatedNumber from "../components/animated_number";
-import { flowDetails } from "../hooks/useSuperFluid";
-import { BigNumber, ethers } from "ethers";
-import StakeContract, { IStake, IStakerDetails } from "../services/stake";
-import AllocateModal from "../components/allocate_modal";
-import Allocation from "../components/allocation";
-import Logo from "../components/logo";
+/* eslint-disable react/no-children-prop */
+import {
+  Avatar,
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Heading,
+  Image,
+  Menu,
+  MenuButton,
+  MenuGroup,
+  MenuItem,
+  MenuList,
+  Text,
+  Tooltip,
+  useBreakpointValue,
+  useDisclosure,
+  useSteps,
+  useToast,
+  MenuDivider,
+  Wrap,
+  WrapItem,
+  IconButton,
+  HStack,
+  PinInput,
+  PinInputField,
+  StatGroup,
+  Stat,
+  StatNumber,
+  StatHelpText,
+  StatArrow,
+  StatLabel,
+  ButtonGroup,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+} from "@chakra-ui/react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+// import Child from "@/components/child";
+import contract from "@/services/contract";
+import HostContract from "@/services/contract";
+import StakeContract from "@/services/stake";
+import { BiTransfer, BiWalletAlt } from "react-icons/bi";
+import { AiOutlinePlus } from "react-icons/ai";
+import shallow from "zustand/shallow";
+import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
+import { trimAddress, getEtherscanUrl } from "@/utils/web3";
+import { ChildDetails } from "@/dataSchema/types";
+import { ChangeAvatarModal } from "@/components/Modals/ChangeAvatarModal";
+import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
+import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
+import { steps } from "@/components/steppers/TransactionStepper";
+import axios from "axios";
+import router from "next/router";
+import { AddChildModal } from "@/components/Modals/AddMemberModal";
+import { useBalance } from "wagmi";
+import { UsernameModal } from "@/components/Modals/UsernameModal";
+import { RxAvatar } from "react-icons/rx";
+import { SendFundsModal } from "@/components/Modals/SendFundsModal";
+import { useNetwork } from "wagmi";
+import { EtherscanContext } from "@/dataSchema/enums";
+import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
+import { HiMenu } from "react-icons/hi";
+import { PasswordInput } from "@/components/PasswordInput";
+import { transactionErrors } from "@/utils/errorHanding";
+import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { ChildDefiOptionsDrawer } from "@/components/drawers/ChildDefiOptionsDrawer";
+import { GrGrow } from "react-icons/gr";
+import { BiTimeFive } from "react-icons/bi";
+import { kv } from "@vercel/kv";
 
-const FETCH_BALANCE_INTERVAL = 25000; // correct balance value X milliseconds
-const MAX_FETCH_RETRIES = 60; // max retries to fetch from provider when expecting a change
-const FETCH_RETRY_TIMEOUT = 1000; // timeout between fetches when expecting a change
+// import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 
 const Child: React.FC = () => {
-  const {
-    dispatch,
-    state: { provider, wallet, stakeContract },
-  } = useStore();
-  const [details, setDetails] = useState<IStakerDetails>({
-    totalInvested: BigNumber.from(0),
-    totalRewards: BigNumber.from(0),
-    totalCreatedStakes: BigNumber.from(0),
-  });
-  const [stakes, setStakes] = useState<IStake[]>([]);
-  const [balance, setBalance] = useState<number>(0);
-  const [netFlow, setNetFlow] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
+  //=============================================================================
+  //                               STATE
+  //=============================================================================
 
-  const initStakeContract = async () => {
-    if (!provider) {
-      return;
-    }
-    const stakeContract = await StakeContract.fromProvider(provider, wallet);
-    dispatch({
-      type: StoreAction.STAKE_CONTRACT,
-      payload: stakeContract as any,
-    });
-  };
+  const [childKey, setChildKey] = useState<number | null>(null);
+  const [childrenLoading, setChildrenLoading] = useState(false);
+  const [children, setChildren] = useState([]);
+  const [childrenStakes, setChildrenStakes] = useState({});
+  const [stakeContract, setStakeContract] = useState<StakeContract>();
+  const [childDetails, setChildDetails] = useState({} as ChildDetails);
+  const [loading, setIsLoading] = useState(false);
+  const [familyId, setFamilyId] = useState<string>("");
+  const [familyIdSubmitted, setFamilyIdSubmitted] = useState<boolean>(false);
+  const [isBackground, setIsBackground] = useState<boolean>(false);
+  const [childDBData, setChildDBData] = useState<any>({});
 
-  useEffect(() => {
-    if (provider) {
-      initStakeContract();
-    }
-  }, [provider]);
-
-  const fetchStakes = async () => {
-    try {
-      setLoading(true);
-      const newStakes = await stakeContract.fetchStakes();
-      setStakes(newStakes);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  async function fetchStakerDetails(loading = true) {
-    try {
-      loading && setLoading(true);
-      const details = await stakeContract.fetchStakerDetails();
-      setDetails(details);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      loading && setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (!stakeContract) {
-      return;
-    }
-
-    fetchStakerDetails(false);
-    fetchStakes();
-  }, [stakeContract]);
-
-  const updateBalance = () => {
-    getUSDCXBalance(provider, wallet).then((value) => {
-      setBalance(parseFloat(value));
-    });
-  };
-
-  // update balance flow
-  const updateNetFlow = async () => {
-    const result = await flowDetails(wallet);
-    setNetFlow(parseFloat(ethers.utils.formatEther(result.cfa.netFlow)));
-  };
-  useEffect(() => {
-    if (!provider) {
-      return;
-    }
-    const id = setInterval(() => {
-      updateBalance();
-    }, FETCH_BALANCE_INTERVAL);
-
-    updateBalance();
-    updateNetFlow();
-    return () => clearInterval(id);
-  }, [provider]);
-
-  const handleAllocate = async (transaction: ethers.ContractReceipt) => {
-    fetchStakerDetails(false);
-    fetchStakes();
-  };
-
-  const [showAllocate, setShowAllocate] = useState(false);
-  const [updateAllocation, setUpdateAllocation] = useState<IStake>();
-  const [showTopUp, setShowTopUp] = useState(false);
-  const [showWithdraw, setShowWithdraw] = useState(false);
-
-  const stakesToShow = useMemo(
-    () => stakes.filter((s) => s.remainingDays >= 0),
-    [stakes]
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
   );
 
-  return (
-    <div>
-      <h1 className="text-xxl text-blue-dark mb-[5vh] ">Welcome Peter</h1>
-      <div className="bg-blue-oil px-6 py-8 rounded-xl text-white flex justify-between items-end stretch">
-        <div className="flex flex-col items-start">
-          <p className="text-sm mb-1">AVAILABLE FUNDS</p>
-          <h1 className={`text-xxl mb-6 flex items-end`}>
-            {balance ? <AnimatedNumber value={balance} rate={netFlow} /> : 0}
-            <span className="text-base ml-2"> USDx</span>
-          </h1>
-          <Image
-            src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=018"
-            alt="USDC logo"
-            width={48}
-            height={48}
-          />
-        </div>
-        <div className="flex" style={{ height: 130 }}>
-          <Button
-            size="lg"
-            className={`mr-6 rounded-full`}
-            style={{ borderRadius: 8 }}
-            onClick={() => setShowTopUp(true)}
-          >
-            <div className="flex items-center">
-              <span className="mr-6">Top up account</span>
-              <Arrow dir="up" />
-            </div>
-          </Button>
-          <Button
-            size="lg"
-            className={`bg-[#47a1b5] mr-6`}
-            style={{ borderRadius: 8 }}
-            onClick={() => setShowWithdraw(true)}
-          >
-            <div className="flex items-center">
-              <span className="mr-6">Withdraw funds</span>
-              <Arrow dir="down" />
-            </div>
-          </Button>
-        </div>
-      </div>
-      <div className="rounded-lg border-2 border-grey-light mt-6">
-        <div className="p-6 flex">
-          <Image
-            src="/placeholder_child.jpg"
-            alt="avatar"
-            width={64}
-            height={64}
-          />
-          <div className="ml-6">
-            <div className="mb-2 flex items-center">
-              <h3 className="text-blue-dark text-lg mr-3">Peter</h3>
-              <Button className="bg-[#47a1b5]" size="sm">
-                Withdraws allowed
-              </Button>
-            </div>
-            <p className="text-grey-medium">{wallet}</p>
-          </div>
-        </div>
-        <div className="flex border-t-2 border-grey-light">
-          <div className="flex flex-col text-blue-dark">
-            <div className="flex-1 p-4 border-b-2 border-grey-light">
-              <p className="text-s mb-1">AVAILABLE FUNDS</p>
-              <h3 className="text-lg">
-                {Math.floor(balance)} <span className="text-base"> USDx</span>
-              </h3>
-            </div>
-            <div className="flex-1 p-4 border-b-2 border-grey-light">
-              <p className="text-s mb-1">INVESTED FUNDS</p>
-              <h3 className="text-lg">
-                {Math.floor(
-                  parseFloat(ethers.utils.formatEther(details.totalInvested))
-                )}{" "}
-                <span className="text-base"> USDx</span>
-              </h3>
-            </div>
-            <div className="flex-1 p-4">
-              <p className="text-s mb-1">TOTAL REWARDS</p>
-              <h3 className="text-lg flex">
-                <span className="mr-1">
-                  {ethers.utils.commify(
-                    ethers.utils.formatUnits(details.totalRewards)
-                  )}{" "}
-                </span>
-                <Logo variant="blue" />
-              </h3>
-            </div>
-          </div>
-          <div className="border-l-2 border-grey-light pl-4 py-4 pb-0 flex flex-col flex-1">
-            <p className="text-s">YOUR ALLOCATIONS</p>
-            <div
-              className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
-              style={{ maxHeight: 300 }}
-            >
-              {stakesToShow.map((a) => (
-                <div
-                  className="flex items-center hover:cursor-pointer"
-                  key={a.name}
-                  onClick={() => setUpdateAllocation({ ...a })}
-                >
-                  <Allocation className="flex-1" key={a.id} {...a} />
-                  <Button className="ml-4 bg-blue-oil mt-3 text-base" size="sm">
-                    Add funds
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-      <Button
-        className={`text-sm w-full rounded-md flex justify-end mt-4 ${
-          loading && "animate-pulse pointer-events-none"
-        }`}
-        onClick={() => setShowAllocate(true)}
+  const { connectedSigner } = useContractStore(
+    (state) => ({
+      connectedSigner: state.connectedSigner,
+    }),
+    shallow
+  );
+
+  const { data } = useBalance({
+    address: userDetails?.wallet as `0x${string}`,
+  });
+
+  const toast = useToast();
+  const { chain } = useNetwork();
+
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isAddChildOpen,
+    onOpen: onAddChildOpen,
+    onClose: onAddChildClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenChildDetails,
+    onOpen: onOpenChildDetails,
+    onClose: onCloseChildDetails,
+  } = useDisclosure();
+
+  const {
+    isOpen: isChangeUsernameOpen,
+    onOpen: onChangeUsernameOpen,
+    onClose: onChangeUsernameClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isSendFundsOpen,
+    onOpen: onSendFundsOpen,
+    onClose: onSendFundsClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isChildDefiOptionsOpen,
+    onOpen: onChildDefiOptionsOpen,
+    onClose: onChildDefiOptionsClose,
+  } = useDisclosure();
+
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
+
+  useEffect(() => {
+    if (!userDetails?.wallet) return;
+
+    const getUserDBData = async () => {
+      try {
+        const { data } = await axios.get(
+          `/api/vercel/get-json?key=${userDetails?.wallet}`
+        );
+        console.log("data", data);
+        setChildDBData(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    getUserDBData();
+  }, [userDetails?.wallet]);
+
+  // useEffect(() => {
+  //   if (!stakeContract || !children.length) {
+  //     setChildrenStakes({});
+  //     return;
+  //   }
+  // }, [stakeContract, children]);
+
+  //=============================================================================
+  //                               FUNCTIONS
+  //=============================================================================
+
+  // const fetchChild = useCallback(async () => {
+  //   const getChild = async () => {
+  //     if (!walletAddress) return;
+
+  //     const contract = await HostContract.fromProvider(
+  //       connectedSigner,
+  //       walletAddress
+  //     );
+
+  //     setChildrenLoading(true);
+  //     const children = await contract.fetchChild(familyId, walletAddress);
+  //     const childrenWalletBalances = await axios.post(
+  //       `/api/etherscan/balancemulti`,
+  //       {
+  //         addresses: children.map((c) => c.wallet),
+  //       }
+  //     );
+
+  //     const childrenWithBalances = children.map((c) => {
+  //       const balance = childrenWalletBalances.data.find(
+  //         (b) => b.account === c.wallet
+  //       );
+  //       return {
+  //         ...c,
+  //         balance: balance ? balance.balance : 0,
+  //       };
+  //     });
+
+  //     setChildren(childrenWithBalances);
+  //     setChildrenLoading(false);
+  //   };
+
+  //   await getChild();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [children.length, contract, walletAddress]);
+
+  const testPostKV = async () => {
+    const body = {
+      address: userDetails?.wallet,
+      value: {
+        avatarURI:
+          "https://purple-ripe-cuckoo-537.mypinata.cloud/ipfs/QmYZ8KHQDupvfU5Bu6qCsPuStMqm1EyEK9hYTtxmLyTUV3",
+        backgroundURI:
+          "https://cdn.pixabay.com/photo/2021/02/01/06/48/geometric-5969508_1280.png",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(`/api/vercel/set-json`, body);
+      console.log("data", data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const testGetKV = async () => {
+    try {
+      const { data } = await axios.get(
+        `/api/vercel/get-json?key=${userDetails?.wallet}`
+      );
+      console.log("data", data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const uploadToIpfs = async (selectedFile: File | null) => {
+    try {
+      const response = await axios.post(
+        `/api/ipfs/upload-to-ipfs`,
+        selectedFile,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e as Error);
+      return {
+        validationError: "",
+        ifpsHash: "",
+      };
+    }
+  };
+
+  const handleSubmit = async (selectedFile: File | null, avatarURI: string) => {
+    setIsLoading(true);
+    setActiveStep(0);
+
+    let ipfsImageHash = "";
+
+    if (selectedFile) {
+      const { validationError, ifpsHash } = (await uploadToIpfs(
+        selectedFile
+      )) as {
+        validationError: string;
+        ifpsHash: string;
+      };
+
+      if (validationError) {
+        toast({
+          title: "Error",
+          description: validationError,
+          status: "error",
+        });
+        return;
+      }
+      ipfsImageHash = ifpsHash;
+    }
+
+    const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
+    const avatar = ipfsImageHash ? ifpsURI : avatarURI;
+
+    console.log("avatar", avatar);
+    console.log("walletAddress", userDetails?.wallet);
+    console.log("connectedSigner", connectedSigner);
+
+    // const contract = await HostContract.fromProvider(connectedSigner);
+
+    // console.log("contract", contract);
+
+    try {
+      setActiveStep(1);
+
+      // const familyId = childDetails.familyId;
+      // const tx = (await contract.updateChildAvatarURI(
+      //   walletAddress,
+      //   avatar,
+      //   familyId
+      // )) as TransactionResponse;
+
+      // setActiveStep(2);
+      // await tx.wait();
+
+      // setChildDetails({
+      //   ...childDetails,
+      //   avatarURI: avatar,
+      // });
+
+      const body = {
+        address: userDetails?.wallet,
+        value: {
+          ...childDBData,
+          avatarURI: avatar,
+        },
+      };
+
+      console.log("body", body);
+
+      await axios.post(`/api/vercel/set-json`, body);
+      const { data } = await axios.get(
+        `/api/vercel/get-json?key=${userDetails?.wallet}`
+      );
+      console.log("data", data);
+      setChildDBData(data);
+
+      toast({
+        title: "Avatar successfully updated",
+        status: "success",
+      });
+
+      onClose();
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
+    }
+  };
+
+  const onFamilyIdSubmit = async (id: string, parentWallet: string) => {
+    if (!id || !parentWallet) {
+      toast({
+        title: "Error",
+        description: "Enter family id and parent address",
+        status: "error",
+      });
+      return;
+    }
+
+    // const contract = await HostContract.fromProvider(connectedSigner);
+    // const hashFamilyId = await contract.hashFamilyId(parentWallet, id);
+    // const childDetails = await contract.fetchChild(hashFamilyId, walletAddress);
+
+    // if (!childDetails.username) {
+    //   toast({
+    //     title: "Error",
+    //     description: "Invalid family id or parent address",
+    //     status: "error",
+    //   });
+    //   return;
+    // }
+
+    // setChildDetails(childDetails);
+    // setFamilyIdSubmitted(true);
+  };
+
+  if (!familyIdSubmitted) {
+    return (
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        h="100vh"
+        direction="column"
       >
-        <div className="flex items-center">
-          <Plus />
-          <span className="ml-6 font-medium text-base">
-            Allocate your funds
-          </span>
-        </div>
-      </Button>
-      <AllocateModal
-        show={showAllocate || !!updateAllocation}
-        onClose={() => {
-          setShowAllocate(false);
-          setUpdateAllocation(undefined);
-        }}
-        onAllocate={handleAllocate}
-        update={updateAllocation}
-        balance={balance}
-      />
-      <TopUpModal
-        show={showTopUp}
-        onClose={() => setShowTopUp(false)}
-        onTransfer={() => updateBalance()}
-      />
-      <WithdrawModal
-        show={showWithdraw}
-        onClose={() => setShowWithdraw(false)}
-        onTransfer={() => updateBalance()}
-        balance={balance}
-      />
-    </div>
+        <Center w="md">
+          <PasswordInput onFamilyIdSubmit={onFamilyIdSubmit} />
+        </Center>
+      </Flex>
+    );
+  }
+  return (
+    <Box
+      mt={isBackground ? "-7.5rem" : "0"}
+      h="100vh"
+      bgImage={
+        isBackground
+          ? `linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ), url(${childDBData.avatarURI || "/images/placeholder-avatar.jpeg"})`
+          : ""
+      }
+      bgRepeat="no-repeat"
+      bgPosition="center"
+    >
+      <Container maxW="container.lg" mt="8rem"></Container>
+
+      {isMobileSize && (
+        <ChildDefiOptionsDrawer
+          isOpen={isChildDefiOptionsOpen}
+          onClose={onChildDefiOptionsClose}
+          placement="bottom"
+        />
+      )}
+
+      {/* <ChildDetailsDrawer
+        isOpen={isOpenChildDetails}
+        onClose={onCloseChildDetails}
+        placement="right"
+        childDetails={childDetails}
+        setChildDetails={setChildDetails}
+        childDBData={childDBData}
+      /> */}
+    </Box>
   );
 };
 

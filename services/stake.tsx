@@ -3,7 +3,7 @@ import { StakingToken } from "../types/ethers-contracts";
 import STAKING_ABI from "../abis/contracts/StakingToken.json";
 import { approveUSDCX } from "./usdcx_contract";
 
-const CONTRACT_ADDRESS = "0xbef965924efc5Fc353cC583F139419ef2150BaCf";
+const STAKING_CONTRACT = "0xbef965924efc5Fc353cC583F139419ef2150BaCf";
 
 export interface IStakerDetails {
   totalInvested: BigNumber;
@@ -28,7 +28,7 @@ export interface IStake {
 }
 
 const parseStake = function (stake: IContractStake): IStake {
-  console.log("start time:", new Date(stake.stakeStartTime.toNumber() * 1000));
+  // console.log("start time:", new Date(stake.stakeStartTime.toNumber() * 1000));
   const timePassed = Math.abs(
     new Date().getTime() -
       new Date(stake.stakeStartTime.toNumber() * 1000).getTime()
@@ -72,23 +72,23 @@ class StakeContract {
     return this.wallet;
   }
 
-  static async fromProvider(
-    provider: ethers.providers.Web3Provider,
-    address?: string
-  ) {
-    let wallet = address;
-    if (!address) {
-      const accounts = await provider.send("eth_requestAccounts", []);
-      wallet = accounts[0];
-    }
-    const signer = provider.getSigner(wallet);
-    const contract = new ethers.Contract(
-      CONTRACT_ADDRESS,
-      STAKING_ABI.abi,
-      signer
-    ) as StakingToken;
-    return new StakeContract(contract, wallet, provider);
-  }
+  // static async fromProvider(
+  //   provider: ethers.providers.Web3Provider,
+  //   address?: string
+  // ) {
+  //   let wallet = address;
+  //   if (!address) {
+  //     const accounts = await provider.send("eth_requestAccounts", []);
+  //     wallet = accounts[0];
+  //   }
+  //   const signer = provider.getSigner(wallet);
+  //   const contract = new ethers.Contract(
+  //     CONTRACT_ADDRESS,
+  //     STAKING_ABI.abi,
+  //     signer
+  //   ) as StakingToken;
+  //   return new StakeContract(contract, wallet, provider);
+  // }
 
   async fetchStakes(address = this.wallet): Promise<IStake[]> {
     const stakes = await this.contract.fetchStakes(address);
@@ -101,7 +101,7 @@ class StakeContract {
 
   async createStake(amount: number, duration: IStakeDuration, name: string) {
     const tokens = ethers.utils.parseUnits(amount.toString(), 18);
-    await approveUSDCX(this.provider, this.wallet, amount, CONTRACT_ADDRESS);
+    // await approveUSDCX(this.provider, this.wallet, amount, CONTRACT_ADDRESS);
     return this.contract.createStake(tokens, duration, name);
   }
 

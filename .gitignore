@@ -19,6 +19,8 @@
 .DS_Store
 *.pem
 .eslintcache
+/artifacts/build-info
+/artifacts/src/*/*.dbg.json
 
 # debug
 npm-debug.log*
@@ -43,4 +45,7 @@ typechain
 
 #Hardhat files
 cache
-# artifacts
+
+settings.json
+
+tsconfig.tsbuildinfo

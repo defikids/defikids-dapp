@@ -1,34 +1,60 @@
-import dynamic from "next/dynamic";
-import UnderlineText from "../components/underline_text";
+import { useAuthStore } from "@/store/auth/authStore";
+import { Box } from "@chakra-ui/react";
+import { useEffect } from "react";
+import shallow from "zustand/shallow";
+import Sandbox from "@/components/landingPage/Sandbox";
+import SplashText from "@/components/landingPage/SplashText";
+import SequenceLogin from "@/components/landingPage/SequenceLogin";
+import Earning from "@/components/landingPage/Earning";
+import Staking from "@/components/landingPage/Staking";
+import Investing from "@/components/landingPage/Investing";
 
-const Login = dynamic(() => import("../components/login"), {
-  ssr: false,
-});
+export default function Main() {
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
 
-export default function Home() {
-  return (
-    <>
-      <style global jsx>{`
-        body.bg-white {
-          background-color: #f1faee !important;
+  const { setNavigationSection } = useAuthStore(
+    (state) => ({
+      setNavigationSection: state.setNavigationSection,
+    }),
+    shallow
+  );
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = document.querySelectorAll("section");
+
+      for (const section of sections) {
+        if (section.id.includes("popover-content")) continue;
+
+        const rect = section.getBoundingClientRect();
+        if (
+          rect.top <= window.innerHeight * 0.2 &&
+          rect.bottom >= window.innerHeight * 0.2
+        ) {
+          setNavigationSection(section.id);
+          break;
         }
-      `}</style>
-      <div className="flex flex-1 flex-col items-center justify-center">
-        <h1 className="text-hero text-blue-dark text-center mb-[8vh]">
-          Teach your kids
-          <br /> to use <span className="text-orange">crypto</span>,
-          <br />
-          <UnderlineText className="text-blue-oil" color="bg-orange">
-            safely
-          </UnderlineText>{" "}
-          and
-          <br />
-          <UnderlineText className="text-blue-oil" color="bg-blue-dark">
-            confidently
-          </UnderlineText>
-        </h1>
-        <Login />
-      </div>
-    </>
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Clean up the event listener on unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  return (
+    <Box>
+      <SplashText />
+      <Sandbox />
+      <Earning />
+      <Staking />
+      <Investing />
+      <SequenceLogin />
+    </Box>
   );
 }

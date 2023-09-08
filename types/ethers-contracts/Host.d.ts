@@ -22,49 +22,124 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
 interface HostInterface extends ethers.utils.Interface {
   functions: {
+    "addChild(bytes32,string,string,address,bool)": FunctionFragment;
+    "fetchChild(address,bytes32)": FunctionFragment;
+    "fetchChildren(bytes32)": FunctionFragment;
+    "getFamilyByOwner(address)": FunctionFragment;
+    "getFamilyIdByOwner(address)": FunctionFragment;
     "getUserType(address)": FunctionFragment;
-    "fetchChild(address)": FunctionFragment;
-    "fetchChildren()": FunctionFragment;
-    "registerParent()": FunctionFragment;
-    "addChild(address,string,bool)": FunctionFragment;
-    "changeAccess(address,uint256)": FunctionFragment;
+    "hashFamilyId(address,string)": FunctionFragment;
+    "registerParent(bytes32,string,string)": FunctionFragment;
+    "toggleSandbox(address,bytes32)": FunctionFragment;
+    "updateAvatarURI(string)": FunctionFragment;
+    "updateChildAvatarURI(bytes32,address,string)": FunctionFragment;
+    "updateChildUsername(bytes32,address,string)": FunctionFragment;
+    "updateFamilyId(address,bytes32,bytes32)": FunctionFragment;
+    "updateUsername(string)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "getUserType", values: [string]): string;
-  encodeFunctionData(functionFragment: "fetchChild", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "addChild",
+    values: [BytesLike, string, string, string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "fetchChild",
+    values: [string, BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "fetchChildren",
-    values?: undefined
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getFamilyByOwner",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getFamilyIdByOwner",
+    values: [string]
+  ): string;
+  encodeFunctionData(functionFragment: "getUserType", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "hashFamilyId",
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "registerParent",
-    values?: undefined
+    values: [BytesLike, string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "addChild",
-    values: [string, string, boolean]
+    functionFragment: "toggleSandbox",
+    values: [string, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "changeAccess",
-    values: [string, BigNumberish]
+    functionFragment: "updateAvatarURI",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateChildAvatarURI",
+    values: [BytesLike, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateChildUsername",
+    values: [BytesLike, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateFamilyId",
+    values: [string, BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateUsername",
+    values: [string]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "getUserType",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "addChild", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "fetchChild", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "fetchChildren",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getFamilyByOwner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getFamilyIdByOwner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getUserType",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "hashFamilyId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "registerParent",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "addChild", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "changeAccess",
+    functionFragment: "toggleSandbox",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateAvatarURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateChildAvatarURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateChildUsername",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateFamilyId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateUsername",
     data: BytesLike
   ): Result;
 
@@ -85,459 +160,828 @@ export class Host extends Contract {
   interface: HostInterface;
 
   functions: {
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
+    addChild(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "addChild(bytes32,string,string,address,bool)"(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    fetchChild(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      fetchedChild: {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      };
+      0: {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      };
+    }>;
+
+    "fetchChild(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      fetchedChild: {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      };
+      0: {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      };
+    }>;
+
+    fetchChildren(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      }[];
+    }>;
+
+    "fetchChildren(bytes32)"(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      }[];
+    }>;
+
+    getFamilyByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: {
+        familyId: string;
+        memberSince: BigNumber;
+        avatarURI: string;
+        username: string;
+        owner: string;
+        children: string[];
+        0: string;
+        1: BigNumber;
+        2: string;
+        3: string;
+        4: string;
+        5: string[];
+      };
+    }>;
+
+    "getFamilyByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: {
+        familyId: string;
+        memberSince: BigNumber;
+        avatarURI: string;
+        username: string;
+        owner: string;
+        children: string[];
+        0: string;
+        1: BigNumber;
+        2: string;
+        3: string;
+        4: string;
+        5: string[];
+      };
+    }>;
+
+    getFamilyIdByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "getFamilyIdByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
     getUserType(
       _user: string,
       overrides?: CallOverrides
     ): Promise<{
-      0: BigNumber;
+      0: number;
     }>;
 
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
     "getUserType(address)"(
       _user: string,
       overrides?: CallOverrides
     ): Promise<{
-      0: BigNumber;
+      0: number;
     }>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChild(
-      _child: string,
+    hashFamilyId(
+      _owner: string,
+      _id: string,
       overrides?: CallOverrides
     ): Promise<{
-      0: {
-        _address: string;
-        username: string;
-        isLocked: boolean;
-        isActive: boolean;
-        childId: BigNumber;
-        0: string;
-        1: string;
-        2: boolean;
-        3: boolean;
-        4: BigNumber;
-      };
+      0: string;
     }>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChild(address)"(
-      _child: string,
+    "hashFamilyId(address,string)"(
+      _owner: string,
+      _id: string,
       overrides?: CallOverrides
     ): Promise<{
-      0: {
-        _address: string;
-        username: string;
-        isLocked: boolean;
-        isActive: boolean;
-        childId: BigNumber;
-        0: string;
-        1: string;
-        2: boolean;
-        3: boolean;
-        4: BigNumber;
-      };
+      0: string;
     }>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChildren(overrides?: CallOverrides): Promise<{
-      0: {
-        _address: string;
-        username: string;
-        isLocked: boolean;
-        isActive: boolean;
-        childId: BigNumber;
-        0: string;
-        1: string;
-        2: boolean;
-        3: boolean;
-        4: BigNumber;
-      }[];
-    }>;
+    registerParent(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChildren()"(overrides?: CallOverrides): Promise<{
-      0: {
-        _address: string;
-        username: string;
-        isLocked: boolean;
-        isActive: boolean;
-        childId: BigNumber;
-        0: string;
-        1: string;
-        2: boolean;
-        3: boolean;
-        4: BigNumber;
-      }[];
-    }>;
+    "registerParent(bytes32,string,string)"(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    registerParent(overrides?: Overrides): Promise<ContractTransaction>;
+    toggleSandbox(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    "registerParent()"(overrides?: Overrides): Promise<ContractTransaction>;
+    "toggleSandbox(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    addChild(
+    updateAvatarURI(
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "updateAvatarURI(string)"(
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    updateChildAvatarURI(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "updateChildAvatarURI(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    updateChildUsername(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    "addChild(address,string,bool)"(
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    changeAccess(
-      _child: string,
-      _childId: BigNumberish,
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    "changeAccess(address,uint256)"(
-      _child: string,
-      _childId: BigNumberish,
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    updateUsername(
+      _username: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "updateUsername(string)"(
+      _username: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
   };
 
-  /**
-   * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-   * @param _user - The address of the user.
-   */
-  getUserType(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
+  addChild(
+    _familyId: BytesLike,
+    _username: string,
+    _avatarURI: string,
+    _child: string,
+    _sandboxMode: boolean,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-   * @param _user - The address of the user.
-   */
+  "addChild(bytes32,string,string,address,bool)"(
+    _familyId: BytesLike,
+    _username: string,
+    _avatarURI: string,
+    _child: string,
+    _sandboxMode: boolean,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  fetchChild(
+    _child: string,
+    _familyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<{
+    username: string;
+    avatarURI: string;
+    familyId: string;
+    memberSince: BigNumber;
+    wallet: string;
+    sandboxMode: boolean;
+    isActive: boolean;
+    0: string;
+    1: string;
+    2: string;
+    3: BigNumber;
+    4: string;
+    5: boolean;
+    6: boolean;
+  }>;
+
+  "fetchChild(address,bytes32)"(
+    _child: string,
+    _familyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<{
+    username: string;
+    avatarURI: string;
+    familyId: string;
+    memberSince: BigNumber;
+    wallet: string;
+    sandboxMode: boolean;
+    isActive: boolean;
+    0: string;
+    1: string;
+    2: string;
+    3: BigNumber;
+    4: string;
+    5: boolean;
+    6: boolean;
+  }>;
+
+  fetchChildren(
+    _familyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    {
+      username: string;
+      avatarURI: string;
+      familyId: string;
+      memberSince: BigNumber;
+      wallet: string;
+      sandboxMode: boolean;
+      isActive: boolean;
+      0: string;
+      1: string;
+      2: string;
+      3: BigNumber;
+      4: string;
+      5: boolean;
+      6: boolean;
+    }[]
+  >;
+
+  "fetchChildren(bytes32)"(
+    _familyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    {
+      username: string;
+      avatarURI: string;
+      familyId: string;
+      memberSince: BigNumber;
+      wallet: string;
+      sandboxMode: boolean;
+      isActive: boolean;
+      0: string;
+      1: string;
+      2: string;
+      3: BigNumber;
+      4: string;
+      5: boolean;
+      6: boolean;
+    }[]
+  >;
+
+  getFamilyByOwner(
+    _owner: string,
+    overrides?: CallOverrides
+  ): Promise<{
+    familyId: string;
+    memberSince: BigNumber;
+    avatarURI: string;
+    username: string;
+    owner: string;
+    children: string[];
+    0: string;
+    1: BigNumber;
+    2: string;
+    3: string;
+    4: string;
+    5: string[];
+  }>;
+
+  "getFamilyByOwner(address)"(
+    _owner: string,
+    overrides?: CallOverrides
+  ): Promise<{
+    familyId: string;
+    memberSince: BigNumber;
+    avatarURI: string;
+    username: string;
+    owner: string;
+    children: string[];
+    0: string;
+    1: BigNumber;
+    2: string;
+    3: string;
+    4: string;
+    5: string[];
+  }>;
+
+  getFamilyIdByOwner(
+    _owner: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  "getFamilyIdByOwner(address)"(
+    _owner: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getUserType(_user: string, overrides?: CallOverrides): Promise<number>;
+
   "getUserType(address)"(
     _user: string,
     overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<number>;
 
-  /**
-   * - This function is used to determine if the user is a member of a family.
-   */
-  fetchChild(
+  hashFamilyId(
+    _owner: string,
+    _id: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  "hashFamilyId(address,string)"(
+    _owner: string,
+    _id: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  registerParent(
+    _familyId: BytesLike,
+    _avatarURI: string,
+    _username: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "registerParent(bytes32,string,string)"(
+    _familyId: BytesLike,
+    _avatarURI: string,
+    _username: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  toggleSandbox(
     _child: string,
-    overrides?: CallOverrides
-  ): Promise<{
-    _address: string;
-    username: string;
-    isLocked: boolean;
-    isActive: boolean;
-    childId: BigNumber;
-    0: string;
-    1: string;
-    2: boolean;
-    3: boolean;
-    4: BigNumber;
-  }>;
+    _familyId: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to determine if the user is a member of a family.
-   */
-  "fetchChild(address)"(
+  "toggleSandbox(address,bytes32)"(
     _child: string,
-    overrides?: CallOverrides
-  ): Promise<{
-    _address: string;
-    username: string;
-    isLocked: boolean;
-    isActive: boolean;
-    childId: BigNumber;
-    0: string;
-    1: string;
-    2: boolean;
-    3: boolean;
-    4: BigNumber;
-  }>;
+    _familyId: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to determine if the user is a member of a family.
-   */
-  fetchChildren(
-    overrides?: CallOverrides
-  ): Promise<
-    {
-      _address: string;
-      username: string;
-      isLocked: boolean;
-      isActive: boolean;
-      childId: BigNumber;
-      0: string;
-      1: string;
-      2: boolean;
-      3: boolean;
-      4: BigNumber;
-    }[]
-  >;
+  updateAvatarURI(
+    _avatarURI: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to determine if the user is a member of a family.
-   */
-  "fetchChildren()"(
-    overrides?: CallOverrides
-  ): Promise<
-    {
-      _address: string;
-      username: string;
-      isLocked: boolean;
-      isActive: boolean;
-      childId: BigNumber;
-      0: string;
-      1: string;
-      2: boolean;
-      3: boolean;
-      4: BigNumber;
-    }[]
-  >;
+  "updateAvatarURI(string)"(
+    _avatarURI: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to create a new family (provider).
-   */
-  registerParent(overrides?: Overrides): Promise<ContractTransaction>;
+  updateChildAvatarURI(
+    _familyId: BytesLike,
+    _child: string,
+    _avatarURI: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to create a new family (provider).
-   */
-  "registerParent()"(overrides?: Overrides): Promise<ContractTransaction>;
+  "updateChildAvatarURI(bytes32,address,string)"(
+    _familyId: BytesLike,
+    _child: string,
+    _avatarURI: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to add a child to the family.
-   * @param _child - The address of the child.
-   * @param _isLocked - Determines if the child account is locked.
-   * @param _username - The username of the child.
-   */
-  addChild(
+  updateChildUsername(
+    _familyId: BytesLike,
     _child: string,
     _username: string,
-    _isLocked: boolean,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to add a child to the family.
-   * @param _child - The address of the child.
-   * @param _isLocked - Determines if the child account is locked.
-   * @param _username - The username of the child.
-   */
-  "addChild(address,string,bool)"(
+  "updateChildUsername(bytes32,address,string)"(
+    _familyId: BytesLike,
     _child: string,
     _username: string,
-    _isLocked: boolean,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to change the access of a child.
-   * @param _child - The address of the child.
-   */
-  changeAccess(
-    _child: string,
-    _childId: BigNumberish,
+  updateFamilyId(
+    _owner: string,
+    _familyId: BytesLike,
+    _updatedFamilyId: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  /**
-   * - This function is used to change the access of a child.
-   * @param _child - The address of the child.
-   */
-  "changeAccess(address,uint256)"(
-    _child: string,
-    _childId: BigNumberish,
+  "updateFamilyId(address,bytes32,bytes32)"(
+    _owner: string,
+    _familyId: BytesLike,
+    _updatedFamilyId: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  updateUsername(
+    _username: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "updateUsername(string)"(
+    _username: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
-    getUserType(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
+    addChild(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
+    "addChild(bytes32,string,string,address,bool)"(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    fetchChild(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      username: string;
+      avatarURI: string;
+      familyId: string;
+      memberSince: BigNumber;
+      wallet: string;
+      sandboxMode: boolean;
+      isActive: boolean;
+      0: string;
+      1: string;
+      2: string;
+      3: BigNumber;
+      4: string;
+      5: boolean;
+      6: boolean;
+    }>;
+
+    "fetchChild(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      username: string;
+      avatarURI: string;
+      familyId: string;
+      memberSince: BigNumber;
+      wallet: string;
+      sandboxMode: boolean;
+      isActive: boolean;
+      0: string;
+      1: string;
+      2: string;
+      3: BigNumber;
+      4: string;
+      5: boolean;
+      6: boolean;
+    }>;
+
+    fetchChildren(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      }[]
+    >;
+
+    "fetchChildren(bytes32)"(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      {
+        username: string;
+        avatarURI: string;
+        familyId: string;
+        memberSince: BigNumber;
+        wallet: string;
+        sandboxMode: boolean;
+        isActive: boolean;
+        0: string;
+        1: string;
+        2: string;
+        3: BigNumber;
+        4: string;
+        5: boolean;
+        6: boolean;
+      }[]
+    >;
+
+    getFamilyByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      familyId: string;
+      memberSince: BigNumber;
+      avatarURI: string;
+      username: string;
+      owner: string;
+      children: string[];
+      0: string;
+      1: BigNumber;
+      2: string;
+      3: string;
+      4: string;
+      5: string[];
+    }>;
+
+    "getFamilyByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      familyId: string;
+      memberSince: BigNumber;
+      avatarURI: string;
+      username: string;
+      owner: string;
+      children: string[];
+      0: string;
+      1: BigNumber;
+      2: string;
+      3: string;
+      4: string;
+      5: string[];
+    }>;
+
+    getFamilyIdByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "getFamilyIdByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getUserType(_user: string, overrides?: CallOverrides): Promise<number>;
+
     "getUserType(address)"(
       _user: string,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<number>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChild(
+    hashFamilyId(
+      _owner: string,
+      _id: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "hashFamilyId(address,string)"(
+      _owner: string,
+      _id: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    registerParent(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "registerParent(bytes32,string,string)"(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    toggleSandbox(
       _child: string,
+      _familyId: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      _address: string;
-      username: string;
-      isLocked: boolean;
-      isActive: boolean;
-      childId: BigNumber;
-      0: string;
-      1: string;
-      2: boolean;
-      3: boolean;
-      4: BigNumber;
-    }>;
+    ): Promise<void>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChild(address)"(
+    "toggleSandbox(address,bytes32)"(
       _child: string,
+      _familyId: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      _address: string;
-      username: string;
-      isLocked: boolean;
-      isActive: boolean;
-      childId: BigNumber;
-      0: string;
-      1: string;
-      2: boolean;
-      3: boolean;
-      4: BigNumber;
-    }>;
+    ): Promise<void>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChildren(
+    updateAvatarURI(
+      _avatarURI: string,
       overrides?: CallOverrides
-    ): Promise<
-      {
-        _address: string;
-        username: string;
-        isLocked: boolean;
-        isActive: boolean;
-        childId: BigNumber;
-        0: string;
-        1: string;
-        2: boolean;
-        3: boolean;
-        4: BigNumber;
-      }[]
-    >;
+    ): Promise<void>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChildren()"(
+    "updateAvatarURI(string)"(
+      _avatarURI: string,
       overrides?: CallOverrides
-    ): Promise<
-      {
-        _address: string;
-        username: string;
-        isLocked: boolean;
-        isActive: boolean;
-        childId: BigNumber;
-        0: string;
-        1: string;
-        2: boolean;
-        3: boolean;
-        4: BigNumber;
-      }[]
-    >;
+    ): Promise<void>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    registerParent(overrides?: CallOverrides): Promise<void>;
+    updateChildAvatarURI(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    "registerParent()"(overrides?: CallOverrides): Promise<void>;
+    "updateChildAvatarURI(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    addChild(
+    updateChildUsername(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    "addChild(address,string,bool)"(
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    changeAccess(
-      _child: string,
-      _childId: BigNumberish,
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    "changeAccess(address,uint256)"(
-      _child: string,
-      _childId: BigNumberish,
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateUsername(_username: string, overrides?: CallOverrides): Promise<void>;
+
+    "updateUsername(string)"(
+      _username: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -545,199 +989,342 @@ export class Host extends Contract {
   filters: {};
 
   estimateGas: {
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
+    addChild(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "addChild(bytes32,string,string,address,bool)"(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    fetchChild(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "fetchChild(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    fetchChildren(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "fetchChildren(bytes32)"(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getFamilyByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "getFamilyByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getFamilyIdByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "getFamilyIdByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getUserType(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
     "getUserType(address)"(
       _user: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChild(_child: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChild(address)"(
-      _child: string,
+    hashFamilyId(
+      _owner: string,
+      _id: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChildren(overrides?: CallOverrides): Promise<BigNumber>;
+    "hashFamilyId(address,string)"(
+      _owner: string,
+      _id: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChildren()"(overrides?: CallOverrides): Promise<BigNumber>;
+    registerParent(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    registerParent(overrides?: Overrides): Promise<BigNumber>;
+    "registerParent(bytes32,string,string)"(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    "registerParent()"(overrides?: Overrides): Promise<BigNumber>;
+    toggleSandbox(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    addChild(
+    "toggleSandbox(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    updateAvatarURI(
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "updateAvatarURI(string)"(
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    updateChildAvatarURI(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "updateChildAvatarURI(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    updateChildUsername(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    "addChild(address,string,bool)"(
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    changeAccess(
-      _child: string,
-      _childId: BigNumberish,
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    "changeAccess(address,uint256)"(
-      _child: string,
-      _childId: BigNumberish,
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    updateUsername(
+      _username: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "updateUsername(string)"(
+      _username: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
+    addChild(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "addChild(bytes32,string,string,address,bool)"(
+      _familyId: BytesLike,
+      _username: string,
+      _avatarURI: string,
+      _child: string,
+      _sandboxMode: boolean,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    fetchChild(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "fetchChild(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    fetchChildren(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "fetchChildren(bytes32)"(
+      _familyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getFamilyByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "getFamilyByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getFamilyIdByOwner(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "getFamilyIdByOwner(address)"(
+      _owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getUserType(
       _user: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to determine the type of user 1 = parent. 2 = child. 3 = neither
-     * @param _user - The address of the user.
-     */
     "getUserType(address)"(
       _user: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChild(
-      _child: string,
+    hashFamilyId(
+      _owner: string,
+      _id: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChild(address)"(
-      _child: string,
+    "hashFamilyId(address,string)"(
+      _owner: string,
+      _id: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    fetchChildren(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    registerParent(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to determine if the user is a member of a family.
-     */
-    "fetchChildren()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "registerParent(bytes32,string,string)"(
+      _familyId: BytesLike,
+      _avatarURI: string,
+      _username: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    registerParent(overrides?: Overrides): Promise<PopulatedTransaction>;
+    toggleSandbox(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to create a new family (provider).
-     */
-    "registerParent()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    "toggleSandbox(address,bytes32)"(
+      _child: string,
+      _familyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    addChild(
+    updateAvatarURI(
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "updateAvatarURI(string)"(
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    updateChildAvatarURI(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "updateChildAvatarURI(bytes32,address,string)"(
+      _familyId: BytesLike,
+      _child: string,
+      _avatarURI: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    updateChildUsername(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to add a child to the family.
-     * @param _child - The address of the child.
-     * @param _isLocked - Determines if the child account is locked.
-     * @param _username - The username of the child.
-     */
-    "addChild(address,string,bool)"(
+    "updateChildUsername(bytes32,address,string)"(
+      _familyId: BytesLike,
       _child: string,
       _username: string,
-      _isLocked: boolean,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    changeAccess(
-      _child: string,
-      _childId: BigNumberish,
+    updateFamilyId(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * - This function is used to change the access of a child.
-     * @param _child - The address of the child.
-     */
-    "changeAccess(address,uint256)"(
-      _child: string,
-      _childId: BigNumberish,
+    "updateFamilyId(address,bytes32,bytes32)"(
+      _owner: string,
+      _familyId: BytesLike,
+      _updatedFamilyId: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    updateUsername(
+      _username: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "updateUsername(string)"(
+      _username: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };

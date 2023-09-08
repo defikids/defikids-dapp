@@ -1,24 +1,30 @@
 import { BigNumber, ethers } from "ethers";
-import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
 import { IChild } from "../services/contract";
 import { IStake, IStakeDuration } from "../services/stake";
-import { useStore } from "../services/store";
 import { getUSDCXBalance } from "../services/usdcx_contract";
-import Allocation from "./allocation";
-import Button from "./button";
-import Plus from "./plus";
+// import Allocation from "./allocation";
+import { AiOutlinePlus } from "react-icons/ai";
+import { IoIosMore } from "react-icons/io";
+import { trimAddress } from "@/utils/web3";
+import { ChildDetails, User } from "@/dataSchema/types";
 
-interface IProps extends IChild {
-  details: {
-    totalCreatedStakes: BigNumber;
-    totalInvested: BigNumber;
-    totalRewards: BigNumber;
-  };
-  stakes: IStake[];
-  onTransfer: () => void;
-  onStream: () => void;
-}
+import {
+  Box,
+  Flex,
+  Button,
+  Text,
+  useBreakpointValue,
+  Badge,
+  ButtonGroup,
+  Container,
+  Tooltip,
+  useToast,
+  Heading,
+  Image,
+  Avatar,
+  AvatarBadge,
+} from "@chakra-ui/react";
 
 export const MOCK_ALLOCATIONS = [
   {
@@ -47,27 +53,57 @@ export const MOCK_ALLOCATIONS = [
   },
 ];
 
-const Child: React.FC<IProps> = ({
-  _address,
+// username: string;
+// avatarURI: string;
+// familyId: string;
+// memberSince: number;
+// wallet: string;
+// sandboxMode: boolean;
+// isActive: boolean;
+const Child = ({
   username,
-  isLocked,
-  details,
+  avatarURI,
+  familyId,
+  memberSince,
+  wallet,
+  sandboxMode,
+  isActive,
   stakes = [],
-  onTransfer,
-  onStream,
+  onOpen,
+  childKey,
+  setChildKey,
+  childDetails,
+}: {
+  username: string;
+  avatarURI: string;
+  familyId: string;
+  memberSince: number;
+  wallet: string;
+  sandboxMode: boolean;
+  isActive: boolean;
+  stakes: IStake[];
+  onOpen: () => void;
+  childKey: number;
+  setChildKey: (key: number) => void;
+  childDetails: ChildDetails;
 }) => {
-  const {
-    state: { provider },
-  } = useStore();
+  const toast = useToast();
   const [balance, setBalance] = useState(0);
-  useEffect(() => {
-    if (!provider || !_address) {
-      return;
-    }
-    getUSDCXBalance(provider, _address).then((value) => {
-      setBalance(parseFloat(value));
-    });
-  }, [provider, _address]);
+  // useEffect(() => {
+  //   if (!provider || !_address) {
+  //     return;
+  //   }
+  //   getUSDCXBalance(provider, _address).then((value) => {
+  //     setBalance(parseFloat(value));
+  //   });
+  // }, [provider, _address]);
+
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
 
   const stakesToShow = useMemo(
     () => stakes.filter((s) => s.remainingDays >= 0),
@@ -75,95 +111,32 @@ const Child: React.FC<IProps> = ({
   );
 
   return (
-    <div className="rounded-lg border-2 border-grey-light">
-      <div className="p-6 flex">
-        <Image
-          src="/placeholder_child.jpg"
-          width={64}
-          height={64}
-          alt="avatar"
-        />
-        <div className="ml-6">
-          <div className="mb-2 flex items-center">
-            <h3 className="text-blue-dark text-lg mr-3">{username}</h3>
-            {!isLocked && (
-              <Button className="bg-[#47a1b5]" size="sm">
-                Withdraws allowed
-              </Button>
-            )}
-          </div>
-          <p className="text-grey-medium">{_address}</p>
-        </div>
-      </div>
-      <div className="border-t-2 border-b-2 border-grey-light flex">
-        <Button
-          className="rounded-0 bg-white border-r-2 border-grey-light shadow-[_0_0px_10px_rgba(0,0,0,0.1)]"
-          onClick={onTransfer}
-        >
-          <div
-            className="flex items-center text-blue-dark"
-            style={{ padding: "0 2px" }}
-          >
-            <Plus width={12} height={12} />
-            <span className="ml-1 font-normal text-base">Add more funds</span>
-          </div>
-        </Button>
-        <Button
-          className="rounded-0 bg-white border-r-2 border-grey-light shadow-[_0_0px_10px_rgba(0,0,0,0.1)]"
-          onClick={onStream}
-        >
-          <div className="flex items-center text-blue-dark">
-            <Plus width={12} height={12} />
-            <span className="ml-1 font-normal text-base">
-              Create new stream
-            </span>
-          </div>
-        </Button>
-        <Button className="rounded-0 bg-white flex-1 shadow-[_0_0px_10px_rgba(0,0,0,0.1)]">
-          <span className="text-blue-dark block" style={{ marginTop: -12 }}>
-            ...
-          </span>
-        </Button>
-      </div>
-      <div className="flex">
-        <div className="flex flex-col text-blue-dark">
-          <div className="flex-1 p-4 border-b-2 border-grey-light">
-            <p className="text-s mb-1">AVAILABLE FUNDS</p>
-            <h3 className="text-lg">
-              {parseFloat(balance.toFixed(2))}{" "}
-              <span className="text-base"> USDx</span>
-            </h3>
-          </div>
-          <div className="flex-1 p-4 border-b-2 border-grey-light">
-            <p className="text-s mb-1">INVESTED FUNDS</p>
-            <h3 className="text-lg">
-              {parseFloat(
-                ethers.utils.formatEther(details?.totalInvested ?? 0)
-              )}{" "}
-              <span className="text-base">USDx</span>
-            </h3>
-          </div>
-          <div className="flex-1 p-4">
-            <p className="text-s mb-1">TOTAL REWARDS</p>
-            <h3 className="text-lg">
-              {parseFloat(ethers.utils.formatEther(details?.totalRewards ?? 0))}{" "}
-              <span className="text-base">USDx</span>
-            </h3>
-          </div>
-        </div>
-        <div className="border-l-2 border-grey-light pl-4 py-4 pb-0 flex flex-col flex-1">
-          <p className="text-s">INVESTED FUNDS</p>
-          <div
-            className="flex-1 overflow-auto flex flex-col pb-3 pr-4"
-            style={{ maxHeight: 300 }}
-          >
-            {stakesToShow.map((s) => (
-              <Allocation key={s.id} {...s} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+    <Flex
+      pb={6}
+      alignItems="center"
+      direction="column"
+      onClick={() => {
+        setChildKey(childKey);
+        onOpen();
+      }}
+      _hover={{
+        transform: "scale(1.05)",
+      }}
+      style={{
+        cursor: "pointer",
+      }}
+    >
+      <Avatar
+        mt={1}
+        size="2xl"
+        name="Defi Kids"
+        src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
+      />
+
+      <Box mt="2rem">
+        <Text>{username ? username : trimAddress(wallet)}</Text>
+      </Box>
+    </Flex>
   );
 };
 

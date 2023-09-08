@@ -1,122 +1,164 @@
-import { useEffect } from "react";
-import { ethers } from "ethers";
-import { loginUser, StoreAction, useStore } from "../services/store";
-import Web3Auth from "../services/web3auth";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { UserType } from "../services/contract";
-import Sequence from "../services/sequence";
+import { UserType } from "@/dataSchema/enums";
+import { useAuthStore } from "@/store/auth/authStore";
+import { useContractStore } from "@/store/contract/contractStore";
+import { shallow } from "zustand/shallow";
+import { providers } from "ethers";
+import { watchAccount } from "@wagmi/core";
+import axios from "axios";
+import { User } from "@/dataSchema/types";
 
-const Auth: React.FC = () => {
-  const store = useStore();
+const Auth = ({
+  onRegisterOpen,
+  setHasCheckedUserType,
+  hasCheckedUserType,
+}: {
+  onRegisterOpen: () => void;
+  setHasCheckedUserType: (hasCheckedUserType: boolean) => void;
+  hasCheckedUserType: boolean;
+}) => {
+  //=============================================================================
+  //                               HOOKS
+  //=============================================================================
+
   const router = useRouter();
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
-  const handleLogin = async (data) => {
-    try {
-      const provider = new ethers.providers.Web3Provider(
-        Web3Auth.web3auth.provider
+  watchAccount((account) => {
+    const { isConnected, address } = account;
+
+    if (walletAddress && address && walletAddress !== (address as string)) {
+      console.log("walletAddress", walletAddress);
+      console.log("address", address);
+      setHasCheckedUserType(false);
+      setLogout();
+    }
+    if (isConnected) {
+      setHasCheckedUserType(false);
+      setSelectedAddress(address);
+    }
+  });
+
+  const {
+    isLoggedIn,
+    userDetails,
+    setIsLoggedIn,
+    setLogout,
+    setUserDetails,
+    walletAddress,
+    setWalletAddress,
+  } = useAuthStore(
+    (state) => ({
+      isLoggedIn: state.isLoggedIn,
+      userDetails: state.userDetails,
+      setIsLoggedIn: state.setIsLoggedIn,
+      setLogout: state.setLogout,
+      setUserDetails: state.setUserDetails,
+      walletAddress: state.walletAddress,
+      setWalletAddress: state.setWalletAddress,
+    }),
+    shallow
+  );
+
+  const { setConnectedSigner, setProvider } = useContractStore(
+    (state) => ({
+      setConnectedSigner: state.setConnectedSigner,
+      setProvider: state.setProvider,
+    }),
+    shallow
+  );
+
+  /*
+   * This hook will listen for the beforeunload event (when the user refreshes the page) and navigate the user to the home page
+   */
+  // useEffect(() => {
+  //   const handleBeforeUnload = (e) => {
+  //     e.preventDefault();
+  //     router.push("/");
+  //   };
+
+  //   // Add the event listener
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   // Clean up the event listener when the component unmounts
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [router]);
+
+  /*
+   * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
+   */
+  useEffect(() => {
+    const fetchUserType = async () => {
+      if (!selectedAddress || hasCheckedUserType) return;
+
+      // @ts-ignore
+      const provider = new providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner(selectedAddress);
+
+      // add provider and signer to store
+      setProvider(provider);
+      setConnectedSigner(signer);
+
+      const { data } = await axios.get(
+        `/api/vercel/get-json?key=${selectedAddress}`
       );
-      loginUser(provider, logout, store.dispatch);
-    } catch (error) {
-      logout();
-    }
-  };
 
-  const handleLoginSequence = async (accounts: string[], wallet) => {
-    try {
-      wallet.saveSession();
-      const account = accounts.shift();
-      const authProvider = await wallet.getProvider();
-      const provider = new ethers.providers.Web3Provider(authProvider);
-      loginUser(provider, () => logout(true), store.dispatch, account);
-    } catch (error) {
-      console.error(error);
-      logout(true);
-    }
-  };
+      const user: User = data;
+      setHasCheckedUserType(true);
 
-  const logout = (isSequence: boolean = false) => {
-    try {
-      Web3Auth.logout();
-    } catch (error) {
-      console.error(error);
-    }
-    try {
-      Sequence.wallet?.disconnect();
-    } catch (error) {
-      console.error(error);
-    }
-    if (isSequence) {
-      handleLogout();
-    }
-  };
-
-  const handleLogout = () => {
-    store.dispatch({ type: StoreAction.LOGOUT });
-    window.location.replace("/");
-  };
-
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const wallet = Sequence.init(handleLoginSequence, handleLogout);
-        const session = wallet.getSession();
-        if (session) {
-          handleLoginSequence([session.accountAddress], wallet);
-          return;
-        }
-
-        await Web3Auth.initializeModal(handleLogin, handleLogout);
-      } catch (error) {
-        console.error(error);
+      if (user) {
+        setUserDetails(user);
       }
+      setIsLoggedIn(true);
+      setWalletAddress(selectedAddress);
     };
-    init();
+
+    fetchUserType();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAddress, hasCheckedUserType]);
+
+  /*
+   * This hook will check if the user has a dark mode preference set in local storage
+   */
+  useEffect(() => {
+    const colorMode = localStorage.getItem("chakra-ui-color-mode");
+    if (colorMode !== "dark") {
+      localStorage.setItem("chakra-ui-color-mode", "dark");
+    }
   }, []);
 
+  /*
+   * This hook will navigate the user to the correct page based on their user type
+   */
   useEffect(() => {
-    if (!store.state.loggedIn) {
-      router.push("/");
-    }
-
-    switch (store.state.userType) {
-      case UserType.UNREGISTERED:
-        router.push("/register");
-        break;
-      case UserType.PARENT:
-        router.push("/parent");
-        break;
-      case UserType.CHILD:
-        router.push("/child");
-        break;
-      default:
-        logout();
+    setTimeout(() => {
+      if (router.pathname === "/admin") {
+        router.push("/admin");
         return;
-    }
-  }, [store.state.userType]);
-
-  useEffect(() => {
-    const provider = store.state.provider;
-    if (!store.state.provider) {
-      return;
-    }
-
-    provider.on("network", (newNetwork, oldNetwork) => {
-      if (oldNetwork) {
-        logout();
-        window.location.reload();
       }
-    });
 
-    provider.on("chainChanged", async () => {
-      logout();
-      window.location.reload();
-    });
-
-    provider.on("accountsChanged", async () => {
-      logout();
-      window.location.reload();
-    });
-  }, []);
+      if (hasCheckedUserType) {
+        switch (userDetails?.userType) {
+          case UserType.UNREGISTERED:
+            onRegisterOpen();
+            break;
+          case UserType.PARENT:
+            router.push("/parent");
+            break;
+          case UserType.CHILD:
+            router.push("/child");
+            break;
+          default:
+            router.push("/");
+            return;
+        }
+      }
+    }, 1000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAddress, hasCheckedUserType]);
 
   return <></>;
 };

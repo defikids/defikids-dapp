@@ -1,0 +1,16 @@
+[profile.default]
+src = 'src'
+out = 'out'
+solc_version = "0.8.15"
+libs = [
+    'lib',
+    'node_modules',
+]
+remappings = [
+    '@ensdomains/=node_modules/@ensdomains/',
+    '@openzeppelin/=node_modules/@openzeppelin/',
+    'hardhat/=node_modules/hardhat/',
+]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+

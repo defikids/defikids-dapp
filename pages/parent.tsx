@@ -19,6 +19,7 @@ import { UsernameModal } from "@/components/Modals/UsernameModal";
 import { ParentDashboardTabs } from "@/dataSchema/enums";
 
 import { Settings } from "@/components/parentDashboard/tabs/Settings";
+import { Info } from "@/components/parentDashboard/tabs/Info";
 import BackgroundDefaults from "@/components/Modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
@@ -269,6 +270,14 @@ const Parent: React.FC = () => {
                 closeTab={closeTab}
               />
             )}
+
+            {selectedTab === ParentDashboardTabs.INFORMATION && (
+              <Info
+                isMobileSize={isMobileSize}
+                isOpenExtendedMenu={isOpenExtendedMenu}
+                closeTab={closeTab}
+              />
+            )}
           </Flex>
         </Box>
       </Flex>
@@ -489,16 +498,7 @@ export default Parent;
 //          onAdd={() => fetchChildren()}
 //        />
 
-//        <ChangeAvatarModal
-//          isOpen={isOpen}
-//          onClose={onClose}
-//          activeStep={activeStep}
-//          loading={loading}
-//          handleSubmit={handleSubmit}
-//          children={children}
-//          childKey={childKey}
-//          familyURI={familyDetails.avatarURI}
-//        />
+//
 
 //        <ChildDetailsDrawer
 //          isOpen={isOpenChildDetails}

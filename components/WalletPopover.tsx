@@ -69,9 +69,7 @@ export const WalletPopover = () => {
       </PopoverTrigger>
       <PopoverContent
         color="black"
-        // bg="white"
         style={{
-          // opacity white background.
           opacity: 0.9,
           background: "white",
         }}

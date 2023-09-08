@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { useDisclosure, useBreakpointValue } from "@chakra-ui/react";
 import {
-  Container,
   Heading,
   Image,
   Box,
@@ -31,10 +29,10 @@ const resourcesInfo = (
     <p>
       <b>Build Strong Financial Foundations:</b>
       <p>
-        We're dedicated to building a strong financial foundation for the
+        {`We're dedicated to building a strong financial foundation for the
         future. Our app introduces kids to the principles of budgeting and
         managing money wisely. With early exposure to these skills, children
-        gain confidence in navigating their financial journeys.
+        gain confidence in navigating their financial journeys.`}
       </p>
       <br></br>
     </p>
@@ -42,20 +40,20 @@ const resourcesInfo = (
       <b>Safety First:</b>
     </p>
     <p>
-      Your child's safety is our priority. Our app provides a sandbox mode,
+      {`Your child's safety is our priority. Our app provides a sandbox mode,
       which results in a secure environment for learning about cryptocurrencies
       without any real-world transactions. You can trust that your child is
-      exploring and learning in a controlled, risk-free space.
+      exploring and learning in a controlled, risk-free space.`}
     </p>
     <br></br>
     <p>
       <b>Parent-Child Collaboration:</b>
     </p>
     <p>
-      We believe in the power of learning together. Our app encourages open
+      {`We believe in the power of learning together. Our app encourages open
       conversations between parents and kids about finances. Engage in
       activities, track progress, and guide your child's learning journey to
-      ensure they're equipped with valuable financial knowledge.
+      ensure they're equipped with valuable financial knowledge.`}
     </p>
   </>
 );

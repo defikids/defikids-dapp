@@ -29,6 +29,7 @@ import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName"
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import router from "next/router";
+import { useAccount } from "wagmi";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -55,12 +56,12 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
 
   const toast = useToast();
+  const { address } = useAccount();
 
-  const { userDetails, setUserDetails, walletAddress } = useAuthStore(
+  const { setUserDetails, setIsLoggedIn } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setUserDetails: state.setUserDetails,
-      walletAddress: state.walletAddress,
+      setIsLoggedIn: state.setIsLoggedIn,
     }),
     shallow
   );
@@ -74,7 +75,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       const payload = {
         username,
         email,
-        walletAddress,
+        walletAddress: address,
       };
 
       await axios.post(`/api/emails/confirm-email-address`, payload);
@@ -113,7 +114,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
         familyName,
         email,
         familyId: hashedFamilyId(familyId),
-        wallet: walletAddress,
+        wallet: address,
         avatarURI: "",
         backgroundURI: "",
         opacity: {
@@ -123,17 +124,17 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
         username,
         userType: UserType.PARENT,
         children: [],
+        invitations: [],
       } as User;
 
       const payload = {
-        key: walletAddress,
+        key: address,
         value: body,
       };
 
-      console.log("payload", payload);
-
       await axios.post(`/api/vercel/set-json`, payload);
       setUserDetails(body);
+      setIsLoggedIn(true);
 
       const emailSent = await sendEmailConfirmation();
       if (!emailSent) {
@@ -148,7 +149,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       onClose();
       router.push("/parent");
     } catch (e) {
-      await axios.delete(`/api/vercel/delete-json-data?key=${walletAddress}`);
+      await axios.delete(`/api/vercel/delete-json-data?key=${address}`);
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
       onClose();

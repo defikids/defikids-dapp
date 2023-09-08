@@ -48,7 +48,7 @@ const ButtonMenu = ({
           }}
           _hover={{ borderColor: "gray" }}
         >
-          Add Member
+          Invite Member
         </Button>
       )}
     </VStack>

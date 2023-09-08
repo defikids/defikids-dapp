@@ -16,6 +16,8 @@ import { useSignMessage, useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/dataSchema/types";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
 
 const ConfirmEmail = () => {
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -34,12 +36,25 @@ const ConfirmEmail = () => {
 
   const message = "Confirm Email Address";
 
-  const redirectUser = () => {
+  const { setUserDetails } = useAuthStore(
+    (state) => ({
+      setUserDetails: state.setUserDetails,
+    }),
+    shallow
+  );
+
+  const redirectUser = async () => {
     let count = 5;
 
     // Countdown function
-    const countdown = () => {
+    const countdown = async () => {
       if (count === 0) {
+        const updatedUserDetails = await axios.get(
+          `/api/vercel/get-json?key=${user?.wallet}`
+        );
+
+        setUserDetails(updatedUserDetails.data);
+
         router.push("/");
       } else {
         setTimeout(() => {
@@ -156,7 +171,6 @@ const ConfirmEmail = () => {
                 `/api/vercel/get-json?key=${walletAddress}`
               );
 
-              console.log("user", user.data);
               setUser(user.data);
 
               if (user.data?.emailVerified) {
@@ -194,15 +208,7 @@ const ConfirmEmail = () => {
 
   const Logo = () => {
     return (
-      <Flex
-        align="center"
-        cursor="pointer"
-        onClick={() => {
-          router.push("/");
-        }}
-        ml={5}
-        mt={5}
-      >
+      <Flex align="center" ml={5} mt={5}>
         <Image src={"/pig_logo.png"} alt="Loader" width="50" height="50" />
 
         <Heading size="lg" ml={5}>

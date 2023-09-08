@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useEffect } from "react";
 import Navbar from "./navbar";
 import LoggedInNavBar from "./LoggedInNavbar";
@@ -9,9 +11,11 @@ import { useRouter } from "next/router";
 export const MainLayout = ({
   showStartEarning,
   isRegisterOpen,
+  onRegisterOpen,
 }: {
   showStartEarning: boolean;
   isRegisterOpen: boolean;
+  onRegisterOpen: () => void;
 }) => {
   //=============================================================================
   //                               HOOKS
@@ -38,14 +42,21 @@ export const MainLayout = ({
     if (navigationSection === "DefiKids") {
       onToggle;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigationSection]);
 
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
 
-  return (
+  const hide = () => {
+    if (router.pathname.startsWith("/member-invite")) return true;
+    if (router.pathname.startsWith("/confirm-email")) return true;
+    return false;
+  };
+
+  return hide() ? (
+    <></>
+  ) : (
     <Box
       bgGradient={["linear(to-b, black,#4F1B7C)"]}
       position="fixed"
@@ -56,14 +67,7 @@ export const MainLayout = ({
       zIndex={5}
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
-        {!isLoggedIn ? (
-          <Navbar
-            showStartEarning={showStartEarning}
-            isRegisterOpen={isRegisterOpen}
-          />
-        ) : (
-          <LoggedInNavBar />
-        )}
+        {!isLoggedIn ? <Navbar /> : <LoggedInNavBar />}
       </Box>
     </Box>
   );

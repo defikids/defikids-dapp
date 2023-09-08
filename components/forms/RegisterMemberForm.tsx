@@ -7,42 +7,27 @@ import {
   FormErrorMessage,
   useToast,
   Flex,
-  Text,
   Switch,
-  Link,
   FormLabel,
 } from "@chakra-ui/react";
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
-import { User, AccountDetails, ChildDetails } from "@/dataSchema/types";
-import NextLink from "next/link";
-import {
-  UserType,
-  AccountPackage,
-  Explaination,
-  AccountStatus,
-} from "@/dataSchema/enums";
-import { hashedFamilyId } from "@/utils/web3";
-import { v4 as uuidv4 } from "uuid";
-import { timestampInSeconds } from "@/utils/dateTime";
+import { Explaination, UserType } from "@/dataSchema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import router from "next/router";
 import { ExplainSandbox } from "@/components/explainations/Sandbox";
+import { User } from "@/dataSchema/types";
 
 export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
   //                             STATE
   //=============================================================================
 
-  const [username, setUsername] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [sandboxMode, setSandboxMode] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const isNameError = username === "";
-  const isWalletAddressError = walletAddress === "";
   const isEmailAddressError = emailAddress === "";
 
   const [showExplanation, setShowExplanation] = useState(false);
@@ -54,10 +39,9 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
 
   const toast = useToast();
 
-  const { userDetails, setUserDetails } = useAuthStore(
+  const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
     }),
     shallow
   );
@@ -65,59 +49,80 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
+  const storeInvitation = async (email: string) => {
+    try {
+      let response = await axios.get(
+        `/api/vercel/get-json?key=${userDetails.wallet}`
+      );
+
+      const user = response.data as User;
+
+      if (!user.invitations.includes(email)) {
+        const body = {
+          ...user,
+          invitations: [...user.invitations, email],
+        };
+
+        const payload = {
+          key: user.wallet,
+          value: body,
+        };
+
+        await axios.post(`/api/vercel/set-json`, payload);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const sendEmailInvite = async () => {
+    const { wallet, familyName, familyId } = userDetails;
+    try {
+      const payload = {
+        email: emailAddress,
+        parentAddress: wallet,
+        familyName: familyName,
+        sandboxMode,
+        familyId,
+      };
+
+      await axios.post(`/api/emails/invite-member`, payload);
+      await storeInvitation(emailAddress);
+
+      toast({
+        title: "Member Invite Email Sent",
+        status: "success",
+      });
+
+      return true;
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+    }
+  };
 
   const handleSubmit = async () => {
     setHasSubmitted(true);
 
-    if (isWalletAddressError || isEmailAddressError || isNameError) {
+    if (isEmailAddressError) {
       return;
     }
 
     try {
-      // const body = {
-      //   familyId: userDetails?.familyId || "",
-      //   email: emailAddress,
-      //   wallet: walletAddress,
-      //   avatarURI: "",
-      //   backgroundURI: "",
-      //   opacity: {
-      //     background: 1,
-      //     card: 1,
-      //   },
-      //   username,
-      //   userType: UserType.CHILD,
-      // } as ChildDetails;
+      const emailSent = await sendEmailInvite();
 
-      // const payload = {
-      //   key: walletAddress,
-      //   value: body,
-      // };
-
-      // console.log("payload", payload);
-
-      const payload = {
-        email: emailAddress,
-        firstName: "",
-        lastName: "",
-        familyId: userDetails?.familyId || "",
-      };
-
-      await axios.post(`/api/emails/invite-member`, payload);
-      // await axios.post(`/api/vercel/set-json`, payload);
-
-      // setUserDetails(body);
-
-      toast({
-        title: "Member Invite Sent",
-        description: "The member must accept the invite to join the family.",
-        status: "success",
-      });
+      if (!emailSent) {
+        toast({
+          title: "Error",
+          description: "An error occured while sending the invite.",
+          status: "error",
+        });
+        return;
+      }
 
       onClose();
-      // router.push("/parent");
     } catch (e) {
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
+      console.log(e);
       onClose();
     }
   };
@@ -134,68 +139,8 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <Box textAlign="left" px={3}>
       <form>
-        {/* Name and avatar */}
-        <Flex direction="row" align="center" mt={5}>
-          {/* Name */}
-          <FormControl isInvalid={isNameError && hasSubmitted}>
-            <Input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              borderColor={isNameError && hasSubmitted ? "red.500" : "black"}
-              _hover={{
-                borderColor: "gray.300",
-              }}
-              _focus={{
-                borderColor: "blue.500",
-              }}
-              sx={{
-                "::placeholder": {
-                  color: "gray.400", // Set the placeholder text color to gray
-                },
-              }}
-            />
-            {isNameError && hasSubmitted && (
-              <FormErrorMessage color="red.500">
-                Name is required
-              </FormErrorMessage>
-            )}
-          </FormControl>
-        </Flex>
-
-        {/* Wallet Address */}
-        <FormControl isInvalid={isWalletAddressError && hasSubmitted} mt={5}>
-          <Input
-            type="text"
-            color="black"
-            placeholder="Wallet Address"
-            value={walletAddress}
-            onChange={(e) => setWalletAddress(e.target.value)}
-            borderColor={
-              isWalletAddressError && hasSubmitted ? "red.500" : "black"
-            }
-            _hover={{
-              borderColor: "gray.300",
-            }}
-            _focus={{
-              borderColor: "blue.500",
-            }}
-            sx={{
-              "::placeholder": {
-                color: "gray.400",
-              },
-            }}
-          />
-          {isWalletAddressError && hasSubmitted && (
-            <FormErrorMessage color="red.500">
-              Wallet address is required.
-            </FormErrorMessage>
-          )}
-        </FormControl>
-
         {/* Email Address */}
-        <FormControl isInvalid={isEmailAddressError && hasSubmitted} mt={5}>
+        <FormControl isInvalid={isEmailAddressError && hasSubmitted} my={4}>
           <Input
             type="text"
             color="black"
@@ -224,27 +169,25 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
           )}
         </FormControl>
 
-        {/* Sandbox mode toggle switch */}
-        <Flex direction="row" justify="flex-end" align="center" mt={5}>
-          <Text fontSize="xs" ml={3}>
-            <Link
-              as={NextLink}
-              color="blue.500"
-              href="#"
+        <Flex
+          direction="row"
+          justify="space-between"
+          my={4}
+          alignItems="center"
+        >
+          <Flex pr={2} alignItems="center">
+            <QuestionOutlineIcon
+              mr={2}
+              cursor="pointer"
               onClick={() => {
                 setExplaination(Explaination.SANDBOX);
                 setShowExplanation(true);
               }}
-            >
-              What is this?
-            </Link>
-          </Text>
-        </Flex>
-
-        <Flex direction="row" justify="space-between" align="center" mb={4}>
-          <FormLabel pr={2} pt={2}>
-            {`Sandbox mode ${sandboxMode ? "enabled" : "disabled"}`}
-          </FormLabel>
+            />
+            <FormLabel mt="7px">
+              {`Sandbox mode ${sandboxMode ? "enabled" : "disabled"}`}
+            </FormLabel>
+          </Flex>
           <Switch
             isChecked={sandboxMode}
             colorScheme="blue"
@@ -263,7 +206,7 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
             bgColor: "blue.600",
           }}
         >
-          Register
+          Invite
         </Button>
       </form>
     </Box>

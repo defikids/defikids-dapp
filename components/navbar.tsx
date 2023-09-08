@@ -6,6 +6,7 @@ import {
   IconButton,
   useBreakpointValue,
   Collapse,
+  Button,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { useRouter } from "next/router";
@@ -18,14 +19,10 @@ import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/dataSchema/enums";
 import { BiSolidUserRectangle } from "react-icons/bi";
 import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
+import { useAccount } from "wagmi";
+import { BiLogOut } from "react-icons/bi";
 
-export default function NavBar({
-  showStartEarning,
-  isRegisterOpen,
-}: {
-  showStartEarning: boolean;
-  isRegisterOpen: boolean;
-}) {
+export default function NavBar() {
   //=============================================================================
   //                               HOOKS
   //============================================================================
@@ -38,11 +35,21 @@ export default function NavBar({
     lg: false,
   });
 
-  const { isLoggedIn, navigationSection, userDetails } = useAuthStore(
+  const {
+    isLoggedIn,
+    walletConnected,
+    navigationSection,
+    userDetails,
+    setIsLoggedIn,
+    setLogout,
+  } = useAuthStore(
     (state) => ({
       isLoggedIn: state.isLoggedIn,
+      walletConnected: state.walletConnected,
       navigationSection: state.navigationSection,
       userDetails: state.userDetails,
+      setIsLoggedIn: state.setIsLoggedIn,
+      setLogout: state.setLogout,
     }),
     shallow
   );
@@ -61,13 +68,33 @@ export default function NavBar({
   //                             FUNCTIONS
   //=============================================================================
 
+  const navigateUser = () => {
+    switch (userDetails?.userType) {
+      case UserType.UNREGISTERED:
+        setIsLoggedIn(false);
+        break;
+      case UserType.PARENT:
+        setIsLoggedIn(true);
+        router.push("/parent");
+        break;
+      case UserType.CHILD:
+        setIsLoggedIn(true);
+        router.push("/child");
+        break;
+      default:
+        router.push("/");
+        return;
+    }
+  };
+
   return (
     <>
       <Box
         zIndex={5}
         bgGradient={["linear(to-b, black,#4F1B7C)"]}
         position="fixed"
-        top={`${showStartEarning && !isRegisterOpen ? 8 : 0}`}
+        // top={`${isLoggedIn ? 8 : 0}`}
+        top={0}
         left={0}
         right={0}
         p={!isMobileSize ? 5 : 2}
@@ -82,10 +109,15 @@ export default function NavBar({
           <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
-            {/* Connect Button */}
-            {!isLoggedIn && <CustomConnectButton />}
+            {!walletConnected ? (
+              <CustomConnectButton />
+            ) : (
+              <Button mr={5} size="lg" onClick={navigateUser}>
+                <Heading size="md">Dashboard</Heading>
+              </Button>
+            )}
 
-            {userDetails?.userType === UserType.PARENT &&
+            {/* {userDetails?.userType === UserType.PARENT &&
               router.pathname !== "/parent" && (
                 <IconButton
                   size="lg"
@@ -93,12 +125,23 @@ export default function NavBar({
                   icon={<BiSolidUserRectangle size={30} />}
                   onClick={() => router.push("/parent")}
                 />
-              )}
+              )} */}
 
             {/* Wallet Menu */}
             {/* {isLoggedIn && <WalletPopover />} */}
 
             {/* Main Menu */}
+            {/* {isLoggedIn && (
+              <IconButton
+                size="lg"
+                aria-label="Menu Icon"
+                icon={<BiLogOut size={30} />}
+                onClick={setLogout}
+                mr={5}
+                pr={2}
+              />
+            )} */}
+
             <IconButton
               size="lg"
               aria-label="Menu Icon"

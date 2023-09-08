@@ -9,7 +9,6 @@ import { MainLayout } from "@/components/main_layout";
 import RegisterModal from "@/components/Modals/RegisterModal";
 import Footer from "@/components/footer";
 import { useState, useEffect } from "react";
-import { RegisterBanner } from "@/components/landingPage/RegisterBanner";
 import "@fontsource/slackey";
 import "@fontsource-variable/jetbrains-mono";
 import { useRouter } from "next/router";
@@ -28,8 +27,9 @@ function MyApp({ Component, pageProps }) {
     onClose: onRegisterClose,
   } = useDisclosure();
 
-  const { userDetails } = useAuthStore((state) => ({
+  const { userDetails, isLoggedIn } = useAuthStore((state) => ({
     userDetails: state.userDetails,
+    isLoggedIn: state.isLoggedIn,
   }));
 
   const router = useRouter();
@@ -39,6 +39,12 @@ function MyApp({ Component, pageProps }) {
       ? setShowStartEarning(true)
       : setShowStartEarning(false);
   }, [isRegisterOpen, hasCheckedUserType, userDetails?.userType]);
+
+  const hide = () => {
+    if (router.pathname.startsWith("/member-invite")) return false;
+    if (!isLoggedIn) return false;
+    return true;
+  };
 
   return (
     <ChakraProvider
@@ -53,24 +59,18 @@ function MyApp({ Component, pageProps }) {
     >
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains} modalSize="compact">
-          {!router.pathname.includes("/confirm-email") && (
-            <>
-              <Auth
-                onRegisterOpen={onRegisterOpen}
-                setHasCheckedUserType={setHasCheckedUserType}
-                hasCheckedUserType={hasCheckedUserType}
-              />
+          <>
+            <Auth
+              setHasCheckedUserType={setHasCheckedUserType}
+              hasCheckedUserType={hasCheckedUserType}
+            />
 
-              {showStartEarning && !isRegisterOpen && (
-                <RegisterBanner onRegisterOpen={onRegisterOpen} />
-              )}
-
-              <MainLayout
-                showStartEarning={showStartEarning}
-                isRegisterOpen={isRegisterOpen}
-              />
-            </>
-          )}
+            <MainLayout
+              showStartEarning={showStartEarning}
+              isRegisterOpen={isRegisterOpen}
+              onRegisterOpen={onRegisterOpen}
+            />
+          </>
 
           <Component {...pageProps} />
 

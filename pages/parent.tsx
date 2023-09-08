@@ -489,16 +489,7 @@ export default Parent;
 //          onAdd={() => fetchChildren()}
 //        />
 
-//        <ChangeAvatarModal
-//          isOpen={isOpen}
-//          onClose={onClose}
-//          activeStep={activeStep}
-//          loading={loading}
-//          handleSubmit={handleSubmit}
-//          children={children}
-//          childKey={childKey}
-//          familyURI={familyDetails.avatarURI}
-//        />
+//
 
 //        <ChildDetailsDrawer
 //          isOpen={isOpenChildDetails}

@@ -14,7 +14,7 @@ import { ParentDashboardTabs } from "@/dataSchema/enums";
 import { ChildDetails, User } from "@/dataSchema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import { EtherscanLogoCircle } from "@/components/logos/etherscanLogoCircle";
+import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 
 export const ExpandedDashboardMenu = ({

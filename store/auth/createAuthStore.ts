@@ -3,10 +3,10 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
-import { UserType } from "@/dataSchema/enums";
+import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
-import { User, ChildDetails } from "@/dataSchema/types";
-import { AccountStatus, AccountPackage } from "@/dataSchema/enums";
+import { User, ChildDetails } from "@/data-schema/types";
+import { AccountStatus, AccountPackage } from "@/data-schema/enums";
 
 type State = {
   isLoggedIn: boolean;

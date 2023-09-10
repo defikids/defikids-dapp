@@ -7,7 +7,7 @@ import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import axios from "axios";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 
 const Auth = ({
   setHasCheckedUserType,

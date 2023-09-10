@@ -13,14 +13,14 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
-import { User, AccountDetails } from "@/dataSchema/types";
+import { User, AccountDetails } from "@/data-schema/types";
 import NextLink from "next/link";
 import {
   UserType,
   AccountPackage,
   Explaination,
   AccountStatus,
-} from "@/dataSchema/enums";
+} from "@/data-schema/enums";
 import { hashedFamilyId } from "@/utils/web3";
 import { v4 as uuidv4 } from "uuid";
 import { timestampInSeconds } from "@/utils/dateTime";

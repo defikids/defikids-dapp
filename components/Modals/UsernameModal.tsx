@@ -22,10 +22,10 @@ import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import HostContract from "@/blockchain/contracts/contract";
-import { StepperContext } from "@/dataSchema/enums";
+import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { ChildDetails } from "@/dataSchema/types";
+import { ChildDetails } from "@/data-schema/types";
 
 export const UsernameModal = ({
   isOpen,

@@ -20,7 +20,7 @@
       "@/components/*": ["components/*"],
       "@/pages/*": ["pages/*"],
       "@/styles/*": ["styles/*"],
-      "@/data-schema/*": ["dataSchema/*"],
+      "@/data-schema/*": ["data-schema/*"],
       "@/store/*": ["store/*"],
       "@/hooks/*": ["hooks/*"],
       "@/data/*": ["data/*"],

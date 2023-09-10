@@ -1,4 +1,4 @@
-import { EtherscanContext } from "@/dataSchema/enums";
+import { EtherscanContext } from "@/data-schema/enums";
 import { getEtherscanUrl, trimAddress } from "@/utils/web3";
 import {
   Box,
@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useNetwork } from "wagmi";
 import { formatDateToIsoString } from "@/utils/dateTime";
-import { ChildDetails } from "@/dataSchema/types";
+import { ChildDetails } from "@/data-schema/types";
 
 export const ChildOverviewParentDashboard = ({
   childDetails,

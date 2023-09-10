@@ -4,7 +4,7 @@ import Auth from "@/components/auth";
 import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
 import { theme } from "@/services/chakra/theme";
 import { useAuthStore } from "@/store/auth/authStore";
-import { UserType } from "@/dataSchema/enums";
+import { UserType } from "@/data-schema/enums";
 import { MainLayout } from "@/components/main_layout";
 import RegisterModal from "@/components/Modals/RegisterModal";
 import Footer from "@/components/footer";

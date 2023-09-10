@@ -3,8 +3,8 @@ import { ethers } from "ethers";
 import { Host } from "../../types/ethers-contracts";
 import HOST from "../artifacts/src/Host.sol/Host.json";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
-import { ChildDetails } from "@/dataSchema/types";
-import { UserType } from "@/dataSchema/enums";
+import { ChildDetails } from "@/data-schema/types";
+import { UserType } from "@/data-schema/enums";
 
 // export enum UserType {
 //   UNREGISTERED = 0,

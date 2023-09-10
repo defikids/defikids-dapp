@@ -15,7 +15,7 @@ import {
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import NextLink from "next/link";
-import { Explaination } from "@/dataSchema/enums";
+import { Explaination } from "@/data-schema/enums";
 import { useMemo, useState } from "react";
 import { ExplainBlockchain } from "@/components/explainations/ExplainBlockchain";
 

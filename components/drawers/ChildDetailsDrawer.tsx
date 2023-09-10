@@ -20,7 +20,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { ChildDetails } from "@/dataSchema/types";
+import { ChildDetails } from "@/data-schema/types";
 import { trimAddress } from "@/utils/web3";
 import HostContract from "@/blockchain/contracts/contract";
 import { useContractStore } from "@/store/contract/contractStore";
@@ -28,7 +28,7 @@ import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { getEtherscanUrl } from "@/utils/web3";
-import { EtherscanContext } from "@/dataSchema/enums";
+import { EtherscanContext } from "@/data-schema/enums";
 import { useNetwork } from "wagmi";
 import { ChildOverviewParentDashboard } from "@/components/drawers/ChildOverviewParentDashboard";
 

@@ -27,7 +27,7 @@ import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { StepperContext } from "@/dataSchema/enums";
+import { StepperContext } from "@/data-schema/enums";
 
 const RegisterChildForm = ({
   onClose,

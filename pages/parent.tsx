@@ -12,11 +12,11 @@ import StakeContract from "@/services/stake";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { User, ChildDetails } from "@/dataSchema/types";
+import { User, ChildDetails } from "@/data-schema/types";
 import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import { UsernameModal } from "@/components/Modals/UsernameModal";
-import { ParentDashboardTabs } from "@/dataSchema/enums";
+import { ParentDashboardTabs } from "@/data-schema/enums";
 
 import { Settings } from "@/components/parentDashboard/tabs/Settings";
 import { Info } from "@/components/parentDashboard/tabs/Info";

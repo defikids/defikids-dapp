@@ -43,9 +43,6 @@ coverage
 coverage.json
 typechain
 
-#Hardhat files
-cache
 
-settings.json
-
+.vscode
 tsconfig.tsbuildinfo

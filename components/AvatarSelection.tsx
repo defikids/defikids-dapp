@@ -1,4 +1,4 @@
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
@@ -12,7 +12,7 @@ import axios from "axios";
 import { useRef, useState } from "react";
 import shallow from "zustand/shallow";
 import { TransactionStepper, steps } from "./steppers/TransactionStepper";
-import { StepperContext } from "@/dataSchema/enums";
+import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 
 export const AvatarSelection = ({

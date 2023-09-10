@@ -13,11 +13,11 @@ import {
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
-import { Explaination, UserType } from "@/dataSchema/enums";
+import { Explaination, UserType } from "@/data-schema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { ExplainSandbox } from "@/components/explainations/Sandbox";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 
 export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================

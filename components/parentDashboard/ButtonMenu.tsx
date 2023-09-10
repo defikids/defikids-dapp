@@ -1,6 +1,6 @@
 import { Button, VStack } from "@chakra-ui/react";
-import { ChildDetails } from "@/dataSchema/types";
-import { ParentDashboardTabs } from "@/dataSchema/enums";
+import { ChildDetails } from "@/data-schema/types";
+import { ParentDashboardTabs } from "@/data-schema/enums";
 
 const ButtonMenu = ({
   onAddChildOpen,

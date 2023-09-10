@@ -1,4 +1,4 @@
-import { ChildDetails } from "@/dataSchema/types";
+import { ChildDetails } from "@/data-schema/types";
 import { Avatar, AvatarGroup } from "@chakra-ui/react";
 
 const ChildAvatarGroup = ({ children }: { children: ChildDetails[] }) => {

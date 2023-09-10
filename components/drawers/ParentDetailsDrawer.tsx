@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import { getEtherscanUrl } from "@/utils/web3";
-import { EtherscanContext } from "@/dataSchema/enums";
+import { EtherscanContext } from "@/data-schema/enums";
 import { useNetwork } from "wagmi";
 import { AiOutlinePlus } from "react-icons/ai";
 import { EditIcon } from "@chakra-ui/icons";

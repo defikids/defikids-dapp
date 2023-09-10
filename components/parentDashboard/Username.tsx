@@ -1,5 +1,5 @@
 import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 
 const Username = ({
   familyDetails,

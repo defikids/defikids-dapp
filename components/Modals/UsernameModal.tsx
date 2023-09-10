@@ -21,7 +21,7 @@ import {
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import HostContract from "@/services/contract";
+import HostContract from "@/blockchain/contracts/contract";
 import { StepperContext } from "@/dataSchema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";

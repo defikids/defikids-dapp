@@ -22,7 +22,7 @@ import {
 import { useRef, useState } from "react";
 import { ChildDetails } from "@/dataSchema/types";
 import { trimAddress } from "@/utils/web3";
-import HostContract from "@/services/contract";
+import HostContract from "@/blockchain/contracts/contract";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";

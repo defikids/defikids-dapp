@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 //@ts-ignore
-import { Host } from "../types/ethers-contracts";
+import { Host } from "../../types/ethers-contracts";
 import HOST from "../artifacts/src/Host.sol/Host.json";
 import { HOST_ADDRESS } from "@/store/contract/contractStore";
 import { ChildDetails } from "@/dataSchema/types";

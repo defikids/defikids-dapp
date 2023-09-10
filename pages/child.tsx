@@ -41,8 +41,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // import Child from "@/components/child";
-import contract from "@/services/contract";
-import HostContract from "@/services/contract";
+import contract from "@/blockchain/contracts/contract";
+import HostContract from "@/blockchain/contracts/contract";
 import StakeContract from "@/services/stake";
 import { BiTransfer, BiWalletAlt } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";

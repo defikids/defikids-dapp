@@ -16,7 +16,7 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import HostContract from "@/services/contract";
+import HostContract from "@/blockchain/contracts/contract";
 import axios from "axios";
 import {
   TransactionStepper,

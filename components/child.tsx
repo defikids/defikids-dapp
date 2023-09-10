@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import React, { useEffect, useMemo, useState } from "react";
-import { IChild } from "../services/contract";
+import { IChild } from "../blockchain/contracts/contract";
 import { IStake, IStakeDuration } from "../services/stake";
 import { getUSDCXBalance } from "../services/usdcx_contract";
 // import Allocation from "./allocation";

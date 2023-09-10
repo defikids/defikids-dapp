@@ -7,7 +7,7 @@ import {
   CloseButton,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-import contract from "@/services/contract";
+import contract from "@/blockchain/contracts/contract";
 import StakeContract from "@/services/stake";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";

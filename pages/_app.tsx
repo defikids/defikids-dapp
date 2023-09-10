@@ -47,28 +47,6 @@ function MyApp({ Component, pageProps }) {
     return true;
   };
 
-  if (true) {
-    return (
-      <ChakraProvider
-        theme={theme}
-        toastOptions={{
-          defaultOptions: {
-            position: "bottom",
-            isClosable: true,
-            duration: 4000,
-          },
-        }}
-      >
-        <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider chains={chains} modalSize="compact">
-            {/* <Component {...pageProps} /> */}
-            <ComingSoon />
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </ChakraProvider>
-    );
-  }
-
   return (
     <ChakraProvider
       theme={theme}

@@ -35,6 +35,8 @@ export const AvatarSelection = ({
   //=============================================================================
   const fileInputRef = useRef(null);
 
+  console.log("familyDetails - on load", familyDetails);
+
   const openFileInput = () => {
     fileInputRef.current.click();
   };
@@ -79,6 +81,19 @@ export const AvatarSelection = ({
     }
   };
 
+  const unpinFromIpfs = async (ipfsHash: string) => {
+    try {
+      // send as query param
+      const result = await axios.get(
+        `/api/ipfs/unpin-from-ipfs?ipfsHash=${ipfsHash}`
+      );
+      console.log(result.data);
+      return result.data.success;
+    } catch (e) {
+      console.error(e as Error);
+    }
+  };
+
   const handleSubmit = async () => {
     console.log("selectedFile", selectedFile);
     setIsLoading(true);
@@ -101,10 +116,39 @@ export const AvatarSelection = ({
         return;
       }
 
-      setActiveStep(1);
-
       const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
       console.log(avatar);
+
+      // delete old avatar from ipfs
+      console.log("familyDetails?.avatarURI", familyDetails?.avatarURI);
+      console.log("avatar", avatar);
+      console.log(
+        "familyDetails?.avatarURI.includes(ipfs)",
+        familyDetails?.avatarURI.includes("ipfs")
+      );
+      console.log(
+        "familyDetails?.avatarURI !== avatar",
+        familyDetails?.avatarURI !== avatar
+      );
+      if (
+        familyDetails?.avatarURI &&
+        familyDetails?.avatarURI.includes("ipfs") &&
+        familyDetails?.avatarURI !== avatar
+      ) {
+        const oldIpfsHash = familyDetails?.avatarURI.split("/")[4];
+        const result = await unpinFromIpfs(oldIpfsHash);
+        if (result.success === false) {
+          toast({
+            title: "Error",
+            description: "Failed to delete old avatar from IPFS",
+            status: "error",
+          });
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      setActiveStep(1);
 
       const body = {
         ...familyDetails,
@@ -115,6 +159,8 @@ export const AvatarSelection = ({
         key: userDetails?.wallet,
         value: body,
       };
+
+      console.log("payload", payload);
 
       await axios.post(`/api/vercel/set-json`, payload);
       setUserDetails(body);

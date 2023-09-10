@@ -41,9 +41,9 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // import Child from "@/components/child";
-import contract from "@/blockchain/contracts/contract";
-import HostContract from "@/blockchain/contracts/contract";
-import StakeContract from "@/services/stake";
+// import contract from "@/blockchain/contracts/contract";
+// import HostContract from "@/blockchain/contracts/contract";
+// import StakeContract from "@/services/stake";
 import { BiTransfer, BiWalletAlt } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
 import shallow from "zustand/shallow";
@@ -84,7 +84,7 @@ const Child: React.FC = () => {
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
-  const [stakeContract, setStakeContract] = useState<StakeContract>();
+  // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [childDetails, setChildDetails] = useState({} as ChildDetails);
   const [loading, setIsLoading] = useState(false);
   const [familyId, setFamilyId] = useState<string>("");

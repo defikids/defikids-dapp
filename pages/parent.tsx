@@ -7,8 +7,8 @@ import {
   CloseButton,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-import contract from "@/blockchain/contracts/contract";
-import StakeContract from "@/services/stake";
+// import contract from "@/blockchain/contracts/contract";
+// import StakeContract from "@/services/stake";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
@@ -37,7 +37,7 @@ const Parent: React.FC = () => {
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
-  const [stakeContract, setStakeContract] = useState<StakeContract>();
+  // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
 
   const [selectedTab, setSelectedTab] = useState<ParentDashboardTabs>(
@@ -126,12 +126,12 @@ const Parent: React.FC = () => {
     fetchChildren();
   }, []);
 
-  useEffect(() => {
-    if (!stakeContract || !children.length) {
-      setChildrenStakes({});
-      return;
-    }
-  }, [stakeContract, children]);
+  // useEffect(() => {
+  //   if (!stakeContract || !children.length) {
+  //     setChildrenStakes({});
+  //     return;
+  //   }
+  // }, [stakeContract, children]);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -190,7 +190,7 @@ const Parent: React.FC = () => {
 
     await getChildren();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length, contract, userDetails?.wallet]);
+  }, [children.length, userDetails?.wallet]);
 
   const closeTab = () => {
     setSelectedTab(ParentDashboardTabs.DASHBOARD);

@@ -21,7 +21,7 @@ import {
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import HostContract from "@/blockchain/contracts/contract";
+// import HostContract from "@/blockchain/contracts/contract";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -82,62 +82,62 @@ export const UsernameModal = ({
   //                               FUNCTIONS
   //=============================================================================
 
-  const onSubmit = async () => {
-    let activeAddress: string = "";
+  // const onSubmit = async () => {
+  //   let activeAddress: string = "";
 
-    activeAddress = children[childKey]?.wallet
-      ? children[childKey]?.wallet
-      : userDetails.wallet;
+  //   activeAddress = children[childKey]?.wallet
+  //     ? children[childKey]?.wallet
+  //     : userDetails.wallet;
 
-    const contract = await HostContract.fromProvider(connectedSigner);
-    setIsLoading(true);
+  //   const contract = await HostContract.fromProvider(connectedSigner);
+  //   setIsLoading(true);
 
-    try {
-      setActiveStep(0);
-      let tx: TransactionResponse;
+  //   try {
+  //     setActiveStep(0);
+  //     let tx: TransactionResponse;
 
-      if (!activeAddress) {
-        tx = await contract.updateChildUsername(
-          familyId,
-          childDetails.wallet,
-          username
-        );
-      } else if (activeAddress === userDetails?.wallet) {
-        tx = await contract.updateUsername(username);
-      } else {
-        const childAddress = activeAddress;
-        tx = await contract.updateChildUsername(
-          familyId,
-          childAddress,
-          username
-        );
-      }
+  //     if (!activeAddress) {
+  //       tx = await contract.updateChildUsername(
+  //         familyId,
+  //         childDetails.wallet,
+  //         username
+  //       );
+  //     } else if (activeAddress === userDetails?.wallet) {
+  //       tx = await contract.updateUsername(username);
+  //     } else {
+  //       const childAddress = activeAddress;
+  //       tx = await contract.updateChildUsername(
+  //         familyId,
+  //         childAddress,
+  //         username
+  //       );
+  //     }
 
-      setActiveStep(1);
-      await tx.wait();
+  //     setActiveStep(1);
+  //     await tx.wait();
 
-      if (!activeAddress) {
-        setChildDetails({
-          ...childDetails,
-          username: username,
-        });
-      } else if (activeAddress === userDetails?.wallet) {
-        fetchFamilyDetails();
-      } else {
-        fetchChildren();
-      }
+  //     if (!activeAddress) {
+  //       setChildDetails({
+  //         ...childDetails,
+  //         username: username,
+  //       });
+  //     } else if (activeAddress === userDetails?.wallet) {
+  //       fetchFamilyDetails();
+  //     } else {
+  //       fetchChildren();
+  //     }
 
-      toast({
-        title: "Avatar successfully updated",
-        status: "success",
-      });
-      onClose();
-    } catch (e) {
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
-      onClose();
-    }
-  };
+  //     toast({
+  //       title: "Avatar successfully updated",
+  //       status: "success",
+  //     });
+  //     onClose();
+  //   } catch (e) {
+  //     const errorDetails = transactionErrors(e);
+  //     toast(errorDetails);
+  //     onClose();
+  //   }
+  // };
   return (
     <Modal
       isOpen={isOpen}
@@ -175,7 +175,11 @@ export const UsernameModal = ({
         </ModalBody>
         <ModalFooter>
           {!isloading && (
-            <Button colorScheme="blue" mr={3} onClick={onSubmit}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              // onClick={onSubmit}
+            >
               Submit
             </Button>
           )}

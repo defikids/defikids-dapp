@@ -16,7 +16,7 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import HostContract from "@/blockchain/contracts/contract";
+// import HostContract from "@/blockchain/contracts/contract";
 import axios from "axios";
 import {
   TransactionStepper,
@@ -116,66 +116,66 @@ const RegisterChildForm = ({
     }
   };
 
-  const handleSubmit = async () => {
-    setHasSubmitted(true);
+  // const handleSubmit = async () => {
+  //   setHasSubmitted(true);
 
-    if (username === "" || wallet === "" || isInvalidWallet) {
-      return;
-    }
+  //   if (username === "" || wallet === "" || isInvalidWallet) {
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    setActiveStep(0);
+  //   setIsLoading(true);
+  //   setActiveStep(0);
 
-    let ipfsImageHash = "";
+  //   let ipfsImageHash = "";
 
-    if (selectedFile) {
-      const { validationError, ifpsHash } = (await uploadToIpfs()) as {
-        validationError: string;
-        ifpsHash: string;
-      };
+  //   if (selectedFile) {
+  //     const { validationError, ifpsHash } = (await uploadToIpfs()) as {
+  //       validationError: string;
+  //       ifpsHash: string;
+  //     };
 
-      if (validationError) {
-        toast({
-          title: "Error",
-          description: validationError,
-          status: "error",
-        });
-        return;
-      }
-      ipfsImageHash = ifpsHash;
-    }
+  //     if (validationError) {
+  //       toast({
+  //         title: "Error",
+  //         description: validationError,
+  //         status: "error",
+  //       });
+  //       return;
+  //     }
+  //     ipfsImageHash = ifpsHash;
+  //   }
 
-    const contract = await HostContract.fromProvider(
-      connectedSigner,
-      userDetails?.wallet
-    );
-    const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
-    const avatar = ipfsImageHash ? ifpsURI : avatarURI;
+  //   const contract = await HostContract.fromProvider(
+  //     connectedSigner,
+  //     userDetails?.wallet
+  //   );
+  //   const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
+  //   const avatar = ipfsImageHash ? ifpsURI : avatarURI;
 
-    try {
-      setActiveStep(1);
-      const tx = (await contract.addChild(
-        username,
-        avatar,
-        wallet,
-        sandboxMode
-      )) as TransactionResponse;
+  //   try {
+  //     setActiveStep(1);
+  //     const tx = (await contract.addChild(
+  //       username,
+  //       avatar,
+  //       wallet,
+  //       sandboxMode
+  //     )) as TransactionResponse;
 
-      setActiveStep(2);
-      await tx.wait();
+  //     setActiveStep(2);
+  //     await tx.wait();
 
-      toast({
-        title: "Child successfully added",
-        status: "success",
-      });
-      onAdd();
-      onClose();
-    } catch (e) {
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
-      onClose();
-    }
-  };
+  //     toast({
+  //       title: "Child successfully added",
+  //       status: "success",
+  //     });
+  //     onAdd();
+  //     onClose();
+  //   } catch (e) {
+  //     const errorDetails = transactionErrors(e);
+  //     toast(errorDetails);
+  //     onClose();
+  //   }
+  // };
 
   // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
 
@@ -288,7 +288,7 @@ const RegisterChildForm = ({
           _hover={{
             bgColor: "blue.600",
           }}
-          onClick={handleSubmit}
+          // onClick={handleSubmit}
         >
           Add Child
         </Button>

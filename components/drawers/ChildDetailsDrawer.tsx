@@ -22,7 +22,7 @@ import {
 import { useRef, useState } from "react";
 import { ChildDetails } from "@/data-schema/types";
 import { trimAddress } from "@/utils/web3";
-import HostContract from "@/blockchain/contracts/contract";
+// import HostContract from "@/blockchain/contracts/contract";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
@@ -84,32 +84,32 @@ export const ChildDetailsDrawer = ({
   //                               FUNCTIONS
   //=============================================================================
 
-  const handleSandboxToggle = async () => {
-    const contract = await HostContract.fromProvider(connectedSigner);
-    const { wallet, familyId } = childDetails;
+  // const handleSandboxToggle = async () => {
+  //   const contract = await HostContract.fromProvider(connectedSigner);
+  //   const { wallet, familyId } = childDetails;
 
-    try {
-      setIsLoading(true);
+  //   try {
+  //     setIsLoading(true);
 
-      const tx = (await contract.toggleSandbox(
-        wallet,
-        familyId
-      )) as TransactionResponse;
+  //     const tx = (await contract.toggleSandbox(
+  //       wallet,
+  //       familyId
+  //     )) as TransactionResponse;
 
-      await tx.wait();
+  //     await tx.wait();
 
-      fetchChildren();
-      setIsLoading(false);
-    } catch (e) {
-      console.error(e);
-      setIsLoading(false);
+  //     fetchChildren();
+  //     setIsLoading(false);
+  //   } catch (e) {
+  //     console.error(e);
+  //     setIsLoading(false);
 
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
+  //     const errorDetails = transactionErrors(e);
+  //     toast(errorDetails);
 
-      onClose();
-    }
-  };
+  //     onClose();
+  //   }
+  // };
 
   const formatDate = () => {
     const unixTimestamp = childDetails.memberSince * 1000;
@@ -138,14 +138,14 @@ export const ChildDetailsDrawer = ({
           <DrawerCloseButton />
           <DrawerHeader />
           <DrawerBody>
-            <ChildOverviewParentDashboard
+            {/* <ChildOverviewParentDashboard
               childDetails={childDetails}
               onOpenChangeUsername={onOpenChangeUsername}
               isLoading={isLoading}
               handleSandboxToggle={handleSandboxToggle}
               onOpen={onOpen}
               onSendFundsOpen={onSendFundsOpen}
-            />
+            /> */}
           </DrawerBody>
           <DrawerFooter />
         </DrawerContent>

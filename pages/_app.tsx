@@ -61,7 +61,6 @@ function MyApp({ Component, pageProps }) {
       >
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider chains={chains} modalSize="compact">
-            {/* <Component {...pageProps} /> */}
             <ComingSoon />
           </RainbowKitProvider>
         </WagmiConfig>

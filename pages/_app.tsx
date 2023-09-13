@@ -16,6 +16,7 @@ import { chains, wagmiConfig } from "@/services/wagmi/wagmiConfig";
 import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiConfig } from "wagmi";
+import ComingSoon from "../components/ComingSoon";
 
 function MyApp({ Component, pageProps }) {
   const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
@@ -39,6 +40,34 @@ function MyApp({ Component, pageProps }) {
       ? setShowStartEarning(true)
       : setShowStartEarning(false);
   }, [isRegisterOpen, hasCheckedUserType, userDetails?.userType]);
+
+  const hide = () => {
+    if (router.pathname.startsWith("/member-invite")) return false;
+    if (!isLoggedIn) return false;
+    return true;
+  };
+
+  if (true) {
+    return (
+      <ChakraProvider
+        theme={theme}
+        toastOptions={{
+          defaultOptions: {
+            position: "bottom",
+            isClosable: true,
+            duration: 4000,
+          },
+        }}
+      >
+        <WagmiConfig config={wagmiConfig}>
+          <RainbowKitProvider chains={chains} modalSize="compact">
+            <ComingSoon />
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ChakraProvider>
+    );
+  }
+
 
   return (
     <ChakraProvider

@@ -40,11 +40,11 @@ function MyApp({ Component, pageProps }) {
       : setShowStartEarning(false);
   }, [isRegisterOpen, hasCheckedUserType, userDetails?.userType]);
 
-  // const hide = () => {
-  //   if (router.pathname.startsWith("/member-invite")) return false;
-  //   if (!isLoggedIn) return false;
-  //   return true;
-  // };
+  const hide = () => {
+    if (router.pathname.startsWith("/member-invite")) return false;
+    if (!isLoggedIn) return false;
+    return true;
+  };
 
   return (
     <ChakraProvider

@@ -20,7 +20,7 @@ import {
 } from "@/components/steppers/TransactionStepper";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
-import { StepperContext } from "@/dataSchema/enums";
+import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";

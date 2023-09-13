@@ -19,7 +19,7 @@ import { HOST_ADDRESS } from "@/store/contract/contractStore";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useNetwork } from "wagmi";
 import { getEtherscanUrl } from "@/utils/web3";
-import { EtherscanContext } from "@/dataSchema/enums";
+import { EtherscanContext } from "@/data-schema/enums";
 
 export const WalletPopover = () => {
   //=============================================================================

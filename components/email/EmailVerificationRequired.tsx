@@ -1,4 +1,4 @@
-import { ChildDetails, User } from "@/dataSchema/types";
+import { ChildDetails, User } from "@/data-schema/types";
 import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";

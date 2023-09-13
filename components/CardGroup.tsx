@@ -10,7 +10,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import CardFlip from "@/styles/CardFlip.module.css";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 import { CloseIcon } from "@chakra-ui/icons";
 import { AvatarSelection } from "./AvatarSelection";
 import { EditUsername } from "@/components/forms/UserNameForm";

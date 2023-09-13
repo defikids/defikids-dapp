@@ -1,5 +1,5 @@
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
-import { Explaination } from "@/dataSchema/enums";
+import { Explaination } from "@/data-schema/enums";
 import { data } from "@/data/explainations/familyName";
 
 export const ExplainFamilyName = ({

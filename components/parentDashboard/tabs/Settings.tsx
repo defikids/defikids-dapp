@@ -3,7 +3,7 @@ import { BackgroundSelection } from "@/components/BackgroundSelection";
 import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 import { EditUsername } from "@/components/forms/UserNameForm";
 import { EditEmail } from "@/components/forms/EmailForm";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 import {
   Accordion,
   AccordionButton,

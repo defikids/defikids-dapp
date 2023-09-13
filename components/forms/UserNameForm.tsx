@@ -1,4 +1,4 @@
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,

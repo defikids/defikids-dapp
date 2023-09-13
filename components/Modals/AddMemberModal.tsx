@@ -14,7 +14,7 @@ import { EmailVerificationRequired } from "@/components/email/EmailVerificationR
 import { useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 
 export const AddMemberModal = ({
   isOpen,

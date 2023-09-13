@@ -15,7 +15,7 @@ import axios from "axios";
 import { useSignMessage, useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { CustomConnectButton } from "@/components/ConnectButton";
-import { User } from "@/dataSchema/types";
+import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 

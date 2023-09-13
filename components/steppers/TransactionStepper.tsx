@@ -11,7 +11,7 @@ import {
   Stepper,
   Spinner,
 } from "@chakra-ui/react";
-import { StepperContext } from "@/dataSchema/enums";
+import { StepperContext } from "@/data-schema/enums";
 
 export const steps = (context: StepperContext) => {
   if (context === StepperContext.AVATAR) {

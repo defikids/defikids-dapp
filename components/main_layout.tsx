@@ -9,11 +9,9 @@ import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
 export const MainLayout = ({
-  showStartEarning,
   isRegisterOpen,
   onRegisterOpen,
 }: {
-  showStartEarning: boolean;
   isRegisterOpen: boolean;
   onRegisterOpen: () => void;
 }) => {

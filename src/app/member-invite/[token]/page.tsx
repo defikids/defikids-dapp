@@ -12,7 +12,7 @@ import {
   Center,
   Container,
 } from "@chakra-ui/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
@@ -40,12 +40,14 @@ const MemberInvite = () => {
   const [inviteAccepted, setInviteAccepted] = useState(false);
 
   const pathname = usePathname();
+  const router = useRouter();
+
   const token = useMemo(() => {
     return pathname?.split("/")[2];
   }, [pathname]);
 
   console.log("token", token);
-  const { address, isDisconnected } = useAccount();
+  const { address, isDisconnected } = useAccount() as any;
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
 
   const { walletConnected, setUserDetails } = useAuthStore(
@@ -70,12 +72,13 @@ const MemberInvite = () => {
       const parentUser = parent.data as User;
 
       // Check if the address is not already in the children array
-      if (!parentUser.children.includes(address)) {
+      if (parentUser.children && !parentUser.children.includes(address)) {
         parentUser.children.push(address);
       }
 
       const body = {
         ...parentUser,
+        //@ts-ignore
         invitations: parentUser.invitations.filter(
           (email) => email !== decodedToken.email
         ),
@@ -156,8 +159,8 @@ const MemberInvite = () => {
     setInitialUserCheck(true);
     try {
       jwt.verify(
-        token,
-        process.env.NEXT_PUBLIC_JWT_SECRET,
+        token!,
+        process.env.NEXT_PUBLIC_JWT_SECRET || "",
         async (err, decodedToken) => {
           if (err) {
             throw err;

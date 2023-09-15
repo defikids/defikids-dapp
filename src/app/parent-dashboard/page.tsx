@@ -26,7 +26,7 @@ const Parent: React.FC = () => {
   //                               STATE
   //=============================================================================
 
-  const [childKey, setChildKey] = useState<number | null>(null);
+  const [childKey, setChildKey] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [children, setChildren] = useState([]);
   const [childrenStakes, setChildrenStakes] = useState({});
@@ -173,9 +173,9 @@ const Parent: React.FC = () => {
           };
         });
 
-        setChildren(childrenWithBalances);
+        // setChildren(childrenWithBalances);
       } else {
-        setChildren(children);
+        // setChildren(children);
       }
 
       setChildrenLoading(false);
@@ -246,7 +246,7 @@ const Parent: React.FC = () => {
             justify="center"
             align="center"
             bgColor={
-              selectedTab === ParentDashboardTabs.SETTINGS && "transparent"
+              selectedTab === ParentDashboardTabs.SETTINGS ? "transparent" : ""
             }
           >
             {selectedTab === ParentDashboardTabs.SETTINGS && (

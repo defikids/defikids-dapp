@@ -44,9 +44,9 @@ export const WalletPopover = () => {
   };
 
   const chainIcon = () => {
-    if (chain.id === null) return;
+    if (chain!.id === null) return;
 
-    if (chain.id === 137 || chain.id === 80001) {
+    if (chain!.id === 137 || chain!.id === 80001) {
       return "/logos/polygon-logo.png";
     }
     return "/logos/ethereum-logo.png";
@@ -117,10 +117,10 @@ export const WalletPopover = () => {
                           style={{ display: "flex", alignItems: "center" }}
                           colorScheme="blue"
                         >
-                          {chain.hasIcon && (
+                          {chain!.hasIcon && (
                             <Box
                               style={{
-                                background: chain.iconBackground,
+                                background: chain!.iconBackground,
                                 width: 12,
                                 height: 12,
                                 borderRadius: 999,
@@ -128,17 +128,17 @@ export const WalletPopover = () => {
                                 marginRight: 4,
                               }}
                             >
-                              {chain.iconUrl && (
+                              {chain!.iconUrl && (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                  alt={chain.name ?? "Chain icon"}
-                                  src={chain.iconUrl}
+                                  alt={chain!.name ?? "Chain icon"}
+                                  src={chain!.iconUrl}
                                   style={{ width: 12, height: 12 }}
                                 />
                               )}
                             </Box>
                           )}
-                          {chain.name}
+                          {chain!.name}
                         </Button>
 
                         <Button
@@ -148,9 +148,9 @@ export const WalletPopover = () => {
                           mb={2}
                           colorScheme="blue"
                         >
-                          {account.displayName}
-                          {account.displayBalance
-                            ? ` (${account.displayBalance})`
+                          {account!.displayName}
+                          {account!.displayBalance
+                            ? ` (${account!.displayBalance})`
                             : ""}
                         </Button>
                       </Box>

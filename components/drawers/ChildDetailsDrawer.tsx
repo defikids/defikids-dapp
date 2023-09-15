@@ -128,10 +128,10 @@ export const ChildDetailsDrawer = ({
         isOpen={isOpen}
         placement={placement}
         onClose={onClose}
-        finalFocusRef={btnRef}
+        // finalFocusRef={btnRef}
         size={isMobileSmall ? "xs" : "full"}
         onCloseComplete={() => {
-          setChildKey(null);
+          setChildKey(0);
           setIsLoading(false);
         }}
       >

@@ -7,7 +7,7 @@ import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID;
+const projectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID || "";
 
 export const { chains, publicClient } = configureChains(
   [goerli],

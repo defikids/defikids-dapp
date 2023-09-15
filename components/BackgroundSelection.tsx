@@ -44,7 +44,7 @@ export const BackgroundSelection = ({
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const toast = useToast();
 
@@ -67,7 +67,9 @@ export const BackgroundSelection = ({
   //=============================================================================
 
   const openFileInput = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   const uploadToIpfs = async (selectedFile: File | null) => {

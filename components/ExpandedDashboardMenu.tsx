@@ -84,9 +84,9 @@ export const ExpandedDashboardMenu = ({
           maxWidth={isMobileSize ? "100%" : "350px"}
           height={isMobileSize ? "100vh" : "96vh"}
           // height={"100vh"}
-          ml={!isMobileSize && "1rem"}
+          ml={!isMobileSize ? "1rem" : 0}
           mt={5}
-          borderRadius={!isMobileSize && "1.5rem"}
+          borderRadius={!isMobileSize ? "1.5rem" : 0}
           style={{
             boxShadow: "0px 0px 10px 15px rgba(0,0,0,0.75)",
           }}
@@ -151,7 +151,7 @@ export const ExpandedDashboardMenu = ({
             </Box>
 
             {/* Footer Buttons */}
-            <Box m={5} pb={isMobileSize && 5}>
+            <Box m={5} pb={isMobileSize ? 5 : 0}>
               <Flex direction="row" justify="flex-end" align="center">
                 <Button
                   size="lg"

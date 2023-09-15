@@ -57,10 +57,10 @@ export const CardGroup = ({
   const handleCardFlip = (e: any, index: string) => {
     e.preventDefault();
     const innerCard = document.getElementById(index);
-    if (innerCard.style.transform === "") {
+    if (innerCard?.style.transform === "") {
       innerCard.style.transform = "rotateY(180deg)";
     } else {
-      innerCard.style.transform = "";
+      innerCard!.style.transform = "";
     }
   };
 

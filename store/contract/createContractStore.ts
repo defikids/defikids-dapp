@@ -11,8 +11,8 @@ import { ethers } from "ethers";
 type State = {
   readOnlyProvider: any;
   provider: any;
-  connectedSigner: ethers.providers.JsonRpcSigner;
-  contractInstance: Contract;
+  connectedSigner: ethers.providers.JsonRpcSigner | null;
+  contractInstance: Contract | null;
 };
 
 type Actions = {

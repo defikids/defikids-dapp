@@ -39,7 +39,7 @@ const ButtonMenu = ({
         Services
       </Button>
 
-      {children.length == 0 && (
+      {children && children.length == 0 && (
         <Button
           variant="outline"
           colorScheme="white"

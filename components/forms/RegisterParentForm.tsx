@@ -113,6 +113,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
       const body = {
         account: accountDetails,
+        termsAgreed,
         familyName,
         email,
         familyId: hashedFamilyId(familyId),

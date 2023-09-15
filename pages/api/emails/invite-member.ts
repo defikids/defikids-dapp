@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import inviteMemberHTML from "@/data/emails/inviteMember";
-import sgMail from "@sendgrid/mail";
+import sgMail, { MailDataRequired } from "@sendgrid/mail";
 import jwt from "jsonwebtoken";
 
 export default async function inviteMember(
@@ -25,21 +25,21 @@ export default async function inviteMember(
         familyName,
         email,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || "",
       {
         expiresIn: "24hr",
         jwtid: Date.now().toString(),
       }
     );
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
     const msg = {
       to: email,
       from: process.env.SENDGRID_TRANSPORTER_EMAIL_ADDRESS,
       subject: "New Member Invitaton",
       text: `${familyName} has invited you to DefiKids`,
       html: inviteMemberHTML(token, familyName),
-    };
+    } as MailDataRequired;
 
     sgMail
       .send(msg)

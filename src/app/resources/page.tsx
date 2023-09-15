@@ -1,8 +1,10 @@
+"use client";
+
 import { Center, Flex, Box } from "@chakra-ui/react";
 import ResourcesModal from "@/components/Modals/ResourcesModal";
 import Navbar from "@/components/navbar";
 
-const Community = () => {
+const Resources = () => {
   return (
     <Box height="100vh" bgGradient={["linear(to-b, black,#4F1B7C)"]}>
       <Navbar />
@@ -15,4 +17,4 @@ const Community = () => {
   );
 };
 
-export default Community;
+export default Resources;

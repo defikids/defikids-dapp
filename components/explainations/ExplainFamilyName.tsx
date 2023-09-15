@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { Explaination } from "@/data-schema/enums";
 import { data } from "@/data/explainations/familyName";

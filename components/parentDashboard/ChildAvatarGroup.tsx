@@ -1,3 +1,5 @@
+"use client";
+
 import { ChildDetails } from "@/data-schema/types";
 import { Avatar, AvatarGroup } from "@chakra-ui/react";
 

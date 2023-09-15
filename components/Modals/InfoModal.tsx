@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Modal,
   ModalOverlay,
@@ -5,7 +7,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Flex,
   useBreakpointValue,
   CardHeader,
   Heading,
@@ -15,7 +16,7 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import { menuCards } from "@/data/landingPage/menuCards";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const CustomCard = ({
@@ -31,7 +32,7 @@ const CustomCard = ({
   title: string;
   description: string;
   link: string;
-  router: NextRouter;
+  router: any;
   setShowLearnMore: (value: { [key: number]: boolean }) => void;
   showLearnMore: { [key: number]: boolean };
   index: number;

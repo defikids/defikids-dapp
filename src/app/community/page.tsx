@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Center,
@@ -12,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import Navbar from "@/components/navbar";
 
-const Community = () => {
+export default function Community() {
   const isMobileSize = useBreakpointValue({
     base: true,
     sm: false,
@@ -23,14 +25,13 @@ const Community = () => {
   const twitterLink = "https://twitter.com/defikids_";
   const discordLink = "https://discord.gg/bDGMYNa8Ng";
   return (
-    <>
+    <Box m={5}>
       <Navbar />
       <Center mt={40}>
         <Heading
           size={isMobileSize ? "2xl" : "xl"}
-          display="flex"
-          alignItems="baseline"
           justifyContent="center"
+          textAlign="center"
           mb={5}
           color="#90cdf4"
         >
@@ -66,8 +67,6 @@ const Community = () => {
           </GridItem>
         </Grid>
       </VStack>
-    </>
+    </Box>
   );
-};
-
-export default Community;
+}

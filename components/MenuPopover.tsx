@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Popover,
   PopoverArrow,
@@ -11,7 +13,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { menuCards } from "@/data/landingPage/menuCards";
 import { useState } from "react";
 
@@ -28,7 +30,7 @@ const CustomCard = ({
   title: string;
   description: string;
   link: string;
-  router: NextRouter;
+  router: any;
   setShowLearnMore: (value: { [key: number]: boolean }) => void;
   showLearnMore: { [key: number]: boolean };
   index: number;

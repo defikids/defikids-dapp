@@ -1,3 +1,5 @@
+"use client";
+
 import { useDisclosure, useBreakpointValue } from "@chakra-ui/react";
 import {
   Heading,
@@ -71,21 +73,20 @@ const ResourcesModal = () => {
   return (
     <>
       <Center>
-        <Box mt="7rem" w="50%" p={4} color="white">
+        <Box mt="7rem" p={4} color="white">
           <Heading
             size={isMobileSize ? "2xl" : "xl"}
-            display="flex"
-            alignItems="baseline"
             justifyContent="center"
             mb={5}
             color="#90cdf4"
+            textAlign="center"
           >
             Welcome to resources!
           </Heading>
 
           <Image
             borderRadius={20}
-            src="/images/backgrounds/1.svg"
+            src="/images/backgrounds/urban.svg"
             alt="DefiKids"
           />
 

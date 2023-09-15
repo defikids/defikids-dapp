@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
@@ -8,9 +10,9 @@ import {
   Image,
   Button,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import jwt from "jsonwebtoken";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSignMessage, useAccount } from "wagmi";
 import { ethers } from "ethers";
@@ -19,7 +21,7 @@ import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 
-const ConfirmEmail = () => {
+export default function ConfirmEmail() {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -29,7 +31,13 @@ const ConfirmEmail = () => {
   const [initialUseCheck, setInitialUseCheck] = useState(false);
 
   const router = useRouter();
-  const { token } = useRouter().query as { token: string };
+  const pathname = usePathname();
+
+  const token = useMemo(() => {
+    return pathname?.split("/")[2];
+  }, [pathname]);
+
+  console.log("token", token);
   const toast = useToast();
   const { data: signature, error, signMessage } = useSignMessage();
   const { address, isDisconnected } = useAccount();
@@ -89,8 +97,8 @@ const ConfirmEmail = () => {
   };
 
   /*
-  This useEffect is use to update the user's emailVerified status in the database after the signature is verified.
-  */
+    This useEffect is use to update the user's emailVerified status in the database after the signature is verified.
+    */
   useEffect(() => {
     const verifyToken = async () => {
       try {
@@ -121,8 +129,8 @@ const ConfirmEmail = () => {
   }, [signature]);
 
   /*
-  This useEffect is used to sign the message when the user clicks the "Confirm Email" button.
-  */
+    This useEffect is used to sign the message when the user clicks the "Confirm Email" button.
+    */
   useEffect(() => {
     if (!address) return;
     if (!isConfirmed) return;
@@ -145,9 +153,9 @@ const ConfirmEmail = () => {
   }, [isConfirmed]);
 
   /*
-  This useEffect is used to check if the user has already verified their email address.
-  If they have, then we redirect them to the app.
-  */
+    This useEffect is used to check if the user has already verified their email address.
+    If they have, then we redirect them to the app.
+    */
   useEffect(() => {
     if (!token && !initialUseCheck && !isDisconnected) return;
 
@@ -188,9 +196,9 @@ const ConfirmEmail = () => {
   }, [token]);
 
   /*
-  This useEffect is used to check if there is an error during the signing process.
-  If there is, then we display an error message.
-  */
+    This useEffect is used to check if there is an error during the signing process.
+    If there is, then we display an error message.
+    */
   useEffect(() => {
     if (!error) return;
     if (error.cause) {
@@ -283,6 +291,4 @@ const ConfirmEmail = () => {
       </Flex>
     </Box>
   );
-};
-
-export default ConfirmEmail;
+}

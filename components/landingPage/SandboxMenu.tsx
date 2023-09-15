@@ -1,3 +1,5 @@
+"use client";
+
 import { Flex, Heading, useBreakpointValue } from "@chakra-ui/react";
 
 type State = {

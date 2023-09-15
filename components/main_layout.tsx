@@ -1,3 +1,4 @@
+"use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useEffect } from "react";
@@ -6,15 +7,9 @@ import LoggedInNavBar from "./LoggedInNavbar";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 
-export const MainLayout = ({
-  isRegisterOpen,
-  onRegisterOpen,
-}: {
-  isRegisterOpen: boolean;
-  onRegisterOpen: () => void;
-}) => {
+export const MainLayout = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
@@ -34,7 +29,7 @@ export const MainLayout = ({
   );
 
   const { onToggle } = useDisclosure();
-  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (navigationSection === "DefiKids") {
@@ -47,8 +42,8 @@ export const MainLayout = ({
   //=============================================================================
 
   const hide = () => {
-    if (router.pathname.startsWith("/member-invite")) return true;
-    if (router.pathname.startsWith("/confirm-email")) return true;
+    if (pathname?.startsWith("/member-invite")) return true;
+    if (pathname?.startsWith("/confirm-email")) return true;
     return false;
   };
 
@@ -61,7 +56,7 @@ export const MainLayout = ({
       top="0"
       left="0"
       width="100%"
-      p={router.pathname === "/parent" ? 0 : 5}
+      p={pathname === "/parent-dashboard" ? 0 : 5}
       zIndex={5}
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>

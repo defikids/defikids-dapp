@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import {
   Box,
@@ -147,7 +149,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       });
 
       onClose();
-      router.push("/parent");
+      router.push("/parent-dashboard");
     } catch (e) {
       await axios.delete(`/api/vercel/delete-json-data?key=${address}`);
       const errorDetails = transactionErrors(e);

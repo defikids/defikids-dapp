@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -26,8 +27,20 @@
       "@/data/*": ["data/*"],
       "@/utils/*": ["utils/*"],
       "@/*": ["./*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "hooks/useSuperFluid.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "hooks/useSuperFluid.js",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

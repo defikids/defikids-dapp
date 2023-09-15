@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuthStore } from "@/store/auth/authStore";
 import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
@@ -9,7 +11,7 @@ import Earning from "@/components/landingPage/Earning";
 import Staking from "@/components/landingPage/Staking";
 import Investing from "@/components/landingPage/Investing";
 
-export default function Main() {
+export const LandingPage = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
@@ -57,4 +59,4 @@ export default function Main() {
       <SequenceLogin />
     </Box>
   );
-}
+};

@@ -1,3 +1,5 @@
+"use client";
+
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import {

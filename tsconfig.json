@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -17,17 +18,30 @@
     "baseUrl": ".",
     "downlevelIteration": true,
     "paths": {
-      "@/components/*": ["components/*"],
+      "@/components/*": ["src/components/*"],
       "@/pages/*": ["pages/*"],
       "@/styles/*": ["styles/*"],
-      "@/data-schema/*": ["data-schema/*"],
-      "@/store/*": ["store/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/data/*": ["data/*"],
-      "@/utils/*": ["utils/*"],
+      "@/data-schema/*": ["src/data-schema/*"],
+      "@/store/*": ["src/store/*"],
+      "@/data/*": ["src/data/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/services/*": ["src/services/*"],
+      "@/BFF/*": ["src/BFF/*"],
       "@/*": ["./*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "hooks/useSuperFluid.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "hooks/useSuperFluid.js",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

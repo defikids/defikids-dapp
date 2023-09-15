@@ -37,7 +37,7 @@ export const ChildDefiOptionsDrawer = ({
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const btnRef = useRef();
+  // const btnRef = useRef();
 
   //=============================================================================
   //                               FUNCTIONS
@@ -49,7 +49,7 @@ export const ChildDefiOptionsDrawer = ({
         isOpen={isOpen}
         placement={placement}
         onClose={onClose}
-        finalFocusRef={btnRef}
+        // finalFocusRef={btnRef}
         size="xs"
         onCloseComplete={() => {}}
       >

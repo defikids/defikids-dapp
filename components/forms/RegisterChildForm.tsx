@@ -65,7 +65,7 @@ const RegisterChildForm = ({
   //=============================================================================
 
   const toast = useToast();
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const inputUrlRef = useRef(null);
 
   const { activeStep, setActiveStep } = useSteps({

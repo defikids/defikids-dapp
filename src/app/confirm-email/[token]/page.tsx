@@ -39,7 +39,8 @@ export default function ConfirmEmail() {
 
   console.log("token", token);
   const toast = useToast();
-  const { data: signature, error, signMessage } = useSignMessage();
+  const { data: signature, error, signMessage } = useSignMessage() as any;
+
   const { address, isDisconnected } = useAccount();
 
   const message = "Confirm Email Address";
@@ -163,8 +164,8 @@ export default function ConfirmEmail() {
       setInitialUseCheck(true);
       try {
         jwt.verify(
-          token,
-          process.env.NEXT_PUBLIC_JWT_SECRET,
+          token!,
+          process.env.NEXT_PUBLIC_JWT_SECRET || "",
           async (err, decodedToken) => {
             if (err) {
               throw err;

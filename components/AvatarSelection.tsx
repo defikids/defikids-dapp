@@ -28,17 +28,19 @@ export const AvatarSelection = ({
   //                               STATE
   //=============================================================================
 
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState() as any;
   const [avatar, setAvatar] = useState(familyDetails?.avatarURI);
   const [loading, setIsLoading] = useState(false);
 
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const openFileInput = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   const toast = useToast();

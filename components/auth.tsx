@@ -15,7 +15,7 @@ const Auth = () => {
   //                               HOOKS
   //=============================================================================
 
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState("") as any;
   const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
 
   watchAccount((account) => {

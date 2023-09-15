@@ -59,7 +59,7 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
 
       const user = response.data as User;
 
-      if (!user.invitations.includes(email)) {
+      if (user.invitations && !user.invitations.includes(email)) {
         const body = {
           ...user,
           invitations: [...user.invitations, email],

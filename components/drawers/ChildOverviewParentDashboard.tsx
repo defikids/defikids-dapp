@@ -98,7 +98,7 @@ export const ChildOverviewParentDashboard = ({
           onClick={() => {
             window.open(
               getEtherscanUrl(
-                chain.id,
+                chain!.id,
                 EtherscanContext.ADDRESS,
                 childDetails.wallet
               ),

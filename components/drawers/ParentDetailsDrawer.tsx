@@ -64,7 +64,7 @@ export const ParentDetailsDrawer = ({
         isOpen={isOpen}
         placement={placement}
         onClose={onClose}
-        finalFocusRef={btnRef}
+        // finalFocusRef={btnRef}
         size="xs"
         onCloseComplete={() => {}}
       >
@@ -101,7 +101,7 @@ export const ParentDetailsDrawer = ({
                     onClick={() => {
                       window.open(
                         getEtherscanUrl(
-                          chain.id,
+                          chain!.id,
                           EtherscanContext.ADDRESS,
                           userDetails?.wallet
                         ),

@@ -62,8 +62,6 @@ import router from "next/router";
 import { useBalance } from "wagmi";
 import { UsernameModal } from "@/components/Modals/UsernameModal";
 import { RxAvatar } from "react-icons/rx";
-import { SendFundsModal } from "@/components/Modals/SendFundsModal";
-import { useNetwork } from "wagmi";
 import { EtherscanContext } from "@/data-schema/enums";
 import { ParentDetailsDrawer } from "@/components/drawers/ParentDetailsDrawer";
 import { HiMenu } from "react-icons/hi";
@@ -74,6 +72,7 @@ import { ChildDefiOptionsDrawer } from "@/components/drawers/ChildDefiOptionsDra
 import { GrGrow } from "react-icons/gr";
 import { BiTimeFive } from "react-icons/bi";
 import { kv } from "@vercel/kv";
+import { useNetwork } from "wagmi";
 
 // import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 

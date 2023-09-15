@@ -18,14 +18,14 @@
     "baseUrl": ".",
     "downlevelIteration": true,
     "paths": {
-      "@/components/*": ["components/*"],
+      "@/components/*": ["src/components/*"],
       "@/pages/*": ["pages/*"],
       "@/styles/*": ["styles/*"],
-      "@/data-schema/*": ["data-schema/*"],
-      "@/store/*": ["store/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/data/*": ["data/*"],
-      "@/utils/*": ["utils/*"],
+      "@/data-schema/*": ["src/data-schema/*"],
+      "@/store/*": ["src/store/*"],
+      "@/data/*": ["src/data/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/services/*": ["src/services/*"],
       "@/*": ["./*"]
     },
     "plugins": [

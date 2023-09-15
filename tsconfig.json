@@ -26,6 +26,7 @@
       "@/data/*": ["src/data/*"],
       "@/utils/*": ["src/utils/*"],
       "@/services/*": ["src/services/*"],
+      "@/BFF/*": ["src/BFF/*"],
       "@/*": ["./*"]
     },
     "plugins": [

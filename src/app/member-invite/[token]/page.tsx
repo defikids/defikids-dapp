@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {
@@ -10,9 +12,9 @@ import {
   Center,
   Container,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import jwt from "jsonwebtoken";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useAccount } from "wagmi";
 import { CustomConnectButton } from "@/components/ConnectButton";
@@ -37,8 +39,12 @@ const MemberInvite = () => {
   const [decodedData, setDecodedData] = useState<DecodedToken | null>(null);
   const [inviteAccepted, setInviteAccepted] = useState(false);
 
-  const router = useRouter();
-  const { token } = useRouter().query as { token: string };
+  const pathname = usePathname();
+  const token = useMemo(() => {
+    return pathname?.split("/")[2];
+  }, [pathname]);
+
+  console.log("token", token);
   const { address, isDisconnected } = useAccount();
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
 

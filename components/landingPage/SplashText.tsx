@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Flex, Heading, Text, useBreakpointValue } from "@chakra-ui/react";
 
 const SplashText = () => {

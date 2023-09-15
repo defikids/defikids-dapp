@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Box, Flex, Heading, Avatar, Text, Slide } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import {
   Box,
@@ -9,7 +11,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { WalletPopover } from "@/components/WalletPopover";
@@ -75,7 +77,7 @@ export default function NavBar() {
         break;
       case UserType.PARENT:
         setIsLoggedIn(true);
-        router.push("/parent");
+        router.push("/parent-dashboard");
         break;
       case UserType.CHILD:
         setIsLoggedIn(true);

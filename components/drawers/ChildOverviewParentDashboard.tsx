@@ -1,3 +1,5 @@
+"use client";
+
 import { EtherscanContext } from "@/data-schema/enums";
 import { getEtherscanUrl, trimAddress } from "@/utils/web3";
 import {

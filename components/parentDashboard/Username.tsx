@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
 import { User } from "@/data-schema/types";
 

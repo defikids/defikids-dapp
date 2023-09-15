@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Center, Flex, Heading, Text } from "@chakra-ui/react";
 
 const SequenceLogin = () => {

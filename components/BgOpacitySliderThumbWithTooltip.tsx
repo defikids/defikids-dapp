@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuthStore } from "@/store/auth/authStore";
 import {
   Slider,

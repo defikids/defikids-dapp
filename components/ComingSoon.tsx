@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Flex, Heading, Text, Image } from "@chakra-ui/react";
 
 const ComingSoon = () => {

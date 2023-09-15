@@ -1,3 +1,4 @@
+"use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect, useState } from "react";
@@ -9,18 +10,13 @@ import { watchAccount } from "@wagmi/core";
 import axios from "axios";
 import { User } from "@/data-schema/types";
 
-const Auth = ({
-  setHasCheckedUserType,
-  hasCheckedUserType,
-}: {
-  setHasCheckedUserType: (hasCheckedUserType: boolean) => void;
-  hasCheckedUserType: boolean;
-}) => {
+const Auth = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
 
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
 
   watchAccount((account) => {
     const { isConnected, address } = account;

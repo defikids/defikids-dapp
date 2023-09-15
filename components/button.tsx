@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface IProps extends React.HTMLAttributes<HTMLButtonElement> {

@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge, Flex, Text } from "@chakra-ui/react";
 
 export const RegisterBanner = ({

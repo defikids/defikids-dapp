@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable react/no-children-prop */
 import {
   Avatar,
@@ -408,10 +410,10 @@ const Child: React.FC = () => {
       bgImage={
         isBackground
           ? `linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.5),
-      rgba(0, 0, 0, 0.5)
-    ), url(${childDBData.avatarURI || "/images/placeholder-avatar.jpeg"})`
+        to bottom,
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.5)
+      ), url(${childDBData.avatarURI || "/images/placeholder-avatar.jpeg"})`
           : ""
       }
       bgRepeat="no-repeat"
@@ -428,13 +430,13 @@ const Child: React.FC = () => {
       )}
 
       {/* <ChildDetailsDrawer
-        isOpen={isOpenChildDetails}
-        onClose={onCloseChildDetails}
-        placement="right"
-        childDetails={childDetails}
-        setChildDetails={setChildDetails}
-        childDBData={childDBData}
-      /> */}
+          isOpen={isOpenChildDetails}
+          onClose={onCloseChildDetails}
+          placement="right"
+          childDetails={childDetails}
+          setChildDetails={setChildDetails}
+          childDBData={childDBData}
+        /> */}
     </Box>
   );
 };

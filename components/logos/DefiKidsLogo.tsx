@@ -1,5 +1,7 @@
+"use client";
+
 import { Flex, Heading, useBreakpointValue, Image } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface DefiKidsProps {
   direction?: "row" | "column" | "row-reverse" | "column-reverse";

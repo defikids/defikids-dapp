@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, Flex, Heading, Slide, Text } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";

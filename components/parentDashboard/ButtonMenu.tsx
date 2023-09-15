@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, VStack } from "@chakra-ui/react";
 import { ChildDetails } from "@/data-schema/types";
 import { ParentDashboardTabs } from "@/data-schema/enums";

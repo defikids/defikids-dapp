@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 

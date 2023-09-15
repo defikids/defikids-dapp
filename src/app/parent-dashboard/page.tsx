@@ -1,14 +1,7 @@
+"use client";
 /* eslint-disable react/no-children-prop */
-import {
-  Box,
-  Flex,
-  useDisclosure,
-  useSteps,
-  CloseButton,
-} from "@chakra-ui/react";
+import { Box, Flex, useDisclosure, useSteps } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-// import contract from "@/blockchain/contracts/contract";
-// import StakeContract from "@/services/stake";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
@@ -282,16 +275,16 @@ const Parent: React.FC = () => {
         </Box>
       </Flex>
       {/* {isMobileSize && (
-        <ParentDetailsDrawer
-          isOpen={isParentDetailsOpen}
-          onClose={onParentDetailsClose}
-          placement="bottom"
-          onOpen={onOpen}
-          walletAddress={walletAddress}
-          onChangeUsernameOpen={onChangeUsernameOpen}
-          onAddChildOpen={onAddChildOpen}
-        />
-      )} */}
+          <ParentDetailsDrawer
+            isOpen={isParentDetailsOpen}
+            onClose={onParentDetailsClose}
+            placement="bottom"
+            onOpen={onOpen}
+            walletAddress={walletAddress}
+            onChangeUsernameOpen={onChangeUsernameOpen}
+            onAddChildOpen={onAddChildOpen}
+          />
+        )} */}
       <UsernameModal
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactHTMLElement } from "react";
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {

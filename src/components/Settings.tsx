@@ -84,12 +84,7 @@ export const Settings = ({
 
   return (
     <>
-      <Container
-        zIndex={2}
-        overflowY="scroll"
-        border="1px solid lightgray"
-        borderRadius={isMobileSize && isOpenExtendedMenu ? "0px" : "20px"}
-      >
+      <Container zIndex={2} overflowY="scroll">
         <Flex
           direction="column"
           justify="center"
@@ -102,16 +97,11 @@ export const Settings = ({
                 <h2>
                   <AccordionButton borderBottom="1px">
                     <Box as="span" flex="1" textAlign="left">
-                      <Heading
-                        as="h3"
-                        size="md"
-                        // color="#82add9"
-                        color="black"
-                      >
+                      <Heading as="h3" size="md" color="black">
                         {title}
                       </Heading>
                     </Box>
-                    <AccordionIcon color="white" />
+                    <AccordionIcon color="black" />
                   </AccordionButton>
                 </h2>
                 <AccordionPanel my={5}>

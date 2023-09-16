@@ -219,7 +219,6 @@ export const BackgroundSelection = ({
         <Flex direction="row" justify="center" align="center" w="100%">
           <Button
             cursor="pointer"
-            variant="outline"
             colorScheme="blue"
             size="md"
             style={{
@@ -235,7 +234,6 @@ export const BackgroundSelection = ({
           <Button
             cursor="pointer"
             onClick={openFileInput}
-            variant="outline"
             colorScheme="blue"
             size="md"
             style={{
@@ -271,7 +269,6 @@ export const BackgroundSelection = ({
         <Flex justify="center" alignItems="center" w="100%" mt={10}>
           <Button
             cursor="pointer"
-            variant="outline"
             colorScheme="blue"
             size="sm"
             onClick={handleOpacityChange}

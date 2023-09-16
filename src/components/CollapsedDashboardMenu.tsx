@@ -32,10 +32,7 @@ export const CollapsedDashboardMenu = ({
       }}
     >
       <Flex
-        // position={"absolute"}
         bgGradient={["linear(to-b, #4F1B7C, black)"]}
-        // width="auto"
-        // height="12vh"
         ml="1rem"
         mt={5}
         p={5}

@@ -100,22 +100,16 @@ export const EditEmail = ({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{
-              border: "1px solid lightgray",
+              border: "1px solid #809193",
             }}
             sx={{
               "::placeholder": {
-                color: "gray.400",
+                color: "gray.600",
               },
             }}
           />
         </FormControl>
-        <Button
-          variant="outline"
-          colorScheme="blue"
-          size={"sm"}
-          onClick={handleSubmit}
-          mt={4}
-        >
+        <Button colorScheme="blue" size={"sm"} onClick={handleSubmit} mt={4}>
           Submit
         </Button>
       </Flex>

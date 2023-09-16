@@ -164,7 +164,7 @@ export const AvatarSelection = ({
           onClick={openFileInput}
         />
         {selectedFile && (
-          <Button size={"xs"} onClick={handleSubmit} mt={4}>
+          <Button variant="solid" size={"xs"} onClick={handleSubmit} mt={4}>
             Submit
           </Button>
         )}

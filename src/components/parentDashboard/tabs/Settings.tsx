@@ -102,11 +102,16 @@ export const Settings = ({
                 <h2>
                   <AccordionButton borderBottom="1px">
                     <Box as="span" flex="1" textAlign="left">
-                      <Heading as="h3" size="md" color="#82add9">
+                      <Heading
+                        as="h3"
+                        size="md"
+                        // color="#82add9"
+                        color="black"
+                      >
                         {title}
                       </Heading>
                     </Box>
-                    <AccordionIcon />
+                    <AccordionIcon color="white" />
                   </AccordionButton>
                 </h2>
                 <AccordionPanel my={5}>

@@ -97,13 +97,18 @@ export const EditUsername = ({
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             style={{
-              border: "1px solid lightgray",
+              border: "1px solid #809193",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.600",
+              },
             }}
           />
         </FormControl>
         <Button
-          variant="outline"
           colorScheme="blue"
+          variant="solid"
           size={"sm"}
           onClick={handleSubmit}
           mt={4}

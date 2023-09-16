@@ -53,10 +53,10 @@ export const SettingsModal = ({
         backdropInvert="10%"
         backdropBlur="4px"
       />
-      <ModalContent>
+      <ModalContent bgGradient={["linear(to-r, white, black)"]}>
         <ModalHeader>Settings</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
+        <ModalCloseButton color="white" />
+        <ModalBody bgGradient={["linear(to-r, white, black)"]}>
           <Settings
             onChangeUsernameOpen={onChangeUsernameOpen}
             familyDetails={familyDetails}

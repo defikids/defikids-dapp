@@ -106,7 +106,12 @@ export const EtherscanModal = ({
       onCloseComplete={() => {}}
       isCentered
     >
-      <ModalOverlay />
+      <ModalOverlay
+        bg="none"
+        backdropFilter="auto"
+        backdropInvert="10%"
+        backdropBlur="4px"
+      />
       <ModalContent>
         <ModalHeader>Etherscan</ModalHeader>
         <ModalCloseButton />

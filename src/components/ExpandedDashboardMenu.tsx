@@ -38,6 +38,7 @@ export const ExpandedDashboardMenu = ({
   isOpenExtendedMenu,
   onOpenEtherScan,
   isMobileSize,
+  onOpenSettingsModal,
 }: {
   familyDetails: User;
   children: ChildDetails[];
@@ -48,6 +49,7 @@ export const ExpandedDashboardMenu = ({
   isOpenExtendedMenu: boolean;
   onOpenEtherScan: () => void;
   isMobileSize: boolean;
+  onOpenSettingsModal: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -83,9 +85,8 @@ export const ExpandedDashboardMenu = ({
           bgGradient={[`linear(to-b, black,${colors.brand.purple})`]}
           maxWidth={isMobileSize ? "100%" : "350px"}
           height={isMobileSize ? "100vh" : "96vh"}
-          // height={"100vh"}
           ml={!isMobileSize ? "1rem" : 0}
-          mt={5}
+          mt={mobileMenuOpen ? 0 : 5}
           borderRadius={!isMobileSize ? "1.5rem" : 0}
           style={{
             boxShadow: "0px 0px 10px 15px rgba(0,0,0,0.75)",
@@ -98,7 +99,12 @@ export const ExpandedDashboardMenu = ({
                 justify="flex-end"
                 align="center"
                 onClick={() => {
-                  if (isMobileSize) setMobileMenuOpen(!mobileMenuOpen);
+                  if (isMobileSize) {
+                    !mobileMenuOpen
+                      ? setMobileMenuOpen(true)
+                      : setMobileMenuOpen(false);
+                  }
+
                   onToggleExtendedMenu();
                   setTimeout(() => {
                     onToggleCollapsedMenu();
@@ -121,11 +127,13 @@ export const ExpandedDashboardMenu = ({
               <ButtonMenu
                 onAddChildOpen={onAddChildOpen}
                 setSelectedTab={setSelectedTab}
+                onOpenEtherScan={onOpenEtherScan}
+                onOpenSettingsModal={onOpenSettingsModal}
                 children={children}
               />
 
               <ChildAvatarGroup children={children} />
-
+              {/* 
               <VStack
                 spacing={4}
                 align="stretch"
@@ -147,7 +155,7 @@ export const ExpandedDashboardMenu = ({
                     Member Profiles
                   </Button>
                 )}
-              </VStack>
+              </VStack> */}
             </Box>
 
             {/* Footer Buttons */}
@@ -166,7 +174,7 @@ export const ExpandedDashboardMenu = ({
                 >
                   Disconnect
                 </Button>
-
+                {/* 
                 <IconButton
                   ml={4}
                   colorScheme="gray"
@@ -183,9 +191,9 @@ export const ExpandedDashboardMenu = ({
                       height="22px"
                     />
                   }
-                />
+                /> */}
 
-                <IconButton
+                {/* <IconButton
                   mx={4}
                   colorScheme="gray"
                   aria-label="button"
@@ -200,8 +208,8 @@ export const ExpandedDashboardMenu = ({
                       style={{ width: "22px", height: "22px" }}
                     />
                   }
-                />
-                <IconButton
+                /> */}
+                {/* <IconButton
                   colorScheme="gray"
                   aria-label="button"
                   size="lg"
@@ -214,7 +222,7 @@ export const ExpandedDashboardMenu = ({
                   icon={
                     <SettingsIcon style={{ width: "22px", height: "22px" }} />
                   }
-                />
+                /> */}
               </Flex>
             </Box>
           </Flex>

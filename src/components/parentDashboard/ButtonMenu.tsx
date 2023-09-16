@@ -7,12 +7,24 @@ import { ParentDashboardTabs } from "@/data-schema/enums";
 const ButtonMenu = ({
   onAddChildOpen,
   setSelectedTab,
+  onOpenEtherScan,
+  onOpenSettingsModal,
   children,
 }: {
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
+  onOpenEtherScan: () => void;
+  onOpenSettingsModal: () => void;
   children?: ChildDetails[];
 }) => {
+  function onToggleCollapsedMenu() {
+    throw new Error("Function not implemented.");
+  }
+
+  function onToggleExtendedMenu() {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <VStack spacing={4} align="stretch" justify="space-between" mt={10} mx={5}>
       <Button
@@ -33,13 +45,37 @@ const ButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
-          setSelectedTab(ParentDashboardTabs.SUPPORT);
+          onOpenSettingsModal();
         }}
       >
-        Services
+        Settings
       </Button>
 
-      {children && children.length == 0 && (
+      <Button
+        variant="outline"
+        colorScheme="white"
+        _hover={{ borderColor: "gray" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedTab(ParentDashboardTabs.INFORMATION);
+        }}
+      >
+        General
+      </Button>
+
+      <Button
+        variant="outline"
+        colorScheme="white"
+        _hover={{ borderColor: "gray" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenEtherScan();
+        }}
+      >
+        Blockchain
+      </Button>
+
+      {/* {children && children.length == 0 && (
         <Button
           variant="outline"
           colorScheme="white"
@@ -52,7 +88,7 @@ const ButtonMenu = ({
         >
           Invite Member
         </Button>
-      )}
+      )} */}
     </VStack>
   );
 };

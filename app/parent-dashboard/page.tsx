@@ -1,6 +1,14 @@
 "use client";
 /* eslint-disable react/no-children-prop */
-import { Box, Flex, useDisclosure, useSteps } from "@chakra-ui/react";
+
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  useDisclosure,
+  useSteps,
+} from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -12,13 +20,15 @@ import { UsernameModal } from "@/components/modals/UsernameModal";
 import { ParentDashboardTabs } from "@/data-schema/enums";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
-import { Info } from "@/components/parentDashboard/tabs/Info";
 import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { AddMemberModal } from "@/components/modals/AddMemberModal";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
+import MemberTable from "@/components/parentDashboard/MemberTable";
+import Features from "@/components/parentDashboard/Features";
+import { SendFundsModal } from "@/components/modals/SendFundsModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -90,17 +100,11 @@ const Parent: React.FC = () => {
     onClose: onChangeUsernameClose,
   } = useDisclosure();
 
-  const {
-    isOpen: isSendFundsOpen,
-    onOpen: onSendFundsOpen,
-    onClose: onSendFundsClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isParentDetailsOpen,
-    onOpen: onParentDetailsOpen,
-    onClose: onParentDetailsClose,
-  } = useDisclosure();
+  // const {
+  //   isOpen: isParentDetailsOpen,
+  //   onOpen: onParentDetailsOpen,
+  //   onClose: onParentDetailsClose,
+  // } = useDisclosure();
 
   const {
     isOpen: isOpenBackgroundDefaults,
@@ -118,6 +122,12 @@ const Parent: React.FC = () => {
     isOpen: isOpenInfoModal,
     onOpen: onOpenInfoModal,
     onClose: onCloseInfoModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenSendFundsModal,
+    onOpen: onOpenSendFundsModal,
+    onClose: onCloseSendFundsModal,
   } = useDisclosure();
 
   const { activeStep, setActiveStep } = useSteps({
@@ -216,6 +226,7 @@ const Parent: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
+            onOpenSendFundsModal={onOpenSendFundsModal}
           />
         </Box>
         {!isMobileSize && (
@@ -253,24 +264,17 @@ const Parent: React.FC = () => {
           opacity={backgroundOpacity || familyDetails?.opacity?.background || 1}
           zIndex={-1}
         />
-        <Box width="100vw">
-          <Flex
-            height="100vh"
-            justify="center"
-            align="center"
-            bgColor={
-              selectedTab === ParentDashboardTabs.SETTINGS ? "transparent" : ""
-            }
-          >
-            {/* {selectedTab === ParentDashboardTabs.INFORMATION && (
-              <Info
-                isMobileSize={isMobileSize}
-                isOpenExtendedMenu={isOpenExtendedMenu}
-                closeTab={closeTab}
-              />
-            )} */}
-          </Flex>
-        </Box>
+        <Flex width="100%" height="100%" direction="column" mt="3rem">
+          <Container maxW="5xl" mt="3rem">
+            <Features />
+            <Flex justify={isMobileSize ? "center" : "flex-end"} px={6}>
+              <Button colorScheme="blue" mt="3rem" onClick={onAddChildOpen}>
+                Add Member
+              </Button>
+            </Flex>
+          </Container>
+          <MemberTable />
+        </Flex>
       </Flex>
 
       <UsernameModal
@@ -312,7 +316,16 @@ const Parent: React.FC = () => {
         onClose={onCloseSettingsModal}
       />
 
-      <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} />
+      <InfoModal
+        isOpen={isOpenInfoModal}
+        onClose={onCloseInfoModal}
+        isOpenExtendedMenu={isOpenExtendedMenu}
+      />
+
+      <SendFundsModal
+        isOpen={isOpenSendFundsModal}
+        onClose={onCloseSendFundsModal}
+      />
     </Flex>
   );
 };

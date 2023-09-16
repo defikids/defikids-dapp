@@ -9,6 +9,7 @@ import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import axios from "axios";
 import { User } from "@/data-schema/types";
+import { useWindowSize } from "usehooks-ts";
 
 const Auth = () => {
   //=============================================================================
@@ -17,6 +18,10 @@ const Auth = () => {
 
   const [selectedAddress, setSelectedAddress] = useState("") as any;
   const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
+
+  const { width } = useWindowSize();
+
+  const isMobileSize = width < 768;
 
   watchAccount((account) => {
     const { isConnected, address } = account;
@@ -37,16 +42,24 @@ const Auth = () => {
     }
   });
 
-  const { setWalletConnected, setLogout, setUserDetails, userDetails } =
-    useAuthStore(
-      (state) => ({
-        userDetails: state.userDetails,
-        setWalletConnected: state.setWalletConnected,
-        setLogout: state.setLogout,
-        setUserDetails: state.setUserDetails,
-      }),
-      shallow
-    );
+  const {
+    setWalletConnected,
+    setLogout,
+    setUserDetails,
+    userDetails,
+    setMobileMenuOpen,
+    mobileMenuOpen,
+  } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+      setWalletConnected: state.setWalletConnected,
+      setLogout: state.setLogout,
+      setUserDetails: state.setUserDetails,
+      mobileMenuOpen: state.mobileMenuOpen,
+      setMobileMenuOpen: state.setMobileMenuOpen,
+    }),
+    shallow
+  );
 
   const { setConnectedSigner, setProvider } = useContractStore(
     (state) => ({
@@ -95,6 +108,15 @@ const Auth = () => {
       localStorage.setItem("chakra-ui-color-mode", "dark");
     }
   }, []);
+
+  // useEffect(() => {
+  //   if (isMobileSize) {
+  //     setMobileMenuOpen(true);
+  //     // mobileMenuOpen
+  //   } else {
+  //     setMobileMenuOpen(false);
+  //   }
+  // }, [isMobileSize]);
 
   return <></>;
 };

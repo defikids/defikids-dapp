@@ -60,6 +60,7 @@ export default function LoggedInNavBar() {
             onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen);
             }}
+            cursor="pointer"
           />
         </Flex>
       </Box>

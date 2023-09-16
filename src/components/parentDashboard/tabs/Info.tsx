@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { menuCards } from "@/data/landingPage/menuCards";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const CustomCard = ({
   title,
@@ -26,7 +26,7 @@ const CustomCard = ({
   title: string;
   description: string;
   link: string;
-  router: NextRouter;
+  router: any;
   setShowLearnMore: (value: { [key: number]: boolean }) => void;
   showLearnMore: { [key: number]: boolean };
   index: number;
@@ -89,7 +89,8 @@ export const Info = ({
   return (
     <>
       <Container
-        size={isMobileSize ? "xl" : "3xl"}
+        zIndex={2}
+        size="xl"
         overflowY="scroll"
         bgColor="#121212"
         borderRadius={isMobileSize && isOpenExtendedMenu ? "0px" : "20px"}
@@ -99,12 +100,18 @@ export const Info = ({
         </Flex>
 
         <Flex direction="row" justify="center">
-          <Heading size="2xl" my="2rem">
+          <Heading size="xl" my="2rem">
             Information
           </Heading>
         </Flex>
 
-        <Flex direction="column" justify="center" alignContent="center" mb={5}>
+        <Flex
+          direction="column"
+          justify="center"
+          alignContent="center"
+          mb={5}
+          p={5}
+        >
           <Grid
             my={4}
             templateColumns={isMobileSize ? "1fr" : "repeat(2, 1fr)"}

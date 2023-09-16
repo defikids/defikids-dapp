@@ -83,6 +83,8 @@ export const EditEmail = ({
     }
   };
 
+  console;
+
   return (
     <>
       <Flex
@@ -95,11 +97,15 @@ export const EditEmail = ({
           <FormLabel>Edit email</FormLabel>
           <Input
             placeholder={familyDetails?.email}
-            defaultValue={familyDetails?.email}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{
               border: "1px solid lightgray",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400",
+              },
             }}
           />
         </FormControl>

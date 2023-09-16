@@ -10,8 +10,7 @@ import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import { UsernameModal } from "@/components/modals/UsernameModal";
 import { ParentDashboardTabs } from "@/data-schema/enums";
-
-import { Settings } from "@/components/parentDashboard/tabs/Settings";
+import { SettingsModal } from "@/components/modals/SettingsModal";
 import { Info } from "@/components/parentDashboard/tabs/Info";
 import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -19,7 +18,6 @@ import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { AddMemberModal } from "@/components/modals/AddMemberModal";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import { colors } from "@/services/chakra/theme";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -107,6 +105,12 @@ const Parent: React.FC = () => {
     isOpen: isOpenBackgroundDefaults,
     onOpen: onOpenBackgroundDefaults,
     onClose: onCloseBackgroundDefaults,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenSettingsModal,
+    onOpen: onOpenSettingsModal,
+    onClose: onCloseSettingsModal,
   } = useDisclosure();
 
   const { activeStep, setActiveStep } = useSteps({
@@ -203,6 +207,7 @@ const Parent: React.FC = () => {
             isOpenExtendedMenu={isOpenExtendedMenu}
             onOpenEtherScan={onOpenEtherScan}
             isMobileSize={isMobileSize}
+            onOpenSettingsModal={onOpenSettingsModal}
           />
         </Box>
         {!isMobileSize && (
@@ -249,21 +254,6 @@ const Parent: React.FC = () => {
               selectedTab === ParentDashboardTabs.SETTINGS ? "transparent" : ""
             }
           >
-            {selectedTab === ParentDashboardTabs.SETTINGS && (
-              <Settings
-                familyDetails={familyDetails}
-                onChangeUsernameOpen={onChangeUsernameOpen}
-                fetchFamilyDetails={fetchFamilyDetails}
-                onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-                setBackgroundOpacity={setBackgroundOpacity}
-                setCardOpacity={setCardOpacity}
-                cardOpacity={cardOpacity}
-                isMobileSize={isMobileSize}
-                isOpenExtendedMenu={isOpenExtendedMenu}
-                closeTab={closeTab}
-              />
-            )}
-
             {selectedTab === ParentDashboardTabs.INFORMATION && (
               <Info
                 isMobileSize={isMobileSize}
@@ -274,17 +264,7 @@ const Parent: React.FC = () => {
           </Flex>
         </Box>
       </Flex>
-      {/* {isMobileSize && (
-          <ParentDetailsDrawer
-            isOpen={isParentDetailsOpen}
-            onClose={onParentDetailsClose}
-            placement="bottom"
-            onOpen={onOpen}
-            walletAddress={walletAddress}
-            onChangeUsernameOpen={onChangeUsernameOpen}
-            onAddChildOpen={onAddChildOpen}
-          />
-        )} */}
+
       <UsernameModal
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
@@ -294,246 +274,37 @@ const Parent: React.FC = () => {
         fetchChildren={fetchChildren}
         fetchFamilyDetails={fetchFamilyDetails}
       />
+
       <BackgroundDefaults
         isOpen={isOpenBackgroundDefaults}
         onClose={onCloseBackgroundDefaults}
         fetchFamilyDetails={fetchFamilyDetails}
       />
+
       <AddMemberModal
         isOpen={isAddChildOpen}
         onClose={onAddChildClose}
         onAdd={() => fetchChildren()}
       />
+
       <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
+
+      <SettingsModal
+        familyDetails={familyDetails}
+        onChangeUsernameOpen={onChangeUsernameOpen}
+        fetchFamilyDetails={fetchFamilyDetails}
+        onOpenBackgroundDefaults={onOpenBackgroundDefaults}
+        setBackgroundOpacity={setBackgroundOpacity}
+        setCardOpacity={setCardOpacity}
+        cardOpacity={cardOpacity}
+        isMobileSize={isMobileSize}
+        isOpenExtendedMenu={isOpenExtendedMenu}
+        closeTab={closeTab}
+        isOpen={isOpenSettingsModal}
+        onClose={onCloseSettingsModal}
+      />
     </Flex>
   );
 };
 
 export default Parent;
-
-//  <Box>
-//        <Container maxW="container.lg" mt="8rem">
-//          <Flex justifyContent="flex-start" alignItems="center" my={10} ml={5}>
-//            <Tooltip label="Change Avatar">
-//              <Avatar
-//                size="xl"
-//                name={
-//                  familyDetails.username
-//                    ? familyDetails.username
-//                    : trimAddress(walletAddress)
-//                }
-//                src={familyDetails.avatarURI || "/images/placeholder-avatar.jpeg"}
-//                style={{ cursor: "pointer" }}
-//                onClick={onOpen}
-//                _hover={{
-//                  transform: "scale(1.05)",
-//                }}
-//              />
-//            </Tooltip>
-
-//            <Heading fontSize={isMobileSize ? "2xl" : "xl"} ml={5}>
-//              {`Welcome back, ${
-//                familyDetails.username
-//                  ? familyDetails.username
-//                  : trimAddress(walletAddress)
-//              }`}
-//            </Heading>
-//          </Flex>
-
-//          <Container
-//            maxW="container.md"
-//            centerContent
-//            bgGradient={["linear(to-b, #4F1B7C, black)"]}
-//            borderRadius={20}
-//          >
-//            <Flex
-//              py="8"
-//              rounded="xl"
-//              color="white"
-//              justify="space-between"
-//              w="100%"
-//              align="center"
-//            >
-//              <Flex flexDir="column" alignItems="space-between" w="100%">
-//                <Text fontSize="xs" mb={2}>
-//                  AVAILABLE FUNDS
-//                </Text>
-
-//                <Flex alignItems="center">
-//                  <Image
-//                    src="/logos/ethereum-logo.png"
-//                    alt="Eth logo"
-//                    width={10}
-//                    height={10}
-//                    mr={3}
-//                  />
-
-//                  <Flex direction="row" alignItems="baseline">
-//                    <Heading
-//                      size={isMobileSize ? "2xl" : "xl"}
-//                      display="flex"
-//                      alignItems="baseline"
-//                    >
-//                      {`${Number(data?.formatted).toFixed(4)}`}
-//                    </Heading>
-//                    <Text fontSize="sm" ml={2}>
-//                      {data?.symbol}
-//                    </Text>
-//                  </Flex>
-//                </Flex>
-//              </Flex>
-//              {!isMobileSize ? (
-//                <Menu>
-//                  {({ isOpen }) => (
-//                    <>
-//                      <MenuButton isActive={isOpen} as={Button} size="2xl">
-//                        <ChevronDownIcon fontSize="3xl" />
-//                      </MenuButton>
-//                      <MenuList>
-//                        <MenuGroup title="Parent">
-//                          <MenuItem icon={<RxAvatar />} onClick={onOpen}>
-//                            Change Avatar
-//                          </MenuItem>
-//                          <MenuItem
-//                            icon={<EditIcon />}
-//                            onClick={onChangeUsernameOpen}
-//                          >
-//                            Change Username
-//                          </MenuItem>
-//                          <MenuItem
-//                            icon={<BiWalletAlt />}
-//                            onClick={() => {
-//                              window.open(
-//                                getEtherscanUrl(
-//                                  chain.id,
-//                                  EtherscanContext.ADDRESS,
-//                                  walletAddress
-//                                ),
-//                                "_blank"
-//                              );
-//                            }}
-//                          >
-//                            Transaction History
-//                          </MenuItem>
-//                        </MenuGroup>
-
-//                        <MenuDivider />
-
-//                        <MenuGroup title="Family Members">
-//                          <MenuItem
-//                            icon={<AiOutlinePlus />}
-//                            onClick={onAddChildOpen}
-//                          >
-//                            Add Member
-//                          </MenuItem>
-//                          <MenuItem
-//                            icon={<BiTransfer />}
-//                            onClick={() => alert("Transfer to all kids")}
-//                          >
-//                            Airdrop
-//                          </MenuItem>
-//                        </MenuGroup>
-//                      </MenuList>
-//                    </>
-//                  )}
-//                </Menu>
-//              ) : (
-//                <IconButton
-//                  variant="outline"
-//                  colorScheme="white"
-//                  aria-label="Call Sage"
-//                  fontSize="30px"
-//                  icon={<HiMenu />}
-//                  onClick={onParentDetailsOpen}
-//                  style={{ border: "1px solid transparent" }}
-//                />
-//              )}
-//            </Flex>
-//          </Container>
-//        </Container>
-
-//        <Container
-//          maxW="container.lg"
-//          my="16"
-//          className={childrenLoading && "animate-pulse"}
-//        >
-//          {children.length > 0 ? (
-//            <>
-//              <Center my="2rem">
-//                <Heading fontSize="2xl">FAMILY MEMBERS</Heading>
-//              </Center>
-
-//              <Wrap direction="row" justify="center" spacing="8rem">
-//                {children.map((c, i) => (
-//                  <WrapItem key={c.wallet}>
-//                    <Child
-//                      childDetails={c}
-//                      {...c}
-//                      {...childrenStakes[c.wallet]}
-//                      onOpen={onOpenChildDetails}
-//                      setChildKey={setChildKey}
-//                      childKey={i}
-//                    />
-//                  </WrapItem>
-//                ))}
-//              </Wrap>
-//            </>
-//          ) : (
-//            <Center my="2rem">
-//              <Heading fontSize="2xl">No Family Members</Heading>
-//            </Center>
-//          )}
-//        </Container>
-
-//        <AddChildModal
-//          isOpen={isAddChildOpen}
-//          onClose={onAddChildClose}
-//          onAdd={() => fetchChildren()}
-//        />
-
-//
-
-//        <ChildDetailsDrawer
-//          isOpen={isOpenChildDetails}
-//          onClose={onCloseChildDetails}
-//          placement="left"
-//          onOpen={onOpen}
-//          childKey={childKey}
-//          children={children}
-//          setChildKey={setChildKey}
-//          fetchChildren={fetchChildren}
-//          onOpenChangeUsername={onChangeUsernameOpen}
-//          onSendFundsOpen={onSendFundsOpen}
-//        />
-
-//        <UsernameModal
-//          isOpen={isChangeUsernameOpen}
-//          onClose={onChangeUsernameClose}
-//          childKey={childKey}
-//          children={children}
-//          familyId={familyDetails.familyId}
-//          fetchChildren={fetchChildren}
-//          fetchFamilyDetails={fetchFamilyDetails}
-//        />
-
-//        <SendFundsModal
-//          isOpen={isSendFundsOpen}
-//          onClose={onSendFundsClose}
-//          childKey={childKey}
-//          children={children}
-//          fetchChildren={fetchChildren}
-//          fetchFamilyDetails={fetchFamilyDetails}
-//        />
-
-//        {isMobileSize && (
-//          <ParentDetailsDrawer
-//            isOpen={isParentDetailsOpen}
-//            onClose={onParentDetailsClose}
-//            placement="bottom"
-//            onOpen={onOpen}
-//            walletAddress={walletAddress}
-//            onChangeUsernameOpen={onChangeUsernameOpen}
-//            onAddChildOpen={onAddChildOpen}
-//          />
-//        )}
-//      </Box>

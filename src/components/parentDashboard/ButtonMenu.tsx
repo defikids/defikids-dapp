@@ -9,12 +9,14 @@ const ButtonMenu = ({
   setSelectedTab,
   onOpenEtherScan,
   onOpenSettingsModal,
+  onOpenInfoModal,
   children,
 }: {
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
   onOpenEtherScan: () => void;
   onOpenSettingsModal: () => void;
+  onOpenInfoModal: () => void;
   children?: ChildDetails[];
 }) => {
   function onToggleCollapsedMenu() {
@@ -57,7 +59,7 @@ const ButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
-          setSelectedTab(ParentDashboardTabs.INFORMATION);
+          onOpenInfoModal();
         }}
       >
         General

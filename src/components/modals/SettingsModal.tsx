@@ -8,8 +8,9 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalFooter,
+  Heading,
 } from "@chakra-ui/react";
-import { Settings } from "@/components/parentDashboard/tabs/Settings";
+import { Settings } from "@/components/Settings";
 import { User } from "@/data-schema/types";
 
 export const SettingsModal = ({
@@ -53,10 +54,12 @@ export const SettingsModal = ({
         backdropInvert="10%"
         backdropBlur="4px"
       />
-      <ModalContent bgGradient={["linear(to-r, white, black)"]}>
-        <ModalHeader>Settings</ModalHeader>
-        <ModalCloseButton color="white" />
-        <ModalBody bgGradient={["linear(to-r, white, black)"]}>
+      <ModalContent bgGradient={["linear(to-r, white, lightgray)"]}>
+        <ModalHeader>
+          <Heading fontSize="md">Settings</Heading>
+        </ModalHeader>
+        <ModalCloseButton color="black" />
+        <ModalBody bgGradient={["linear(to-r, white, lightgray)"]}>
           <Settings
             onChangeUsernameOpen={onChangeUsernameOpen}
             familyDetails={familyDetails}

@@ -11,6 +11,7 @@ import axios from "axios";
 import { UsernameModal } from "@/components/modals/UsernameModal";
 import { ParentDashboardTabs } from "@/data-schema/enums";
 import { SettingsModal } from "@/components/modals/SettingsModal";
+import { InfoModal } from "@/components/modals/InfoModal";
 import { Info } from "@/components/parentDashboard/tabs/Info";
 import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -113,6 +114,12 @@ const Parent: React.FC = () => {
     onClose: onCloseSettingsModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenInfoModal,
+    onOpen: onOpenInfoModal,
+    onClose: onCloseInfoModal,
+  } = useDisclosure();
+
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
     count: steps.length,
@@ -208,6 +215,7 @@ const Parent: React.FC = () => {
             onOpenEtherScan={onOpenEtherScan}
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
+            onOpenInfoModal={onOpenInfoModal}
           />
         </Box>
         {!isMobileSize && (
@@ -254,13 +262,13 @@ const Parent: React.FC = () => {
               selectedTab === ParentDashboardTabs.SETTINGS ? "transparent" : ""
             }
           >
-            {selectedTab === ParentDashboardTabs.INFORMATION && (
+            {/* {selectedTab === ParentDashboardTabs.INFORMATION && (
               <Info
                 isMobileSize={isMobileSize}
                 isOpenExtendedMenu={isOpenExtendedMenu}
                 closeTab={closeTab}
               />
-            )}
+            )} */}
           </Flex>
         </Box>
       </Flex>
@@ -303,6 +311,8 @@ const Parent: React.FC = () => {
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
       />
+
+      <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} />
     </Flex>
   );
 };

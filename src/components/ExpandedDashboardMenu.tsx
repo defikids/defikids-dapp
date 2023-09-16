@@ -26,7 +26,7 @@ import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
-import InfoModal from "@/components/modals/InfoModal";
+// import InfoModal from "@/components/modals/InfoModal";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -39,6 +39,7 @@ export const ExpandedDashboardMenu = ({
   onOpenEtherScan,
   isMobileSize,
   onOpenSettingsModal,
+  onOpenInfoModal,
 }: {
   familyDetails: User;
   children: ChildDetails[];
@@ -50,6 +51,7 @@ export const ExpandedDashboardMenu = ({
   onOpenEtherScan: () => void;
   isMobileSize: boolean;
   onOpenSettingsModal: () => void;
+  onOpenInfoModal: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -72,11 +74,11 @@ export const ExpandedDashboardMenu = ({
     }
   };
 
-  const {
-    isOpen: isOpenInfoModal,
-    onOpen: onOpenInfoModal,
-    onClose: onCloseInfoModal,
-  } = useDisclosure();
+  // const {
+  //   isOpen: isOpenInfoModal,
+  //   onOpen: onOpenInfoModal,
+  //   onClose: onCloseInfoModal,
+  // } = useDisclosure();
 
   return (
     <>
@@ -129,6 +131,7 @@ export const ExpandedDashboardMenu = ({
                 setSelectedTab={setSelectedTab}
                 onOpenEtherScan={onOpenEtherScan}
                 onOpenSettingsModal={onOpenSettingsModal}
+                onOpenInfoModal={onOpenInfoModal}
                 children={children}
               />
 
@@ -228,7 +231,7 @@ export const ExpandedDashboardMenu = ({
           </Flex>
         </Box>
       </Slide>
-      <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} />
+      {/* <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} /> */}
     </>
   );
 };

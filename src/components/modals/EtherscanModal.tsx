@@ -13,6 +13,7 @@ import {
   Flex,
   Text,
   Link,
+  Heading,
 } from "@chakra-ui/react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -113,7 +114,9 @@ export const EtherscanModal = ({
         backdropBlur="4px"
       />
       <ModalContent>
-        <ModalHeader>Etherscan</ModalHeader>
+        <ModalHeader>
+          <Heading fontSize="sm">Etherscan</Heading>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {showExplanation

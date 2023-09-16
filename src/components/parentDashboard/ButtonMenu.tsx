@@ -10,6 +10,7 @@ const ButtonMenu = ({
   onOpenEtherScan,
   onOpenSettingsModal,
   onOpenInfoModal,
+  onOpenSendFundsModal,
   children,
 }: {
   onAddChildOpen: () => void;
@@ -17,6 +18,7 @@ const ButtonMenu = ({
   onOpenEtherScan: () => void;
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
+  onOpenSendFundsModal: () => void;
   children?: ChildDetails[];
 }) => {
   function onToggleCollapsedMenu() {
@@ -35,13 +37,25 @@ const ButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
-          setSelectedTab(ParentDashboardTabs.DASHBOARD);
+          onOpenSendFundsModal();
         }}
       >
-        Dashboard
+        Send Funds
       </Button>
 
       <Button
+        variant="outline"
+        colorScheme="white"
+        _hover={{ borderColor: "gray" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedTab(ParentDashboardTabs.DASHBOARD);
+        }}
+      >
+        Airdrop
+      </Button>
+
+      {/* <Button
         variant="outline"
         colorScheme="white"
         _hover={{ borderColor: "gray" }}
@@ -51,9 +65,9 @@ const ButtonMenu = ({
         }}
       >
         Settings
-      </Button>
+      </Button> */}
 
-      <Button
+      {/* <Button
         variant="outline"
         colorScheme="white"
         _hover={{ borderColor: "gray" }}
@@ -63,9 +77,9 @@ const ButtonMenu = ({
         }}
       >
         General
-      </Button>
+      </Button> */}
 
-      <Button
+      {/* <Button
         variant="outline"
         colorScheme="white"
         _hover={{ borderColor: "gray" }}
@@ -75,7 +89,7 @@ const ButtonMenu = ({
         }}
       >
         Blockchain
-      </Button>
+      </Button> */}
 
       {/* {children && children.length == 0 && (
         <Button

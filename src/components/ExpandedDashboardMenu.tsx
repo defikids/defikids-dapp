@@ -27,6 +27,7 @@ import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 // import InfoModal from "@/components/modals/InfoModal";
+import { useRouter, usePathname } from "next/navigation";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -40,6 +41,7 @@ export const ExpandedDashboardMenu = ({
   isMobileSize,
   onOpenSettingsModal,
   onOpenInfoModal,
+  onOpenSendFundsModal,
 }: {
   familyDetails: User;
   children: ChildDetails[];
@@ -52,6 +54,7 @@ export const ExpandedDashboardMenu = ({
   isMobileSize: boolean;
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
+  onOpenSendFundsModal: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -63,6 +66,9 @@ export const ExpandedDashboardMenu = ({
       }),
       shallow
     );
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const showMenu = () => {
     if (!isOpenExtendedMenu && !isMobileSize) {
@@ -132,33 +138,9 @@ export const ExpandedDashboardMenu = ({
                 onOpenEtherScan={onOpenEtherScan}
                 onOpenSettingsModal={onOpenSettingsModal}
                 onOpenInfoModal={onOpenInfoModal}
+                onOpenSendFundsModal={onOpenSendFundsModal}
                 children={children}
               />
-
-              <ChildAvatarGroup children={children} />
-              {/* 
-              <VStack
-                spacing={4}
-                align="stretch"
-                justify="space-between"
-                mt={10}
-                mx={5}
-                mb="3rem"
-              >
-                {children.length && (
-                  <Button
-                    variant="outline"
-                    colorScheme="white"
-                    onClick={(e) => {
-                      onAddChildOpen();
-                      e.stopPropagation();
-                    }}
-                    _hover={{ borderColor: "gray" }}
-                  >
-                    Member Profiles
-                  </Button>
-                )}
-              </VStack> */}
             </Box>
 
             {/* Footer Buttons */}
@@ -177,7 +159,7 @@ export const ExpandedDashboardMenu = ({
                 >
                   Disconnect
                 </Button>
-                {/* 
+
                 <IconButton
                   ml={4}
                   colorScheme="gray"
@@ -194,44 +176,41 @@ export const ExpandedDashboardMenu = ({
                       height="22px"
                     />
                   }
-                /> */}
+                />
 
-                {/* <IconButton
+                <IconButton
                   mx={4}
                   colorScheme="gray"
                   aria-label="button"
                   size="lg"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // onOpenInfoModal();
-                    setSelectedTab(ParentDashboardTabs.INFORMATION);
+                    onOpenInfoModal();
                   }}
                   icon={
                     <QuestionOutlineIcon
                       style={{ width: "22px", height: "22px" }}
                     />
                   }
-                /> */}
-                {/* <IconButton
+                />
+
+                <IconButton
                   colorScheme="gray"
                   aria-label="button"
                   size="lg"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedTab(ParentDashboardTabs.SETTINGS);
-                    onToggleCollapsedMenu();
-                    onToggleExtendedMenu();
+                    onOpenSettingsModal();
                   }}
                   icon={
                     <SettingsIcon style={{ width: "22px", height: "22px" }} />
                   }
-                /> */}
+                />
               </Flex>
             </Box>
           </Flex>
         </Box>
       </Slide>
-      {/* <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} /> */}
     </>
   );
 };

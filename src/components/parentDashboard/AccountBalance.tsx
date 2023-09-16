@@ -7,7 +7,7 @@ import { useBalance } from "wagmi";
 const AccountBalance = ({ walletAddress }: { walletAddress: string }) => {
   const { data } = useBalance({
     address: walletAddress as `0x${string}`,
-    blockTag: "latest",
+    watch: true,
   });
   return (
     <>

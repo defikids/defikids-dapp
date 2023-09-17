@@ -1,4 +1,11 @@
-import { UserType, AccountStatus, AccountPackage } from "./enums";
+import {
+  UserType,
+  AccountStatus,
+  AccountPackage,
+  NetworkType,
+  MainnetNetworks,
+  TestnetNetworks,
+} from "./enums";
 
 export type ChildDetails = {
   familyName: string;
@@ -7,6 +14,8 @@ export type ChildDetails = {
   username: string;
   avatarURI: string;
   backgroundURI: string;
+  defaultNetwork: MainnetNetworks | TestnetNetworks;
+  defaultNetworkType: NetworkType;
   opacity: {
     background: 1;
     card: 1;
@@ -26,6 +35,8 @@ export type User = {
   wallet: string;
   avatarURI: string;
   backgroundURI: string;
+  defaultNetwork: MainnetNetworks | TestnetNetworks;
+  defaultNetworkType: NetworkType;
   opacity: {
     background: number;
     card: number;

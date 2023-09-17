@@ -6,27 +6,17 @@ import {
   SettingsIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Flex,
-  IconButton,
-  Slide,
-  VStack,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, IconButton, Slide } from "@chakra-ui/react";
 import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
 import ButtonMenu from "./parentDashboard/ButtonMenu";
-import ChildAvatarGroup from "./parentDashboard/ChildAvatarGroup";
 import { ParentDashboardTabs } from "@/data-schema/enums";
 import { ChildDetails, User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
-// import InfoModal from "@/components/modals/InfoModal";
 import { useRouter, usePathname } from "next/navigation";
 
 export const ExpandedDashboardMenu = ({
@@ -42,6 +32,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSettingsModal,
   onOpenInfoModal,
   onOpenSendFundsModal,
+  onOpenNetworkModal,
 }: {
   familyDetails: User;
   children: ChildDetails[];
@@ -55,6 +46,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
   onOpenSendFundsModal: () => void;
+  onOpenNetworkModal: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -79,12 +71,6 @@ export const ExpandedDashboardMenu = ({
       return true;
     }
   };
-
-  // const {
-  //   isOpen: isOpenInfoModal,
-  //   onOpen: onOpenInfoModal,
-  //   onClose: onCloseInfoModal,
-  // } = useDisclosure();
 
   return (
     <>
@@ -139,6 +125,7 @@ export const ExpandedDashboardMenu = ({
                 onOpenSettingsModal={onOpenSettingsModal}
                 onOpenInfoModal={onOpenInfoModal}
                 onOpenSendFundsModal={onOpenSendFundsModal}
+                onOpenNetworkModal={onOpenNetworkModal}
                 children={children}
               />
             </Box>

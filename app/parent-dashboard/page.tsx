@@ -6,8 +6,18 @@ import {
   Button,
   Container,
   Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   useDisclosure,
   useSteps,
+  useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
@@ -27,9 +37,11 @@ import { useWindowSize } from "usehooks-ts";
 import { AddMemberModal } from "@/components/modals/AddMemberModal";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import MemberTable from "@/components/parentDashboard/MemberTable";
-import Features from "@/components/parentDashboard/Features";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import { NetworkModal } from "@/components/modals/NetworkModal";
+import FeatureStats from "@/components/parentDashboard/StatsCards";
+import StakingContracts from "@/components/parentDashboard/StakingContracts";
+import StatsTable from "@/components/parentDashboard/StatsTable";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -101,12 +113,6 @@ const Parent: React.FC = () => {
     onClose: onChangeUsernameClose,
   } = useDisclosure();
 
-  // const {
-  //   isOpen: isParentDetailsOpen,
-  //   onOpen: onParentDetailsOpen,
-  //   onClose: onParentDetailsClose,
-  // } = useDisclosure();
-
   const {
     isOpen: isOpenBackgroundDefaults,
     onOpen: onOpenBackgroundDefaults,
@@ -136,11 +142,6 @@ const Parent: React.FC = () => {
     onOpen: onOpenNetworkModal,
     onClose: onCloseNetworkModal,
   } = useDisclosure();
-
-  const { activeStep, setActiveStep } = useSteps({
-    index: 1,
-    count: steps.length,
-  });
 
   useEffect(() => {
     fetchFamilyDetails();
@@ -272,17 +273,50 @@ const Parent: React.FC = () => {
           opacity={backgroundOpacity || familyDetails?.opacity?.background || 1}
           zIndex={-1}
         />
-        <Flex width="100%" height="100%" direction="column" mt="3rem">
-          <Container maxW="5xl" mt="3rem">
-            <Features />
-            <Flex justify={isMobileSize ? "center" : "flex-end"} px={6}>
-              <Button colorScheme="blue" mt="3rem" onClick={onAddChildOpen}>
-                Add Member
-              </Button>
-            </Flex>
-          </Container>
-          <MemberTable />
-        </Flex>
+
+        <Grid
+          mt={isMobileSize ? "5rem" : "10rem"}
+          w="100%"
+          h="600px"
+          templateColumns={`${
+            isMobileSize ? "repeat(0, 0fr)" : "repeat(8, 1fr)"
+          }`}
+          templateRows={`${isMobileSize ? "repeat(1, 2fr)" : "repeat(2, 1fr)"}`}
+          gap={4}
+          mx={isMobileSize ? 0 : 5}
+        >
+          <GridItem
+            rowStart={+`${isMobileSize ? 0 : 1}`}
+            rowEnd={+`${isMobileSize ? 0 : 1}`}
+            colSpan={+`${isMobileSize ? 0 : 4}`}
+            h="320"
+            bg={useColorModeValue("gray.100", "gray.900")}
+            borderRadius={isMobileSize ? "0" : "10px"}
+          >
+            <StakingContracts />
+          </GridItem>
+          <GridItem
+            rowSpan={2}
+            colStart={+`${isMobileSize ? 0 : 5}`}
+            colEnd={+`${isMobileSize ? 0 : 9}`}
+            h="100%"
+            bg={useColorModeValue("gray.100", "gray.900")}
+            borderRadius={isMobileSize ? "0" : "10px"}
+          >
+            <MemberTable />
+          </GridItem>
+
+          <GridItem
+            rowStart={+`${isMobileSize ? 0 : 2}`}
+            rowEnd={+`${isMobileSize ? 0 : 2}`}
+            colSpan={+`${isMobileSize ? 0 : 4}`}
+            h="300"
+            bg={useColorModeValue("gray.100", "gray.900")}
+            borderRadius={isMobileSize ? "0" : "10px"}
+          >
+            <StatsTable />
+          </GridItem>
+        </Grid>
       </Flex>
 
       <UsernameModal
@@ -341,3 +375,12 @@ const Parent: React.FC = () => {
 };
 
 export default Parent;
+
+{
+  /* <Container maxW="5xl" mt="3rem">
+<FeatureStats />
+<Flex justify={isMobileSize ? "center" : "flex-end"} mr={2}>
+
+</Container>
+<MemberTable /> */
+}

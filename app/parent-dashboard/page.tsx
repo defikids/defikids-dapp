@@ -39,7 +39,6 @@ import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import MemberTable from "@/components/parentDashboard/MemberTable";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import { NetworkModal } from "@/components/modals/NetworkModal";
-import FeatureStats from "@/components/parentDashboard/StatsCards";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import StatsTable from "@/components/parentDashboard/StatsTable";
 

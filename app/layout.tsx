@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import RegisterModal from "@/components/modals/RegisterModal";
 import { Providers } from "./providers";
 import { ConditionalNavBars } from "@/components/ConditionalNavBars";
 import Auth from "@/components/Auth";
@@ -17,12 +16,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const {
-  //   isOpen: isRegisterOpen,
-  //   onOpen: onRegisterOpen,
-  //   onClose: onRegisterClose,
-  // } = useDisclosure();
-
   // const pathname = usePathname();
 
   return (

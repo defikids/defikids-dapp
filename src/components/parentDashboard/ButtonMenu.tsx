@@ -55,6 +55,18 @@ const ButtonMenu = ({
         Airdrop
       </Button>
 
+      <Button
+        variant="outline"
+        colorScheme="white"
+        _hover={{ borderColor: "gray" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          // setSelectedTab(ParentDashboardTabs.DASHBOARD);
+        }}
+      >
+        Members
+      </Button>
+
       {/* <Button
         variant="outline"
         colorScheme="white"

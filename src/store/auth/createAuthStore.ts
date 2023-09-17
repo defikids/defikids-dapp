@@ -49,7 +49,7 @@ const initialState: State = {
       package: AccountPackage.BASIC,
     },
     defaultNetwork: TestnetNetworks.GOERLI,
-    defualtNetworkType: NetworkType.TESTNET,
+    defaultNetworkType: NetworkType.TESTNET,
     opacity: {
       background: 0,
       card: 0,

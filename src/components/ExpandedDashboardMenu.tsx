@@ -17,7 +17,7 @@ import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -60,7 +60,6 @@ export const ExpandedDashboardMenu = ({
     );
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const showMenu = () => {
     if (!isOpenExtendedMenu && !isMobileSize) {
@@ -141,6 +140,7 @@ export const ExpandedDashboardMenu = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     setLogout();
+                    router.push("/");
                   }}
                   fontSize={isMobileSize ? "md" : "sm"}
                 >

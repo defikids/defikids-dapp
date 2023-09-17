@@ -30,7 +30,7 @@ import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
 import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
@@ -59,6 +59,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
   const toast = useToast();
   const { address } = useAccount();
+  const router = useRouter();
 
   const { setUserDetails, setIsLoggedIn } = useAuthStore(
     (state) => ({

@@ -55,7 +55,7 @@ export default function LoggedInNavBar() {
             src={
               userDetails?.avatarURI
                 ? userDetails?.avatarURI
-                : "/images/placeholder-avatar.png"
+                : "/images/placeholder-avatar.jpeg"
             }
             onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen);

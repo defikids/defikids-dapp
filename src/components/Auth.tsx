@@ -109,15 +109,6 @@ const Auth = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (isMobileSize) {
-  //     setMobileMenuOpen(true);
-  //     // mobileMenuOpen
-  //   } else {
-  //     setMobileMenuOpen(false);
-  //   }
-  // }, [isMobileSize]);
-
   return <></>;
 };
 

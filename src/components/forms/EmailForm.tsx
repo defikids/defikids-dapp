@@ -83,8 +83,6 @@ export const EditEmail = ({
     }
   };
 
-  console;
-
   return (
     <>
       <Flex

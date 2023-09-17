@@ -9,6 +9,7 @@ import {
   useBreakpointValue,
   Collapse,
   Button,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { useRouter } from "next/navigation";
@@ -23,6 +24,7 @@ import { BiSolidUserRectangle } from "react-icons/bi";
 import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 import { useAccount } from "wagmi";
 import { BiLogOut } from "react-icons/bi";
+import RegisterModal from "@/components/modals/RegisterModal";
 
 export default function NavBar() {
   //=============================================================================
@@ -56,6 +58,12 @@ export default function NavBar() {
     shallow
   );
 
+  const {
+    isOpen: isRegisterOpen,
+    onOpen: onRegisterOpen,
+    onClose: onRegisterClose,
+  } = useDisclosure();
+
   //=============================================================================
   //                             STATE
   //=============================================================================
@@ -74,6 +82,7 @@ export default function NavBar() {
     switch (userDetails?.userType) {
       case UserType.UNREGISTERED:
         setIsLoggedIn(false);
+        onRegisterOpen();
         break;
       case UserType.PARENT:
         setIsLoggedIn(true);
@@ -95,7 +104,6 @@ export default function NavBar() {
         zIndex={5}
         bgGradient={["linear(to-b, black,#4F1B7C)"]}
         position="fixed"
-        // top={`${isLoggedIn ? 8 : 0}`}
         top={0}
         left={0}
         right={0}
@@ -115,34 +123,13 @@ export default function NavBar() {
               <CustomConnectButton />
             ) : (
               <Button mr={5} size="lg" onClick={navigateUser}>
-                <Heading size="md">Dashboard</Heading>
+                <Heading size="sm">
+                  {userDetails?.userType !== UserType.UNREGISTERED
+                    ? "Dashboard"
+                    : "Register"}
+                </Heading>
               </Button>
             )}
-
-            {/* {userDetails?.userType === UserType.PARENT &&
-              router.pathname !== "/parent" && (
-                <IconButton
-                  size="lg"
-                  aria-label="Parent Icon"
-                  icon={<BiSolidUserRectangle size={30} />}
-                  onClick={() => router.push("/parent")}
-                />
-              )} */}
-
-            {/* Wallet Menu */}
-            {/* {isLoggedIn && <WalletPopover />} */}
-
-            {/* Main Menu */}
-            {/* {isLoggedIn && (
-              <IconButton
-                size="lg"
-                aria-label="Menu Icon"
-                icon={<BiLogOut size={30} />}
-                onClick={setLogout}
-                mr={5}
-                pr={2}
-              />
-            )} */}
 
             <IconButton
               size="lg"
@@ -164,6 +151,9 @@ export default function NavBar() {
             </Flex>
           </Box>
         </Collapse>
+
+        {/* Modals */}
+        <RegisterModal isOpen={isRegisterOpen} onClose={onRegisterClose} />
       </Box>
     </>
   );

@@ -32,6 +32,7 @@ import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
+import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -117,6 +118,8 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
         termsAgreed,
         familyName,
         email,
+        defaultNetwork: TestnetNetworks.GOERLI,
+        defaultNetworkType: NetworkType.TESTNET,
         familyId: hashedFamilyId(familyId),
         wallet: address,
         avatarURI: "",

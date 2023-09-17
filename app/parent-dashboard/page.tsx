@@ -29,6 +29,7 @@ import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import MemberTable from "@/components/parentDashboard/MemberTable";
 import Features from "@/components/parentDashboard/Features";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
+import { NetworkModal } from "@/components/modals/NetworkModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -130,6 +131,12 @@ const Parent: React.FC = () => {
     onClose: onCloseSendFundsModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenNetworkModal,
+    onOpen: onOpenNetworkModal,
+    onClose: onCloseNetworkModal,
+  } = useDisclosure();
+
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
     count: steps.length,
@@ -227,6 +234,7 @@ const Parent: React.FC = () => {
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
             onOpenSendFundsModal={onOpenSendFundsModal}
+            onOpenNetworkModal={onOpenNetworkModal}
           />
         </Box>
         {!isMobileSize && (
@@ -326,6 +334,8 @@ const Parent: React.FC = () => {
         isOpen={isOpenSendFundsModal}
         onClose={onCloseSendFundsModal}
       />
+
+      <NetworkModal isOpen={isOpenNetworkModal} onClose={onCloseNetworkModal} />
     </Flex>
   );
 };

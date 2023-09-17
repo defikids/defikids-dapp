@@ -57,3 +57,18 @@ export enum OpacityContext {
   BACKGROUND = "BACKGROUND",
   CARD = "CARD",
 }
+
+export enum MainnetNetworks {
+  MAINNET = "Ethereum",
+  POLYGON = "Polygon",
+}
+
+export enum TestnetNetworks {
+  GOERLI = "Goerli",
+  MUMBAI = "Mumbai",
+}
+
+export enum NetworkType {
+  MAINNET = "MAINNET",
+  TESTNET = "TESTNET",
+}

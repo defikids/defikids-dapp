@@ -6,7 +6,13 @@ import { shallow } from "zustand/shallow";
 import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User, ChildDetails } from "@/data-schema/types";
-import { AccountStatus, AccountPackage } from "@/data-schema/enums";
+import {
+  AccountStatus,
+  AccountPackage,
+  NetworkType,
+  MainnetNetworks,
+  TestnetNetworks,
+} from "@/data-schema/enums";
 
 type State = {
   isLoggedIn: boolean;
@@ -42,6 +48,8 @@ const initialState: State = {
       memberSince: 0,
       package: AccountPackage.BASIC,
     },
+    defaultNetwork: TestnetNetworks.GOERLI,
+    defualtNetworkType: NetworkType.TESTNET,
     opacity: {
       background: 0,
       card: 0,

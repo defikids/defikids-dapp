@@ -19,7 +19,7 @@ const ChildAvatarGroup = ({ children }: { children: ChildDetails[] }) => {
         <Avatar
           key={i}
           name={child?.username}
-          src={child?.avatarURI || "./images/placeholder-avatar.png"}
+          src={child?.avatarURI || "./images/placeholder-avatar.jpeg"}
         />
       ))}
     </AvatarGroup>

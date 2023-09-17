@@ -9,7 +9,7 @@ import { shallow } from "zustand/shallow";
 import { useDisclosure, Box, useBreakpointValue } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 
-export const MainLayout = () => {
+export const ConditionalNavBars = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================

@@ -54,7 +54,7 @@ export const TransactionStepper = ({
           <StepIndicator>
             <StepStatus
               complete={<StepIcon />}
-              incomplete={<StepNumber />}
+              incomplete=""
               active={
                 <Spinner speed=".9s" emptyColor="gray.200" color="blue.500" />
               }

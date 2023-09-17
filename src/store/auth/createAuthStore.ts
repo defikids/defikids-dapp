@@ -6,7 +6,13 @@ import { shallow } from "zustand/shallow";
 import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User, ChildDetails } from "@/data-schema/types";
-import { AccountStatus, AccountPackage } from "@/data-schema/enums";
+import {
+  AccountStatus,
+  AccountPackage,
+  NetworkType,
+  MainnetNetworks,
+  TestnetNetworks,
+} from "@/data-schema/enums";
 
 type State = {
   isLoggedIn: boolean;
@@ -42,6 +48,8 @@ const initialState: State = {
       memberSince: 0,
       package: AccountPackage.BASIC,
     },
+    defaultNetwork: TestnetNetworks.GOERLI,
+    defaultNetworkType: NetworkType.TESTNET,
     opacity: {
       background: 0,
       card: 0,
@@ -84,25 +92,21 @@ const setters = (set: any) => ({
     }, shallow);
   },
   setLogout: () => {
-    if (window.location.pathname !== "/") {
-      window.location.href = "/";
-    }
-
-    setTimeout(() => {
-      set(
-        (state: {
-          walletAddress: string;
-          isLoggedIn: boolean;
-          userType: UserType;
-        }) => {
-          state.walletAddress = "";
-          state.isLoggedIn = false;
-          state.userType = UserType.UNREGISTERED;
-        },
-        shallow
-      );
-      disconnect();
-    }, 100);
+    set(
+      (state: {
+        walletAddress: string;
+        isLoggedIn: boolean;
+        userType: UserType;
+        walletConnected: boolean;
+      }) => {
+        state.walletAddress = "";
+        state.isLoggedIn = false;
+        state.userType = UserType.UNREGISTERED;
+        state.walletConnected = false;
+      },
+      shallow
+    );
+    disconnect();
   },
   setUserDetails: (userDetails: User | ChildDetails) => {
     set((state: { userDetails: User | ChildDetails }) => {

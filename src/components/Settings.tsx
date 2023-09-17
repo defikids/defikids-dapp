@@ -11,7 +11,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  CloseButton,
   Container,
   Flex,
   Heading,
@@ -85,33 +84,24 @@ export const Settings = ({
 
   return (
     <>
-      <Container
-        overflowY="scroll"
-        bgColor="#121212"
-        borderRadius={isMobileSize && isOpenExtendedMenu ? "0px" : "20px"}
-      >
-        <Flex justify="flex-end" mt={3} onClick={closeTab}>
-          <CloseButton />
-        </Flex>
-
-        <Flex direction="row" justify="center">
-          <Heading size="2xl" my="2rem">
-            Settings
-          </Heading>
-        </Flex>
-
-        <Flex direction="column" justify="center" alignContent="center" mb={5}>
+      <Container zIndex={2} overflowY="scroll">
+        <Flex
+          direction="column"
+          justify="center"
+          alignContent="center"
+          my="3rem"
+        >
           <Accordion allowToggle>
             {data.map(({ title, description, buttonTitle }) => (
               <AccordionItem key={title}>
                 <h2>
-                  <AccordionButton>
+                  <AccordionButton borderBottom="1px">
                     <Box as="span" flex="1" textAlign="left">
-                      <Heading as="h3" size="lg" color="white">
+                      <Heading as="h3" size="md" color="black">
                         {title}
                       </Heading>
                     </Box>
-                    <AccordionIcon />
+                    <AccordionIcon color="black" />
                   </AccordionButton>
                 </h2>
                 <AccordionPanel my={5}>

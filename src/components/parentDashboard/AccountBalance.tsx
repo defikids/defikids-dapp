@@ -1,13 +1,24 @@
 "use client";
 
 import { trimAddress } from "@/utils/web3";
-import { Flex, Heading, Text, Center } from "@chakra-ui/react";
+import { CopyIcon } from "@chakra-ui/icons";
+import {
+  Flex,
+  Heading,
+  Text,
+  Center,
+  useToast,
+  Tooltip,
+} from "@chakra-ui/react";
 import { useBalance } from "wagmi";
 
 const AccountBalance = ({ walletAddress }: { walletAddress: string }) => {
   const { data } = useBalance({
     address: walletAddress as `0x${string}`,
+    watch: true,
   });
+
+  const toast = useToast();
   return (
     <>
       <Flex
@@ -24,7 +35,21 @@ const AccountBalance = ({ walletAddress }: { walletAddress: string }) => {
           {data?.symbol}
         </Text>
       </Flex>
-      <Center>{trimAddress(walletAddress)}</Center>
+
+      <Tooltip label="Copy to clipboard" hasArrow placement="bottom">
+        <Center
+          cursor="pointer"
+          onClick={() => {
+            navigator.clipboard.writeText(walletAddress);
+            toast({
+              title: "Copied to clipboard",
+              status: "success",
+            });
+          }}
+        >
+          {trimAddress(walletAddress)}
+        </Center>
+      </Tooltip>
     </>
   );
 };

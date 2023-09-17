@@ -219,7 +219,6 @@ export const BackgroundSelection = ({
         <Flex direction="row" justify="center" align="center" w="100%">
           <Button
             cursor="pointer"
-            variant="outline"
             colorScheme="blue"
             size="md"
             style={{
@@ -235,7 +234,6 @@ export const BackgroundSelection = ({
           <Button
             cursor="pointer"
             onClick={openFileInput}
-            variant="outline"
             colorScheme="blue"
             size="md"
             style={{
@@ -268,15 +266,14 @@ export const BackgroundSelection = ({
           </Flex>
         )}
 
-        <Flex justify="space-between" alignItems="center" w="100%" mt={10}>
+        <Flex justify="center" alignItems="center" w="100%" mt={10}>
           <Button
             cursor="pointer"
-            variant="outline"
             colorScheme="blue"
             size="sm"
             onClick={handleOpacityChange}
           >
-            Save
+            Submit
           </Button>
 
           {/* <Flex direction="row" justify="center" align="center">
@@ -346,51 +343,3 @@ export const BackgroundSelection = ({
     </>
   );
 };
-
-{
-  /* <Box>
-<input
-  type="file"
-  style={{ display: "none" }}
-  ref={fileInputRef}
-  onChange={(e) => {
-    e.preventDefault();
-    const files = e.target.files;
-    if (!files) return;
-
-    const validTypes = ["image/png", "image/jpg", "image/jpeg"];
-
-    if (
-      files &&
-      files.length > 0 &&
-      !validTypes.includes(files[0].type)
-    ) {
-      toast({
-        title: "Error",
-        description:
-          "Invalid file type. Only accept images with .png, .jpg or .jpeg extensions.",
-        status: "error",
-      });
-    }
-
-    if (files && files.length > 0) {
-      const file = files[0];
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setAvatar(reader.result as string);
-      };
-
-      reader.readAsDataURL(file);
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("description", "child_avatar");
-      setSelectedFile(formData);
-    } else {
-      console.log("User canceled file selection");
-    }
-  }}
-/>
-</Box> */
-}

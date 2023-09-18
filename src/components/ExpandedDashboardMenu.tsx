@@ -12,7 +12,7 @@ import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
 import ButtonMenu from "./parentDashboard/ButtonMenu";
 import { ParentDashboardTabs } from "@/data-schema/enums";
-import { ChildDetails, User } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
@@ -33,9 +33,10 @@ export const ExpandedDashboardMenu = ({
   onOpenInfoModal,
   onOpenSendFundsModal,
   onOpenNetworkModal,
+  onOpenMembersTableModal,
 }: {
   familyDetails: User;
-  children: ChildDetails[];
+  children: User[];
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
   onToggleCollapsedMenu: () => void;
@@ -47,6 +48,7 @@ export const ExpandedDashboardMenu = ({
   onOpenInfoModal: () => void;
   onOpenSendFundsModal: () => void;
   onOpenNetworkModal: () => void;
+  onOpenMembersTableModal: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -125,6 +127,7 @@ export const ExpandedDashboardMenu = ({
                 onOpenInfoModal={onOpenInfoModal}
                 onOpenSendFundsModal={onOpenSendFundsModal}
                 onOpenNetworkModal={onOpenNetworkModal}
+                onOpenMembersTableModal={onOpenMembersTableModal}
                 children={children}
               />
             </Box>

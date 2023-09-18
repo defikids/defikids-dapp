@@ -3,7 +3,7 @@
 // import { Host } from "../../types/ethers-contracts";
 // import HOST from "../artifacts/src/Host.sol/Host.json";
 // import { HOST_ADDRESS } from "@/store/contract/contractStore";
-// import { ChildDetails } from "@/data-schema/types";
+// import { User } from "@/data-schema/types";
 // import { UserType } from "@/data-schema/enums";
 
 // // export enum UserType {
@@ -161,7 +161,7 @@
 
 //   //   async fetchChild(familyId: string, childAddress: string) {
 //   //     const response = await this.contract.fetchChild(childAddress, familyId);
-//   //     let childDetails: ChildDetails = {
+//   //     let childDetails: User = {
 //   //       username: response.username,
 //   //       avatarURI: response.avatarURI,
 //   //       familyId: response.familyId,

@@ -80,7 +80,7 @@ const MemberInvite = () => {
         ...parentUser,
         //@ts-ignore
         invitations: parentUser.invitations.filter(
-          (email) => email !== decodedToken.email
+          (obj) => obj.email !== decodedToken.email
         ),
       };
 
@@ -206,7 +206,10 @@ const MemberInvite = () => {
       );
 
       // check if invite still exists
-      if (!user?.data?.invitations.includes(decodedData?.email)) {
+      const emailExists = user.data.invitations?.some(
+        (obj: User) => obj.email === decodedData?.email
+      );
+      if (!emailExists) {
         setInviteNonExistent(true);
         return;
       }

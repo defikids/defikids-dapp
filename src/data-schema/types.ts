@@ -7,28 +7,8 @@ import {
   TestnetNetworks,
 } from "./enums";
 
-export type ChildDetails = {
-  familyName: string;
-  familyId: string;
-  email: string;
-  username: string;
-  avatarURI: string;
-  backgroundURI: string;
-  defaultNetwork: MainnetNetworks | TestnetNetworks;
-  defaultNetworkType: NetworkType;
-  opacity: {
-    background: 1;
-    card: 1;
-  };
-  userType: UserType;
-  memberSince: number;
-  wallet: string;
-  sandboxMode: boolean;
-  balance?: string;
-};
-
 export type User = {
-  account: AccountDetails;
+  account?: AccountDetails;
   familyId: string;
   familyName: string;
   email: string;
@@ -42,11 +22,20 @@ export type User = {
     card: number;
   };
   username: string;
-  termsAgreed: boolean;
+  termsAgreed?: boolean;
   userType: UserType;
   emailVerified?: boolean;
+  sandboxMode: boolean;
+  balance?: string;
   children?: string[];
-  invitations?: string[];
+  invitations?:
+    | [
+        {
+          email: string;
+          dateSent: number;
+        }
+      ]
+    | [];
 };
 
 export type AccountDetails = {

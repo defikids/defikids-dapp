@@ -1,6 +1,6 @@
 "use client";
 
-import { ChildDetails, User } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import { useState } from "react";
 export const EmailVerificationRequired = ({
   userDetails,
 }: {
-  userDetails: User | ChildDetails;
+  userDetails: User | User;
 }) => {
   const [emailSent, setEmailSent] = useState(false);
   const toast = useToast();

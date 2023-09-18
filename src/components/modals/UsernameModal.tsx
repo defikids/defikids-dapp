@@ -27,7 +27,7 @@ import { useAuthStore } from "@/store/auth/authStore";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 
 export const UsernameModal = ({
   isOpen,
@@ -47,8 +47,8 @@ export const UsernameModal = ({
   familyId?: string;
   fetchChildren?: () => void;
   fetchFamilyDetails?: () => void;
-  childDetails?: ChildDetails;
-  setChildDetails?: (childDetails: ChildDetails) => void;
+  childDetails?: User;
+  setChildDetails?: (childDetails: User) => void;
 }) => {
   //=============================================================================
   //                               STATE

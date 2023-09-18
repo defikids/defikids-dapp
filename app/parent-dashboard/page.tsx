@@ -23,7 +23,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { User, ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import { UsernameModal } from "@/components/modals/UsernameModal";
@@ -34,13 +34,14 @@ import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
-import { AddMemberModal } from "@/components/modals/AddMemberModal";
+
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import MemberTable from "@/components/parentDashboard/MemberTable";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import { NetworkModal } from "@/components/modals/NetworkModal";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import StatsTable from "@/components/parentDashboard/StatsTable";
+import { MembersTableModal } from "@/components/modals/MembersTableModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -142,6 +143,12 @@ const Parent: React.FC = () => {
     onClose: onCloseNetworkModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenMembersTableModal,
+    onOpen: onOpenMembersTableModal,
+    onClose: onCloseMembersTableModal,
+  } = useDisclosure();
+
   useEffect(() => {
     fetchFamilyDetails();
     fetchChildren();
@@ -173,14 +180,14 @@ const Parent: React.FC = () => {
     const getChildren = async () => {
       if (!userDetails?.wallet) return;
 
-      const children = [] as ChildDetails[];
+      const children = [] as User[];
 
       familyDetails.children?.forEach(async (walletAddress) => {
         const { data } = await axios.get(
           `/api/vercel/get-json?key=${walletAddress}`
         );
 
-        children.push(data as ChildDetails);
+        children.push(data as User);
       });
 
       if (children.length) {
@@ -235,6 +242,7 @@ const Parent: React.FC = () => {
             onOpenInfoModal={onOpenInfoModal}
             onOpenSendFundsModal={onOpenSendFundsModal}
             onOpenNetworkModal={onOpenNetworkModal}
+            onOpenMembersTableModal={onOpenMembersTableModal}
           />
         </Box>
         {!isMobileSize && (
@@ -334,12 +342,6 @@ const Parent: React.FC = () => {
         fetchFamilyDetails={fetchFamilyDetails}
       />
 
-      <AddMemberModal
-        isOpen={isAddChildOpen}
-        onClose={onAddChildClose}
-        onAdd={() => fetchChildren()}
-      />
-
       <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
 
       <SettingsModal
@@ -369,6 +371,11 @@ const Parent: React.FC = () => {
       />
 
       <NetworkModal isOpen={isOpenNetworkModal} onClose={onCloseNetworkModal} />
+
+      <MembersTableModal
+        isOpen={isOpenMembersTableModal}
+        onClose={onCloseMembersTableModal}
+      />
     </Flex>
   );
 };

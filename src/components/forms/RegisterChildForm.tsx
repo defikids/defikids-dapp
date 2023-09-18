@@ -9,51 +9,34 @@ import {
   Button,
   FormErrorMessage,
   useToast,
-  Text,
   Flex,
   Switch,
   Divider,
-  Avatar,
-  Heading,
-  useSteps,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-// import HostContract from "@/blockchain/contracts/contract";
 import axios from "axios";
-import {
-  TransactionStepper,
-  steps,
-} from "@/components/steppers/TransactionStepper";
-import { useContractStore } from "@/store/contract/contractStore";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
-import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { StepperContext } from "@/data-schema/enums";
+import {
+  AccountPackage,
+  AccountStatus,
+  NetworkType,
+  TestnetNetworks,
+  UserType,
+} from "@/data-schema/enums";
+import { timestampInSeconds } from "@/utils/dateTime";
+import { AccountDetails, User } from "@/data-schema/types";
 
-const RegisterChildForm = ({
-  onClose,
-  onAdd,
-  isLoading,
-  setIsLoading,
-}: {
-  onClose: () => void;
-  onAdd: () => void;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-}) => {
+const RegisterChildForm = ({ isLoading }: { isLoading: boolean }) => {
   //=============================================================================
   //                             STATE
   //=============================================================================
 
   const [username, setUsername] = useState("");
   const [wallet, setWallet] = useState("");
-  const [avatarURI, setAvatarURI] = useState("");
-  const [uploadURI, setUploadURI] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
 
   const [sandboxMode, setSandboxMode] = useState(false);
-  const [provideUrl, setProvideUrl] = useState(false);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -66,19 +49,6 @@ const RegisterChildForm = ({
 
   const toast = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const inputUrlRef = useRef(null);
-
-  const { activeStep, setActiveStep } = useSteps({
-    index: 1,
-    count: steps.length,
-  });
-
-  const { connectedSigner } = useContractStore(
-    (state) => ({
-      connectedSigner: state.connectedSigner,
-    }),
-    shallow
-  );
 
   const { userDetails } = useAuthStore(
     (state) => ({
@@ -90,126 +60,81 @@ const RegisterChildForm = ({
   //=============================================================================
   //                             FUNCTIONS
   //=============================================================================
+  const handleSubmit = async () => {
+    setHasSubmitted(true);
 
-  const openFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+    if (isNameError) {
+      return;
     }
-  };
 
-  const uploadToIpfs = async () => {
     try {
-      const response = await axios.post(
-        `/api/ipfs/upload-to-ipfs`,
-        selectedFile,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data;
-    } catch (e) {
-      console.error(e as Error);
-      return {
-        validationError: "",
-        ifpsHash: "",
+      const accountDetails = {
+        id: userDetails.familyId,
+        status: AccountStatus.ACTIVE,
+        memberSince: timestampInSeconds(Date.now()),
+        package: AccountPackage.NONE,
+      } as AccountDetails;
+
+      const body = {
+        account: accountDetails,
+        familyName: userDetails.familyName,
+        email: "",
+        defaultNetwork: TestnetNetworks.GOERLI,
+        defaultNetworkType: NetworkType.TESTNET,
+        familyId: userDetails.familyId,
+        wallet,
+        avatarURI: "",
+        backgroundURI: "",
+        opacity: {
+          background: 1,
+          card: 1,
+        },
+        username,
+        userType: UserType.PARENT,
+        children: [],
+        invitations: [],
+      } as User;
+
+      const payload = {
+        key: address,
+        value: body,
       };
+
+      await axios.post(`/api/vercel/set-json`, payload);
+      setUserDetails(body);
+      setIsLoggedIn(true);
+
+      const emailSent = await sendEmailConfirmation();
+      if (!emailSent) {
+        return;
+      }
+
+      toast({
+        title: "Registration successful",
+        status: "success",
+      });
+
+      onClose();
+      router.push("/parent-dashboard");
+    } catch (e) {
+      await axios.delete(`/api/vercel/delete-json-data?key=${address}`);
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
     }
   };
-
-  // const handleSubmit = async () => {
-  //   setHasSubmitted(true);
-
-  //   if (username === "" || wallet === "" || isInvalidWallet) {
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-  //   setActiveStep(0);
-
-  //   let ipfsImageHash = "";
-
-  //   if (selectedFile) {
-  //     const { validationError, ifpsHash } = (await uploadToIpfs()) as {
-  //       validationError: string;
-  //       ifpsHash: string;
-  //     };
-
-  //     if (validationError) {
-  //       toast({
-  //         title: "Error",
-  //         description: validationError,
-  //         status: "error",
-  //       });
-  //       return;
-  //     }
-  //     ipfsImageHash = ifpsHash;
-  //   }
-
-  //   const contract = await HostContract.fromProvider(
-  //     connectedSigner,
-  //     userDetails?.wallet
-  //   );
-  //   const ifpsURI = `https://ipfs.io/ipfs/${ipfsImageHash}`;
-  //   const avatar = ipfsImageHash ? ifpsURI : avatarURI;
-
-  //   try {
-  //     setActiveStep(1);
-  //     const tx = (await contract.addChild(
-  //       username,
-  //       avatar,
-  //       wallet,
-  //       sandboxMode
-  //     )) as TransactionResponse;
-
-  //     setActiveStep(2);
-  //     await tx.wait();
-
-  //     toast({
-  //       title: "Child successfully added",
-  //       status: "success",
-  //     });
-  //     onAdd();
-  //     onClose();
-  //   } catch (e) {
-  //     const errorDetails = transactionErrors(e);
-  //     toast(errorDetails);
-  //     onClose();
-  //   }
-  // };
-
-  // https://v2-liveart.mypinata.cloud/ipfs/QmVkmX5pGfMuBEbBbWJiQAUcQjAqU7zT3jHF6SZTZNoZsY
-
-  if (isLoading) {
-    return (
-      <TransactionStepper
-        activeStep={activeStep}
-        context={StepperContext.AVATAR}
-      />
-    );
-  }
 
   return (
     <Box textAlign="left">
       <form>
-        {/* Name and avatar */}
         <Flex direction="row" align="center">
-          {/* <Avatar
-            mt={3}
-            size="lg"
-            name="Defi Kids"
-            src={avatarURI ? avatarURI : "/images/placeholder-avatar.jpeg"}
-          /> */}
-
           {/* Name */}
-          <FormControl isInvalid={isNameError && hasSubmitted} ml={5}>
+          <FormControl isInvalid={isNameError && hasSubmitted}>
             <FormLabel>{`Username`}</FormLabel>
             <Input
               type="text"
               placeholder="Kid's Name"
               value={username}
-              disabled={isLoading}
               onChange={(e) => setUsername(e.target.value)}
               borderColor={isNameError && hasSubmitted ? "red.500" : "black"}
               _hover={{
@@ -234,7 +159,6 @@ const RegisterChildForm = ({
             type="text"
             placeholder="Wallet"
             value={wallet}
-            disabled={isLoading}
             onChange={(e) => setWallet(e.target.value)}
             borderColor={isInvalidWallet && hasSubmitted ? "red.500" : "black"}
             _hover={{
@@ -265,7 +189,6 @@ const RegisterChildForm = ({
             {`Sandbox mode ${sandboxMode ? "enabled" : "disabled"}`}
           </FormLabel>
           <Switch
-            disabled={isLoading}
             id="sandbox"
             isChecked={sandboxMode}
             colorScheme="blue"
@@ -290,9 +213,9 @@ const RegisterChildForm = ({
           _hover={{
             bgColor: "blue.600",
           }}
-          // onClick={handleSubmit}
+          onClick={handleSubmit}
         >
-          Add Child
+          Add Member
         </Button>
       </form>
     </Box>

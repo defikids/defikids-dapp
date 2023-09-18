@@ -22,7 +22,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import { trimAddress } from "@/utils/web3";
 // import HostContract from "@/blockchain/contracts/contract";
 import { useContractStore } from "@/store/contract/contractStore";
@@ -80,7 +80,7 @@ export const ChildDetailsDrawer = ({
   //=============================================================================
   const [isLoading, setIsLoading] = useState(false);
 
-  const childDetails = children[childKey] as ChildDetails;
+  const childDetails = children[childKey] as User;
 
   //=============================================================================
   //                               FUNCTIONS

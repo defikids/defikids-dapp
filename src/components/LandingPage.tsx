@@ -12,10 +12,6 @@ import Staking from "@/components/landingPage/Staking";
 import Investing from "@/components/landingPage/Investing";
 
 export const LandingPage = () => {
-  //=============================================================================
-  //                               HOOKS
-  //=============================================================================
-
   const { setNavigationSection } = useAuthStore(
     (state) => ({
       setNavigationSection: state.setNavigationSection,

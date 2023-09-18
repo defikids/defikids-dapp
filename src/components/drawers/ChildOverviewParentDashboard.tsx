@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useNetwork } from "wagmi";
 import { formatDateToIsoString } from "@/utils/dateTime";
-import { ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 
 export const ChildOverviewParentDashboard = ({
   childDetails,
@@ -27,7 +27,7 @@ export const ChildOverviewParentDashboard = ({
   onOpen,
   onSendFundsOpen,
 }: {
-  childDetails: ChildDetails;
+  childDetails: User;
   onOpenChangeUsername: () => void;
   isLoading: boolean;
   handleSandboxToggle: () => void;

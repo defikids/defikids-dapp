@@ -4,7 +4,6 @@ import {
   Flex,
   Stack,
   VStack,
-  Icon,
   Divider,
   useColorModeValue,
   Avatar,
@@ -12,7 +11,6 @@ import {
   Heading,
   Button,
 } from "@chakra-ui/react";
-import { SlOptions } from "react-icons/sl";
 
 interface Notification {
   notification: string;
@@ -74,6 +72,7 @@ const NotificationsList = () => {
           View All
         </Button>
       </Flex>
+
       <VStack
         boxShadow={useColorModeValue(
           "2px 6px 8px rgba(160, 174, 192, 0.6)",

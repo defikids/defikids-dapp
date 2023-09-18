@@ -7,127 +7,36 @@ import {
   Input,
   Button,
   FormErrorMessage,
-  useToast,
   Flex,
   Switch,
   FormLabel,
+  Divider,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import axios from "axios";
-import { transactionErrors } from "@/utils/errorHanding";
-import { Explaination, UserType } from "@/data-schema/enums";
-import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { Explaination } from "@/data-schema/enums";
 import { ExplainSandbox } from "@/components/explainations/Sandbox";
-import { User } from "@/data-schema/types";
 
-export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
-  //=============================================================================
-  //                             STATE
-  //=============================================================================
-
-  const [emailAddress, setEmailAddress] = useState("");
-  const [sandboxMode, setSandboxMode] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-
+export const RegisterMemberForm = ({
+  setShowRegisterChildForm,
+  hasSubmitted,
+  handleSubmit,
+  emailAddress,
+  setEmailAddress,
+  sandboxMode,
+  setSandboxMode,
+}: {
+  setShowRegisterChildForm: (show: boolean) => void;
+  hasSubmitted: boolean;
+  handleSubmit: () => void;
+  emailAddress: string;
+  setEmailAddress: (emailAddress: string) => void;
+  sandboxMode: boolean;
+  setSandboxMode: (sandboxMode: boolean) => void;
+}) => {
   const isEmailAddressError = emailAddress === "";
 
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);
-
-  //=============================================================================
-  //                             HOOKS
-  //=============================================================================
-
-  const toast = useToast();
-
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
-
-  //=============================================================================
-  //                             FUNCTIONS
-  //=============================================================================
-  const storeInvitation = async (email: string) => {
-    try {
-      let response = await axios.get(
-        `/api/vercel/get-json?key=${userDetails.wallet}`
-      );
-
-      const user = response.data as User;
-
-      if (user.invitations && !user.invitations.includes(email)) {
-        const body = {
-          ...user,
-          invitations: [...user.invitations, email],
-        };
-
-        const payload = {
-          key: user.wallet,
-          value: body,
-        };
-
-        await axios.post(`/api/vercel/set-json`, payload);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const sendEmailInvite = async () => {
-    const { wallet, familyName, familyId } = userDetails;
-    try {
-      const payload = {
-        email: emailAddress,
-        parentAddress: wallet,
-        familyName: familyName,
-        sandboxMode,
-        familyId,
-      };
-
-      await axios.post(`/api/emails/invite-member`, payload);
-      await storeInvitation(emailAddress);
-
-      toast({
-        title: "Member Invite Email Sent",
-        status: "success",
-      });
-
-      return true;
-    } catch (e) {
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
-    }
-  };
-
-  const handleSubmit = async () => {
-    setHasSubmitted(true);
-
-    if (isEmailAddressError) {
-      return;
-    }
-
-    try {
-      const emailSent = await sendEmailInvite();
-
-      if (!emailSent) {
-        toast({
-          title: "Error",
-          description: "An error occured while sending the invite.",
-          status: "error",
-        });
-        return;
-      }
-
-      onClose();
-    } catch (e) {
-      console.log(e);
-      onClose();
-    }
-  };
 
   if (showExplanation) {
     return (
@@ -141,7 +50,6 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <Box textAlign="left" px={3}>
       <form>
-        {/* Email Address */}
         <FormControl isInvalid={isEmailAddressError && hasSubmitted} my={4}>
           <Input
             type="text"
@@ -202,7 +110,13 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
         <Button
           variant="solid"
           colorScheme="blue"
-          onClick={handleSubmit}
+          onClick={() => {
+            if (isEmailAddressError) {
+              return;
+            }
+            handleSubmit();
+            setShowRegisterChildForm(false);
+          }}
           w="100%"
           _hover={{
             bgColor: "blue.600",
@@ -211,6 +125,18 @@ export const RegisterMemberForm = ({ onClose }: { onClose: () => void }) => {
           Invite
         </Button>
       </form>
+      <Divider
+        mt={4}
+        sx={{
+          "::before": {
+            content: '" "',
+            display: "block",
+            width: "100%",
+            height: "1px",
+            backgroundColor: "gray.300",
+          },
+        }}
+      />
     </Box>
   );
 };

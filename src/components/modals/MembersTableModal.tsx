@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -13,7 +12,6 @@ import {
   ModalFooter,
   Button,
   Flex,
-  Text,
   Container,
 } from "@chakra-ui/react";
 import { useWindowSize } from "usehooks-ts";
@@ -26,6 +24,7 @@ import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";
 import MemberInvitationTable from "@/components/parentDashboard/MemberInvitationTable";
 import { EmailVerificationRequired } from "@/components/email/EmailVerificationRequired";
+import { ethers } from "ethers";
 
 export const MembersTableModal = ({
   isOpen,
@@ -43,6 +42,7 @@ export const MembersTableModal = ({
   const [emailAddress, setEmailAddress] = useState("");
   const [sandboxMode, setSandboxMode] = useState(false);
   const [showInvitations, setShowInvitations] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
 
   const { width } = useWindowSize();
   const isMobileSize = width < 900;
@@ -60,7 +60,29 @@ export const MembersTableModal = ({
     shallow
   );
 
-  console.log("userDetails - MembersTableModal", userDetails);
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const members = [] as User[];
+      //@ts-ignore
+      for (const memberAddress of userDetails.children) {
+        try {
+          const response = await axios.get(
+            `/api/vercel/get-json?key=${memberAddress}`
+          );
+          const user = response.data;
+
+          if (ethers.utils.isAddress(user.wallet)) {
+            members.push(user);
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      }
+      setUsers(members);
+    };
+
+    fetchMembers();
+  }, []);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -208,7 +230,11 @@ export const MembersTableModal = ({
                 )}
 
                 {!showRegisterChildForm && !showInvitations && (
-                  <MemberAccordian userDetails={userDetails} />
+                  <MemberAccordian
+                    userDetails={userDetails}
+                    users={users}
+                    setUsers={setUsers}
+                  />
                 )}
 
                 {showInvitations && (

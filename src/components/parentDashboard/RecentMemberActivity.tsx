@@ -12,56 +12,56 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-interface Notification {
-  notification: string;
+interface Activity {
+  activity: string;
   dateTime: string;
   userName: string;
   userAvatar: string;
 }
 
-const notifications: Notification[] = [
+const memberActivity: Activity[] = [
   {
-    notification: `<span style="font-weight: 600">Dan Abrahmov</span> Updated Avatar.`,
+    activity: `<span style="font-weight: 600">Dan Abrahmov</span> Updated Avatar.`,
     dateTime: "September 10th at 9:10 AM",
     userName: "Dan Abrahmov",
     userAvatar: "https://bit.ly/dan-abramov",
   },
   {
-    notification: `<span style="font-weight: 600">Kent Dodds</span> Staked 1.5 ETH.`,
+    activity: `<span style="font-weight: 600">Kent Dodds</span> Staked 1.5 ETH.`,
     dateTime: "yesterday",
     userName: "Kent Dodds",
     userAvatar: "https://bit.ly/kent-c-dodds",
   },
   {
-    notification: `<span style="font-weight: 600">Jena Karlis</span> Timelocked 5 ETH.`,
+    activity: `<span style="font-weight: 600">Jena Karlis</span> Timelocked 5 ETH.`,
     dateTime: "4 days ago",
     userName: "Jena Karlis",
     userAvatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
   },
   {
-    notification: `<span style="font-weight: 600">Jena Karlis</span> Staked 2 ETH.`,
+    activity: `<span style="font-weight: 600">Jena Karlis</span> Staked 2 ETH.`,
     dateTime: "4 days ago",
     userName: "Jena Karlis",
     userAvatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
   },
   {
-    notification: `<span style="font-weight: 600">Jena Karlis</span> Updated Avatar.`,
+    activity: `<span style="font-weight: 600">Jena Karlis</span> Updated Avatar.`,
     dateTime: "4 days ago",
     userName: "Jena Karlis",
     userAvatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
   },
   {
-    notification: `<span style="font-weight: 600">Kent Dodds</span> Claimed 1.5 ETH in staking rewards.`,
+    activity: `<span style="font-weight: 600">Kent Dodds</span> Claimed 1.5 ETH in staking rewards.`,
     dateTime: "5 days ago",
     userName: "Kent Dodds",
     userAvatar: "https://bit.ly/kent-c-dodds",
   },
 ];
 
-const NotificationsList = () => {
+const RecentMemberActivity = () => {
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">
@@ -84,7 +84,7 @@ const NotificationsList = () => {
         spacing={0}
         my="2.5rem"
       >
-        {notifications.map((notification, index) => (
+        {memberActivity.map((activity, index) => (
           <Fragment key={index}>
             <Flex
               w="100%"
@@ -97,24 +97,24 @@ const NotificationsList = () => {
                 <Flex p={4}>
                   <Avatar
                     size="md"
-                    name={notification.userName}
-                    src={notification.userAvatar || ""}
+                    name={activity.userName}
+                    src={activity.userAvatar || ""}
                   />
                 </Flex>
                 <Flex direction="column" p={2}>
                   <Text
                     fontSize={{ base: "sm", sm: "md", md: "lg" }}
                     dangerouslySetInnerHTML={{
-                      __html: notification.notification,
+                      __html: activity.activity,
                     }}
                   />
                   <Text fontSize={{ base: "sm", sm: "md" }}>
-                    {notification.dateTime}
+                    {activity.dateTime}
                   </Text>
                 </Flex>
               </Stack>
             </Flex>
-            {notifications.length - 1 !== index && <Divider m={0} />}
+            {memberActivity.length - 1 !== index && <Divider m={0} />}
           </Fragment>
         ))}
       </VStack>
@@ -122,4 +122,4 @@ const NotificationsList = () => {
   );
 };
 
-export default NotificationsList;
+export default RecentMemberActivity;

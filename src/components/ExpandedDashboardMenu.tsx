@@ -64,7 +64,7 @@ export const ExpandedDashboardMenu = ({
   const router = useRouter();
 
   const showMenu = () => {
-    if (!isOpenExtendedMenu && !isMobileSize) {
+    if (isOpenExtendedMenu && !isMobileSize) {
       return true;
     }
 

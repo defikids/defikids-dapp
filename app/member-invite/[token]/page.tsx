@@ -11,6 +11,9 @@ import {
   Button,
   Center,
   Container,
+  FormControl,
+  Input,
+  useToast,
 } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
@@ -23,6 +26,7 @@ import { UserType } from "@/data-schema/enums";
 import { trimAddress } from "@/utils/web3";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
+import { ethers } from "ethers";
 
 interface DecodedToken {
   parentAddress: string;
@@ -41,14 +45,15 @@ const MemberInvite = () => {
 
   const pathname = usePathname();
   const router = useRouter();
+  const toast = useToast();
 
   const token = useMemo(() => {
     return pathname?.split("/")[2];
   }, [pathname]);
 
-  console.log("token", token);
   const { address, isDisconnected } = useAccount() as any;
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
+  const [username, setUsername] = useState("");
 
   const { walletConnected, setUserDetails } = useAuthStore(
     (state) => ({
@@ -105,7 +110,7 @@ const MemberInvite = () => {
         familyName,
         familyId,
         email,
-        username: "",
+        username,
         avatarURI: "",
         backgroundURI: "",
         opacity: {
@@ -154,6 +159,15 @@ const MemberInvite = () => {
   };
 
   const handleToken = async () => {
+    if (!username) {
+      toast({
+        title: "Error",
+        description: "Please enter a username.",
+        status: "error",
+      });
+      return;
+    }
+
     if (!token && !initialUserCheck && !isDisconnected) return;
 
     setInitialUserCheck(true);
@@ -289,10 +303,33 @@ const MemberInvite = () => {
             <Heading textAlign="center" size={"lg"}>{`Account ${trimAddress(
               address
             )}`}</Heading>
-            <Text align="center" mt={5}>
+            <Text align="center" my={5}>
               This is the account you are currently connected to and will be
               used to create your DefiKids account.
             </Text>
+          </Flex>
+
+          {/* username */}
+          <Flex direction="row" align="center" mt="3rem" mx={5}>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="Create a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                _hover={{
+                  borderColor: "gray.300",
+                }}
+                _focus={{
+                  borderColor: "blue.500",
+                }}
+                sx={{
+                  "::placeholder": {
+                    color: "gray.400",
+                  },
+                }}
+              />
+            </FormControl>
           </Flex>
 
           <Center mt={5}>

@@ -7,8 +7,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Avatar,
-  Box,
-  Button,
   Flex,
   Heading,
   Switch,
@@ -22,49 +20,54 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
 import { NetworkType } from "@/data-schema/enums";
+import { useState } from "react";
+import axios from "axios";
 
-const MemberAccordian = ({ userDetails }: { userDetails: User }) => {
+const MemberAccordian = ({
+  userDetails,
+  users,
+  setUsers,
+}: {
+  userDetails: User;
+  users: User[];
+  setUsers: (users: User[]) => void;
+}) => {
   const toast = useToast();
-  const [users, setUsers] = useState<User[]>([]);
 
-  useEffect(() => {
-    if (userDetails.children?.length) {
-      const fetchMembers = async () => {
-        //@ts-ignore
-        for (const memberAddress of userDetails.children) {
-          try {
-            const response = await axios.get(
-              `/api/vercel/get-json?key=${memberAddress}`
-            );
-            const user = response.data;
+  const [toggleSwitch, setToggleSwitch] = useState(false);
 
-            if (ethers.utils.isAddress(user.wallet)) {
-              setUsers((users) => [...users, user]);
-            }
-          } catch (error) {
-            console.error("Error fetching user:", error);
-          }
-        }
-      };
-
-      fetchMembers();
-    }
-  }, [userDetails]);
-
-  console.log("userDetails", userDetails);
-  console.log("users", users);
-
-  if (userDetails.children) {
+  if (userDetails.children && userDetails.children.length === 0) {
     return (
       <Heading size="sm" textAlign="center" mt={4}>
         You have no members in your family yet.
       </Heading>
     );
   }
+
+  const updateMemberSandbox = async () => {
+    //! REVIEW SANDBOX BUTTON ON MAIN MENU
+    try {
+      const body = {
+        ...userDetails,
+        sandboxMode: toggleSwitch,
+      };
+
+      const payload = {
+        key: userDetails?.wallet,
+        value: body,
+      };
+
+      await axios.post(`/api/vercel/set-json`, payload);
+
+      toast({
+        title: "Username successfully updated",
+        status: "success",
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Accordion allowToggle>
@@ -82,13 +85,12 @@ const MemberAccordian = ({ userDetails }: { userDetails: User }) => {
                 <Flex align="center" w="100%" justify="space-between">
                   <Avatar
                     size="md"
-                    name={user?.username}
-                    src={user?.avatarURI || ""}
+                    name={user?.username || trimAddress(user?.wallet)}
+                    src={user?.avatarURI}
                   />
-                  <Text fontWeight="bold" fontSize="sm">
-                    {user?.username}
+                  <Text fontWeight="bold" fontSize="lg" color="black">
+                    {user?.username || trimAddress(user?.wallet)}
                   </Text>
-                  <Text fontSize="sm">{user?.account?.memberSince}</Text>
                 </Flex>
               </AccordionButton>
               <AccordionPanel>
@@ -125,19 +127,28 @@ const MemberAccordian = ({ userDetails }: { userDetails: User }) => {
                         <Switch
                           colorScheme="teal"
                           size="md"
-                          isChecked={
-                            user?.defaultNetworkType === NetworkType.TESTNET
-                              ? true
-                              : false
-                          }
+                          isChecked={toggleSwitch}
                           onChange={() => {
                             // Update the sandboxMode state for the specific user
                             const updatedUsers = [...users];
+
                             updatedUsers[index].defaultNetworkType ===
                             NetworkType.MAINNET
-                              ? NetworkType.TESTNET
-                              : NetworkType.MAINNET;
+                              ? setToggleSwitch(true)
+                              : setToggleSwitch(false);
 
+                            // updatedUsers[index].defaultNetworkType ===
+                            // NetworkType.MAINNET
+                            //   ? NetworkType.TESTNET
+                            //   : NetworkType.MAINNET;
+
+                            // const selectedNetwork =
+                            //   updatedUsers[index].defaultNetworkType ===
+                            //   NetworkType.MAINNET
+                            //     ? NetworkType.TESTNET
+                            //     : NetworkType.MAINNET;
+
+                            updateMemberSandbox();
                             setUsers(updatedUsers);
                           }}
                         />

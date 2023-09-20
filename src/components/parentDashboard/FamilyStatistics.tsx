@@ -46,7 +46,7 @@ const stats: Notification[] = [
   },
 ];
 
-const StatsTable = () => {
+const FamilyStatistics = () => {
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">
@@ -60,7 +60,7 @@ const StatsTable = () => {
         gap={4}
         rounded="md"
         overflow="hidden"
-        mt="2rem"
+        my="2rem"
       >
         {stats.map((stat, index) => (
           <GridItem key={index} bg="gray.800" borderRadius="md" p={4}>
@@ -79,4 +79,4 @@ const StatsTable = () => {
   );
 };
 
-export default StatsTable;
+export default FamilyStatistics;

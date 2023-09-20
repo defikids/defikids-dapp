@@ -16,6 +16,9 @@ import {
   MenuList,
   MenuItem,
   useToast,
+  Text,
+  Box,
+  Container,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useCallback } from "react";
@@ -102,36 +105,48 @@ const MemberInvitationTable = ({ isMobileSize }: { isMobileSize: boolean }) => {
   };
 
   return (
-    <Table variant="simple">
-      <Thead>
-        <Tr>
-          <Th>Email</Th>
-          <Th></Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {/* @ts-ignore */}
-        {userDetails?.invitations?.map(
-          (
-            invite: {
-              email: string;
-              dateSent: number;
-            },
-            index: number
-          ) => (
-            <Tr key={index}>
-              <Td fontSize={isMobileSize ? "sm" : "md"}>{invite.email}</Td>
-
-              <Td>
-                <Flex justify="center">
-                  {inviteMenu(invite.dateSent, invite.email)}
-                </Flex>
-              </Td>
-            </Tr>
-          )
-        )}
-      </Tbody>
-    </Table>
+    <Box>
+      {userDetails?.invitations?.map(
+        (
+          invite: {
+            email: string;
+            dateSent: number;
+          },
+          index: number
+        ) => (
+          <Container key={index}>
+            <Flex
+              justify="space-between"
+              style={{
+                border: "1px solid #e2e8f0",
+                borderRadius: "0.5rem",
+                padding: "1rem",
+                marginBottom: "1rem",
+              }}
+            >
+              <Flex justify="center" direction="column">
+                <Text fontSize="xs" fontWeight="bold">
+                  Sent: {formatDateToIsoString(invite.dateSent)}
+                </Text>
+                <Text fontSize={isMobileSize ? "sm" : "md"}>
+                  {invite.email}
+                </Text>
+              </Flex>
+              <IconButton
+                aria-label="Remove Invite"
+                icon={<DeleteIcon />}
+                variant="solid"
+                color="black"
+                size="md"
+                padding={0}
+                margin={0}
+                onClick={() => removeInvitation(invite.email)}
+              />
+            </Flex>
+          </Container>
+        )
+      )}
+    </Box>
   );
 };
 

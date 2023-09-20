@@ -3,28 +3,18 @@
 
 import {
   Box,
-  Button,
-  Container,
   Flex,
   Grid,
   GridItem,
   Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   useDisclosure,
-  useSteps,
   useColorModeValue,
-  VStack,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { User } from "@/data-schema/types";
-import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import { UsernameModal } from "@/components/modals/UsernameModal";
 import { ParentDashboardTabs } from "@/data-schema/enums";
@@ -36,11 +26,11 @@ import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import MemberTable from "@/components/parentDashboard/MemberTable";
+import RecentMemberActivity from "@/components/parentDashboard/RecentMemberActivity";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import { NetworkModal } from "@/components/modals/NetworkModal";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
-import StatsTable from "@/components/parentDashboard/StatsTable";
+import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 
 const Parent: React.FC = () => {
@@ -225,8 +215,8 @@ const Parent: React.FC = () => {
   };
 
   return (
-    <Flex>
-      <>
+    <Box>
+      <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             familyDetails={familyDetails}
@@ -245,6 +235,7 @@ const Parent: React.FC = () => {
             onOpenMembersTableModal={onOpenMembersTableModal}
           />
         </Box>
+
         {!isMobileSize && (
           <Box zIndex={100}>
             <CollapsedDashboardMenu
@@ -255,77 +246,81 @@ const Parent: React.FC = () => {
             />
           </Box>
         )}
-      </>
 
-      {/* handles the background image and opacity */}
-      <Flex
-        width="100%"
-        height="100vh"
-        bgPosition="center"
-        bgRepeat="no-repeat"
-      >
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          width="100%"
-          height="100%"
+        <Grid
+          pt={isMobileSize ? "5rem" : "0"}
+          pb={!isMobileSize ? "1.3rem" : "0"}
+          w="100%"
+          h="100%"
+          templateColumns={isMobileSize ? "1fr" : "repeat(8, 1fr)"}
+          templateRows={isMobileSize ? "auto" : "repeat(3, 1fr)"}
+          gap={4}
+          px={isMobileSize ? 0 : 5}
           bgPosition="center"
           bgSize="cover"
           bgImage={
             familyDetails?.backgroundURI
               ? familyDetails?.backgroundURI
-              : "/images/backgrounds/city-center.png"
+              : "/images/backgrounds/purple-bg.jpg"
           }
-          opacity={backgroundOpacity || familyDetails?.opacity?.background || 1}
-          zIndex={-1}
-        />
-
-        <Grid
-          mt={isMobileSize ? "5rem" : "10rem"}
-          w="100%"
-          h="600px"
-          templateColumns={`${
-            isMobileSize ? "repeat(0, 0fr)" : "repeat(8, 1fr)"
-          }`}
-          templateRows={`${isMobileSize ? "repeat(1, 2fr)" : "repeat(2, 1fr)"}`}
-          gap={4}
-          mx={isMobileSize ? 0 : 5}
         >
+          {!isMobileSize && (
+            <GridItem
+              rowStart={1}
+              rowEnd={1}
+              colStart={4}
+              colEnd={9}
+              h={isMobileSize ? "auto" : "105"}
+              mt="1.2rem"
+            >
+              <Flex justify="flex-end" alignItems="center">
+                <Heading
+                  size="4xl"
+                  color="white"
+                  mt={isMobileSize ? 0 : 6}
+                  pr={4}
+                >
+                  DefiKids
+                </Heading>
+              </Flex>
+            </GridItem>
+          )}
+
           <GridItem
-            rowStart={+`${isMobileSize ? 0 : 1}`}
-            rowEnd={+`${isMobileSize ? 0 : 1}`}
-            colSpan={+`${isMobileSize ? 0 : 4}`}
-            h="320"
+            rowStart={isMobileSize ? 2 : 0}
+            rowEnd={isMobileSize ? 2 : 0}
+            colSpan={isMobileSize ? 1 : 4}
+            h={isMobileSize ? "auto" : "320"}
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <StakingContracts />
           </GridItem>
+
           <GridItem
             rowSpan={2}
-            colStart={+`${isMobileSize ? 0 : 5}`}
-            colEnd={+`${isMobileSize ? 0 : 9}`}
-            h="100%"
+            colStart={isMobileSize ? 1 : 5}
+            colEnd={isMobileSize ? 1 : 9}
+            h={isMobileSize ? "auto" : "100%"}
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <MemberTable />
+            <RecentMemberActivity />
           </GridItem>
 
           <GridItem
-            rowStart={+`${isMobileSize ? 0 : 2}`}
-            rowEnd={+`${isMobileSize ? 0 : 2}`}
-            colSpan={+`${isMobileSize ? 0 : 4}`}
-            h="300"
+            rowStart={isMobileSize ? 3 : 0}
+            rowEnd={isMobileSize ? 3 : 0}
+            colSpan={isMobileSize ? 1 : 4}
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <StatsTable />
+            <FamilyStatistics />
           </GridItem>
         </Grid>
       </Flex>
 
+      {/* Modals and other components */}
       <UsernameModal
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
@@ -376,17 +371,8 @@ const Parent: React.FC = () => {
         isOpen={isOpenMembersTableModal}
         onClose={onCloseMembersTableModal}
       />
-    </Flex>
+    </Box>
   );
 };
 
 export default Parent;
-
-{
-  /* <Container maxW="5xl" mt="3rem">
-<FeatureStats />
-<Flex justify={isMobileSize ? "center" : "flex-end"} mr={2}>
-
-</Container>
-<MemberTable /> */
-}

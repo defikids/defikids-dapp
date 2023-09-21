@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, VStack } from "@chakra-ui/react";
-import { ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import { ParentDashboardTabs } from "@/data-schema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
@@ -15,6 +15,7 @@ const ButtonMenu = ({
   onOpenInfoModal,
   onOpenSendFundsModal,
   onOpenNetworkModal,
+  onOpenMembersTableModal,
   children,
 }: {
   onAddChildOpen: () => void;
@@ -24,7 +25,8 @@ const ButtonMenu = ({
   onOpenInfoModal: () => void;
   onOpenSendFundsModal: () => void;
   onOpenNetworkModal: () => void;
-  children?: ChildDetails[];
+  onOpenMembersTableModal: () => void;
+  children?: User[];
 }) => {
   const { userDetails } = useAuthStore(
     (state) => ({
@@ -68,6 +70,7 @@ const ButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
+          onOpenMembersTableModal();
         }}
       >
         Members

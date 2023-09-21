@@ -7,7 +7,7 @@
 // import { AiOutlinePlus } from "react-icons/ai";
 // import { IoIosMore } from "react-icons/io";
 // import { trimAddress } from "@/utils/web3";
-// import { ChildDetails, User } from "@/data-schema/types";
+// import { User } from "@/data-schema/types";
 
 // import {
 //   Box,
@@ -85,7 +85,7 @@
 //   onOpen: () => void;
 //   childKey: number;
 //   setChildKey: (key: number) => void;
-//   childDetails: ChildDetails;
+//   childDetails: User;
 // }) => {
 //   const toast = useToast();
 //   const [balance, setBalance] = useState(0);

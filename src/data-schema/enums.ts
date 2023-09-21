@@ -34,6 +34,7 @@ export enum AccountStatus {
 }
 
 export enum AccountPackage {
+  NONE = "None",
   BASIC = "Basic",
   PREMIUM = "Premium",
 }

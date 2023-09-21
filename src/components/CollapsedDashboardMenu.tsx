@@ -1,8 +1,16 @@
 "use client";
 
-import { Avatar, Flex, Heading, Slide, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Flex,
+  Heading,
+  IconButton,
+  Slide,
+  Text,
+} from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
+import { TriangleDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 export const CollapsedDashboardMenu = ({
   onToggleCollapsedMenu,
@@ -23,7 +31,7 @@ export const CollapsedDashboardMenu = ({
   );
   return (
     <Slide
-      in={isOpenCollapsedMenu}
+      in={!isOpenCollapsedMenu}
       direction="left"
       style={{
         width: "auto",
@@ -33,8 +41,8 @@ export const CollapsedDashboardMenu = ({
     >
       <Flex
         bgGradient={["linear(to-b, #4F1B7C, black)"]}
-        ml="1rem"
-        mt={5}
+        ml="1.4rem"
+        mt="2.7rem"
         p={5}
         borderRadius="1.5rem"
         justify="space-between"
@@ -43,31 +51,40 @@ export const CollapsedDashboardMenu = ({
         _hover={{ transform: `${isMobileSize && "scale(1.1)"}` }}
         onClick={() => {
           if (isMobileSize) {
-            console.log("mobile size");
             return;
           }
           onToggleCollapsedMenu();
           setTimeout(() => {
             onToggleExtendedMenu();
-          }, 500);
+          }, 800);
         }}
       >
-        <Flex align="center">
-          <Avatar
-            size="lg"
-            name={userDetails?.username}
-            sx={{
-              fontFamily: "Slackey",
-              bgColor: `${
-                userDetails?.avatarURI ? "transparent" : "purple.500"
-              }`,
-            }}
-            src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
-          />
-          <Flex direction="column" ml={3}>
-            <Heading fontSize="lg">{userDetails?.username}</Heading>
-            <Text fontSize="md">{userDetails?.userType}</Text>
+        <Flex justify="space-between" align="center">
+          <Flex align="center">
+            <Avatar
+              size="lg"
+              name={userDetails?.username}
+              sx={{
+                fontFamily: "Slackey",
+                bgColor: `${
+                  userDetails?.avatarURI ? "transparent" : "purple.500"
+                }`,
+              }}
+              src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
+            />
+            <Flex direction="column" ml={3}>
+              <Heading fontSize="lg">{userDetails?.username}</Heading>
+              <Text fontSize="md">{userDetails?.userType}</Text>
+            </Flex>
           </Flex>
+          <IconButton
+            ml={5}
+            px={1}
+            colorScheme="gray"
+            aria-label="button"
+            size="md"
+            icon={<HamburgerIcon />}
+          />
         </Flex>
       </Flex>
     </Slide>

@@ -5,12 +5,11 @@ import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
 import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
-import { User, ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import {
   AccountStatus,
   AccountPackage,
   NetworkType,
-  MainnetNetworks,
   TestnetNetworks,
 } from "@/data-schema/enums";
 
@@ -19,7 +18,7 @@ type State = {
   walletConnected: boolean;
   navigationSection: string;
   logout: () => void;
-  userDetails: User | ChildDetails;
+  userDetails: User;
   opacity: 0;
   mobileMenuOpen: boolean;
 };
@@ -29,7 +28,7 @@ type Actions = {
   setWalletConnected: (walletConnected: boolean) => void;
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
-  setUserDetails: (userDetails: User | ChildDetails) => void;
+  setUserDetails: (userDetails: User) => void;
   setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
 };
@@ -64,6 +63,8 @@ const initialState: State = {
     termsAgreed: false,
     userType: UserType.UNREGISTERED,
     children: [],
+    invitations: [],
+    sandboxMode: undefined,
   },
   opacity: 0,
   mobileMenuOpen: false,
@@ -108,8 +109,8 @@ const setters = (set: any) => ({
     );
     disconnect();
   },
-  setUserDetails: (userDetails: User | ChildDetails) => {
-    set((state: { userDetails: User | ChildDetails }) => {
+  setUserDetails: (userDetails: User) => {
+    set((state: { userDetails: User }) => {
       state.userDetails = userDetails;
     }, shallow);
   },

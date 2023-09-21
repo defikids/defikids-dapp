@@ -1,9 +1,9 @@
 "use client";
 
-import { ChildDetails } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import { Avatar, AvatarGroup } from "@chakra-ui/react";
 
-const ChildAvatarGroup = ({ children }: { children: ChildDetails[] }) => {
+const ChildAvatarGroup = ({ children }: { children: User[] }) => {
   return (
     <AvatarGroup
       size="lg"

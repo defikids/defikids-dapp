@@ -38,15 +38,6 @@ export const NetworkModal = ({
   onClose: () => void;
 }) => {
   //=============================================================================
-  //                               STATE
-  //=============================================================================
-  const [selectedNetwork, setSelectedNetwork] = useState("");
-  const [selectedNetworkType, setSelectedNetworkType] = useState(
-    NetworkType.MAINNET
-  );
-  const [isLoading, setIsLoading] = useState(false);
-
-  //=============================================================================
   //                               HOOKS
   //=============================================================================
   const { userDetails, setUserDetails } = useAuthStore(
@@ -58,6 +49,15 @@ export const NetworkModal = ({
   );
 
   const toast = useToast();
+
+  //=============================================================================
+  //                               STATE
+  //=============================================================================
+  const [selectedNetwork, setSelectedNetwork] = useState("");
+  const [selectedNetworkType, setSelectedNetworkType] = useState(
+    NetworkType.MAINNET
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   //=============================================================================
   //                               FUNCTIONS

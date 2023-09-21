@@ -53,12 +53,12 @@ export const Settings = ({
       buttonTitle: "Change Username",
       action: onChangeUsernameOpen,
     },
-    {
-      title: "Background",
-      description:
-        "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
-      buttonTitle: "Change Background",
-    },
+    // {
+    //   title: "Background",
+    //   description:
+    //     "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
+    //   buttonTitle: "Change Background",
+    // },
     {
       title: "Family Id",
       description:

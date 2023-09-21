@@ -6,7 +6,7 @@ import {
   SettingsIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons";
-import { Box, Button, Flex, IconButton, Slide } from "@chakra-ui/react";
+import { Box, Button, Collapse, Flex, IconButton } from "@chakra-ui/react";
 import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
@@ -18,6 +18,7 @@ import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 import { useRouter } from "next/navigation";
+import { RiMenuFoldFill } from "react-icons/ri";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -75,17 +76,11 @@ export const ExpandedDashboardMenu = ({
 
   return (
     <>
-      <Slide in={showMenu()} direction={isMobileSize ? "top" : "left"}>
+      <Collapse in={showMenu()} animateOpacity>
         <Box
           bgGradient={[`linear(to-b, black,${colors.brand.purple})`]}
           maxWidth={isMobileSize ? "100%" : "350px"}
-          height={isMobileSize ? "100vh" : "96vh"}
-          ml={!isMobileSize ? "1rem" : 0}
-          mt={mobileMenuOpen ? 0 : 5}
-          borderRadius={!isMobileSize ? "1.5rem" : 0}
-          style={{
-            boxShadow: "0px 0px 10px 15px rgba(0,0,0,0.75)",
-          }}
+          h="100vh"
         >
           <Flex direction="column" h="100%" justify="space-between">
             <Box>
@@ -93,6 +88,7 @@ export const ExpandedDashboardMenu = ({
                 direction="row"
                 justify="flex-end"
                 align="center"
+                mt={2}
                 onClick={() => {
                   if (isMobileSize) {
                     !mobileMenuOpen
@@ -103,7 +99,7 @@ export const ExpandedDashboardMenu = ({
                   onToggleExtendedMenu();
                   setTimeout(() => {
                     onToggleCollapsedMenu();
-                  }, 500);
+                  }, 800);
                 }}
               >
                 <IconButton
@@ -115,8 +111,8 @@ export const ExpandedDashboardMenu = ({
                   icon={<TriangleUpIcon />}
                 />
               </Flex>
-              <Username familyDetails={familyDetails} mt={5} />
-              <ParentAvatar familyDetails={familyDetails} />
+              <Username familyDetails={familyDetails} mt={2} />
+              <ParentAvatar />
               <AccountBalance walletAddress={userDetails?.wallet} />
 
               <ButtonMenu
@@ -200,7 +196,7 @@ export const ExpandedDashboardMenu = ({
             </Box>
           </Flex>
         </Box>
-      </Slide>
+      </Collapse>
     </>
   );
 };

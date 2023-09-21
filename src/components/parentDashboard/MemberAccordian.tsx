@@ -4,11 +4,14 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
+  AccordionIcon,
   AccordionItem,
   AccordionPanel,
   Avatar,
+  Box,
   Flex,
   Heading,
+  Select,
   Switch,
   Table,
   Tbody,
@@ -23,17 +26,24 @@ import {
 import { NetworkType } from "@/data-schema/enums";
 import { useState } from "react";
 import axios from "axios";
+import shallow from "zustand/shallow";
+import { useAuthStore } from "@/store/auth/authStore";
 
 const MemberAccordian = ({
-  userDetails,
   users,
   setUsers,
 }: {
-  userDetails: User;
   users: User[];
   setUsers: (users: User[]) => void;
 }) => {
   const toast = useToast();
+
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
+  );
 
   const [toggleSwitch, setToggleSwitch] = useState(false);
 
@@ -45,12 +55,40 @@ const MemberAccordian = ({
     );
   }
 
-  const updateMemberSandbox = async () => {
-    //! REVIEW SANDBOX BUTTON ON MAIN MENU
+  const updateMemberSandbox = async (user: User) => {
     try {
       const body = {
-        ...userDetails,
+        ...user,
         sandboxMode: toggleSwitch,
+      };
+
+      const payload = {
+        key: user?.wallet,
+        value: body,
+      };
+
+      await axios.post(`/api/vercel/set-json`, payload);
+
+      toast({
+        title: "Mode successfully updated",
+        status: "success",
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteMember = async (user: User) => {
+    try {
+      await axios.delete(`/api/vercel/delete-json-data?key=${user?.wallet}`);
+
+      // remove the member from the parent's children array
+      const body = {
+        ...user,
+        children: [
+          //@ts-ignore
+          ...userDetails.children.filter((address) => address !== user?.wallet),
+        ],
       };
 
       const payload = {
@@ -61,7 +99,7 @@ const MemberAccordian = ({
       await axios.post(`/api/vercel/set-json`, payload);
 
       toast({
-        title: "Username successfully updated",
+        title: "Member successfully deleted",
         status: "success",
       });
     } catch (e) {
@@ -83,14 +121,17 @@ const MemberAccordian = ({
                 borderBottom={isExpanded ? "none" : "1px solid"}
               >
                 <Flex align="center" w="100%" justify="space-between">
-                  <Avatar
-                    size="md"
-                    name={user?.username || trimAddress(user?.wallet)}
-                    src={user?.avatarURI}
-                  />
-                  <Text fontWeight="bold" fontSize="lg" color="black">
-                    {user?.username || trimAddress(user?.wallet)}
-                  </Text>
+                  <Flex align="center">
+                    <Avatar
+                      size="md"
+                      name={user?.username || trimAddress(user?.wallet)}
+                      src={user?.avatarURI}
+                    />
+                    <Text fontWeight="bold" fontSize="lg" color="black" ml={5}>
+                      {user?.username || trimAddress(user?.wallet)}
+                    </Text>
+                  </Flex>
+                  <AccordionIcon />
                 </Flex>
               </AccordionButton>
               <AccordionPanel>
@@ -98,7 +139,7 @@ const MemberAccordian = ({
                   <Thead>
                     <Tr>
                       <Th>Address</Th>
-                      <Th>Mode</Th>
+                      <Th>Sandbox Mode</Th>
                       <Th>Delete</Th>
                     </Tr>
                   </Thead>
@@ -124,44 +165,28 @@ const MemberAccordian = ({
                         </Tooltip>
                       </Td>
                       <Td>
-                        <Switch
-                          colorScheme="teal"
-                          size="md"
-                          isChecked={toggleSwitch}
-                          onChange={() => {
-                            // Update the sandboxMode state for the specific user
-                            const updatedUsers = [...users];
+                        {userDetails.defaultNetworkType ===
+                        NetworkType.TESTNET ? (
+                          <Text>Testnet</Text>
+                        ) : (
+                          <Select
+                            value={toggleSwitch ? "true" : "false"}
+                            onChange={(e) => {
+                              const updatedUsers = [...users];
+                              updatedUsers[index].sandboxMode = toggleSwitch;
 
-                            updatedUsers[index].defaultNetworkType ===
-                            NetworkType.MAINNET
-                              ? setToggleSwitch(true)
-                              : setToggleSwitch(false);
+                              e.target.value === "true"
+                                ? setToggleSwitch(true)
+                                : setToggleSwitch(false);
 
-                            // updatedUsers[index].defaultNetworkType ===
-                            // NetworkType.MAINNET
-                            //   ? NetworkType.TESTNET
-                            //   : NetworkType.MAINNET;
-
-                            // const selectedNetwork =
-                            //   updatedUsers[index].defaultNetworkType ===
-                            //   NetworkType.MAINNET
-                            //     ? NetworkType.TESTNET
-                            //     : NetworkType.MAINNET;
-
-                            updateMemberSandbox();
-                            setUsers(updatedUsers);
-                          }}
-                        />
-                        <span
-                          style={{
-                            marginLeft: ".5rem",
-                            fontSize: "0.8rem",
-                          }}
-                        >
-                          {user?.defaultNetworkType === NetworkType.TESTNET
-                            ? "Sandbox"
-                            : "Mainnet"}
-                        </span>
+                              updateMemberSandbox(updatedUsers[index]);
+                              setUsers(updatedUsers);
+                            }}
+                          >
+                            <option value={"true"}>Enabled</option>
+                            <option value={"false"}>Disabled</option>
+                          </Select>
+                        )}
                       </Td>
                       <Td>
                         <Flex justify="center">
@@ -170,6 +195,13 @@ const MemberAccordian = ({
                               cursor: "pointer",
                               fontSize: "1.2rem",
                               marginBottom: "0.3rem",
+                            }}
+                            onClick={() => {
+                              const updatedUsers = [...users];
+                              updatedUsers.splice(index, 1);
+
+                              handleDeleteMember(user);
+                              setUsers(updatedUsers);
                             }}
                           />
                         </Flex>

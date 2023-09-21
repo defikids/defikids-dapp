@@ -9,6 +9,7 @@ import {
   Heading,
   useDisclosure,
   useColorModeValue,
+  Text,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
@@ -69,7 +70,7 @@ const Parent: React.FC = () => {
     shallow
   );
 
-  const { width, height } = useWindowSize();
+  const { width } = useWindowSize();
 
   const isMobileSize = width < 768;
 
@@ -235,7 +236,6 @@ const Parent: React.FC = () => {
             onOpenMembersTableModal={onOpenMembersTableModal}
           />
         </Box>
-
         {!isMobileSize && (
           <Box zIndex={100}>
             <CollapsedDashboardMenu
@@ -274,14 +274,17 @@ const Parent: React.FC = () => {
               mt="1.2rem"
             >
               <Flex justify="flex-end" alignItems="center">
-                <Heading
-                  size="4xl"
-                  color="white"
-                  mt={isMobileSize ? 0 : 6}
-                  pr={4}
-                >
-                  DefiKids
-                </Heading>
+                <Box>
+                  <Heading
+                    size="4xl"
+                    color="white"
+                    mt={isMobileSize ? 0 : 6}
+                    pr={4}
+                  >
+                    DefiKids
+                  </Heading>
+                  <Text align="center">Earn. Save. Stake. Invest.</Text>
+                </Box>
               </Flex>
             </GridItem>
           )}

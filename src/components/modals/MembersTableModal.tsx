@@ -192,7 +192,7 @@ export const MembersTableModal = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        size={showInvitations ? "xl" : "lg"}
+        size="xl"
         onCloseComplete={() => {
           setIsLoading(false);
           setShowRegisterChildForm(false);
@@ -229,16 +229,19 @@ export const MembersTableModal = ({
                   />
                 )}
 
-                {!showRegisterChildForm && !showInvitations && (
-                  <MemberAccordian
-                    userDetails={userDetails}
-                    users={users}
-                    setUsers={setUsers}
-                  />
-                )}
-
                 {showInvitations && (
                   <MemberInvitationTable isMobileSize={isMobileSize} />
+                )}
+
+                {!showRegisterChildForm &&
+                !showInvitations &&
+                userDetails.children &&
+                userDetails.children.length ? (
+                  <MemberAccordian users={users} setUsers={setUsers} />
+                ) : (
+                  <Heading size="sm" textAlign="center" mt={4}>
+                    You have no members in your family yet.
+                  </Heading>
                 )}
               </>
             ) : (

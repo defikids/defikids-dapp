@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import { TriangleDownIcon } from "@chakra-ui/icons";
+import { TriangleDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 export const CollapsedDashboardMenu = ({
   onToggleCollapsedMenu,
@@ -41,8 +41,8 @@ export const CollapsedDashboardMenu = ({
     >
       <Flex
         bgGradient={["linear(to-b, #4F1B7C, black)"]}
-        ml="1rem"
-        mt={5}
+        ml="1.4rem"
+        mt="2.7rem"
         p={5}
         borderRadius="1.5rem"
         justify="space-between"
@@ -56,7 +56,7 @@ export const CollapsedDashboardMenu = ({
           onToggleCollapsedMenu();
           setTimeout(() => {
             onToggleExtendedMenu();
-          }, 500);
+          }, 800);
         }}
       >
         <Flex justify="space-between" align="center">
@@ -79,11 +79,11 @@ export const CollapsedDashboardMenu = ({
           </Flex>
           <IconButton
             ml={5}
-            mt={2}
+            px={1}
             colorScheme="gray"
             aria-label="button"
             size="md"
-            icon={<TriangleDownIcon />}
+            icon={<HamburgerIcon />}
           />
         </Flex>
       </Flex>

@@ -18,7 +18,7 @@ type State = {
   walletConnected: boolean;
   navigationSection: string;
   logout: () => void;
-  userDetails: User | User;
+  userDetails: User;
   opacity: 0;
   mobileMenuOpen: boolean;
 };
@@ -28,7 +28,7 @@ type Actions = {
   setWalletConnected: (walletConnected: boolean) => void;
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
-  setUserDetails: (userDetails: User | User) => void;
+  setUserDetails: (userDetails: User) => void;
   setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
 };
@@ -64,6 +64,7 @@ const initialState: State = {
     userType: UserType.UNREGISTERED,
     children: [],
     invitations: [],
+    sandboxMode: undefined,
   },
   opacity: 0,
   mobileMenuOpen: false,
@@ -108,8 +109,8 @@ const setters = (set: any) => ({
     );
     disconnect();
   },
-  setUserDetails: (userDetails: User | User) => {
-    set((state: { userDetails: User | User }) => {
+  setUserDetails: (userDetails: User) => {
+    set((state: { userDetails: User }) => {
       state.userDetails = userDetails;
     }, shallow);
   },

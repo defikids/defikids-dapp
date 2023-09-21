@@ -25,7 +25,7 @@ export type User = {
   termsAgreed?: boolean;
   userType: UserType;
   emailVerified?: boolean;
-  sandboxMode: boolean;
+  sandboxMode: boolean | undefined;
   balance?: string;
   children?: string[];
   invitations?:

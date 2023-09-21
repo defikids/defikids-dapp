@@ -8,7 +8,7 @@ import { useState } from "react";
 export const EmailVerificationRequired = ({
   userDetails,
 }: {
-  userDetails: User | User;
+  userDetails: User;
 }) => {
   const [emailSent, setEmailSent] = useState(false);
   const toast = useToast();

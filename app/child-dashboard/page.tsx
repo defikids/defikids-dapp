@@ -54,7 +54,6 @@ import { useContractStore } from "@/store/contract/contractStore";
 import { trimAddress, getEtherscanUrl } from "@/utils/web3";
 import { User } from "@/data-schema/types";
 import { ChevronDownIcon, EditIcon } from "@chakra-ui/icons";
-import { ChildDetailsDrawer } from "@/components/drawers/ChildDetailsDrawer";
 import { steps } from "@/components/steppers/TransactionStepper";
 import axios from "axios";
 import router from "next/router";

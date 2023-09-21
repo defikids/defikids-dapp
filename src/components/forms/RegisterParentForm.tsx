@@ -132,6 +132,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
         userType: UserType.PARENT,
         children: [],
         invitations: [],
+        sandboxMode: false,
       } as User;
 
       const payload = {

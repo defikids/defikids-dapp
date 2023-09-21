@@ -63,6 +63,8 @@ Please try to create bug reports that are:
 - <i>Unique:</i> Do not duplicate existing opened issues.
 - <i>Scoped to a Single Bug</i> One bug per report.
 
+[Contribuiting Guide](https://github.com/defikids/.github/blob/main/profile/CONTRIBUTING.md)
+
 ### Steps:
 
 1. Fork the Project

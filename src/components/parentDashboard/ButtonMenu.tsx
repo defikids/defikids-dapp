@@ -75,20 +75,6 @@ const ButtonMenu = ({
       >
         Members
       </Button>
-
-      <Button
-        variant="outline"
-        colorScheme="white"
-        _hover={{ borderColor: "gray" }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenNetworkModal();
-        }}
-      >
-        {userDetails.defaultNetworkType === NetworkType.TESTNET
-          ? "Sandbox Mode"
-          : "Networks"}
-      </Button>
     </VStack>
   );
 };

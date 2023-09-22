@@ -3,7 +3,9 @@ import { BackgroundSelection } from "@/components/BackgroundSelection";
 import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 import { EditUsername } from "@/components/forms/UserNameForm";
 import { EditEmail } from "@/components/forms/EmailForm";
+import Permissions from "@/app/permissions/page";
 import { User } from "@/data-schema/types";
+import { useRouter } from "next/navigation";
 import {
   Accordion,
   AccordionButton,
@@ -11,9 +13,11 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Container,
   Flex,
   Heading,
+  Text,
 } from "@chakra-ui/react";
 
 export const Settings = ({
@@ -47,6 +51,24 @@ export const Settings = ({
       buttonTitle: "Change Avatar",
     },
     {
+      title: "Email",
+      description:
+        "Your email is used to verify your account and to send you notifications.",
+      buttonTitle: "Change Email",
+    },
+    {
+      title: "Family Id",
+      description:
+        "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
+      buttonTitle: "Change Family Id",
+    },
+    {
+      title: "Permissions",
+      description:
+        "Allows you to control who can view or interact with features.",
+      buttonTitle: "Change Permissions",
+    },
+    {
       title: "Username",
       description:
         "Usernames enhance security by reducing the need for sharing personal information. They play a pivotal role in fostering community, making connections, and building a consistent online presence.",
@@ -59,18 +81,6 @@ export const Settings = ({
     //     "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
     //   buttonTitle: "Change Background",
     // },
-    {
-      title: "Family Id",
-      description:
-        "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
-      buttonTitle: "Change Family Id",
-    },
-    {
-      title: "Email",
-      description:
-        "Your email is used to verify your account and to send you notifications.",
-      buttonTitle: "Change Email",
-    },
   ];
 
   // These are the title labels for the settings
@@ -80,7 +90,10 @@ export const Settings = ({
     USERNAME = "Username",
     FAMILY_ID = "Family Id",
     EMAIL = "Email",
+    PERMISSIONS = "Permissions",
   }
+
+  const router = useRouter();
 
   return (
     <>
@@ -139,6 +152,22 @@ export const Settings = ({
                       familyDetails={familyDetails}
                       fetchFamilyDetails={fetchFamilyDetails}
                     />
+                  )}
+                  {title === SelectedSetting.PERMISSIONS && (
+                    <>
+                      <Text>{description}</Text>
+                      <Flex justify="flex-end">
+                        <Button
+                          colorScheme="blue"
+                          size="sm"
+                          onClick={() => {
+                            router.push("/permissions");
+                          }}
+                        >
+                          {buttonTitle}
+                        </Button>
+                      </Flex>
+                    </>
                   )}
                 </AccordionPanel>
               </AccordionItem>

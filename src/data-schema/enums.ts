@@ -73,3 +73,9 @@ export enum NetworkType {
   MAINNET = "MAINNET",
   TESTNET = "TESTNET",
 }
+
+export enum PermissionType {
+  ENABLED = "ENABLED",
+  DISABLED = "DISABLED",
+  FAMILY_ID_REQUIRED = "FAMILY_ID_REQUIRED",
+}

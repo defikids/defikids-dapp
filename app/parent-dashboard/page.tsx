@@ -42,7 +42,6 @@ const Parent: React.FC = () => {
   const [childKey, setChildKey] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [children, setChildren] = useState([]);
-  const [childrenStakes, setChildrenStakes] = useState({});
   // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
 
@@ -59,13 +58,6 @@ const Parent: React.FC = () => {
   const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
-    }),
-    shallow
-  );
-
-  const { connectedSigner } = useContractStore(
-    (state) => ({
-      connectedSigner: state.connectedSigner,
     }),
     shallow
   );
@@ -290,7 +282,9 @@ const Parent: React.FC = () => {
           )}
 
           <GridItem
-            rowStart={isMobileSize ? 2 : 0}
+            rowStart={
+              isMobileSize || (isMobileSize && isOpenExtendedMenu) ? 2 : 0
+            }
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
             h={isMobileSize ? "auto" : "320"}

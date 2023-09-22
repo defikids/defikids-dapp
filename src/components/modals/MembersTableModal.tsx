@@ -234,15 +234,20 @@ export const MembersTableModal = ({
                 )}
 
                 {!showRegisterChildForm &&
-                !showInvitations &&
-                userDetails.children &&
-                userDetails.children.length ? (
-                  <MemberAccordian users={users} setUsers={setUsers} />
-                ) : (
-                  <Heading size="sm" textAlign="center" mt={4}>
-                    You have no members in your family yet.
-                  </Heading>
-                )}
+                  !showInvitations &&
+                  userDetails.children &&
+                  userDetails.children.length > 0 && (
+                    <MemberAccordian users={users} setUsers={setUsers} />
+                  )}
+
+                {!showRegisterChildForm &&
+                  !showInvitations &&
+                  userDetails.children &&
+                  userDetails.children.length === 0 && (
+                    <Heading size="sm" textAlign="center" mt={4}>
+                      You have no members in your family yet.
+                    </Heading>
+                  )}
               </>
             ) : (
               <EmailVerificationRequired userDetails={userDetails} />

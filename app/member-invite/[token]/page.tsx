@@ -26,7 +26,7 @@ import { UserType } from "@/data-schema/enums";
 import { trimAddress } from "@/utils/web3";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import { ethers } from "ethers";
+import { PermissionType } from "@/data-schema/enums";
 
 interface DecodedToken {
   parentAddress: string;
@@ -121,6 +121,13 @@ const MemberInvite = () => {
         memberSince: Date.now(),
         wallet: address,
         sandboxMode,
+        permissions: {
+          general: {
+            avatar: PermissionType.ENABLED,
+            email: PermissionType.ENABLED,
+            username: PermissionType.ENABLED,
+          },
+        },
       };
 
       const payload = {

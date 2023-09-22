@@ -5,58 +5,46 @@ import {
   Flex,
   Box,
   Heading,
-  Grid,
-  GridItem,
-  Avatar,
-  Text,
-  useColorModeValue,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Switch,
-  HStack,
   Badge,
-  Icon,
   Button,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   FormControl,
-  FormLabel,
   Select,
   Container,
   VStack,
 } from "@chakra-ui/react";
 import { MdArrowDropDown } from "react-icons/md";
 import Navbar from "@/components/Navbar";
-import { useWindowSize } from "usehooks-ts";
 import { useCallback, useEffect, useState } from "react";
-import { BiUserCircle, BiText } from "react-icons/bi";
-import { AiOutlineMail } from "react-icons/ai";
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import { User, UserPermissions } from "@/data-schema/types";
+import { User } from "@/data-schema/types";
 import axios from "axios";
 import { ethers } from "ethers";
-import { PermissionType } from "@/data-schema/enums";
-
-interface Member {
-  userName: string;
-  userAvatar: string;
-}
+import { PermissionType, UserType } from "@/data-schema/enums";
+import { WalletNotFound } from "@/components/WalletNotFound";
+import { Restricted } from "@/components/Restricted";
+import { useAccount } from "wagmi";
 
 const Permissions = () => {
-  const { width } = useWindowSize();
-
   const [members, setMembers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
-  const isMobileSize = width < 768;
+
+  const { address } = useAccount();
+
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
+  );
 
   useEffect(() => {
+    if (!userDetails?.wallet) return;
+
     const fetchMembers = async () => {
       const familyMembers = [] as User[];
       //@ts-ignore
@@ -118,7 +106,6 @@ const Permissions = () => {
     },
     updatedStatus: string
   ) => {
-    console.log(category, selectedDetails, updatedStatus);
     if (selectedDetails.status === updatedStatus) return;
 
     const body = {
@@ -143,6 +130,7 @@ const Permissions = () => {
         (user) => user.wallet === selectedUser?.wallet
       );
       if (userIndex !== -1) {
+        //@ts-ignore
         updatedMembers[userIndex] = body;
       }
       return updatedMembers;
@@ -195,14 +183,6 @@ const Permissions = () => {
     ));
   };
 
-  const { userDetails, setUserDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
-    }),
-    shallow
-  );
-
   useEffect(() => {
     const fetchMembers = async () => {
       const familyMembers = [] as User[];
@@ -226,6 +206,18 @@ const Permissions = () => {
 
     fetchMembers();
   }, []);
+
+  if (!address) {
+    return <WalletNotFound />;
+  }
+
+  if (!userDetails?.wallet && !userDetails.username) {
+    return <></>;
+  }
+
+  if (userDetails?.wallet && userDetails.userType !== UserType.PARENT) {
+    return <Restricted />;
+  }
 
   return (
     <Box height="100vh" bgGradient={["linear(to-b, black,#4F1B7C)"]}>

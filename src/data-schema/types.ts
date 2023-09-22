@@ -5,10 +5,20 @@ import {
   NetworkType,
   MainnetNetworks,
   TestnetNetworks,
+  PermissionType,
 } from "./enums";
+
+export type UserPermissions = {
+  general: {
+    avatar: PermissionType;
+    email: PermissionType;
+    username: PermissionType;
+  };
+};
 
 export type User = {
   account?: AccountDetails;
+  permissions?: UserPermissions;
   familyId: string;
   familyName: string;
   email: string;

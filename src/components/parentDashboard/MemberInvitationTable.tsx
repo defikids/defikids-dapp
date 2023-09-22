@@ -35,34 +35,6 @@ const MemberInvitationTable = ({ isMobileSize }: { isMobileSize: boolean }) => {
   );
   const toast = useToast();
 
-  const inviteMenu = useCallback((dateSent: number, email: string) => {
-    return (
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="Options"
-          icon={<HamburgerIcon />}
-          variant="solid"
-          color="black"
-          size="md"
-          padding={0}
-          margin={0}
-        />
-        <MenuList>
-          <MenuItem icon={<BsCalendarMonth />}>
-            Sent: {formatDateToIsoString(dateSent)}
-          </MenuItem>
-          <MenuItem
-            icon={<DeleteIcon />}
-            onClick={() => removeInvitation(email)}
-          >
-            Remove Invite
-          </MenuItem>
-        </MenuList>
-      </Menu>
-    );
-  }, []);
-
   const removeInvitation = async (email: string) => {
     try {
       let response = await axios.get(

@@ -6,7 +6,14 @@ import {
   SettingsIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons";
-import { Box, Button, Collapse, Flex, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Collapse,
+  Flex,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
 import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
@@ -18,7 +25,7 @@ import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 import { useRouter } from "next/navigation";
-import { RiMenuFoldFill } from "react-icons/ri";
+import { useNetwork } from "wagmi";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
@@ -63,6 +70,8 @@ export const ExpandedDashboardMenu = ({
     );
 
   const router = useRouter();
+  const { chain } = useNetwork();
+  console.log("chain", chain);
 
   const showMenu = () => {
     if (isOpenExtendedMenu && !isMobileSize) {
@@ -193,6 +202,15 @@ export const ExpandedDashboardMenu = ({
                   }
                 />
               </Flex>
+              {/* Chain Details */}
+              <Text
+                mt={2}
+                mx={2}
+                textAlign="center"
+                fontSize="xs"
+              >{`Connected to the ${chain?.name} ${
+                chain?.network ? "Testnet" : "Mainnet"
+              }`}</Text>
             </Box>
           </Flex>
         </Box>

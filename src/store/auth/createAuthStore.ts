@@ -11,6 +11,7 @@ import {
   AccountPackage,
   NetworkType,
   TestnetNetworks,
+  PermissionType,
 } from "@/data-schema/enums";
 
 type State = {
@@ -65,6 +66,13 @@ const initialState: State = {
     children: [],
     invitations: [],
     sandboxMode: undefined,
+    permissions: {
+      general: {
+        avatar: PermissionType.ENABLED,
+        email: PermissionType.ENABLED,
+        username: PermissionType.ENABLED,
+      },
+    },
   },
   opacity: 0,
   mobileMenuOpen: false,

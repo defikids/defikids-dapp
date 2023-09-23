@@ -33,6 +33,7 @@ import { NetworkModal } from "@/components/modals/NetworkModal";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
+import { AirdropModal } from "@/components/modals/AirdropModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -132,6 +133,12 @@ const Parent: React.FC = () => {
     onClose: onCloseMembersTableModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenAirdropModal,
+    onOpen: onOpenAirdropModal,
+    onClose: onCloseAirdropModal,
+  } = useDisclosure();
+
   useEffect(() => {
     fetchFamilyDetails();
     fetchChildren();
@@ -226,6 +233,7 @@ const Parent: React.FC = () => {
             onOpenSendFundsModal={onOpenSendFundsModal}
             onOpenNetworkModal={onOpenNetworkModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
+            onOpenAirdropModal={onOpenAirdropModal}
           />
         </Box>
         {!isMobileSize && (
@@ -368,6 +376,8 @@ const Parent: React.FC = () => {
         isOpen={isOpenMembersTableModal}
         onClose={onCloseMembersTableModal}
       />
+
+      <AirdropModal isOpen={isOpenAirdropModal} onClose={onCloseAirdropModal} />
     </Box>
   );
 };

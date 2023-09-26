@@ -1,6 +1,12 @@
-![defikids](https://github.com/NathanTarbert/defikids/assets/66887028/5f89ee84-e66c-4909-b386-c489fe7387f0)
 
-⭐️ Why DefiKids?
+![DefiKids-alt](https://github.com/defikids/defikids-dapp/assets/66887028/e7038138-8f8b-4d38-acc5-1caf6446a441)
+
+
+   ### ⭐️ Crypto for Kids, parent approved
+
+ 
+
+## Why DefiKids
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
 ## ✨ Simplified Platform Overview:

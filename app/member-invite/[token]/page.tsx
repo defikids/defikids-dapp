@@ -19,7 +19,7 @@ import { usePathname, useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { UserType } from "@/data-schema/enums";
@@ -52,8 +52,11 @@ const MemberInvite = () => {
   }, [pathname]);
 
   const { address, isDisconnected } = useAccount() as any;
+  const { chain } = useNetwork();
+  console.log("chain", chain);
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
+  const [validWallet, setValidWallet] = useState(false);
 
   const { walletConnected, setUserDetails } = useAuthStore(
     (state) => ({
@@ -93,6 +96,9 @@ const MemberInvite = () => {
         key: parentAddress,
         value: body,
       };
+
+      console.log("parent payload", payload);
+      return;
 
       await axios.post(`/api/vercel/set-json`, payload);
     } catch (err) {
@@ -134,6 +140,9 @@ const MemberInvite = () => {
         key: address,
         value: body,
       };
+
+      console.log("member payload", payload);
+      return;
 
       await axios.post(`/api/vercel/set-json`, payload);
     } catch (err) {
@@ -238,6 +247,7 @@ const MemberInvite = () => {
       //update DB
       await updateParent(decodedData);
       await createMember(decodedData);
+      return;
 
       // set invite accepted
       setInviteAccepted(true);
@@ -246,6 +256,35 @@ const MemberInvite = () => {
 
     inviteAlreadyAccepted();
   }, [decodedData]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("address", address);
+      if (!address) return;
+
+      try {
+        const response = await axios.get(`/api/vercel/get-all-keys`);
+        const addresses = response.data;
+
+        console.log("addresses", addresses);
+
+        if (addresses.includes(address)) {
+          setValidWallet(false);
+          toast({
+            title: "Error",
+            description: "Wallet already registered.",
+            status: "error",
+          });
+        } else {
+          setValidWallet(true);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [walletConnected]);
 
   if (inviteAccepted) {
     return (
@@ -278,7 +317,7 @@ const MemberInvite = () => {
     );
   }
 
-  if (!walletConnected) {
+  if (!address) {
     return (
       <Box h="100vh">
         {Logo()}
@@ -289,8 +328,9 @@ const MemberInvite = () => {
             </Heading>
 
             <Text my={5} textAlign="center">
-              You have been invited to join a DefiKids family. To accept this
-              invitation, please connect your wallet.
+              {`You have been invited to join a DefiKids family. To accept this
+              invitation, please connect your
+              wallet.`}
             </Text>
             <Center mt="5rem">
               <CustomConnectButton />
@@ -307,53 +347,68 @@ const MemberInvite = () => {
       <Flex direction="column" align="center" justify="center" height="100vh">
         <Container size="lg" mb="10rem">
           <Flex direction="column" justify="center">
-            <Heading textAlign="center" size={"lg"}>{`Account ${trimAddress(
-              address
-            )}`}</Heading>
-            <Text align="center" my={5}>
-              This is the account you are currently connected to and will be
-              used to create your DefiKids account.
-            </Text>
+            {/* <Heading textAlign="center" size={"lg"}>{`Account ${
+              address ? trimAddress(address) : "not found"
+            }`}</Heading> */}
+
+            {chain?.unsupported ? (
+              <Text align="center" my={5}>
+                Your wallet is currently connected to an unsupported network.
+                Click the button below to change networks.
+              </Text>
+            ) : (
+              <Text align="center" my={5}>
+                This is the wallet you are currently connected to and will be
+                used to create your DefiKids account.
+              </Text>
+            )}
+            <Center>
+              <CustomConnectButton />
+            </Center>
           </Flex>
 
           {/* username */}
-          <Flex direction="row" align="center" mt="3rem" mx={5}>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Create a username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                _hover={{
-                  borderColor: "gray.300",
-                }}
-                _focus={{
-                  borderColor: "blue.500",
-                }}
-                sx={{
-                  "::placeholder": {
-                    color: "gray.400",
-                  },
-                }}
-              />
-            </FormControl>
-          </Flex>
+          {!chain?.unsupported && (
+            <>
+              <Flex direction="row" align="center" mt="3rem" mx={5}>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Create a username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    _hover={{
+                      borderColor: "gray.300",
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
+                    sx={{
+                      "::placeholder": {
+                        color: "gray.400",
+                      },
+                    }}
+                  />
+                </FormControl>
+              </Flex>
 
-          <Center mt={5}>
-            <Button
-              mt="3rem"
-              colorScheme="gray"
-              size="lg"
-              style={{
-                cursor: "pointer",
-                borderRadius: "10px",
-                padding: "15px",
-              }}
-              onClick={handleToken}
-            >
-              <Text fontSize={"lg"}>Accept Invitation</Text>
-            </Button>
-          </Center>
+              <Center mt={5}>
+                <Button
+                  mt="3rem"
+                  colorScheme="gray"
+                  size="lg"
+                  style={{
+                    cursor: "pointer",
+                    borderRadius: "10px",
+                    padding: "15px",
+                  }}
+                  onClick={handleToken}
+                >
+                  <Text fontSize={"lg"}>Accept Invitation</Text>
+                </Button>
+              </Center>
+            </>
+          )}
         </Container>
       </Flex>
     </Box>

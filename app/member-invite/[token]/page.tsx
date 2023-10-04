@@ -23,7 +23,6 @@ import { useAccount, useNetwork } from "wagmi";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { UserType } from "@/data-schema/enums";
-import { trimAddress } from "@/utils/web3";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { PermissionType } from "@/data-schema/enums";
@@ -42,6 +41,7 @@ const MemberInvite = () => {
   const [initialUserCheck, setInitialUserCheck] = useState(false);
   const [decodedData, setDecodedData] = useState<DecodedToken | null>(null);
   const [inviteAccepted, setInviteAccepted] = useState(false);
+  const [dBKeys, setDBKeys] = useState<string[]>([]);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -56,9 +56,8 @@ const MemberInvite = () => {
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
 
-  const { walletConnected, setUserDetails, reset } = useAuthStore(
+  const { setUserDetails, reset } = useAuthStore(
     (state) => ({
-      walletConnected: state.walletConnected,
       setUserDetails: state.setUserDetails,
       reset: state.reset,
     }),
@@ -95,9 +94,6 @@ const MemberInvite = () => {
         key: parentAddress,
         value: body,
       };
-
-      console.log("parent payload", payload);
-      return;
 
       await axios.post(`/api/vercel/set-json`, payload);
     } catch (err) {
@@ -139,9 +135,6 @@ const MemberInvite = () => {
         key: address,
         value: body,
       };
-
-      console.log("member payload", payload);
-      return;
 
       await axios.post(`/api/vercel/set-json`, payload);
     } catch (err) {
@@ -226,12 +219,38 @@ const MemberInvite = () => {
     );
   };
 
+  // Reset store on page load
   useEffect(() => {
     reset();
+
+    const fetchData = async () => {
+      const response = await axios.get(`/api/vercel/get-all-keys`);
+      const addresses = response.data;
+      setDBKeys(addresses);
+    };
+
+    fetchData();
   }, []);
 
+  // Check if wallet has already been registered and if invite has already been accepted
   useEffect(() => {
     if (!decodedData) return;
+
+    if (!address) return;
+    if (dBKeys.length === 0) return;
+
+    try {
+      if (dBKeys.includes(address)) {
+        toast({
+          title: "Error",
+          description: "Wallet already registered.",
+          status: "error",
+        });
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
 
     const inviteAlreadyAccepted = async () => {
       const user = await axios.get(
@@ -250,7 +269,6 @@ const MemberInvite = () => {
       //update DB
       await updateParent(decodedData);
       await createMember(decodedData);
-      return;
 
       // set invite accepted
       setInviteAccepted(true);
@@ -259,32 +277,6 @@ const MemberInvite = () => {
 
     inviteAlreadyAccepted();
   }, [decodedData]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log("address", address);
-      if (!address) return;
-
-      try {
-        const response = await axios.get(`/api/vercel/get-all-keys`);
-        const addresses = response.data;
-
-        console.log("addresses", addresses);
-
-        if (addresses.includes(address)) {
-          toast({
-            title: "Error",
-            description: "Wallet already registered.",
-            status: "error",
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [walletConnected]);
 
   if (inviteAccepted) {
     return (
@@ -347,10 +339,6 @@ const MemberInvite = () => {
       <Flex direction="column" align="center" justify="center" height="100vh">
         <Container size="lg" mb="10rem">
           <Flex direction="column" justify="center">
-            {/* <Heading textAlign="center" size={"lg"}>{`Account ${
-              address ? trimAddress(address) : "not found"
-            }`}</Heading> */}
-
             {chain?.unsupported ? (
               <Text align="center" my={5}>
                 Your wallet is currently connected to an unsupported network.

@@ -53,15 +53,14 @@ const MemberInvite = () => {
 
   const { address, isDisconnected } = useAccount() as any;
   const { chain } = useNetwork();
-  console.log("chain", chain);
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
-  const [validWallet, setValidWallet] = useState(false);
 
-  const { walletConnected, setUserDetails } = useAuthStore(
+  const { walletConnected, setUserDetails, reset } = useAuthStore(
     (state) => ({
       walletConnected: state.walletConnected,
       setUserDetails: state.setUserDetails,
+      reset: state.reset,
     }),
     shallow
   );
@@ -228,6 +227,10 @@ const MemberInvite = () => {
   };
 
   useEffect(() => {
+    reset();
+  }, []);
+
+  useEffect(() => {
     if (!decodedData) return;
 
     const inviteAlreadyAccepted = async () => {
@@ -269,14 +272,11 @@ const MemberInvite = () => {
         console.log("addresses", addresses);
 
         if (addresses.includes(address)) {
-          setValidWallet(false);
           toast({
             title: "Error",
             description: "Wallet already registered.",
             status: "error",
           });
-        } else {
-          setValidWallet(true);
         }
       } catch (error) {
         console.error("Error fetching data:", error);

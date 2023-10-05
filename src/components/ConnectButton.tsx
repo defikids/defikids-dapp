@@ -2,8 +2,10 @@
 
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { usePathname } from "next/navigation";
 
 export const CustomConnectButton = () => {
+  const pathname = usePathname();
   return (
     <ConnectButton.Custom>
       {({
@@ -43,7 +45,9 @@ export const CustomConnectButton = () => {
                     mr={5}
                     size="lg"
                   >
-                    <Heading size="md">Connect </Heading>
+                    <Heading size={pathname === "/" ? "sm" : "md"}>
+                      Connect{" "}
+                    </Heading>
                   </Button>
                 );
               }

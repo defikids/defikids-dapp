@@ -9,6 +9,7 @@ import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import axios from "axios";
 import { User } from "@/data-schema/types";
+import { UserType } from "@/data-schema/enums";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("") as any;
@@ -33,16 +34,24 @@ const Auth = () => {
     }
   });
 
-  const { setWalletConnected, setLogout, setUserDetails, userDetails } =
-    useAuthStore(
-      (state) => ({
-        userDetails: state.userDetails,
-        setWalletConnected: state.setWalletConnected,
-        setLogout: state.setLogout,
-        setUserDetails: state.setUserDetails,
-      }),
-      shallow
-    );
+  const {
+    setIsLoggedIn,
+    setWalletConnected,
+    setLogout,
+    setUserDetails,
+    userDetails,
+    setFetchedUserDetails,
+  } = useAuthStore(
+    (state) => ({
+      setIsLoggedIn: state.setIsLoggedIn,
+      userDetails: state.userDetails,
+      setWalletConnected: state.setWalletConnected,
+      setLogout: state.setLogout,
+      setUserDetails: state.setUserDetails,
+      setFetchedUserDetails: state.setFetchedUserDetails,
+    }),
+    shallow
+  );
 
   const { setConnectedSigner, setProvider } = useContractStore(
     (state) => ({
@@ -77,6 +86,7 @@ const Auth = () => {
       if (user) {
         setUserDetails(user);
       }
+      setFetchedUserDetails(true);
     };
 
     fetchUserType();

@@ -22,6 +22,7 @@ type State = {
   userDetails: User;
   opacity: 0;
   mobileMenuOpen: boolean;
+  fetchedUserDetails: boolean;
 };
 
 type Actions = {
@@ -32,6 +33,7 @@ type Actions = {
   setUserDetails: (userDetails: User) => void;
   setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
+  setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
 };
 
 type MyStore = State & Actions;
@@ -76,6 +78,7 @@ const initialState: State = {
   },
   opacity: 0,
   mobileMenuOpen: false,
+  fetchedUserDetails: false,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -130,6 +133,11 @@ const setters = (set: any) => ({
   setMobileMenuOpen: (mobileMenuOpen: boolean) => {
     set((state: { mobileMenuOpen: boolean }) => {
       state.mobileMenuOpen = mobileMenuOpen;
+    }, shallow);
+  },
+  setFetchedUserDetails: (fetchedUserDetails: boolean) => {
+    set((state: { fetchedUserDetails: boolean }) => {
+      state.fetchedUserDetails = fetchedUserDetails;
     }, shallow);
   },
 });

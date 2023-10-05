@@ -55,42 +55,42 @@ export const CustomConnectButton = () => {
                 );
               }
               return (
-                <> </>
-                // <Box style={{ display: "flex", gap: 12 }}>
-                //   <Button
-                //     onClick={openChainModal}
-                //     style={{ display: "flex", alignItems: "center" }}
-                //     type="button"
-                //   >
-                //     {chain.hasIcon && (
-                //       <Box
-                //         style={{
-                //           background: chain.iconBackground,
-                //           width: 12,
-                //           height: 12,
-                //           borderRadius: 999,
-                //           overflow: "hidden",
-                //           marginRight: 4,
-                //         }}
-                //       >
-                //         {chain.iconUrl && (
-                //           <img
-                //             alt={chain.name ?? "Chain icon"}
-                //             src={chain.iconUrl}
-                //             style={{ width: 12, height: 12 }}
-                //           />
-                //         )}
-                //       </Box>
-                //     )}
-                //     {chain.name}
-                //   </Button>
-                //   <Button onClick={openAccountModal} type="button">
-                //     {account.displayName}
-                //     {account.displayBalance
-                //       ? ` (${account.displayBalance})`
-                //       : ""}
-                //   </Button>
-                // </Box>
+                // <> </>
+                <Box style={{ display: "flex", gap: 12 }}>
+                  <Button
+                    onClick={openChainModal}
+                    style={{ display: "flex", alignItems: "center" }}
+                    type="button"
+                  >
+                    {chain.hasIcon && (
+                      <Box
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: "hidden",
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? "Chain icon"}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </Box>
+                    )}
+                    {chain.name}
+                  </Button>
+                  <Button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ""}
+                  </Button>
+                </Box>
               );
             })()}
           </Box>

@@ -11,42 +11,38 @@ import {
   Flex,
   Grid,
   GridItem,
-  useBreakpointValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useWindowSize } from "usehooks-ts";
 
 const SandboxModal = ({ isOpen, onClose, learnMoreContent }) => {
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
+  const { width } = useWindowSize();
 
-  const Overlay = () => (
-    <ModalOverlay
-      bg="blackAlpha.300"
-      backdropFilter="blur(10px) hue-rotate(90deg)"
-    />
-  );
-
-  const [overlay] = useState(<Overlay />);
+  const handleSize = () => {
+    if (width < 600) return "full";
+    if (width < 768) return "xl";
+    else return "2xl";
+  };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      size={isMobileSize ? "full" : "4xl"}
-      isCentered
-    >
-      {overlay}
-      <ModalContent>
+    <Modal isOpen={isOpen} onClose={onClose} size={handleSize()}>
+      <ModalOverlay
+        bg="none"
+        backdropFilter="auto"
+        backdropInvert="10%"
+        backdropBlur="4px"
+      />
+      <ModalContent
+        sx={{
+          opacity: "0.9",
+        }}
+      >
         <ModalHeader>{learnMoreContent.title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody
           sx={{
-            overflow: "scroll",
             borderRadius: "10px",
+            maxHeight: "80vh",
+            overflow: "scroll",
           }}
         >
           <Flex align="center" justify="center" bgColor="white">
@@ -56,11 +52,8 @@ const SandboxModal = ({ isOpen, onClose, learnMoreContent }) => {
               gap={4}
               pt={2}
               px={10}
-              sx={{
-                overflow: "scroll",
-              }}
             >
-              <GridItem rowSpan={1} colSpan={5}>
+              <GridItem rowSpan={1} colSpan={5} overflowY="scroll">
                 {learnMoreContent.description.map(
                   (text: string, index: number) => (
                     <Text mb={5} color="black" fontSize="lg" key={index}>

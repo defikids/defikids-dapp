@@ -6,19 +6,20 @@ import {
   Flex,
   Heading,
   Text,
-  useBreakpointValue,
   Card,
   Stack,
   CardBody,
   CardFooter,
-  Image,
   useDisclosure,
+  Center,
+  Container,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import SandboxMenu from "@/components/landingPage/SandboxMenu";
 import { sandboxLearnMore } from "@/data/landingPage/sandboxLearnMore";
 import RegisterModal from "@/components/modals/RegisterModal";
 import SandboxModal from "@/components/modals/SandboxModal";
+import { useWindowSize } from "usehooks-ts";
 
 const Sandbox = () => {
   //=============================================================================
@@ -45,12 +46,9 @@ const Sandbox = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
+
+  const { width } = useWindowSize();
+  const isMobile = width <= 768;
 
   const sectionRef = useRef(null);
 
@@ -89,6 +87,7 @@ const Sandbox = () => {
   //=============================================================================
   const handleSetSandBoxContent = (content: any) => {
     setSandboxContent(content);
+    if (isMobile) onOpenSandbox();
   };
 
   const handleSetActive = (active: any) => {
@@ -99,74 +98,92 @@ const Sandbox = () => {
     <Box
       ref={sectionRef}
       as="section"
-      pt="12rem"
+      pt="20rem"
       bgGradient={["linear(to-b, black, #4F1B7C)"]}
       id="Sandbox"
     >
-      {/* Section Title  */}
-      <Flex direction="column" align="center" justify="center">
-        <Text color="white" fontSize="xl" textAlign="center" px={12}>
-          Through our carefully curated sandbox, kids can engage in hands-on
-          learning, earn interest, and even receive rewards—all while
-          understanding the fundamentals of blockchain and smartcontracts.
-        </Text>
-      </Flex>
+      <Container maxW="container.xl">
+        {/* Section Title  */}
+        <Flex direction="column" align="center" justify="center">
+          <Text color="white" fontSize="xl" textAlign="center" px={12}>
+            Through our carefully curated sandbox, kids can engage in hands-on
+            learning, earn interest, and even receive rewards—all while
+            understanding the fundamentals of blockchain and smartcontracts.
+          </Text>
+        </Flex>
 
-      {/* Menu Bar */}
-      <SandboxMenu
-        isActive={isActive}
-        handleSetActive={handleSetActive}
-        handleSetSandBoxContent={handleSetSandBoxContent}
-      />
-
-      <Card
-        direction={{ base: "column", sm: "row" }}
-        overflow="hidden"
-        bg="white"
-        mt={5}
-        mx={10}
-        style={{
-          borderRadius: "20px",
-        }}
-        h={isMobileSize ? "auto" : "350px"}
-      >
-        <Image
-          objectFit="cover"
-          maxW={{ base: "100%", sm: "400px" }}
-          src="/images/sandbox-laptop.jpg"
-          alt="kids-on-computers"
+        {/* Menu Bar */}
+        <SandboxMenu
+          isActive={isActive}
+          handleSetActive={handleSetActive}
+          handleSetSandBoxContent={handleSetSandBoxContent}
         />
 
-        <Stack>
-          <CardBody>
-            <Heading size="lg" color="#82add9">
-              {sandboxContent.title}
-            </Heading>
+        {!isMobile && (
+          <Card
+            direction={{ base: "column", sm: "row" }}
+            overflow="hidden"
+            bg="white"
+            mt={5}
+            mx={10}
+            style={{
+              borderRadius: "20px",
+            }}
+          >
+            <Stack>
+              <CardBody>
+                <Text color="#82add9" fontSize="xl">
+                  {sandboxContent.description}
+                </Text>
+              </CardBody>
 
-            <Text py="2" color="#82add9" fontSize="xl">
-              {sandboxContent.description}
-            </Text>
-          </CardBody>
-
-          <CardFooter>
-            <Flex justify="flex-end" w="100%">
-              <Button
-                variant="solid"
-                colorScheme="blue"
-                onClick={onOpenSandbox}
-              >
-                Learn More
-              </Button>
-            </Flex>
-          </CardFooter>
-        </Stack>
-      </Card>
+              <CardFooter>
+                <Flex justify="flex-end" w="100%">
+                  <Button
+                    variant="solid"
+                    colorScheme="blue"
+                    onClick={onOpenSandbox}
+                  >
+                    {`${sandboxContent.title} continued...`}
+                  </Button>
+                </Flex>
+              </CardFooter>
+            </Stack>
+          </Card>
+        )}
+      </Container>
 
       {/* Section Title  */}
-      <Flex direction="column" align="center" justify="center" py="25rem">
-        <Heading size="xl" color="#82add9" pb={10}>
-          Join our risk-free blockchain sandbox today
-        </Heading>
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        py={isMobile ? "4rem" : "25rem"}
+      >
+        <Center mb="3rem">
+          <Box
+            style={{
+              color: "#82add9",
+            }}
+          >
+            <Heading size={isMobile ? "3xl" : "4xl"} textAlign="center" pb={3}>
+              Join our
+            </Heading>
+            <Heading
+              size={isMobile ? "3xl" : "4xl"}
+              textAlign="center"
+              pb={3}
+              bgGradient="linear(to-l, #7928CA, #FF0080)"
+              bgClip="text"
+            >
+              risk-free
+            </Heading>
+            <Heading size={isMobile ? "3xl" : "4xl"} textAlign="center" pb={3}>
+              sandbox today.
+            </Heading>
+          </Box>
+        </Center>
+
         <Button
           variant="solid"
           size="lg"

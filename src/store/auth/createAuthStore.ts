@@ -18,6 +18,7 @@ type State = {
   isLoggedIn: boolean;
   walletConnected: boolean;
   navigationSection: string;
+  reset: () => void;
   logout: () => void;
   userDetails: User;
   opacity: 0;
@@ -34,6 +35,7 @@ type Actions = {
   setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
+  reset: () => void;
 };
 
 type MyStore = State & Actions;
@@ -43,6 +45,7 @@ const initialState: State = {
   walletConnected: false,
   navigationSection: "DefiKids",
   logout: () => {},
+  reset: () => void {},
   userDetails: {
     account: {
       id: "",
@@ -138,6 +141,11 @@ const setters = (set: any) => ({
   setFetchedUserDetails: (fetchedUserDetails: boolean) => {
     set((state: { fetchedUserDetails: boolean }) => {
       state.fetchedUserDetails = fetchedUserDetails;
+    }, shallow);
+  },
+  reset: () => {
+    set((state: State) => {
+      state = { ...initialState };
     }, shallow);
   },
 });

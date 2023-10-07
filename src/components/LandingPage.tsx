@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import shallow from "zustand/shallow";
 import Sandbox from "@/components/landingPage/Sandbox";
 import SplashText from "@/components/landingPage/SplashText";
-import SequenceLogin from "@/components/landingPage/SequenceLogin";
 import Earning from "@/components/landingPage/Earning";
 import Staking from "@/components/landingPage/Staking";
 import Investing from "@/components/landingPage/Investing";
@@ -52,7 +51,6 @@ export const LandingPage = () => {
       <Earning />
       <Staking />
       <Investing />
-      <SequenceLogin />
     </Box>
   );
 };

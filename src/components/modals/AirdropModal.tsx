@@ -113,18 +113,18 @@ export const AirdropModal = ({
     const amountToSend = ethers.utils.parseEther(amount);
     setIsLoading(true);
     try {
-      setActiveStep(0);
-      const tx = (await connectedSigner?.sendTransaction({
-        to: recipientAddress,
-        value: amountToSend,
-      })) as TransactionResponse;
-      setActiveStep(1);
-      await tx.wait();
-      toast({
-        title: "Funds sent successfully",
-        status: "success",
-      });
-      onClose();
+      // setActiveStep(0);
+      // const tx = (await connectedSigner?.sendTransaction({
+      //   to: recipientAddress,
+      //   value: amountToSend,
+      // })) as TransactionResponse;
+      // setActiveStep(1);
+      // await tx.wait();
+      // toast({
+      //   title: "Funds sent successfully",
+      //   status: "success",
+      // });
+      // onClose();
     } catch (e) {
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
@@ -222,7 +222,7 @@ export const AirdropModal = ({
                       return;
                     }
 
-                    setSelectedUsers((prev) => [...prev, selectedUser]);
+                    // setSelectedUsers((prev) => [...prev, selectedUser]);
                     e.target.value = "";
                   }}
                 >

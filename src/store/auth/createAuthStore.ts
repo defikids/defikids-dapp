@@ -18,10 +18,12 @@ type State = {
   isLoggedIn: boolean;
   walletConnected: boolean;
   navigationSection: string;
+  reset: () => void;
   logout: () => void;
   userDetails: User;
   opacity: 0;
   mobileMenuOpen: boolean;
+  fetchedUserDetails: boolean;
 };
 
 type Actions = {
@@ -32,6 +34,8 @@ type Actions = {
   setUserDetails: (userDetails: User) => void;
   setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
+  setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
+  reset: () => void;
 };
 
 type MyStore = State & Actions;
@@ -41,6 +45,7 @@ const initialState: State = {
   walletConnected: false,
   navigationSection: "DefiKids",
   logout: () => {},
+  reset: () => void {},
   userDetails: {
     account: {
       id: "",
@@ -76,6 +81,7 @@ const initialState: State = {
   },
   opacity: 0,
   mobileMenuOpen: false,
+  fetchedUserDetails: false,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -130,6 +136,16 @@ const setters = (set: any) => ({
   setMobileMenuOpen: (mobileMenuOpen: boolean) => {
     set((state: { mobileMenuOpen: boolean }) => {
       state.mobileMenuOpen = mobileMenuOpen;
+    }, shallow);
+  },
+  setFetchedUserDetails: (fetchedUserDetails: boolean) => {
+    set((state: { fetchedUserDetails: boolean }) => {
+      state.fetchedUserDetails = fetchedUserDetails;
+    }, shallow);
+  },
+  reset: () => {
+    set((state: State) => {
+      state = { ...initialState };
     }, shallow);
   },
 });

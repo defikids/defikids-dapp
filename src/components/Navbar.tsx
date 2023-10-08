@@ -10,20 +10,17 @@ import {
   Collapse,
   Button,
   useDisclosure,
+  Fade,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
-import { WalletPopover } from "@/components/WalletPopover";
 import { MenuPopover } from "@/components/MenuPopover";
 import { AiFillAppstore } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/data-schema/enums";
-import { BiSolidUserRectangle } from "react-icons/bi";
 import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
-import { useAccount } from "wagmi";
-import { BiLogOut } from "react-icons/bi";
 import RegisterModal from "@/components/modals/RegisterModal";
 
 export default function NavBar() {
@@ -44,16 +41,16 @@ export default function NavBar() {
     walletConnected,
     navigationSection,
     userDetails,
+    fetchedUserDetails,
     setIsLoggedIn,
-    setLogout,
   } = useAuthStore(
     (state) => ({
       isLoggedIn: state.isLoggedIn,
       walletConnected: state.walletConnected,
       navigationSection: state.navigationSection,
       userDetails: state.userDetails,
+      fetchedUserDetails: state.fetchedUserDetails,
       setIsLoggedIn: state.setIsLoggedIn,
-      setLogout: state.setLogout,
     }),
     shallow
   );
@@ -121,14 +118,18 @@ export default function NavBar() {
           <Flex justifyContent="flex-end">
             {!walletConnected ? (
               <CustomConnectButton />
-            ) : (
+            ) : fetchedUserDetails ? (
               <Button mr={5} size="lg" onClick={navigateUser}>
-                <Heading size="sm">
-                  {userDetails?.userType !== UserType.UNREGISTERED
-                    ? "Dashboard"
-                    : "Register"}
-                </Heading>
+                <Fade in={fetchedUserDetails}>
+                  <Heading size="sm">
+                    {userDetails.userType != UserType.UNREGISTERED
+                      ? "Dashboard"
+                      : "Register"}
+                  </Heading>
+                </Fade>
               </Button>
+            ) : (
+              <></>
             )}
 
             <IconButton

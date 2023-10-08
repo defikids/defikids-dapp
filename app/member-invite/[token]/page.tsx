@@ -19,11 +19,10 @@ import { usePathname, useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { UserType } from "@/data-schema/enums";
-import { trimAddress } from "@/utils/web3";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { PermissionType } from "@/data-schema/enums";
@@ -42,6 +41,7 @@ const MemberInvite = () => {
   const [initialUserCheck, setInitialUserCheck] = useState(false);
   const [decodedData, setDecodedData] = useState<DecodedToken | null>(null);
   const [inviteAccepted, setInviteAccepted] = useState(false);
+  const [dBKeys, setDBKeys] = useState<string[]>([]);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -52,13 +52,14 @@ const MemberInvite = () => {
   }, [pathname]);
 
   const { address, isDisconnected } = useAccount() as any;
+  const { chain } = useNetwork();
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
 
-  const { walletConnected, setUserDetails } = useAuthStore(
+  const { setUserDetails, reset } = useAuthStore(
     (state) => ({
-      walletConnected: state.walletConnected,
       setUserDetails: state.setUserDetails,
+      reset: state.reset,
     }),
     shallow
   );
@@ -218,8 +219,38 @@ const MemberInvite = () => {
     );
   };
 
+  // Reset store on page load
+  useEffect(() => {
+    reset();
+
+    const fetchData = async () => {
+      const response = await axios.get(`/api/vercel/get-all-keys`);
+      const addresses = response.data;
+      setDBKeys(addresses);
+    };
+
+    fetchData();
+  }, []);
+
+  // Check if wallet has already been registered and if invite has already been accepted
   useEffect(() => {
     if (!decodedData) return;
+
+    if (!address) return;
+    if (dBKeys.length === 0) return;
+
+    try {
+      if (dBKeys.includes(address)) {
+        toast({
+          title: "Error",
+          description: "Wallet already registered.",
+          status: "error",
+        });
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
 
     const inviteAlreadyAccepted = async () => {
       const user = await axios.get(
@@ -278,7 +309,7 @@ const MemberInvite = () => {
     );
   }
 
-  if (!walletConnected) {
+  if (!address) {
     return (
       <Box h="100vh">
         {Logo()}
@@ -289,8 +320,9 @@ const MemberInvite = () => {
             </Heading>
 
             <Text my={5} textAlign="center">
-              You have been invited to join a DefiKids family. To accept this
-              invitation, please connect your wallet.
+              {`You have been invited to join a DefiKids family. To accept this
+              invitation, please connect your
+              wallet.`}
             </Text>
             <Center mt="5rem">
               <CustomConnectButton />
@@ -307,53 +339,64 @@ const MemberInvite = () => {
       <Flex direction="column" align="center" justify="center" height="100vh">
         <Container size="lg" mb="10rem">
           <Flex direction="column" justify="center">
-            <Heading textAlign="center" size={"lg"}>{`Account ${trimAddress(
-              address
-            )}`}</Heading>
-            <Text align="center" my={5}>
-              This is the account you are currently connected to and will be
-              used to create your DefiKids account.
-            </Text>
+            {chain?.unsupported ? (
+              <Text align="center" my={5}>
+                Your wallet is currently connected to an unsupported network.
+                Click the button below to change networks.
+              </Text>
+            ) : (
+              <Text align="center" my={5}>
+                This is the wallet you are currently connected to and will be
+                used to create your DefiKids account.
+              </Text>
+            )}
+            <Center>
+              <CustomConnectButton />
+            </Center>
           </Flex>
 
           {/* username */}
-          <Flex direction="row" align="center" mt="3rem" mx={5}>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Create a username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                _hover={{
-                  borderColor: "gray.300",
-                }}
-                _focus={{
-                  borderColor: "blue.500",
-                }}
-                sx={{
-                  "::placeholder": {
-                    color: "gray.400",
-                  },
-                }}
-              />
-            </FormControl>
-          </Flex>
+          {!chain?.unsupported && (
+            <>
+              <Flex direction="row" align="center" mt="3rem" mx={5}>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Create a username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    _hover={{
+                      borderColor: "gray.300",
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
+                    sx={{
+                      "::placeholder": {
+                        color: "gray.400",
+                      },
+                    }}
+                  />
+                </FormControl>
+              </Flex>
 
-          <Center mt={5}>
-            <Button
-              mt="3rem"
-              colorScheme="gray"
-              size="lg"
-              style={{
-                cursor: "pointer",
-                borderRadius: "10px",
-                padding: "15px",
-              }}
-              onClick={handleToken}
-            >
-              <Text fontSize={"lg"}>Accept Invitation</Text>
-            </Button>
-          </Center>
+              <Center mt={5}>
+                <Button
+                  mt="3rem"
+                  colorScheme="gray"
+                  size="lg"
+                  style={{
+                    cursor: "pointer",
+                    borderRadius: "10px",
+                    padding: "15px",
+                  }}
+                  onClick={handleToken}
+                >
+                  <Text fontSize={"lg"}>Accept Invitation</Text>
+                </Button>
+              </Center>
+            </>
+          )}
         </Container>
       </Flex>
     </Box>

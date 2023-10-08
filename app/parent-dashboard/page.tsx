@@ -312,7 +312,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics />
+            <FamilyStatistics members={userDetails.children} />
           </GridItem>
         </Grid>
       </Flex>

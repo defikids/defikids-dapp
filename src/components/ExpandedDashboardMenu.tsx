@@ -45,7 +45,7 @@ export const ExpandedDashboardMenu = ({
   onOpenAirdropModal,
 }: {
   familyDetails: User;
-  children: User[];
+  children: string[];
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
   onToggleCollapsedMenu: () => void;

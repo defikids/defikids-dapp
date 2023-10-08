@@ -7,7 +7,6 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import { User } from "@/data-schema/types";
 
 interface Notification {
   title: string;
@@ -15,7 +14,7 @@ interface Notification {
   unit: string;
 }
 
-const FamilyStatistics = ({ members }: { members: User[] }) => {
+const FamilyStatistics = ({ members }: { members: string[] }) => {
   const stats: Notification[] = [
     {
       title: "Members",

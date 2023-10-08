@@ -20,7 +20,7 @@ const ParentAvatar = () => {
         sx={{
           bgColor: `${!userDetails?.avatarURI && "purple.500"}`,
         }}
-        src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
+        src={userDetails?.avatarURI}
       />
     </Flex>
   );

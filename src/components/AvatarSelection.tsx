@@ -159,7 +159,7 @@ export const AvatarSelection = ({
         <Avatar
           size="2xl"
           name={familyDetails?.username ? familyDetails?.username : "Avatar"}
-          src={avatar ? avatar : "/images/placeholder-avatar.jpeg"}
+          src={avatar && avatar}
           _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
           onClick={openFileInput}
         />

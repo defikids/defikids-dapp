@@ -29,7 +29,7 @@ import { useNetwork } from "wagmi";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
-  children,
+  members,
   onAddChildOpen,
   setSelectedTab,
   onToggleCollapsedMenu,
@@ -44,7 +44,7 @@ export const ExpandedDashboardMenu = ({
   onOpenMembersTableModal,
 }: {
   familyDetails: User;
-  children: User[];
+  members: User[];
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
   onToggleCollapsedMenu: () => void;
@@ -133,7 +133,7 @@ export const ExpandedDashboardMenu = ({
                 onOpenSendFundsModal={onOpenSendFundsModal}
                 onOpenNetworkModal={onOpenNetworkModal}
                 onOpenMembersTableModal={onOpenMembersTableModal}
-                children={children}
+                members={members}
               />
             </Box>
 

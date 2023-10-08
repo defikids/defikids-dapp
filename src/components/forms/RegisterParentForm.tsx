@@ -33,6 +33,7 @@ import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
+import { registerActivityEvent } from "@/utils/recentActivity";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -143,6 +144,12 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       await axios.post(`/api/vercel/set-json`, payload);
       setUserDetails(body);
       setIsLoggedIn(true);
+
+      registerActivityEvent(
+        String(address),
+        String(address),
+        "Registered as parent"
+      );
 
       const emailSent = await sendEmailConfirmation();
       if (!emailSent) {

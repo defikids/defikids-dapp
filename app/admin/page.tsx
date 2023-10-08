@@ -79,6 +79,22 @@ const Admin = () => {
     console.log(data);
   };
 
+  const setRecentActivity = async () => {
+    const res = await fetch(
+      `/api/vercel/set-recent-activity?key=${setterKey}&value=${setterValue}`
+    );
+    const data = await res.json();
+    console.log(data);
+  };
+
+  const getAllRecentActivity = async () => {
+    const res = await fetch(
+      `/api/vercel/get-all-recent-activity?key=${inputValue}`
+    );
+    const data = await res.json();
+    console.log(data);
+  };
+
   const buttons = [
     {
       name: "flushall",
@@ -108,6 +124,15 @@ const Admin = () => {
     {
       name: "setData",
       method: () => setData(),
+    },
+    {
+      name: "setRecentActivity",
+      method: () => setRecentActivity(),
+    },
+
+    {
+      name: "getAllRecentActivity - by parent wallet",
+      method: () => getAllRecentActivity(),
     },
   ];
 

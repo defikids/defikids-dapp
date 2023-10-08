@@ -16,6 +16,7 @@ const ButtonMenu = ({
   onOpenSendFundsModal,
   onOpenNetworkModal,
   onOpenMembersTableModal,
+  onOpenAirdropModal,
   children,
 }: {
   onAddChildOpen: () => void;
@@ -26,6 +27,7 @@ const ButtonMenu = ({
   onOpenSendFundsModal: () => void;
   onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
+  onOpenAirdropModal: () => void;
   children?: User[];
 }) => {
   const { userDetails } = useAuthStore(
@@ -58,7 +60,7 @@ const ButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
-          setSelectedTab(ParentDashboardTabs.DASHBOARD);
+          onOpenAirdropModal();
         }}
       >
         Airdrop

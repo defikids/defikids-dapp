@@ -264,6 +264,7 @@ export const MembersTableModal = ({
                       onClick={() => {
                         setShowRegisterChildForm(true);
                         setShowInvitations(false);
+                        setEmailAddress("");
                       }}
                     >
                       Invite

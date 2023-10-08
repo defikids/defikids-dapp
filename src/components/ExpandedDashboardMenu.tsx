@@ -42,6 +42,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSendFundsModal,
   onOpenNetworkModal,
   onOpenMembersTableModal,
+  onOpenAirdropModal,
 }: {
   familyDetails: User;
   children: User[];
@@ -57,6 +58,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSendFundsModal: () => void;
   onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
+  onOpenAirdropModal: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -133,6 +135,7 @@ export const ExpandedDashboardMenu = ({
                 onOpenSendFundsModal={onOpenSendFundsModal}
                 onOpenNetworkModal={onOpenNetworkModal}
                 onOpenMembersTableModal={onOpenMembersTableModal}
+                onOpenAirdropModal={onOpenAirdropModal}
                 children={children}
               />
             </Box>

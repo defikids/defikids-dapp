@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable react/no-children-prop */
+/* eslint-disable react/no-members-prop */
 
 import {
   Box,
@@ -40,8 +40,8 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const [childKey, setChildKey] = useState<number>(0);
-  const [childrenLoading, setChildrenLoading] = useState(false);
-  const [children, setChildren] = useState([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [members, setMembers] = useState<User[]>([]);
   // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
 
@@ -82,12 +82,6 @@ const Parent: React.FC = () => {
     isOpen: isOpenEtherScan,
     onOpen: onOpenEtherScan,
     onClose: onCloseEtherScan,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenChildDetails,
-    onOpen: onOpenChildDetails,
-    onClose: onCloseChildDetails,
   } = useDisclosure();
 
   const {
@@ -134,15 +128,8 @@ const Parent: React.FC = () => {
 
   useEffect(() => {
     fetchFamilyDetails();
-    fetchChildren();
+    fetchMembers();
   }, []);
-
-  // useEffect(() => {
-  //   if (!stakeContract || !children.length) {
-  //     setChildrenStakes({});
-  //     return;
-  //   }
-  // }, [stakeContract, children]);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -159,30 +146,30 @@ const Parent: React.FC = () => {
     setFamilyDetails(user);
   }, [userDetails?.wallet]);
 
-  const fetchChildren = useCallback(async () => {
-    const getChildren = async () => {
+  const fetchMembers = useCallback(async () => {
+    const getMembers = async () => {
       if (!userDetails?.wallet) return;
 
-      const children = [] as User[];
+      const members = [] as User[];
 
       familyDetails.children?.forEach(async (walletAddress) => {
         const { data } = await axios.get(
           `/api/vercel/get-json?key=${walletAddress}`
         );
 
-        children.push(data as User);
+        members.push(data as User);
       });
 
-      if (children.length) {
-        const childrenWalletBalances = await axios.post(
+      if (members.length) {
+        const membersWalletBalances = await axios.post(
           `/api/etherscan/balancemulti`,
           {
-            addresses: children.map((c) => c.wallet),
+            addresses: members.map((c) => c.wallet),
           }
         );
 
-        const childrenWithBalances = children.map((c) => {
-          const balance = childrenWalletBalances.data.find(
+        const membersWithBalances = members.map((c) => {
+          const balance = membersWalletBalances.data.find(
             (b) => b.account === c.wallet
           );
           return {
@@ -191,17 +178,17 @@ const Parent: React.FC = () => {
           };
         });
 
-        // setChildren(childrenWithBalances);
+        setMembers(membersWithBalances);
       } else {
-        // setChildren(children);
+        setMembers(members);
       }
 
-      setChildrenLoading(false);
+      setMembersLoading(false);
     };
 
-    await getChildren();
+    await getMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length, userDetails?.wallet]);
+  }, [members.length, userDetails?.wallet]);
 
   const closeTab = () => {
     setSelectedTab(ParentDashboardTabs.DASHBOARD);
@@ -213,7 +200,7 @@ const Parent: React.FC = () => {
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             familyDetails={familyDetails}
-            children={children}
+            children={members}
             onAddChildOpen={onAddChildOpen}
             setSelectedTab={setSelectedTab}
             onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -302,7 +289,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity />
+            <RecentMemberActivity members={members} />
           </GridItem>
 
           <GridItem
@@ -322,9 +309,9 @@ const Parent: React.FC = () => {
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
         childKey={childKey}
-        children={children}
+        children={members}
         familyId={familyDetails.familyId}
-        fetchChildren={fetchChildren}
+        fetchChildren={fetchMembers}
         fetchFamilyDetails={fetchFamilyDetails}
       />
 

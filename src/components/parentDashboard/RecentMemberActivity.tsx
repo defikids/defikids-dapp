@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import {
   Container,
   Flex,
@@ -11,6 +11,9 @@ import {
   Heading,
   Button,
 } from "@chakra-ui/react";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
+import { User } from "@/data-schema/types";
 
 interface Activity {
   activity: string;
@@ -61,7 +64,24 @@ const memberActivity: Activity[] = [
   },
 ];
 
-const RecentMemberActivity = () => {
+const RecentMemberActivity = ({ members }: { members: User[] }) => {
+  console.log("RecentMemberActivity", members);
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
+  );
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await fetch(`/api/vercel/get-data?key=${userDetails.wallet}`);
+      const data = await res.json();
+      console.log(data);
+    };
+    getData();
+  }, []);
+
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">

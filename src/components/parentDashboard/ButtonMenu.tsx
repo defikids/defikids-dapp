@@ -28,7 +28,7 @@ const ButtonMenu = ({
   onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
   onOpenAirdropModal: () => void;
-  children?: User[];
+  children?: string[];
 }) => {
   const { userDetails } = useAuthStore(
     (state) => ({

@@ -1,21 +1,12 @@
-import { Fragment } from "react";
 import {
   Container,
   Flex,
-  Stack,
-  VStack,
-  Icon,
-  Divider,
   useColorModeValue,
-  Avatar,
   Text,
   Heading,
-  Button,
-  Badge,
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import { SlOptions } from "react-icons/sl";
 
 interface Notification {
   title: string;
@@ -23,30 +14,29 @@ interface Notification {
   unit: string;
 }
 
-const stats: Notification[] = [
-  {
-    title: "Members",
-    value: "3",
-    unit: "",
-  },
-  {
-    title: "Currently Staked",
-    value: "31,573",
-    unit: "ETH",
-  },
-  {
-    title: "Rewards Earned",
-    value: "5",
-    unit: "ETH",
-  },
-  {
-    title: "Custom Contracts",
-    value: "7",
-    unit: "",
-  },
-];
-
-const FamilyStatistics = () => {
+const FamilyStatistics = ({ members }: { members: string[] }) => {
+  const stats: Notification[] = [
+    {
+      title: "Members",
+      value: members.length.toString(),
+      unit: "",
+    },
+    {
+      title: "Currently Staked",
+      value: "31,573",
+      unit: "ETH",
+    },
+    {
+      title: "Rewards Earned",
+      value: "5",
+      unit: "ETH",
+    },
+    {
+      title: "Custom Contracts",
+      value: "7",
+      unit: "",
+    },
+  ];
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">

@@ -42,7 +42,7 @@ const Parent: React.FC = () => {
 
   const [childKey, setChildKey] = useState<number>(0);
   const [childrenLoading, setChildrenLoading] = useState(false);
-  const [children, setChildren] = useState([]);
+  const [children, setChildren] = useState<string[]>([]);
   // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
 
@@ -320,7 +320,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics />
+            <FamilyStatistics members={userDetails.children || []} />
           </GridItem>
         </Grid>
       </Flex>

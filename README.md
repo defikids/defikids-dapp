@@ -1,6 +1,12 @@
-![defikids](https://github.com/NathanTarbert/defikids/assets/66887028/5f89ee84-e66c-4909-b386-c489fe7387f0)
 
-⭐️ Why DefiKids?
+![DefiKids-alt](https://github.com/defikids/defikids-dapp/assets/66887028/e7038138-8f8b-4d38-acc5-1caf6446a441)
+
+
+   ### ⭐️ Crypto for Kids, parent approved
+
+ 
+
+## Why DefiKids
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
 ## ✨ Simplified Platform Overview:
@@ -62,6 +68,8 @@ Please try to create bug reports that are:
 - <i>Specific</i> Include as much detail as possible: which version, what environment, etc.
 - <i>Unique:</i> Do not duplicate existing opened issues.
 - <i>Scoped to a Single Bug</i> One bug per report.
+
+[Contributing Guide](https://github.com/defikids/.github/blob/main/profile/CONTRIBUTING.md)
 
 ### Steps:
 

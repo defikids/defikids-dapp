@@ -1,6 +1,7 @@
 "use client";
 
-import { Flex, Heading, useBreakpointValue } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
+import { useWindowSize } from "usehooks-ts";
 
 type State = {
   riskFree: boolean;
@@ -42,21 +43,9 @@ const SandboxMenu = ({
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
-  //=============================================================================
-  //                               STATE
-  //=============================================================================
-  // const [isActive, setIsActive] = useState({
-  //   riskFree: true,
-  //   handsOn: false,
-  //   educational: false,
-  //   realistic: false,
-  // });
+
+  const { width } = useWindowSize();
+  const isMobile = width <= 768;
 
   //=============================================================================
   //                               FUNCTIONS
@@ -77,9 +66,9 @@ const SandboxMenu = ({
     <Flex
       align="center"
       justify="center"
-      mt={25}
+      mt={!isMobile ? "25px" : "50px"}
       mb={10}
-      direction={isMobileSize ? "column" : "row"}
+      direction={isMobile ? "column" : "row"}
     >
       <Heading
         size="lg"

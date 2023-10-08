@@ -16,7 +16,7 @@ const ButtonMenu = ({
   onOpenSendFundsModal,
   onOpenNetworkModal,
   onOpenMembersTableModal,
-  children,
+  members,
 }: {
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
@@ -26,7 +26,7 @@ const ButtonMenu = ({
   onOpenSendFundsModal: () => void;
   onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
-  children?: User[];
+  members?: User[];
 }) => {
   const { userDetails } = useAuthStore(
     (state) => ({

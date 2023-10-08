@@ -33,7 +33,7 @@ export const UsernameModal = ({
   isOpen,
   onClose,
   childKey,
-  children,
+  members,
   familyId,
   fetchChildren,
   fetchFamilyDetails,
@@ -43,7 +43,7 @@ export const UsernameModal = ({
   isOpen: boolean;
   onClose: () => void;
   childKey?: number;
-  children?: any;
+  members?: any;
   familyId?: string;
   fetchChildren?: () => void;
   fetchFamilyDetails?: () => void;

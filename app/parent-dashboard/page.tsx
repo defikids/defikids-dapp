@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react/no-members-prop */
 
 import {
   Box,
@@ -200,7 +199,7 @@ const Parent: React.FC = () => {
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             familyDetails={familyDetails}
-            children={members}
+            members={members}
             onAddChildOpen={onAddChildOpen}
             setSelectedTab={setSelectedTab}
             onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -309,7 +308,7 @@ const Parent: React.FC = () => {
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
         childKey={childKey}
-        children={members}
+        members={members}
         familyId={familyDetails.familyId}
         fetchChildren={fetchMembers}
         fetchFamilyDetails={fetchFamilyDetails}

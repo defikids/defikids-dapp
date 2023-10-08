@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Container,
   Flex,
@@ -14,58 +14,11 @@ import {
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { User } from "@/data-schema/types";
-
-interface Activity {
-  activity: string;
-  dateTime: string;
-  userName: string;
-  userAvatar: string;
-}
-
-const memberActivity: Activity[] = [
-  {
-    activity: `<span style="font-weight: 600">Dan Abrahmov</span> Updated Avatar.`,
-    dateTime: "September 10th at 9:10 AM",
-    userName: "Dan Abrahmov",
-    userAvatar: "https://bit.ly/dan-abramov",
-  },
-  {
-    activity: `<span style="font-weight: 600">Kent Dodds</span> Staked 1.5 ETH.`,
-    dateTime: "yesterday",
-    userName: "Kent Dodds",
-    userAvatar: "https://bit.ly/kent-c-dodds",
-  },
-  {
-    activity: `<span style="font-weight: 600">Jena Karlis</span> Timelocked 5 ETH.`,
-    dateTime: "4 days ago",
-    userName: "Jena Karlis",
-    userAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
-  },
-  {
-    activity: `<span style="font-weight: 600">Jena Karlis</span> Staked 2 ETH.`,
-    dateTime: "4 days ago",
-    userName: "Jena Karlis",
-    userAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
-  },
-  {
-    activity: `<span style="font-weight: 600">Jena Karlis</span> Updated Avatar.`,
-    dateTime: "4 days ago",
-    userName: "Jena Karlis",
-    userAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
-  },
-  {
-    activity: `<span style="font-weight: 600">Kent Dodds</span> Claimed 1.5 ETH in staking rewards.`,
-    dateTime: "5 days ago",
-    userName: "Kent Dodds",
-    userAvatar: "https://bit.ly/kent-c-dodds",
-  },
-];
+import { dateInSecondsToLongDate } from "@/utils/dateTime";
 
 const RecentMemberActivity = ({ members }: { members: User[] }) => {
-  console.log("RecentMemberActivity", members);
+  const [activity, setActivity] = useState([]);
+
   const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
@@ -75,12 +28,24 @@ const RecentMemberActivity = ({ members }: { members: User[] }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await fetch(`/api/vercel/get-data?key=${userDetails.wallet}`);
-      const data = await res.json();
-      console.log(data);
+      const res = await fetch(
+        `/api/vercel/get-all-recent-activity?key=${userDetails.wallet}`
+      );
+      let data = await res.json();
+      data = Object.entries(data).reverse().slice(0, 6);
+      setActivity(data);
     };
+
+    if (!userDetails.wallet) return;
     getData();
-  }, []);
+  }, [userDetails.wallet]);
+
+  const parseUser = (wallet: string) => {
+    const member = members.find((m) => m.wallet === wallet);
+    const username = member ? member.username : userDetails.username;
+    const avatar = member ? member.avatarURI : userDetails.avatarURI;
+    return { username, avatar };
+  };
 
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
@@ -102,39 +67,39 @@ const RecentMemberActivity = ({ members }: { members: User[] }) => {
         rounded="md"
         overflow="hidden"
         spacing={0}
-        my="2.5rem"
+        mb="2.5rem"
       >
-        {memberActivity.map((activity, index) => (
+        {activity.map(([timestamp, record]: [string, string], index) => (
           <Fragment key={index}>
-            <Flex
-              w="100%"
-              justify="space-between"
-              alignItems="center"
-              _hover={{ bg: "gray.600" }}
-              cursor="pointer"
-            >
+            <Flex w="100%" justify="space-between" alignItems="center">
               <Stack spacing={0} direction="row" alignItems="center">
                 <Flex p={4}>
                   <Avatar
                     size="md"
-                    name={activity.userName}
-                    src={activity.userAvatar || ""}
+                    name={parseUser(record.split("::")[0]).username}
+                    src={parseUser(record.split("::")[0]).avatar}
                   />
                 </Flex>
                 <Flex direction="column" p={2}>
+                  <Heading
+                    fontSize={{ base: "sm", sm: "md", md: "lg" }}
+                    dangerouslySetInnerHTML={{
+                      __html: parseUser(record.split("::")[0]).username,
+                    }}
+                  />
                   <Text
                     fontSize={{ base: "sm", sm: "md", md: "lg" }}
                     dangerouslySetInnerHTML={{
-                      __html: activity.activity,
+                      __html: record.split("::")[1],
                     }}
                   />
                   <Text fontSize={{ base: "sm", sm: "md" }}>
-                    {activity.dateTime}
+                    {dateInSecondsToLongDate(timestamp)}
                   </Text>
                 </Flex>
               </Stack>
             </Flex>
-            {memberActivity.length - 1 !== index && <Divider m={0} />}
+            <Divider m={0} />
           </Fragment>
         ))}
       </VStack>

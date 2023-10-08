@@ -66,11 +66,8 @@ export const CollapsedDashboardMenu = ({
               name={userDetails?.username}
               sx={{
                 fontFamily: "Slackey",
-                bgColor: `${
-                  userDetails?.avatarURI ? "transparent" : "purple.500"
-                }`,
               }}
-              src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
+              src={userDetails?.avatarURI}
             />
             <Flex direction="column" ml={3}>
               <Heading fontSize="lg">{userDetails?.username}</Heading>

@@ -52,11 +52,7 @@ export default function LoggedInNavBar() {
           <Avatar
             size="md"
             name={userDetails?.username}
-            src={
-              userDetails?.avatarURI
-                ? userDetails?.avatarURI
-                : "/images/placeholder-avatar.jpeg"
-            }
+            src={userDetails?.avatarURI && userDetails?.avatarURI}
             onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen);
             }}

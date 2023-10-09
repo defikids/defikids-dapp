@@ -125,7 +125,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
       username,
       userType: UserType.PARENT,
-      // children: [],
       // invitations: [],
       sandboxMode: false,
     } as IUser;
@@ -156,7 +155,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
         throw new Error(error);
       }
 
-      setUserDetails(userPayload);
+      setUserDetails(user);
       setIsLoggedIn(true);
 
       const emailSent = await sendEmailConfirmation();

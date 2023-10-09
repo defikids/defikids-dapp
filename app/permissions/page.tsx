@@ -48,7 +48,7 @@ const Permissions = () => {
     const fetchMembers = async () => {
       const familyMembers = [] as User[];
       //@ts-ignore
-      for (const memberAddress of userDetails.children) {
+      for (const memberAddress of userDetails.members) {
         try {
           const response = await axios.get(
             `/api/vercel/get-json?key=${memberAddress}`
@@ -187,7 +187,7 @@ const Permissions = () => {
     const fetchMembers = async () => {
       const familyMembers = [] as User[];
       //@ts-ignore
-      for (const memberAddress of userDetails.children) {
+      for (const memberAddress of userDetails.members) {
         try {
           const response = await axios.get(
             `/api/vercel/get-json?key=${memberAddress}`

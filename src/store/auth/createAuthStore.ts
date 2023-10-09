@@ -3,7 +3,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
-import { UserType } from "@/data-schema/enums";
+import { PermissionType, UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User } from "@/data-schema/types";
 import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
@@ -26,7 +26,7 @@ type Actions = {
   setWalletConnected: (walletConnected: boolean) => void;
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
-  setUserDetails: (userDetails: IUser) => void;
+  setUserDetails: (userDetails: User) => void;
   setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
@@ -42,7 +42,7 @@ const initialState: State = {
   logout: () => {},
   reset: () => void {},
   userDetails: {
-    accountId: undefined,
+    accountId: "",
     familyId: "",
     familyName: "",
     email: "",
@@ -54,16 +54,16 @@ const initialState: State = {
     username: "",
     termsAgreed: false,
     userType: UserType.UNREGISTERED,
-    // children: [],
-    // invitations: [],
+    members: [],
+    invitations: [],
     sandboxMode: undefined,
-    // permissions: {
-    //   general: {
-    //     avatar: PermissionType.ENABLED,
-    //     email: PermissionType.ENABLED,
-    //     username: PermissionType.ENABLED,
-    //   },
-    // },
+    permissions: {
+      general: {
+        avatar: PermissionType.ENABLED,
+        email: PermissionType.ENABLED,
+        username: PermissionType.ENABLED,
+      },
+    },
     balance: "",
   },
   opacity: 0,

@@ -35,6 +35,7 @@ import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { AirdropModal } from "@/components/modals/AirdropModal";
+import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -42,8 +43,8 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const [childKey, setChildKey] = useState<number>(0);
-  const [childrenLoading, setChildrenLoading] = useState(false);
-  const [children, setChildren] = useState<string[]>([]);
+  const [childrenLoading, setMembersLoading] = useState(false);
+  const [members, setMembers] = useState<User[]>([]);
   // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
 
@@ -147,7 +148,7 @@ const Parent: React.FC = () => {
 
   // useEffect(() => {
   //   if (!stakeContract || !children.length) {
-  //     setChildrenStakes({});
+  //     setMembersStakes({});
   //     return;
   //   }
   // }, [stakeContract, children]);
@@ -167,26 +168,18 @@ const Parent: React.FC = () => {
     const getChildren = async () => {
       if (!userDetails?.wallet) return;
 
-      const children = [] as User[];
+      const members = await getFamilyMembers(userDetails?.accountId || "");
 
-      familyDetails.children?.forEach(async (walletAddress) => {
-        const { data } = await axios.get(
-          `/api/vercel/get-json?key=${walletAddress}`
-        );
-
-        children.push(data as User);
-      });
-
-      if (children.length) {
-        const childrenWalletBalances = await axios.post(
+      if (members.length) {
+        const membersWalletBalances = await axios.post(
           `/api/etherscan/balancemulti`,
           {
-            addresses: children.map((c) => c.wallet),
+            addresses: members.map((c) => c.wallet),
           }
         );
 
-        const childrenWithBalances = children.map((c) => {
-          const balance = childrenWalletBalances.data.find(
+        const membersWithBalances = members.map((c) => {
+          const balance = membersWalletBalances.data.find(
             (b) => b.account === c.wallet
           );
           return {
@@ -195,17 +188,17 @@ const Parent: React.FC = () => {
           };
         });
 
-        // setChildren(childrenWithBalances);
+        setMembers(membersWithBalances);
       } else {
-        // setChildren(children);
+        setMembers(members);
       }
 
-      setChildrenLoading(false);
+      setMembersLoading(false);
     };
 
     await getChildren();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length, userDetails?.wallet]);
+  }, [members.length, userDetails?.wallet]);
 
   const closeTab = () => {
     setSelectedTab(ParentDashboardTabs.DASHBOARD);
@@ -217,7 +210,7 @@ const Parent: React.FC = () => {
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             familyDetails={familyDetails}
-            children={children}
+            members={members}
             onAddChildOpen={onAddChildOpen}
             setSelectedTab={setSelectedTab}
             onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -317,7 +310,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics members={userDetails.children || []} />
+            <FamilyStatistics members={userDetails.members || []} />
           </GridItem>
         </Grid>
       </Flex>
@@ -327,7 +320,7 @@ const Parent: React.FC = () => {
         isOpen={isChangeUsernameOpen}
         onClose={onChangeUsernameClose}
         childKey={childKey}
-        children={children}
+        members={members}
         familyId={familyDetails.familyId}
         fetchChildren={fetchChildren}
         fetchFamilyDetails={fetchFamilyDetails}

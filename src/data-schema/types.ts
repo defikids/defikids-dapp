@@ -18,7 +18,7 @@ export type UserPermissions = {
 };
 
 export type User = {
-  accountId?: ObjectId;
+  accountId?: "";
   permissions?: UserPermissions;
   familyId: string;
   familyName: string;
@@ -28,22 +28,21 @@ export type User = {
   backgroundURI: string;
   defaultNetwork: MainnetNetworks | TestnetNetworks;
   defaultNetworkType: NetworkType;
-
   username: string;
   termsAgreed?: boolean;
   userType: UserType;
   emailVerified?: boolean;
   sandboxMode: boolean | undefined;
   balance?: string;
-  // children?: string[];
-  // invitations?:
-  //   | [
-  //       {
-  //         email: string;
-  //         dateSent: number;
-  //       }
-  //     ]
-  //   | [];
+  members?: User[];
+  invitations?:
+    | [
+        {
+          email: string;
+          dateSent: number;
+        }
+      ]
+    | [];
 };
 
 export type AccountDetails = {

@@ -29,7 +29,7 @@ import { useNetwork } from "wagmi";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
-  children,
+  members,
   onAddChildOpen,
   setSelectedTab,
   onToggleCollapsedMenu,
@@ -45,7 +45,7 @@ export const ExpandedDashboardMenu = ({
   onOpenAirdropModal,
 }: {
   familyDetails: User;
-  children: string[];
+  members: User[];
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
   onToggleCollapsedMenu: () => void;
@@ -73,7 +73,6 @@ export const ExpandedDashboardMenu = ({
 
   const router = useRouter();
   const { chain } = useNetwork();
-  console.log("chain", chain);
 
   const showMenu = () => {
     if (isOpenExtendedMenu && !isMobileSize) {
@@ -136,7 +135,7 @@ export const ExpandedDashboardMenu = ({
                 onOpenNetworkModal={onOpenNetworkModal}
                 onOpenMembersTableModal={onOpenMembersTableModal}
                 onOpenAirdropModal={onOpenAirdropModal}
-                children={children}
+                members={members}
               />
             </Box>
 

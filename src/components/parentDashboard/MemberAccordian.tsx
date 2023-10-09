@@ -47,7 +47,7 @@ const MemberAccordian = ({
 
   const [toggleSwitch, setToggleSwitch] = useState(false);
 
-  if (userDetails.children && userDetails.children.length === 0) {
+  if (userDetails.members && userDetails.members.length === 0) {
     return (
       <Heading size="sm" textAlign="center" mt={4}>
         You have no members in your family yet.
@@ -85,9 +85,9 @@ const MemberAccordian = ({
       // remove the member from the parent's children array
       const body = {
         ...user,
-        children: [
+        members: [
           //@ts-ignore
-          ...userDetails.children.filter((address) => address !== user?.wallet),
+          ...userDetails.members.filter((address) => address !== user?.wallet),
         ],
       };
 

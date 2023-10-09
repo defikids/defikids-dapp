@@ -25,6 +25,7 @@ import { User } from "@/data-schema/types";
 import MemberInvitationTable from "@/components/parentDashboard/MemberInvitationTable";
 import { EmailVerificationRequired } from "@/components/email/EmailVerificationRequired";
 import { ethers } from "ethers";
+import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
 
 export const MembersTableModal = ({
   isOpen,
@@ -62,22 +63,9 @@ export const MembersTableModal = ({
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const members = [] as User[];
-      //@ts-ignore
-      for (const memberAddress of userDetails.children) {
-        try {
-          const response = await axios.get(
-            `/api/vercel/get-json?key=${memberAddress}`
-          );
-          const user = response.data;
-
-          if (ethers.utils.isAddress(user.wallet)) {
-            members.push(user);
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        }
-      }
+      const members = (await getFamilyMembers(
+        userDetails.accountId!
+      )) as User[];
       setUsers(members);
     };
 
@@ -235,15 +223,15 @@ export const MembersTableModal = ({
 
                 {!showRegisterChildForm &&
                   !showInvitations &&
-                  userDetails.children &&
-                  userDetails.children.length > 0 && (
+                  userDetails.members &&
+                  userDetails.members.length > 0 && (
                     <MemberAccordian users={users} setUsers={setUsers} />
                   )}
 
                 {!showRegisterChildForm &&
                   !showInvitations &&
-                  userDetails.children &&
-                  userDetails.children.length === 0 && (
+                  userDetails.members &&
+                  userDetails.members.length === 0 && (
                     <Heading size="sm" textAlign="center" mt={4}>
                       You have no members in your family yet.
                     </Heading>

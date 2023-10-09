@@ -46,3 +46,13 @@ export const getUserByWalletAddress = async (walletAddress: string) => {
     return error;
   }
 };
+
+export const getAllUsers = async () => {
+  try {
+    const { data } = await axios.get(`/api/mongo/user/getAll`);
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

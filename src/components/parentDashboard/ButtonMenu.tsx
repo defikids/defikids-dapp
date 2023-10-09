@@ -17,7 +17,7 @@ const ButtonMenu = ({
   onOpenNetworkModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
-  children,
+  members,
 }: {
   onAddChildOpen: () => void;
   setSelectedTab: (tab: ParentDashboardTabs) => void;
@@ -28,7 +28,7 @@ const ButtonMenu = ({
   onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
   onOpenAirdropModal: () => void;
-  children?: string[];
+  members?: User[];
 }) => {
   const { userDetails } = useAuthStore(
     (state) => ({
@@ -36,9 +36,6 @@ const ButtonMenu = ({
     }),
     shallow
   );
-
-  console.log("userDetails.defaultNetworkType", userDetails.defaultNetworkType);
-  console.log("NetworkType.TESTNET", NetworkType.TESTNET);
 
   return (
     <VStack spacing={4} align="stretch" justify="space-between" mt={10} mx={5}>

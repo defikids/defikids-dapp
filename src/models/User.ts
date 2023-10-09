@@ -7,7 +7,7 @@ import {
 } from "@/data-schema/enums";
 
 export interface IUser extends Document {
-  accountId?: ObjectId;
+  accountId: ObjectId;
   familyId: string;
   familyName: string;
   email: string;

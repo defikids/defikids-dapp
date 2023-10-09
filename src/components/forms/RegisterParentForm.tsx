@@ -33,6 +33,8 @@ import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
+import { createUser } from "@/services/mongo/database";
+import { IUser } from "@/models/User";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -105,42 +107,46 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
+    const accountDetails = {
+      id: uuidv4(),
+      status: AccountStatus.ACTIVE,
+      memberSince: timestampInSeconds(Date.now()),
+      package: AccountPackage.BASIC,
+    } as AccountDetails;
+
+    const body = {
+      // account: accountDetails,
+      termsAgreed,
+      familyName,
+      email,
+      defaultNetwork: TestnetNetworks.GOERLI,
+      defaultNetworkType: NetworkType.TESTNET,
+      familyId: hashedFamilyId(familyId),
+      wallet: address,
+
+      username,
+      userType: UserType.PARENT,
+      // children: [],
+      // invitations: [],
+      sandboxMode: false,
+    } as IUser;
+
+    // await axios.post(`/api/vercel/set-json`, payload);
     try {
-      const accountDetails = {
-        id: uuidv4(),
-        status: AccountStatus.ACTIVE,
-        memberSince: timestampInSeconds(Date.now()),
-        package: AccountPackage.BASIC,
-      } as AccountDetails;
+      const result = await createUser(body);
+      console.log("result", result);
 
-      const body = {
-        account: accountDetails,
-        termsAgreed,
-        familyName,
-        email,
-        defaultNetwork: TestnetNetworks.GOERLI,
-        defaultNetworkType: NetworkType.TESTNET,
-        familyId: hashedFamilyId(familyId),
-        wallet: address,
-        avatarURI: "",
-        backgroundURI: "",
-        opacity: {
-          background: 1,
-          card: 1,
-        },
-        username,
-        userType: UserType.PARENT,
-        children: [],
-        invitations: [],
-        sandboxMode: false,
-      } as User;
+      const error = result.response.data.error || result.error;
 
-      const payload = {
-        key: address,
-        value: body,
-      };
+      if (error) {
+        console.log("error - ERRROR", error);
+        toast({
+          description: "Database error. Please try again later.",
+          status: "error",
+        });
+        return;
+      }
 
-      await axios.post(`/api/vercel/set-json`, payload);
       setUserDetails(body);
       setIsLoggedIn(true);
 

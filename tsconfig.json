@@ -27,6 +27,7 @@
       "@/utils/*": ["src/utils/*"],
       "@/services/*": ["src/services/*"],
       "@/BFF/*": ["src/BFF/*"],
+      "@/models/*": ["src/models/*"],
       "@/*": ["./*"]
     },
     "plugins": [

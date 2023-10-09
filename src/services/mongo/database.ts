@@ -34,3 +34,15 @@ export const createAccount = async (values: any) => {
     return error;
   }
 };
+
+export const getUserByWalletAddress = async (walletAddress: string) => {
+  try {
+    const { data } = await axios.get(
+      `/api/mongo/user/get?walletAddress=${walletAddress}`
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

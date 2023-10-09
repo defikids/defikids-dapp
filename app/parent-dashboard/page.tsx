@@ -25,6 +25,7 @@ import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
+import { getUserByWalletAddress } from "@/services/mongo/database";
 
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import RecentMemberActivity from "@/components/parentDashboard/RecentMemberActivity";
@@ -158,11 +159,7 @@ const Parent: React.FC = () => {
   const fetchFamilyDetails = useCallback(async () => {
     if (!userDetails?.wallet) return;
 
-    const { data } = await axios.get(
-      `/api/vercel/get-json?key=${userDetails?.wallet}`
-    );
-
-    const user = data as User;
+    const user = await getUserByWalletAddress(userDetails.wallet);
     setFamilyDetails(user);
   }, [userDetails?.wallet]);
 

@@ -10,6 +10,7 @@ import { watchAccount } from "@wagmi/core";
 import axios from "axios";
 import { User } from "@/data-schema/types";
 import { UserType } from "@/data-schema/enums";
+import { getUserByWalletAddress } from "@/services/mongo/database";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("") as any;
@@ -76,11 +77,7 @@ const Auth = () => {
       setProvider(provider);
       setConnectedSigner(signer);
 
-      const { data } = await axios.get(
-        `/api/vercel/get-json?key=${selectedAddress}`
-      );
-
-      const user: User = data;
+      const user = await getUserByWalletAddress(selectedAddress);
       setHasCheckedUserType(true);
 
       if (user) {

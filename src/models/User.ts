@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, model } from "mongoose";
+import mongoose, { Schema, Document, model, ObjectId } from "mongoose";
 import {
   UserType,
   NetworkType,
@@ -7,6 +7,7 @@ import {
 } from "@/data-schema/enums";
 
 export interface IUser extends Document {
+  accountId?: ObjectId;
   familyId: string;
   familyName: string;
   email: string;
@@ -25,6 +26,10 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>(
   {
+    accountId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Account",
+    },
     familyId: {
       type: String,
       required: true,

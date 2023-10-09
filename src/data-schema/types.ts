@@ -7,6 +7,7 @@ import {
   TestnetNetworks,
   PermissionType,
 } from "./enums";
+import { ObjectId } from "mongoose";
 
 export type UserPermissions = {
   general: {
@@ -17,7 +18,7 @@ export type UserPermissions = {
 };
 
 export type User = {
-  account?: AccountDetails;
+  accountId?: ObjectId;
   permissions?: UserPermissions;
   familyId: string;
   familyName: string;
@@ -27,25 +28,22 @@ export type User = {
   backgroundURI: string;
   defaultNetwork: MainnetNetworks | TestnetNetworks;
   defaultNetworkType: NetworkType;
-  opacity: {
-    background: number;
-    card: number;
-  };
+
   username: string;
   termsAgreed?: boolean;
   userType: UserType;
   emailVerified?: boolean;
   sandboxMode: boolean | undefined;
   balance?: string;
-  children?: string[];
-  invitations?:
-    | [
-        {
-          email: string;
-          dateSent: number;
-        }
-      ]
-    | [];
+  // children?: string[];
+  // invitations?:
+  //   | [
+  //       {
+  //         email: string;
+  //         dateSent: number;
+  //       }
+  //     ]
+  //   | [];
 };
 
 export type AccountDetails = {

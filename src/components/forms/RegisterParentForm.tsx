@@ -33,8 +33,9 @@ import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
-import { createUser } from "@/services/mongo/database";
+import { createAccount, createUser } from "@/services/mongo/database";
 import { IUser } from "@/models/User";
+import { IAccount } from "@/models/Account";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -107,15 +108,13 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    const accountDetails = {
-      id: uuidv4(),
+    const accountPayload = {
       status: AccountStatus.ACTIVE,
       memberSince: timestampInSeconds(Date.now()),
       package: AccountPackage.BASIC,
-    } as AccountDetails;
+    } as IAccount;
 
-    const body = {
-      // account: accountDetails,
+    let userPayload = {
       termsAgreed,
       familyName,
       email,
@@ -131,23 +130,33 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       sandboxMode: false,
     } as IUser;
 
-    // await axios.post(`/api/vercel/set-json`, payload);
     try {
-      const result = await createUser(body);
-      console.log("result", result);
+      // Create a new account record
+      const account = await createAccount(accountPayload);
+      const accountError = account.response?.data?.error || account.error;
 
-      const error = result.response.data.error || result.error;
-
-      if (error) {
-        console.log("error - ERRROR", error);
+      if (accountError) {
         toast({
           description: "Database error. Please try again later.",
           status: "error",
         });
-        return;
+        throw new Error(accountError);
       }
 
-      setUserDetails(body);
+      // Create a new user record
+      userPayload.accountId = account._id;
+      const user = await createUser(userPayload);
+      const error = user.response?.data?.error || user.error;
+
+      if (error) {
+        toast({
+          description: "Database error. Please try again later.",
+          status: "error",
+        });
+        throw new Error(error);
+      }
+
+      setUserDetails(userPayload);
       setIsLoggedIn(true);
 
       const emailSent = await sendEmailConfirmation();
@@ -163,7 +172,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       onClose();
       router.push("/parent-dashboard");
     } catch (e) {
-      await axios.delete(`/api/vercel/delete-json-data?key=${address}`);
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
       onClose();

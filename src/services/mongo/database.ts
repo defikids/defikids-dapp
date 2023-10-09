@@ -10,7 +10,21 @@ const config = {
 export const createUser = async (values: IUser) => {
   try {
     const { data } = await axios.post(
-      `http://localhost:3000/api/mongo/user/create`,
+      `/api/mongo/user/create`,
+      JSON.stringify(values),
+      config
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const createAccount = async (values: any) => {
+  try {
+    const { data } = await axios.post(
+      `/api/mongo/account/create`,
       JSON.stringify(values),
       config
     );

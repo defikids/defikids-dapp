@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Account, IAccount } from "@/models/Account";
+import { User } from "@/models/User";
 import dbConnect from "@/services/mongo/dbConnect";
 
 export default async function handler(
@@ -7,10 +8,17 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    await dbConnect();
-    const account: IAccount = await Account.create(new Account(req.body));
+    const wallet = req.query.wallet as string;
 
-    res.json(account);
+    await dbConnect();
+    const user = await User.findOne({ wallet });
+
+    if (user) {
+      res.status(400).json({ error: "Account already exists" });
+    } else {
+      const account: IAccount = await Account.create(new Account(req.body));
+      res.json(account);
+    }
   } catch (error) {
     res
       .status(500)

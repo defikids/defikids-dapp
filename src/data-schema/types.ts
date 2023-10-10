@@ -7,19 +7,10 @@ import {
   TestnetNetworks,
   PermissionType,
 } from "./enums";
-import { ObjectId } from "mongoose";
-
-export type UserPermissions = {
-  general: {
-    avatar: PermissionType;
-    email: PermissionType;
-    username: PermissionType;
-  };
-};
 
 export type User = {
-  accountId?: "";
-  permissions?: UserPermissions;
+  accountId: "";
+  permissions: PermissionType[];
   familyId: string;
   familyName: string;
   email: string;

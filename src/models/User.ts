@@ -4,6 +4,7 @@ import {
   NetworkType,
   MainnetNetworks,
   TestnetNetworks,
+  PermissionType,
 } from "@/data-schema/enums";
 
 export interface IUser extends Document {
@@ -22,6 +23,7 @@ export interface IUser extends Document {
   emailVerified?: boolean;
   sandboxMode: boolean | undefined;
   balance?: string;
+  permissions: PermissionType[];
 }
 
 const userSchema = new Schema<IUser>(
@@ -80,6 +82,12 @@ const userSchema = new Schema<IUser>(
     balance: {
       type: String,
     },
+    permissions: [
+      {
+        type: String,
+        enum: PermissionType,
+      },
+    ],
   },
   { timestamps: true }
 );

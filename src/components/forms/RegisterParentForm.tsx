@@ -15,16 +15,15 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
-import { User, AccountDetails } from "@/data-schema/types";
 import NextLink from "next/link";
 import {
   UserType,
   AccountPackage,
   Explaination,
   AccountStatus,
+  PermissionType,
 } from "@/data-schema/enums";
 import { hashedFamilyId } from "@/utils/web3";
-import { v4 as uuidv4 } from "uuid";
 import { timestampInSeconds } from "@/utils/dateTime";
 import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
 import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
@@ -122,16 +121,16 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       defaultNetworkType: NetworkType.TESTNET,
       familyId: hashedFamilyId(familyId),
       wallet: address,
-
       username,
       userType: UserType.PARENT,
       // invitations: [],
       sandboxMode: false,
+      permissions: [...Object.values(PermissionType)],
     } as IUser;
 
     try {
       // Create a new account record
-      const account = await createAccount(accountPayload);
+      const account = await createAccount(accountPayload, String(address));
       const accountError = account.response?.data?.error || account.error;
 
       if (accountError) {

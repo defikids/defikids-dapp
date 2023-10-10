@@ -78,8 +78,8 @@ const MemberInvite = () => {
       const parentUser = parent.data as User;
 
       // Check if the address is not already in the children array
-      if (parentUser.children && !parentUser.children.includes(address)) {
-        parentUser.children.push(address);
+      if (parentUser.members && !parentUser.members.includes(address)) {
+        parentUser.members.push(address);
       }
 
       const body = {
@@ -122,13 +122,7 @@ const MemberInvite = () => {
         memberSince: Date.now(),
         wallet: address,
         sandboxMode,
-        permissions: {
-          general: {
-            avatar: PermissionType.ENABLED,
-            email: PermissionType.ENABLED,
-            username: PermissionType.ENABLED,
-          },
-        },
+        permissions: [...Object.values(PermissionType)],
       };
 
       const payload = {

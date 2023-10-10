@@ -75,6 +75,12 @@ export enum NetworkType {
 }
 
 export enum PermissionType {
+  AVATAR = "AVATAR",
+  EMAIL = "EMAIL",
+  USERNAME = "USERNAME",
+}
+
+export enum PermissionState {
   ENABLED = "ENABLED",
   DISABLED = "DISABLED",
   FAMILY_ID_REQUIRED = "FAMILY_ID_REQUIRED",

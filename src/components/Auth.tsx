@@ -7,9 +7,6 @@ import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
-import axios from "axios";
-import { User } from "@/data-schema/types";
-import { UserType } from "@/data-schema/enums";
 import { getUserByWalletAddress } from "@/services/mongo/database";
 
 const Auth = () => {
@@ -36,7 +33,6 @@ const Auth = () => {
   });
 
   const {
-    setIsLoggedIn,
     setWalletConnected,
     setLogout,
     setUserDetails,
@@ -44,7 +40,6 @@ const Auth = () => {
     setFetchedUserDetails,
   } = useAuthStore(
     (state) => ({
-      setIsLoggedIn: state.setIsLoggedIn,
       userDetails: state.userDetails,
       setWalletConnected: state.setWalletConnected,
       setLogout: state.setLogout,
@@ -80,7 +75,7 @@ const Auth = () => {
       const user = await getUserByWalletAddress(selectedAddress);
       setHasCheckedUserType(true);
 
-      if (user) {
+      if (user.response?.status !== 404) {
         setUserDetails(user);
       }
       setFetchedUserDetails(true);

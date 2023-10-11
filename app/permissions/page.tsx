@@ -15,6 +15,7 @@ import {
   Select,
   Container,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { MdArrowDropDown } from "react-icons/md";
 import Navbar from "@/components/Navbar";
@@ -27,13 +28,14 @@ import { WalletNotFound } from "@/components/WalletNotFound";
 import { Restricted } from "@/components/Restricted";
 import { useAccount } from "wagmi";
 import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
-import { editUser } from "@/services/mongo/database";
+import { editPermissions, editUser } from "@/services/mongo/database";
 
 const Permissions = () => {
   const [members, setMembers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
 
   const { address } = useAccount();
+  const toast = useToast();
 
   const { userDetails } = useAuthStore(
     (state) => ({
@@ -49,11 +51,12 @@ const Permissions = () => {
       const members = (await getFamilyMembers(
         userDetails.accountId!
       )) as User[];
+      console.log(members);
       setMembers(members);
     };
 
     fetchMembers();
-  }, []);
+  }, [userDetails?.wallet]);
 
   const handleColor = (item: string) => {
     const status = selectedUser?.permissions?.find(
@@ -71,79 +74,71 @@ const Permissions = () => {
       userPermissions?.push(permission);
     }
 
-    await editUser(String(selectedUser?.accountId), userPermissions);
-
     setMembers((prevMembers) => {
       const updatedMembers = [...prevMembers];
       const userIndex = updatedMembers.findIndex(
         (user) => user.wallet === selectedUser?.wallet
       );
       if (userIndex !== -1) {
-        //@ts-ignore
-        updatedMembers[userIndex] = body;
+        updatedMembers[userIndex].permissions = userPermissions;
       }
       return updatedMembers;
     });
+
+    toast({
+      title: "Success",
+      description: `${permission.toLowerCase()} updated`,
+      status: "success",
+    });
+
+    const { accountId, wallet } = selectedUser as User;
+    await editPermissions(accountId!, wallet, userPermissions);
   };
 
   const generalPermissions = () => {
     return Object.values(PermissionType).map((item, index) => (
-      <Menu key={index}>
-        {({ isOpen }) => (
-          <>
-            <MenuButton
-              isActive={isOpen}
-              as={Button}
-              colorScheme={handleColor(item)}
-              w="100%"
-            >
-              {item}
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                onClick={() => {
-                  togglePermission(item);
-                }}
-              >
-                Enable
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  togglePermission(item);
-                }}
-              >
-                Disable
-              </MenuItem>
-            </MenuList>
-          </>
-        )}
-      </Menu>
+      <Button
+        key={index}
+        w={"100%"}
+        colorScheme={handleColor(item)}
+        onClick={() => {
+          togglePermission(item);
+        }}
+      >
+        {item}
+      </Button>
+      // <Menu key={index}>
+      //   {({ isOpen }) => (
+      //     <>
+      //       <MenuButton
+      //         isActive={isOpen}
+      //         as={Button}
+      //         colorScheme={handleColor(item)}
+      //         w="100%"
+      //       >
+      //         {item}
+      //       </MenuButton>
+      //       <MenuList>
+      //         <MenuItem
+      //           onClick={() => {
+      //             togglePermission(item);
+      //           }}
+      //         >
+      //           Enable
+      //         </MenuItem>
+      //         <MenuItem
+      //           onClick={() => {
+      //             togglePermission(item);
+      //           }}
+      //         >
+      //           Disable
+      //         </MenuItem>
+      //       </MenuList>
+      //     </>
+      //   )}
+      // </Menu>
     ));
   };
-
-  // useEffect(() => {
-  //   const fetchMembers = async () => {
-  //     const familyMembers = [] as User[];
-  //     //@ts-ignore
-  //     for (const memberAddress of userDetails.members) {
-  //       try {
-  //         const response = await axios.get(
-  //           `/api/vercel/get-json?key=${memberAddress}`
-  //         );
-  //         const user = response.data;
-
-  //         if (ethers.utils.isAddress(user.wallet)) {
-  //           familyMembers.push(user);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching user:", error);
-  //       }
-  //     }
-  //     setMembers(familyMembers);
-  //   };
-
-  //   fetchMembers();
-  // }, []);
 
   if (!address) {
     return <WalletNotFound />;
@@ -166,27 +161,6 @@ const Permissions = () => {
         </Heading>
       </Center>
 
-      {/* <Center pb="2rem">
-        <Flex align="center">
-          <Badge
-            px="2"
-            borderRadius="full"
-            colorScheme="green"
-            fontSize="0.8rem"
-          >
-            Enabled
-          </Badge>
-          <Badge
-            borderRadius="full"
-            px="2"
-            colorScheme="red"
-            fontSize="0.8rem"
-            mx={2}
-          >
-            Disabled
-          </Badge>
-        </Flex>
-      </Center> */}
       <VStack>
         <Container size="lg" px="1rem">
           <Flex justify="center" py={4}></Flex>

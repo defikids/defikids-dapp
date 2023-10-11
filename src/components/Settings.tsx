@@ -104,12 +104,7 @@ export const Settings = ({
                     />
                   )}
 
-                  {title === SelectedSetting.EMAIL && (
-                    <EditEmail
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
+                  {title === SelectedSetting.EMAIL && <EditEmail />}
                   {title === SelectedSetting.PERMISSIONS && (
                     <>
                       <Text>{description}</Text>

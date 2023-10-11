@@ -1,36 +1,22 @@
 "use client";
 
-import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
   useToast,
-  Box,
   Button,
   FormControl,
   FormLabel,
   Input,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useState } from "react";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
+import { editUser } from "@/services/mongo/database";
+import axios from "axios";
 
-export const EditEmail = ({
-  familyDetails,
-  fetchFamilyDetails,
-}: {
-  familyDetails: User;
-  fetchFamilyDetails: () => void;
-}) => {
-  //=============================================================================
-  //                               STATE
-  //=============================================================================
+export const EditEmail = () => {
   const [email, setEmail] = useState("");
-
-  //=============================================================================
-  //                               HOOKS
-  //=============================================================================
 
   const { userDetails, setUserDetails } = useAuthStore(
     (state) => ({
@@ -41,10 +27,6 @@ export const EditEmail = ({
   );
 
   const toast = useToast();
-
-  //=============================================================================
-  //                               FUNCTIONS
-  //=============================================================================
 
   const handleSubmit = async () => {
     try {
@@ -57,21 +39,24 @@ export const EditEmail = ({
         return;
       }
 
-      const body = {
-        ...familyDetails,
+      const payload = {
+        ...userDetails,
         email,
         emailVerified: false,
       };
 
-      const payload = {
-        key: userDetails?.wallet,
-        value: body,
+      await editUser(userDetails.accountId!, payload);
+      setUserDetails(payload);
+      setEmail("");
+
+      const { username, wallet } = userDetails;
+      const emailPayload = {
+        username,
+        email,
+        walletAddress: wallet,
       };
 
-      await axios.post(`/api/vercel/set-json`, payload);
-      setUserDetails(body);
-      fetchFamilyDetails();
-      setEmail("");
+      await axios.post(`/api/emails/confirm-email-address`, emailPayload);
 
       toast({
         title: "Email successfully updated",
@@ -94,7 +79,7 @@ export const EditEmail = ({
         <FormControl>
           <FormLabel>Edit email</FormLabel>
           <Input
-            placeholder={familyDetails?.email}
+            placeholder={userDetails?.email}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{

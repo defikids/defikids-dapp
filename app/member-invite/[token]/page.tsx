@@ -22,15 +22,24 @@ import axios from "axios";
 import { useAccount, useNetwork } from "wagmi";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
-import { UserType } from "@/data-schema/enums";
+import { NetworkType, UserType } from "@/data-schema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { PermissionType } from "@/data-schema/enums";
+import { IUser } from "@/models/User";
+import {
+  createUser,
+  deleteInvitation,
+  getInvitation,
+  getUserByWalletAddress,
+} from "@/services/mongo/database";
+import { TestnetNetworks } from "@/data-schema/enums";
+import mongoose from "mongoose";
 
 interface DecodedToken {
+  accountId: mongoose.Schema.Types.ObjectId;
   parentAddress: string;
   sandboxMode: boolean;
-  familyId: string;
   familyName: string;
   email: string;
   exp: number;
@@ -41,7 +50,6 @@ const MemberInvite = () => {
   const [initialUserCheck, setInitialUserCheck] = useState(false);
   const [decodedData, setDecodedData] = useState<DecodedToken | null>(null);
   const [inviteAccepted, setInviteAccepted] = useState(false);
-  const [dBKeys, setDBKeys] = useState<string[]>([]);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -56,81 +64,44 @@ const MemberInvite = () => {
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
 
-  const { setUserDetails, reset } = useAuthStore(
+  const { setUserDetails, userDetails, reset } = useAuthStore(
     (state) => ({
       setUserDetails: state.setUserDetails,
+      userDetails: state.userDetails,
       reset: state.reset,
     }),
     shallow
   );
 
-  const updateParent = async (decodedToken: DecodedToken) => {
-    if (!decodedToken) return;
-
-    try {
-      const { parentAddress } = decodedToken;
-
-      const parent = await axios.get(
-        `/api/vercel/get-json?key=${parentAddress}`
-      );
-
-      // Update parent's children and remove invitation
-      const parentUser = parent.data as User;
-
-      // Check if the address is not already in the children array
-      if (parentUser.members && !parentUser.members.includes(address)) {
-        parentUser.members.push(address);
-      }
-
-      const body = {
-        ...parentUser,
-        //@ts-ignore
-        invitations: parentUser.invitations.filter(
-          (obj) => obj.email !== decodedToken.email
-        ),
-      };
-
-      const payload = {
-        key: parentAddress,
-        value: body,
-      };
-
-      await axios.post(`/api/vercel/set-json`, payload);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const createMember = async (decodedToken: DecodedToken) => {
     if (!decodedToken) return;
 
-    const { sandboxMode, familyId, familyName, email } = decodedToken;
-
+    const { email, accountId } = decodedToken;
+    console.log("createMember - userDetails", userDetails);
     try {
-      const body = {
-        familyName,
-        familyId,
+      let userPayload = {
+        accountId,
+        termsAgreed: true,
         email,
-        username,
-        avatarURI: "",
-        backgroundURI: "",
-        opacity: {
-          background: 1,
-          card: 1,
-        },
-        userType: UserType.CHILD,
-        memberSince: Date.now(),
+        defaultNetwork: TestnetNetworks.GOERLI,
+        defaultNetworkType: NetworkType.TESTNET,
         wallet: address,
-        sandboxMode,
+        username,
+        userType: UserType.MEMBER,
+        sandboxMode: false,
         permissions: [...Object.values(PermissionType)],
-      };
+      } as IUser;
 
-      const payload = {
-        key: address,
-        value: body,
-      };
+      const user = await createUser(userPayload);
+      const error = user.response?.data?.error || user.error;
 
-      await axios.post(`/api/vercel/set-json`, payload);
+      if (error) {
+        toast({
+          description: "Database error. Please try again later.",
+          status: "error",
+        });
+        throw new Error(error);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -142,10 +113,7 @@ const MemberInvite = () => {
     // Countdown function
     const countdown = async () => {
       if (count === 0) {
-        const updatedUserDetails = await axios.get(
-          `/api/vercel/get-json?key=${address}`
-        );
-
+        const updatedUserDetails = await getUserByWalletAddress(address);
         setUserDetails(updatedUserDetails.data);
         router.push("/");
       } else {
@@ -217,13 +185,13 @@ const MemberInvite = () => {
   useEffect(() => {
     reset();
 
-    const fetchData = async () => {
-      const response = await axios.get(`/api/vercel/get-all-keys`);
-      const addresses = response.data;
-      setDBKeys(addresses);
-    };
+    // const fetchData = async () => {
+    //   const response = await axios.get(`/api/vercel/get-all-keys`);
+    //   const addresses = response.data;
+    //   setDBKeys(addresses);
+    // };
 
-    fetchData();
+    // fetchData();
   }, []);
 
   // Check if wallet has already been registered and if invite has already been accepted
@@ -231,45 +199,38 @@ const MemberInvite = () => {
     if (!decodedData) return;
 
     if (!address) return;
-    if (dBKeys.length === 0) return;
 
-    try {
-      if (dBKeys.includes(address)) {
-        toast({
-          title: "Error",
-          description: "Wallet already registered.",
-          status: "error",
-        });
-        return;
+    const verifyUser = async () => {
+      const { accountId, email } = decodedData;
+      try {
+        const user = await getUserByWalletAddress(address);
+        const invitation = await getInvitation(accountId!, email);
+
+        if (user.response?.statusText !== "Not Found") {
+          toast({
+            title: "Error",
+            description: "Wallet already registered.",
+            status: "error",
+          });
+          return;
+        }
+
+        if (!invitation) {
+          setInviteNonExistent(true);
+          return;
+        }
+
+        await createMember(decodedData);
+        await deleteInvitation(invitation._id);
+
+        setInviteAccepted(true);
+        redirectUser();
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-
-    const inviteAlreadyAccepted = async () => {
-      const user = await axios.get(
-        `/api/vercel/get-json?key=${decodedData?.parentAddress}`
-      );
-
-      // check if invite still exists
-      const emailExists = user.data.invitations?.some(
-        (obj: User) => obj.email === decodedData?.email
-      );
-      if (!emailExists) {
-        setInviteNonExistent(true);
-        return;
-      }
-
-      //update DB
-      await updateParent(decodedData);
-      await createMember(decodedData);
-
-      // set invite accepted
-      setInviteAccepted(true);
-      redirectUser();
     };
 
-    inviteAlreadyAccepted();
+    verifyUser();
   }, [decodedData]);
 
   if (inviteAccepted) {

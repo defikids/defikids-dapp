@@ -8,13 +8,10 @@ import {
 } from "@/data-schema/enums";
 
 export interface IUser extends Document {
-  accountId: ObjectId;
-  familyId: string;
-  familyName: string;
+  accountId: mongoose.Schema.Types.ObjectId;
   email: string;
   wallet: string;
   avatarURI: string;
-  backgroundURI: string;
   defaultNetwork: MainnetNetworks | TestnetNetworks;
   defaultNetworkType: NetworkType;
   username: string;
@@ -32,14 +29,6 @@ const userSchema = new Schema<IUser>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Account",
     },
-    familyId: {
-      type: String,
-      required: true,
-    },
-    familyName: {
-      type: String,
-      required: true,
-    },
     email: {
       type: String,
       required: true,
@@ -51,7 +40,6 @@ const userSchema = new Schema<IUser>(
     avatarURI: {
       type: String,
     },
-
     defaultNetwork: {
       type: String,
       required: true,

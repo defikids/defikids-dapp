@@ -24,8 +24,13 @@ import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";
 import MemberInvitationTable from "@/components/parentDashboard/MemberInvitationTable";
 import { EmailVerificationRequired } from "@/components/email/EmailVerificationRequired";
-import { ethers } from "ethers";
 import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
+import { createInvitation, getAccount } from "@/services/mongo/database";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
+import jwt from "jsonwebtoken";
+import { IInvitation } from "@/models/Invitation";
+import { getInvitationsByAccount } from "@/BFF/mongo/getInvitationsByAccount";
+import mongoose from "mongoose";
 
 export const MembersTableModal = ({
   isOpen,
@@ -37,12 +42,12 @@ export const MembersTableModal = ({
   //=============================================================================
   //                               STATE
   //=============================================================================
-  const [isLoading, setIsLoading] = useState(false);
-  const [showRegisterChildForm, setShowRegisterChildForm] = useState(false);
+  const [showRegisterMemberForm, setShowRegisterMemberForm] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [emailAddress, setEmailAddress] = useState("");
   const [sandboxMode, setSandboxMode] = useState(false);
   const [showInvitations, setShowInvitations] = useState(false);
+  const [invitations, setInvitations] = useState<IInvitation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
 
   const { width } = useWindowSize();
@@ -53,10 +58,9 @@ export const MembersTableModal = ({
   //=============================================================================
   const toast = useToast();
 
-  const { userDetails, setUserDetails } = useAuthStore(
+  const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
     }),
     shallow
   );
@@ -69,17 +73,66 @@ export const MembersTableModal = ({
       setUsers(members);
     };
 
+    const fetchInvitations = async () => {
+      const invitations = await getInvitationsByAccount(userDetails.accountId!);
+      setInvitations(invitations);
+    };
+
     fetchMembers();
+    fetchInvitations();
   }, []);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
+  const invitationExists = (
+    accountId: mongoose.Schema.Types.ObjectId,
+    email: string
+  ) => {
+    const invitation = invitations
+      .filter((invitation) => invitation.accountId === accountId)
+      .find((invitation) => invitation.email === email);
+
+    if (invitation) {
+      toast({
+        title: "Error",
+        description: "An invitation has already been sent to this email.",
+        status: "error",
+      });
+      setHasSubmitted(false);
+      setEmailAddress("");
+      return true;
+    }
+    return false;
+  };
+
+  const userExists = (email: string, users: User[]) => {
+    const user = users.find((user) => user.email === email);
+
+    if (user) {
+      toast({
+        title: "Error",
+        description: "This user is already a member of your family.",
+        status: "error",
+      });
+      setHasSubmitted(false);
+      setEmailAddress("");
+      return true;
+    }
+    return false;
+  };
+
   const handleSubmit = async () => {
     setHasSubmitted(true);
 
     try {
-      const emailSent = await sendEmailInvite();
+      const { wallet, accountId } = userDetails;
+      const email = emailAddress.trim();
+
+      if (userExists(email, users)) return;
+      if (invitationExists(accountId!, email)) return;
+
+      const emailSent = await sendEmailInvite(email, wallet, accountId!);
 
       if (!emailSent) {
         toast({
@@ -89,69 +142,67 @@ export const MembersTableModal = ({
         });
         return;
       }
-      setShowRegisterChildForm(false);
+      setShowRegisterMemberForm(false);
+      setHasSubmitted(false);
+      setEmailAddress("");
     } catch (e) {
       console.log(e);
-      setShowRegisterChildForm(false);
+      setShowRegisterMemberForm(false);
     }
   };
 
-  const storeInvitation = async (email: string) => {
+  const storeInvitation = async (email: string, token: any) => {
     try {
-      let response = await axios.get(
-        `/api/vercel/get-json?key=${userDetails.wallet}`
-      );
-
-      const user = response.data as User;
-
-      let emailExists = false;
-
-      if (user.invitations)
-        emailExists = user.invitations?.some(
-          (obj: { email: string; dateSent: string }) => obj.email === email
-        );
-
-      console.log("emailExists", emailExists);
-      const newInvitation = {
+      const invitationPayload = {
+        accountId: userDetails.accountId,
+        date: convertTimestampToSeconds(Date.now()),
         email,
-        dateSent: new Date(),
+        token,
       };
-      console.log("newInvitation", newInvitation);
 
-      if (user.invitations && !emailExists) {
-        const body = {
-          ...user,
-          invitations: [...user.invitations, newInvitation],
-        };
-
-        const payload = {
-          key: user.wallet,
-          value: body,
-        };
-
-        await axios.post(`/api/vercel/set-json`, payload);
-
-        //@ts-ignore
-        setUserDetails(body);
-      }
+      const newInvite = await createInvitation(invitationPayload);
+      setInvitations((prevInvitations) => [...prevInvitations, newInvite]);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const sendEmailInvite = async () => {
-    const { wallet, familyName, familyId } = userDetails;
+  const sendEmailInvite = async (
+    email: string,
+    wallet: string,
+    accountId: mongoose.Schema.Types.ObjectId
+  ) => {
+    const { familyName } = await getAccount(accountId!);
+
     try {
-      const payload = {
-        email: emailAddress,
+      const body = {
+        accountId,
+        email,
         parentAddress: wallet.trim(),
-        familyName: familyName,
+        familyName,
         sandboxMode,
-        familyId,
+      };
+
+      const token = jwt.sign(
+        {
+          ...body,
+        },
+        process.env.NEXT_PUBLIC_JWT_SECRET || "",
+        {
+          expiresIn: "7d",
+          jwtid: Date.now().toString(),
+        }
+      );
+
+      const payload = {
+        token,
+        email,
+        familyName,
       };
 
       await axios.post(`/api/emails/invite-member`, payload);
-      await storeInvitation(emailAddress);
+
+      await storeInvitation(email, token);
 
       toast({
         title: "Member Invite Email Sent",
@@ -166,14 +217,14 @@ export const MembersTableModal = ({
   };
 
   const handleModalHeading = useMemo(() => {
-    if (showRegisterChildForm && !showInvitations) {
+    if (showRegisterMemberForm && !showInvitations) {
       return "Invite Member";
     } else if (showInvitations) {
       return "Member Invites";
     } else {
       return "Members";
     }
-  }, [showRegisterChildForm, showInvitations]);
+  }, [showRegisterMemberForm, showInvitations]);
 
   return (
     <Box margin="20px">
@@ -182,8 +233,7 @@ export const MembersTableModal = ({
         onClose={onClose}
         size="xl"
         onCloseComplete={() => {
-          setIsLoading(false);
-          setShowRegisterChildForm(false);
+          setShowRegisterMemberForm(false);
           setHasSubmitted(false);
           setEmailAddress("");
           setSandboxMode(false);
@@ -205,9 +255,9 @@ export const MembersTableModal = ({
           <ModalBody>
             {userDetails.emailVerified ? (
               <>
-                {showRegisterChildForm && (
+                {showRegisterMemberForm && (
                   <RegisterMemberForm
-                    setShowRegisterChildForm={setShowRegisterChildForm}
+                    setShowRegisterMemberForm={setShowRegisterMemberForm}
                     hasSubmitted={hasSubmitted}
                     handleSubmit={handleSubmit}
                     emailAddress={emailAddress}
@@ -218,20 +268,24 @@ export const MembersTableModal = ({
                 )}
 
                 {showInvitations && (
-                  <MemberInvitationTable isMobileSize={isMobileSize} />
+                  <MemberInvitationTable
+                    isMobileSize={isMobileSize}
+                    invitations={invitations}
+                    setInvitations={setInvitations}
+                    setShowInvitations={setShowInvitations}
+                  />
                 )}
 
-                {!showRegisterChildForm &&
+                {!showRegisterMemberForm &&
                   !showInvitations &&
-                  userDetails.members &&
-                  userDetails.members.length > 0 && (
+                  users &&
+                  users.length > 0 && (
                     <MemberAccordian users={users} setUsers={setUsers} />
                   )}
 
-                {!showRegisterChildForm &&
+                {!showRegisterMemberForm &&
                   !showInvitations &&
-                  userDetails.members &&
-                  userDetails.members.length === 0 && (
+                  users.length === 0 && (
                     <Heading size="sm" textAlign="center" mt={4}>
                       You have no members in your family yet.
                     </Heading>
@@ -245,12 +299,12 @@ export const MembersTableModal = ({
             {userDetails?.emailVerified && (
               <Container>
                 <Flex direction="row" justify="flex-end" w="100%">
-                  {!showRegisterChildForm && (
+                  {!showRegisterMemberForm && (
                     <Button
                       size="xs"
                       colorScheme="blue"
                       onClick={() => {
-                        setShowRegisterChildForm(true);
+                        setShowRegisterMemberForm(true);
                         setShowInvitations(false);
                         setEmailAddress("");
                       }}
@@ -260,7 +314,7 @@ export const MembersTableModal = ({
                   )}
 
                   {/* @ts-ignore */}
-                  {userDetails?.invitations?.length > 0 && (
+                  {invitations?.length > 0 && (
                     <Button
                       size="xs"
                       ml={2}
@@ -268,10 +322,10 @@ export const MembersTableModal = ({
                       onClick={() => {
                         if (showInvitations) {
                           setShowInvitations(false);
-                          setShowRegisterChildForm(false);
+                          setShowRegisterMemberForm(false);
                         } else {
                           setShowInvitations(true);
-                          setShowRegisterChildForm(false);
+                          setShowRegisterMemberForm(false);
                         }
                       }}
                     >
@@ -279,13 +333,13 @@ export const MembersTableModal = ({
                     </Button>
                   )}
 
-                  {showRegisterChildForm && !showInvitations && (
+                  {showRegisterMemberForm && !showInvitations && (
                     <Button
                       size="xs"
                       ml={2}
                       colorScheme="blue"
                       onClick={() => {
-                        setShowRegisterChildForm(false);
+                        setShowRegisterMemberForm(false);
                         setShowInvitations(false);
                       }}
                     >

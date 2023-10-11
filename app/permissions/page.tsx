@@ -71,13 +71,7 @@ const Permissions = () => {
       userPermissions?.push(permission);
     }
 
-    const permissionPayload = {
-      _id: selectedUser?.accountId,
-      permissions: userPermissions,
-    };
-
-    const updatedUser = await editUser(permissionPayload);
-    console.log("updatedUser", updatedUser);
+    await editUser(String(selectedUser?.accountId), userPermissions);
 
     setMembers((prevMembers) => {
       const updatedMembers = [...prevMembers];

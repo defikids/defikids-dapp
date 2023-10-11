@@ -17,7 +17,7 @@ import { Explaination } from "@/data-schema/enums";
 import { ExplainSandbox } from "@/components/explainations/Sandbox";
 
 export const RegisterMemberForm = ({
-  setShowRegisterChildForm,
+  setShowRegisterMemberForm,
   hasSubmitted,
   handleSubmit,
   emailAddress,
@@ -25,7 +25,7 @@ export const RegisterMemberForm = ({
   sandboxMode,
   setSandboxMode,
 }: {
-  setShowRegisterChildForm: (show: boolean) => void;
+  setShowRegisterMemberForm: (show: boolean) => void;
   hasSubmitted: boolean;
   handleSubmit: () => void;
   emailAddress: string;
@@ -115,7 +115,7 @@ export const RegisterMemberForm = ({
               return;
             }
             handleSubmit();
-            setShowRegisterChildForm(false);
+            setShowRegisterMemberForm(false);
           }}
           w="100%"
           _hover={{

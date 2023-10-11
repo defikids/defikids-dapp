@@ -1,36 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import inviteMemberHTML from "@/data/emails/inviteMember";
 import sgMail, { MailDataRequired } from "@sendgrid/mail";
-import jwt from "jsonwebtoken";
 
 export default async function inviteMember(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const { parentAddress, sandboxMode, familyId, familyName, email } =
-      req.body as {
-        parentAddress: string;
-        sandboxMode: boolean;
-        familyId: string;
-        familyName: string;
-        email: string;
-      };
-
-    const token = jwt.sign(
-      {
-        parentAddress,
-        sandboxMode,
-        familyId,
-        familyName,
-        email,
-      },
-      process.env.JWT_SECRET || "",
-      {
-        expiresIn: "24hr",
-        jwtid: Date.now().toString(),
-      }
-    );
+    const { token, email, familyName } = req.body as {
+      token: string;
+      email: string;
+      familyName: string;
+    };
 
     sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
     const msg = {

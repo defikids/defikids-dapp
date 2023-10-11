@@ -8,6 +8,8 @@ import { disconnect } from "@wagmi/core";
 import { User } from "@/data-schema/types";
 import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
 import { IUser } from "@/models/User";
+import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 
 type State = {
   isLoggedIn: boolean;
@@ -42,28 +44,18 @@ const initialState: State = {
   logout: () => {},
   reset: () => void {},
   userDetails: {
-    accountId: "",
+    accountId: null,
     familyId: "",
-    familyName: "",
     email: "",
     wallet: "",
     avatarURI: "",
-    backgroundURI: "",
     defaultNetwork: TestnetNetworks.GOERLI,
     defaultNetworkType: NetworkType.TESTNET,
     username: "",
     termsAgreed: false,
     userType: UserType.UNREGISTERED,
-    members: [],
-    invitations: [],
     sandboxMode: undefined,
-    permissions: {
-      general: {
-        avatar: PermissionType.ENABLED,
-        email: PermissionType.ENABLED,
-        username: PermissionType.ENABLED,
-      },
-    },
+    permissions: [],
     balance: "",
   },
   opacity: 0,

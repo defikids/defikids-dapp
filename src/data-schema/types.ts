@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   UserType,
   AccountStatus,
@@ -9,14 +10,12 @@ import {
 } from "./enums";
 
 export type User = {
-  accountId: "";
+  accountId: mongoose.Schema.Types.ObjectId | null;
   permissions: PermissionType[];
   familyId: string;
-  familyName: string;
   email: string;
   wallet: string;
   avatarURI: string;
-  backgroundURI: string;
   defaultNetwork: MainnetNetworks | TestnetNetworks;
   defaultNetworkType: NetworkType;
   username: string;
@@ -25,15 +24,6 @@ export type User = {
   emailVerified?: boolean;
   sandboxMode: boolean | undefined;
   balance?: string;
-  members?: User[];
-  invitations?:
-    | [
-        {
-          email: string;
-          dateSent: number;
-        }
-      ]
-    | [];
 };
 
 export type AccountDetails = {

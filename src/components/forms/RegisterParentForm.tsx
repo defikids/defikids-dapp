@@ -24,7 +24,7 @@ import {
   PermissionType,
 } from "@/data-schema/enums";
 import { hashedFamilyId } from "@/utils/web3";
-import { timestampInSeconds } from "@/utils/dateTime";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
 import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -109,21 +109,19 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
 
     const accountPayload = {
       status: AccountStatus.ACTIVE,
-      memberSince: timestampInSeconds(Date.now()),
+      memberSince: convertTimestampToSeconds(Date.now()),
       package: AccountPackage.BASIC,
+      familyName,
     } as IAccount;
 
     let userPayload = {
       termsAgreed,
-      familyName,
       email,
       defaultNetwork: TestnetNetworks.GOERLI,
       defaultNetworkType: NetworkType.TESTNET,
-      familyId: hashedFamilyId(familyId),
       wallet: address,
       username,
       userType: UserType.PARENT,
-      // invitations: [],
       sandboxMode: false,
       permissions: [...Object.values(PermissionType)],
     } as IUser;

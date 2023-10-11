@@ -1,71 +1,46 @@
-import { User } from "@/data-schema/types";
-import { useAuthStore } from "@/store/auth/authStore";
+import { IInvitation } from "@/models/Invitation";
+import { deleteInvitation } from "@/services/mongo/database";
 import { formatDateToIsoString } from "@/utils/dateTime";
-import { DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Flex,
-  Menu,
-  MenuButton,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
   IconButton,
-  MenuList,
-  MenuItem,
   useToast,
   Text,
   Box,
   Container,
 } from "@chakra-ui/react";
-import axios from "axios";
-import { useCallback } from "react";
-import { BsCalendarMonth } from "react-icons/bs";
-import shallow from "zustand/shallow";
 
-const MemberInvitationTable = ({ isMobileSize }: { isMobileSize: boolean }) => {
-  const { userDetails, setUserDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
-    }),
-    shallow
-  );
+const MemberInvitationTable = ({
+  isMobileSize,
+  invitations,
+  setInvitations,
+  setShowInvitations,
+}: {
+  isMobileSize: boolean;
+  invitations: IInvitation[];
+  setInvitations: (invitations: IInvitation[]) => void;
+  setShowInvitations: (showInvitations: boolean) => void;
+}) => {
   const toast = useToast();
 
-  const removeInvitation = async (email: string) => {
+  const removeInvitation = async (_id: string) => {
     try {
-      let response = await axios.get(
-        `/api/vercel/get-json?key=${userDetails.wallet}`
+      const updatedInvitations = invitations.filter(
+        (invitation) => invitation._id !== _id
       );
+      setInvitations(updatedInvitations);
 
-      const user = response.data as User;
-
-      const body = {
-        ...user,
-        invitations: [
-          //@ts-ignore
-          ...user.invitations.filter(
-            (obj: { email: string; dateSent: string }) => obj.email !== email
-          ),
-        ],
-      };
-
-      const payload = {
-        key: user.wallet,
-        value: body,
-      };
-
-      await axios.post(`/api/vercel/set-json`, payload);
       toast({
         title: "Member Invite Removed",
         status: "success",
       });
 
-      //@ts-ignore
-      setUserDetails(body);
+      if (updatedInvitations.length === 0) {
+        setShowInvitations(false);
+      }
+
+      await deleteInvitation(_id);
     } catch (err) {
       console.error(err);
       toast({
@@ -78,46 +53,38 @@ const MemberInvitationTable = ({ isMobileSize }: { isMobileSize: boolean }) => {
 
   return (
     <Box>
-      {userDetails?.invitations?.map(
-        (
-          invite: {
-            email: string;
-            dateSent: number;
-          },
-          index: number
-        ) => (
-          <Container key={index}>
-            <Flex
-              justify="space-between"
-              style={{
-                border: "1px solid #e2e8f0",
-                borderRadius: "0.5rem",
-                padding: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
-              <Flex justify="center" direction="column">
-                <Text fontSize="xs" fontWeight="bold">
-                  Sent: {formatDateToIsoString(invite.dateSent)}
-                </Text>
-                <Text fontSize={isMobileSize ? "sm" : "md"}>
-                  {invite.email}
-                </Text>
-              </Flex>
-              <IconButton
-                aria-label="Remove Invite"
-                icon={<DeleteIcon />}
-                variant="solid"
-                color="black"
-                size="md"
-                padding={0}
-                margin={0}
-                onClick={() => removeInvitation(invite.email)}
-              />
+      {invitations.map((invitation, index: number) => (
+        <Container key={index}>
+          <Flex
+            justify="space-between"
+            style={{
+              border: "1px solid #e2e8f0",
+              borderRadius: "0.5rem",
+              padding: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <Flex justify="center" direction="column">
+              <Text fontSize="xs" fontWeight="bold">
+                Sent: {formatDateToIsoString(invitation.date)}
+              </Text>
+              <Text fontSize={isMobileSize ? "sm" : "md"}>
+                {invitation.email}
+              </Text>
             </Flex>
-          </Container>
-        )
-      )}
+            <IconButton
+              aria-label="Remove Invite"
+              icon={<DeleteIcon />}
+              variant="solid"
+              color="black"
+              size="md"
+              padding={0}
+              margin={0}
+              onClick={() => removeInvitation(invitation._id)}
+            />
+          </Flex>
+        </Container>
+      ))}
     </Box>
   );
 };

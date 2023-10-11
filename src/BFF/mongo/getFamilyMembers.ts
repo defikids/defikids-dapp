@@ -1,19 +1,16 @@
 import { IUser } from "@/models/User";
-import { ObjectId } from "mongodb";
 import { User } from "@/data-schema/types";
 import { getAllUsers } from "@/services/mongo/database";
 import { UserType } from "@/data-schema/enums";
+import mongoose from "mongoose";
 
-export const getFamilyMembers = async (accountId: "") => {
+export const getFamilyMembers = async (
+  accountId: mongoose.Schema.Types.ObjectId
+) => {
   const users = (await getAllUsers()) as IUser[];
   const members = users.filter((user) => {
-    if (
-      String(user.accountId) === accountId &&
-      user.userType === UserType.PARENT
-    ) {
+    if (user.accountId === accountId && user.userType !== UserType.PARENT) {
       return {
-        familyId: user.familyId,
-        familyName: user.familyName,
         email: user.email,
         wallet: user.wallet,
         avatarURI: user.avatarURI,
@@ -27,7 +24,7 @@ export const getFamilyMembers = async (accountId: "") => {
         balance: user.balance,
       };
     }
-  }) as User[];
+  }) as unknown as User[];
 
   return members;
 };

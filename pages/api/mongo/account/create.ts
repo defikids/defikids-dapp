@@ -14,7 +14,7 @@ export default async function handler(
     const user = await User.findOne({ wallet });
 
     if (user) {
-      res.status(400).json({ error: "Account already exists" });
+      res.status(400).json({ error: "User already exists" });
     } else {
       const account: IAccount = await Account.create(new Account(req.body));
       res.json(account);

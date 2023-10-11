@@ -10,16 +10,16 @@ import {
   Image,
   Button,
 } from "@chakra-ui/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { useSignMessage, useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
+import { editUser, getUserByWalletAddress } from "@/services/mongo/database";
 
 export default function ConfirmEmail() {
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -37,7 +37,6 @@ export default function ConfirmEmail() {
     return pathname?.split("/")[2];
   }, [pathname]);
 
-  console.log("token", token);
   const toast = useToast();
   const { data: signature, error, signMessage } = useSignMessage() as any;
 
@@ -58,12 +57,10 @@ export default function ConfirmEmail() {
     // Countdown function
     const countdown = async () => {
       if (count === 0) {
-        const updatedUserDetails = await axios.get(
-          `/api/vercel/get-json?key=${user?.wallet}`
+        const updatedUserDetails = await getUserByWalletAddress(
+          user?.wallet || ""
         );
-
-        setUserDetails(updatedUserDetails.data);
-
+        setUserDetails(updatedUserDetails);
         router.push("/");
       } else {
         setTimeout(() => {
@@ -77,21 +74,13 @@ export default function ConfirmEmail() {
     countdown(); // Start the countdown
   };
 
-  const updateUserEmailVerified = async (
-    address: string,
-    emailVerified: boolean
-  ) => {
+  const updateUserEmailVerified = async (emailVerified: boolean) => {
     const body = {
       ...user,
       emailVerified,
     };
 
-    const payload = {
-      key: address,
-      value: body,
-    };
-
-    await axios.post(`/api/vercel/set-json`, payload);
+    await editUser(String(user?.accountId), body);
 
     setEmailVerified(true);
     redirectUser();
@@ -110,7 +99,7 @@ export default function ConfirmEmail() {
           ethers.utils.verifyMessage(message, signature);
 
         if (verified) {
-          await updateUserEmailVerified(decodedWalletAddress, true);
+          await updateUserEmailVerified(true);
         } else {
           throw new Error("Verification failed");
         }
@@ -176,11 +165,8 @@ export default function ConfirmEmail() {
 
               setDecodedWalletAddress(walletAddress);
 
-              const user = await axios.get(
-                `/api/vercel/get-json?key=${walletAddress}`
-              );
-
-              setUser(user.data);
+              const user = await getUserByWalletAddress(walletAddress);
+              setUser(user);
 
               if (user.data?.emailVerified) {
                 redirectUser();

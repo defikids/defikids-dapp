@@ -5,6 +5,7 @@ export interface IAccount extends Document {
   status: AccountStatus;
   memberSince: number;
   package: AccountPackage;
+  familyName: string;
   maxMembers?: number;
   expiry?: number; // timestamp in seconds
 }
@@ -23,6 +24,10 @@ const accountSchema = new Schema<IAccount>(
     package: {
       type: String,
       enum: AccountPackage,
+      required: true,
+    },
+    familyName: {
+      type: String,
       required: true,
     },
     maxMembers: {

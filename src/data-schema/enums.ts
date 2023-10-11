@@ -24,7 +24,7 @@ export enum ChainId {
 export enum UserType {
   UNREGISTERED = "UNREGISTERED",
   PARENT = "PARENT",
-  CHILD = "CHILD",
+  MEMBER = "MEMBER",
 }
 
 export enum AccountStatus {

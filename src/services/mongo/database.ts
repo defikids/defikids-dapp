@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IUser } from "@/models/User";
 import { IAccount } from "@/models/Account";
+import mongoose from "mongoose";
 
 const config = {
   headers: {
@@ -58,12 +59,78 @@ export const getAllUsers = async () => {
   }
 };
 
-export const editUser = async (values: any) => {
+export const editUser = async (
+  id: mongoose.Schema.Types.ObjectId,
+  values: any
+) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/user/edit`,
+      `/api/mongo/user/edit?_id=${id}`,
       JSON.stringify(values),
       config
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const createInvitation = async (values: any) => {
+  try {
+    const { data } = await axios.post(
+      `/api/mongo/invitation/create`,
+      JSON.stringify(values),
+      config
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const getAllInvitations = async () => {
+  try {
+    const { data } = await axios.get(`/api/mongo/invitation/getAll`);
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const deleteInvitation = async (id: mongoose.Schema.Types.ObjectId) => {
+  try {
+    const { data } = await axios.post(
+      `/api/mongo/invitation/delete`,
+      JSON.stringify({ id }),
+      config
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const getAccount = async (id: mongoose.Schema.Types.ObjectId) => {
+  try {
+    const { data } = await axios.get(`/api/mongo/account/get?_id=${id}`);
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const getInvitation = async (
+  accountId: mongoose.Schema.Types.ObjectId,
+  email: string
+) => {
+  try {
+    const { data } = await axios.get(
+      `/api/mongo/invitation/get?accountId=${accountId}&email=${email}`
     );
     return data;
   } catch (error) {

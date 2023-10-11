@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { User, IUser } from "@/models/User";
+import { User } from "@/models/User";
 import dbConnect from "@/services/mongo/dbConnect";
+import mongoose from "mongoose";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,9 +9,10 @@ export default async function handler(
 ) {
   try {
     await dbConnect();
-    const { _id, permissions } = req.body as IUser;
+    const { _id } = req.query as { _id: string };
+    const id = _id as unknown as mongoose.Schema.Types.ObjectId;
 
-    const result = await User.updateOne({ _id }, permissions);
+    const result = await User.updateOne({ accountId: id }, req.body);
 
     if (result.modifiedCount) {
       res.json(result.modifiedCount);

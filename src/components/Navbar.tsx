@@ -85,7 +85,7 @@ export default function NavBar() {
         setIsLoggedIn(true);
         router.push("/parent-dashboard");
         break;
-      case UserType.CHILD:
+      case UserType.MEMBER:
         setIsLoggedIn(true);
         router.push("/child");
         break;

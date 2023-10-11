@@ -118,12 +118,7 @@ export const Settings = ({
                   </AccordionButton>
                 </h2>
                 <AccordionPanel my={5}>
-                  {title === SelectedSetting.AVATAR && (
-                    <AvatarSelection
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
+                  {title === SelectedSetting.AVATAR && <AvatarSelection />}
 
                   {title === SelectedSetting.USERNAME && (
                     <EditUsername

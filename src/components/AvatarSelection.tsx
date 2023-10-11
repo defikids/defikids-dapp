@@ -1,6 +1,5 @@
 "use client";
 
-import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
@@ -16,22 +15,9 @@ import shallow from "zustand/shallow";
 import { TransactionStepper, steps } from "./steppers/TransactionStepper";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
+import { editUser } from "@/services/mongo/database";
 
-export const AvatarSelection = ({
-  familyDetails,
-  fetchFamilyDetails,
-}: {
-  familyDetails: User;
-  fetchFamilyDetails: () => void;
-}) => {
-  //=============================================================================
-  //                               STATE
-  //=============================================================================
-
-  const [selectedFile, setSelectedFile] = useState() as any;
-  const [avatar, setAvatar] = useState(familyDetails?.avatarURI);
-  const [loading, setIsLoading] = useState(false);
-
+export const AvatarSelection = () => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
@@ -59,6 +45,14 @@ export const AvatarSelection = ({
   });
 
   //=============================================================================
+  //                               STATE
+  //=============================================================================
+
+  const [selectedFile, setSelectedFile] = useState() as any;
+  const [avatar, setAvatar] = useState(userDetails?.avatarURI);
+  const [loading, setIsLoading] = useState(false);
+
+  //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
 
@@ -84,7 +78,6 @@ export const AvatarSelection = ({
   };
 
   const handleSubmit = async () => {
-    console.log("selectedFile", selectedFile);
     setIsLoading(true);
     setActiveStep(0);
 
@@ -110,19 +103,13 @@ export const AvatarSelection = ({
       const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
       console.log(avatar);
 
-      const body = {
-        ...familyDetails,
+      const payload = {
+        ...userDetails,
         avatarURI: avatar,
       };
 
-      const payload = {
-        key: userDetails?.wallet,
-        value: body,
-      };
-
-      await axios.post(`/api/vercel/set-json`, payload);
-      setUserDetails(body);
-      fetchFamilyDetails();
+      await editUser(userDetails?.accountId!, payload);
+      setUserDetails(payload);
 
       toast({
         title: "Avatar successfully updated",
@@ -158,7 +145,7 @@ export const AvatarSelection = ({
       >
         <Avatar
           size="2xl"
-          name={familyDetails?.username ? familyDetails?.username : "Avatar"}
+          name={userDetails?.username ? userDetails?.username : "Avatar"}
           src={avatar ? avatar : "/images/placeholder-avatar.jpeg"}
           _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
           onClick={openFileInput}

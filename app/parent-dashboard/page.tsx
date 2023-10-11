@@ -146,13 +146,6 @@ const Parent: React.FC = () => {
     fetchChildren();
   }, []);
 
-  // useEffect(() => {
-  //   if (!stakeContract || !children.length) {
-  //     setMembersStakes({});
-  //     return;
-  //   }
-  // }, [stakeContract, children]);
-
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
@@ -168,7 +161,7 @@ const Parent: React.FC = () => {
     const getChildren = async () => {
       if (!userDetails?.wallet) return;
 
-      const members = await getFamilyMembers(userDetails?.accountId || "");
+      const members = await getFamilyMembers(userDetails?.accountId!);
 
       if (members.length) {
         const membersWalletBalances = await axios.post(
@@ -248,11 +241,7 @@ const Parent: React.FC = () => {
           px={isMobileSize ? 0 : 5}
           bgPosition="center"
           bgSize="cover"
-          bgImage={
-            familyDetails?.backgroundURI
-              ? familyDetails?.backgroundURI
-              : "/images/backgrounds/purple-bg.jpg"
-          }
+          bgImage={"/images/backgrounds/purple-bg.jpg"}
         >
           {!isMobileSize && (
             <GridItem

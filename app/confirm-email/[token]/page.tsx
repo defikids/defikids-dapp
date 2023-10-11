@@ -80,7 +80,7 @@ export default function ConfirmEmail() {
       emailVerified,
     };
 
-    await editUser(String(user?.accountId), body);
+    await editUser(user?.accountId!, body);
 
     setEmailVerified(true);
     redirectUser();

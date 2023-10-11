@@ -17,10 +17,8 @@ import { useAuthStore } from "@/store/auth/authStore";
 import { User } from "@/data-schema/types";
 import axios from "axios";
 import { UsernameModal } from "@/components/modals/UsernameModal";
-import { ParentDashboardTabs } from "@/data-schema/enums";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
-import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
@@ -68,33 +66,15 @@ const Parent: React.FC = () => {
     useDisclosure();
 
   const {
-    isOpen: isAddChildOpen,
-    onOpen: onAddChildOpen,
-    onClose: onAddChildClose,
-  } = useDisclosure();
-
-  const {
     isOpen: isOpenEtherScan,
     onOpen: onOpenEtherScan,
     onClose: onCloseEtherScan,
   } = useDisclosure();
 
   const {
-    isOpen: isOpenChildDetails,
-    onOpen: onOpenChildDetails,
-    onClose: onCloseChildDetails,
-  } = useDisclosure();
-
-  const {
     isOpen: isChangeUsernameOpen,
     onOpen: onChangeUsernameOpen,
     onClose: onChangeUsernameClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenBackgroundDefaults,
-    onOpen: onOpenBackgroundDefaults,
-    onClose: onCloseBackgroundDefaults,
   } = useDisclosure();
 
   const {
@@ -289,21 +269,6 @@ const Parent: React.FC = () => {
       </Flex>
 
       {/* Modals and other components */}
-      <UsernameModal
-        isOpen={isChangeUsernameOpen}
-        onClose={onChangeUsernameClose}
-        childKey={childKey}
-        members={members}
-        familyId={familyDetails.familyId}
-        fetchChildren={fetchChildren}
-        fetchFamilyDetails={fetchFamilyDetails}
-      />
-
-      <BackgroundDefaults
-        isOpen={isOpenBackgroundDefaults}
-        onClose={onCloseBackgroundDefaults}
-        fetchFamilyDetails={fetchFamilyDetails}
-      />
 
       <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
 
@@ -325,8 +290,6 @@ const Parent: React.FC = () => {
         isOpen={isOpenSendFundsModal}
         onClose={onCloseSendFundsModal}
       />
-
-      <NetworkModal isOpen={isOpenNetworkModal} onClose={onCloseNetworkModal} />
 
       <MembersTableModal
         isOpen={isOpenMembersTableModal}

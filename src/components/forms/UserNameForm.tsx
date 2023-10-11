@@ -1,36 +1,21 @@
 "use client";
 
-import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
   useToast,
-  Box,
   Button,
   FormControl,
   FormLabel,
   Input,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useState } from "react";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
+import { editUser } from "@/services/mongo/database";
 
-export const EditUsername = ({
-  familyDetails,
-  fetchFamilyDetails,
-}: {
-  familyDetails: User;
-  fetchFamilyDetails: () => void;
-}) => {
-  //=============================================================================
-  //                               STATE
-  //=============================================================================
+export const EditUsername = () => {
   const [username, setUsername] = useState("");
-
-  //=============================================================================
-  //                               HOOKS
-  //=============================================================================
 
   const { userDetails, setUserDetails } = useAuthStore(
     (state) => ({
@@ -41,10 +26,6 @@ export const EditUsername = ({
   );
 
   const toast = useToast();
-
-  //=============================================================================
-  //                               FUNCTIONS
-  //=============================================================================
 
   const handleSubmit = async () => {
     try {
@@ -57,19 +38,13 @@ export const EditUsername = ({
         return;
       }
 
-      const body = {
-        ...familyDetails,
+      const payload = {
+        ...userDetails,
         username,
       };
 
-      const payload = {
-        key: userDetails?.wallet,
-        value: body,
-      };
-
-      await axios.post(`/api/vercel/set-json`, payload);
-      setUserDetails(body);
-      fetchFamilyDetails();
+      await editUser(userDetails.accountId!, payload);
+      setUserDetails(payload);
       setUsername("");
 
       toast({
@@ -93,7 +68,7 @@ export const EditUsername = ({
         <FormControl>
           <FormLabel>New Username</FormLabel>
           <Input
-            placeholder={familyDetails?.username || ""}
+            placeholder={userDetails?.username || ""}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             style={{

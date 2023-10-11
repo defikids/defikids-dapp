@@ -112,7 +112,7 @@ export const ExpandedDashboardMenu = ({
                   icon={<TriangleUpIcon />}
                 />
               </Flex>
-              <Username familyDetails={familyDetails} mt={2} />
+              <Username />
               <ParentAvatar />
               <AccountBalance walletAddress={userDetails?.wallet} />
 

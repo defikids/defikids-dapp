@@ -59,12 +59,6 @@ export const Settings = ({
       buttonTitle: "Change Username",
       action: onChangeUsernameOpen,
     },
-    // {
-    //   title: "Background",
-    //   description:
-    //     "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
-    //   buttonTitle: "Change Background",
-    // },
   ];
 
   // These are the title labels for the settings
@@ -102,13 +96,7 @@ export const Settings = ({
                 </h2>
                 <AccordionPanel my={5}>
                   {title === SelectedSetting.AVATAR && <AvatarSelection />}
-
-                  {title === SelectedSetting.USERNAME && (
-                    <EditUsername
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
+                  {title === SelectedSetting.USERNAME && <EditUsername />}
                   {title === SelectedSetting.FAMILY_ID && (
                     <EditFamilyId
                       familyDetails={familyDetails}

@@ -1,9 +1,7 @@
 import { AvatarSelection } from "@/components/AvatarSelection";
-import { BackgroundSelection } from "@/components/BackgroundSelection";
 import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 import { EditUsername } from "@/components/forms/UserNameForm";
 import { EditEmail } from "@/components/forms/EmailForm";
-import Permissions from "@/app/permissions/page";
 import { User } from "@/data-schema/types";
 import { useRouter } from "next/navigation";
 import {
@@ -24,24 +22,10 @@ export const Settings = ({
   onChangeUsernameOpen,
   familyDetails,
   fetchFamilyDetails,
-  onOpenBackgroundDefaults,
-  cardOpacity,
-  setCardOpacity,
-  setBackgroundOpacity,
-  isMobileSize,
-  isOpenExtendedMenu,
-  closeTab,
 }: {
   onChangeUsernameOpen: () => void;
   familyDetails: User;
   fetchFamilyDetails: () => void;
-  onOpenBackgroundDefaults: () => void;
-  cardOpacity: number;
-  setCardOpacity: (value: number) => void;
-  setBackgroundOpacity: (value: number) => void;
-  isMobileSize: boolean;
-  isOpenExtendedMenu: boolean;
-  closeTab: () => void;
 }) => {
   const data = [
     {
@@ -86,7 +70,6 @@ export const Settings = ({
   // These are the title labels for the settings
   enum SelectedSetting {
     AVATAR = "Avatar",
-    BACKGROUND = "Background",
     USERNAME = "Username",
     FAMILY_ID = "Family Id",
     EMAIL = "Email",
@@ -133,15 +116,6 @@ export const Settings = ({
                     />
                   )}
 
-                  {title === SelectedSetting.BACKGROUND && (
-                    <BackgroundSelection
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                      onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-                      setBackgroundOpacity={setBackgroundOpacity}
-                      setCardOpacity={setCardOpacity}
-                    />
-                  )}
                   {title === SelectedSetting.EMAIL && (
                     <EditEmail
                       familyDetails={familyDetails}

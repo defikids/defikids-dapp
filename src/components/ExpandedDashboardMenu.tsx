@@ -18,7 +18,6 @@ import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
 import ButtonMenu from "./parentDashboard/ButtonMenu";
-import { ParentDashboardTabs } from "@/data-schema/enums";
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
@@ -29,9 +28,6 @@ import { useNetwork } from "wagmi";
 
 export const ExpandedDashboardMenu = ({
   familyDetails,
-  members,
-  onAddChildOpen,
-  setSelectedTab,
   onToggleCollapsedMenu,
   onToggleExtendedMenu,
   isOpenExtendedMenu,
@@ -40,14 +36,10 @@ export const ExpandedDashboardMenu = ({
   onOpenSettingsModal,
   onOpenInfoModal,
   onOpenSendFundsModal,
-  onOpenNetworkModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
 }: {
   familyDetails: User;
-  members: User[];
-  onAddChildOpen: () => void;
-  setSelectedTab: (tab: ParentDashboardTabs) => void;
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
   isOpenExtendedMenu: boolean;
@@ -56,7 +48,6 @@ export const ExpandedDashboardMenu = ({
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
   onOpenSendFundsModal: () => void;
-  onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
   onOpenAirdropModal: () => void;
 }) => {
@@ -126,16 +117,9 @@ export const ExpandedDashboardMenu = ({
               <AccountBalance walletAddress={userDetails?.wallet} />
 
               <ButtonMenu
-                onAddChildOpen={onAddChildOpen}
-                setSelectedTab={setSelectedTab}
-                onOpenEtherScan={onOpenEtherScan}
-                onOpenSettingsModal={onOpenSettingsModal}
-                onOpenInfoModal={onOpenInfoModal}
                 onOpenSendFundsModal={onOpenSendFundsModal}
-                onOpenNetworkModal={onOpenNetworkModal}
                 onOpenMembersTableModal={onOpenMembersTableModal}
                 onOpenAirdropModal={onOpenAirdropModal}
-                members={members}
               />
             </Box>
 

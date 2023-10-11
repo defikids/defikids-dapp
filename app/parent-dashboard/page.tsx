@@ -14,7 +14,6 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { User } from "@/data-schema/types";
 import axios from "axios";
 import { UsernameModal } from "@/components/modals/UsernameModal";
@@ -45,14 +44,7 @@ const Parent: React.FC = () => {
   const [childKey, setChildKey] = useState<number>(0);
   const [childrenLoading, setMembersLoading] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
-  // const [stakeContract, setStakeContract] = useState<StakeContract>();
   const [familyDetails, setFamilyDetails] = useState({} as User);
-
-  const [selectedTab, setSelectedTab] = useState<ParentDashboardTabs>(
-    ParentDashboardTabs.DASHBOARD
-  );
-  const [cardOpacity, setCardOpacity] = useState(0);
-  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -193,19 +185,12 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members.length, userDetails?.wallet]);
 
-  const closeTab = () => {
-    setSelectedTab(ParentDashboardTabs.DASHBOARD);
-  };
-
   return (
     <Box>
       <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             familyDetails={familyDetails}
-            members={members}
-            onAddChildOpen={onAddChildOpen}
-            setSelectedTab={setSelectedTab}
             onToggleCollapsedMenu={onToggleCollapsedMenu}
             onToggleExtendedMenu={onToggleExtendedMenu}
             isOpenExtendedMenu={isOpenExtendedMenu}
@@ -214,7 +199,6 @@ const Parent: React.FC = () => {
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
             onOpenSendFundsModal={onOpenSendFundsModal}
-            onOpenNetworkModal={onOpenNetworkModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
             onOpenAirdropModal={onOpenAirdropModal}
           />
@@ -327,13 +311,6 @@ const Parent: React.FC = () => {
         familyDetails={familyDetails}
         onChangeUsernameOpen={onChangeUsernameOpen}
         fetchFamilyDetails={fetchFamilyDetails}
-        onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-        setBackgroundOpacity={setBackgroundOpacity}
-        setCardOpacity={setCardOpacity}
-        cardOpacity={cardOpacity}
-        isMobileSize={isMobileSize}
-        isOpenExtendedMenu={isOpenExtendedMenu}
-        closeTab={closeTab}
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
       />

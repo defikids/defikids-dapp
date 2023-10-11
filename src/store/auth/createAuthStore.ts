@@ -3,13 +3,10 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
-import { PermissionType, UserType } from "@/data-schema/enums";
+import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User } from "@/data-schema/types";
 import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
-import { IUser } from "@/models/User";
-import { ObjectId } from "mongodb";
-import mongoose from "mongoose";
 
 type State = {
   isLoggedIn: boolean;
@@ -18,7 +15,6 @@ type State = {
   reset: () => void;
   logout: () => void;
   userDetails: User;
-  opacity: 0;
   mobileMenuOpen: boolean;
   fetchedUserDetails: boolean;
 };
@@ -29,7 +25,6 @@ type Actions = {
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
   setUserDetails: (userDetails: User) => void;
-  setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
   reset: () => void;
@@ -58,7 +53,6 @@ const initialState: State = {
     permissions: [],
     balance: "",
   },
-  opacity: 0,
   mobileMenuOpen: false,
   fetchedUserDetails: false,
 };
@@ -107,11 +101,7 @@ const setters = (set: any) => ({
       state.userDetails = userDetails;
     }, shallow);
   },
-  setOpacity: (opacity: number) => {
-    set((state: { opacity: number }) => {
-      state.opacity = opacity;
-    }, shallow);
-  },
+
   setMobileMenuOpen: (mobileMenuOpen: boolean) => {
     set((state: { mobileMenuOpen: boolean }) => {
       state.mobileMenuOpen = mobileMenuOpen;

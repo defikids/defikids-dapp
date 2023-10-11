@@ -17,26 +17,12 @@ export const SettingsModal = ({
   onChangeUsernameOpen,
   familyDetails,
   fetchFamilyDetails,
-  onOpenBackgroundDefaults,
-  cardOpacity,
-  setCardOpacity,
-  setBackgroundOpacity,
-  isMobileSize,
-  isOpenExtendedMenu,
-  closeTab,
   isOpen,
   onClose,
 }: {
   onChangeUsernameOpen: () => void;
   familyDetails: User;
   fetchFamilyDetails: () => void;
-  onOpenBackgroundDefaults: () => void;
-  cardOpacity: number;
-  setCardOpacity: (value: number) => void;
-  setBackgroundOpacity: (value: number) => void;
-  isMobileSize: boolean;
-  isOpenExtendedMenu: boolean;
-  closeTab: () => void;
   isOpen: boolean;
   onClose: () => void;
 }) => {
@@ -64,13 +50,6 @@ export const SettingsModal = ({
             onChangeUsernameOpen={onChangeUsernameOpen}
             familyDetails={familyDetails}
             fetchFamilyDetails={fetchFamilyDetails}
-            onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-            cardOpacity={cardOpacity}
-            setCardOpacity={setCardOpacity}
-            setBackgroundOpacity={setBackgroundOpacity}
-            isMobileSize={isMobileSize}
-            isOpenExtendedMenu={isOpenExtendedMenu}
-            closeTab={closeTab}
           />
         </ModalBody>
         <ModalFooter />

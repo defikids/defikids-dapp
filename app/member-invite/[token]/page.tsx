@@ -184,14 +184,6 @@ const MemberInvite = () => {
   // Reset store on page load
   useEffect(() => {
     reset();
-
-    // const fetchData = async () => {
-    //   const response = await axios.get(`/api/vercel/get-all-keys`);
-    //   const addresses = response.data;
-    //   setDBKeys(addresses);
-    // };
-
-    // fetchData();
   }, []);
 
   // Check if wallet has already been registered and if invite has already been accepted

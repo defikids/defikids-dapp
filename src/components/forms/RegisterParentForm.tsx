@@ -15,24 +15,26 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
-import { User, AccountDetails } from "@/data-schema/types";
 import NextLink from "next/link";
 import {
   UserType,
   AccountPackage,
   Explaination,
   AccountStatus,
+  PermissionType,
 } from "@/data-schema/enums";
-import { hashedFamilyId } from "@/utils/web3";
-import { v4 as uuidv4 } from "uuid";
-import { timestampInSeconds } from "@/utils/dateTime";
-import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
+import { createUser } from "@/services/mongo/routes/user";
+import { createAccount } from "@/services/mongo/routes/account";
+import { createActivity } from "@/services/mongo/routes/activity";
+import { IUser } from "@/models/User";
+import { IAccount } from "@/models/Account";
 
 export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   //=============================================================================
@@ -42,12 +44,10 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [termsAgreed, setTermsAgreed] = useState(false);
-  const [familyId, setFamilyId] = useState("");
   const [familyName, setFamilyName] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const isNameError = username === "";
-  const isIdError = familyId === "";
   const isEmailError = email === "";
   const isFamilyNameError = familyName === "";
 
@@ -101,47 +101,65 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    if (isNameError || isIdError || isEmailError || isFamilyNameError) {
+    if (isNameError || isEmailError || isFamilyNameError) {
       return;
     }
 
+    const wallet = address;
+
+    const accountPayload = {
+      status: AccountStatus.ACTIVE,
+      memberSince: convertTimestampToSeconds(Date.now()),
+      package: AccountPackage.BASIC,
+      familyName,
+    } as IAccount;
+
+    let userPayload = {
+      termsAgreed,
+      email,
+      defaultNetwork: TestnetNetworks.GOERLI,
+      defaultNetworkType: NetworkType.TESTNET,
+      wallet,
+      username,
+      userType: UserType.PARENT,
+      sandboxMode: false,
+      permissions: [...Object.values(PermissionType)],
+    } as IUser;
+
     try {
-      const accountDetails = {
-        id: uuidv4(),
-        status: AccountStatus.ACTIVE,
-        memberSince: timestampInSeconds(Date.now()),
-        package: AccountPackage.BASIC,
-      } as AccountDetails;
+      // Create a new account record
+      const account = await createAccount(accountPayload, String(address));
+      const accountError = account.response?.data?.error || account.error;
 
-      const body = {
-        account: accountDetails,
-        termsAgreed,
-        familyName,
-        email,
-        defaultNetwork: TestnetNetworks.GOERLI,
-        defaultNetworkType: NetworkType.TESTNET,
-        familyId: hashedFamilyId(familyId),
-        wallet: address,
-        avatarURI: "",
-        backgroundURI: "",
-        opacity: {
-          background: 1,
-          card: 1,
-        },
-        username,
-        userType: UserType.PARENT,
-        children: [],
-        invitations: [],
-        sandboxMode: false,
-      } as User;
+      if (accountError) {
+        toast({
+          description: "Database error. Please try again later.",
+          status: "error",
+        });
+        throw new Error(accountError);
+      }
 
-      const payload = {
-        key: address,
-        value: body,
-      };
+      // Create a new user record
+      userPayload.accountId = account._id;
+      const user = await createUser(userPayload);
+      const error = user.response?.data?.error || user.error;
 
-      await axios.post(`/api/vercel/set-json`, payload);
-      setUserDetails(body);
+      await createActivity({
+        accountId: account._id,
+        wallet,
+        date: convertTimestampToSeconds(Date.now()),
+        type: "Account Created 🎉",
+      });
+
+      if (error) {
+        toast({
+          description: "Database error. Please try again later.",
+          status: "error",
+        });
+        throw new Error(error);
+      }
+
+      setUserDetails(user);
       setIsLoggedIn(true);
 
       const emailSent = await sendEmailConfirmation();
@@ -157,21 +175,11 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       onClose();
       router.push("/parent-dashboard");
     } catch (e) {
-      await axios.delete(`/api/vercel/delete-json-data?key=${address}`);
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
       onClose();
     }
   };
-
-  if (showExplanation && explaination === Explaination.FAMILY_ID) {
-    return (
-      <ExplainFamilyId
-        explaination={explaination}
-        setShowExplanation={setShowExplanation}
-      />
-    );
-  }
 
   if (showExplanation && explaination === Explaination.FAMILY_NAME) {
     return (
@@ -283,50 +291,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
           {isFamilyNameError && hasSubmitted && (
             <FormErrorMessage color="red.500">
               Family name is required
-            </FormErrorMessage>
-          )}
-        </FormControl>
-
-        {/* Family Id */}
-        <FormControl isInvalid={isIdError && hasSubmitted} mt={5}>
-          <Flex direction="row" justify="flex-end" align="center">
-            <Text fontSize="xs" ml={3}>
-              <Link
-                as={NextLink}
-                color="blue.500"
-                href="#"
-                onClick={() => {
-                  setExplaination(Explaination.FAMILY_ID);
-                  setShowExplanation(true);
-                }}
-              >
-                What is this?
-              </Link>
-            </Text>
-          </Flex>
-
-          <Input
-            type="text"
-            color="black"
-            placeholder="Create Family Id"
-            value={familyId}
-            onChange={(e) => setFamilyId(e.target.value)}
-            borderColor={isIdError && hasSubmitted ? "red.500" : "black"}
-            _hover={{
-              borderColor: "gray.300",
-            }}
-            _focus={{
-              borderColor: "blue.500",
-            }}
-            sx={{
-              "::placeholder": {
-                color: "gray.400",
-              },
-            }}
-          />
-          {isIdError && hasSubmitted && (
-            <FormErrorMessage color="red.500">
-              Family Id is required.
             </FormErrorMessage>
           )}
         </FormControl>

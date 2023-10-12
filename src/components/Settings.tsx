@@ -1,9 +1,6 @@
 import { AvatarSelection } from "@/components/AvatarSelection";
-import { BackgroundSelection } from "@/components/BackgroundSelection";
-import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 import { EditUsername } from "@/components/forms/UserNameForm";
 import { EditEmail } from "@/components/forms/EmailForm";
-import Permissions from "@/app/permissions/page";
 import { User } from "@/data-schema/types";
 import { useRouter } from "next/navigation";
 import {
@@ -20,29 +17,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-export const Settings = ({
-  onChangeUsernameOpen,
-  familyDetails,
-  fetchFamilyDetails,
-  onOpenBackgroundDefaults,
-  cardOpacity,
-  setCardOpacity,
-  setBackgroundOpacity,
-  isMobileSize,
-  isOpenExtendedMenu,
-  closeTab,
-}: {
-  onChangeUsernameOpen: () => void;
-  familyDetails: User;
-  fetchFamilyDetails: () => void;
-  onOpenBackgroundDefaults: () => void;
-  cardOpacity: number;
-  setCardOpacity: (value: number) => void;
-  setBackgroundOpacity: (value: number) => void;
-  isMobileSize: boolean;
-  isOpenExtendedMenu: boolean;
-  closeTab: () => void;
-}) => {
+export const Settings = () => {
   const data = [
     {
       title: "Avatar",
@@ -56,12 +31,7 @@ export const Settings = ({
         "Your email is used to verify your account and to send you notifications.",
       buttonTitle: "Change Email",
     },
-    {
-      title: "Family Id",
-      description:
-        "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
-      buttonTitle: "Change Family Id",
-    },
+
     {
       title: "Permissions",
       description:
@@ -73,22 +43,13 @@ export const Settings = ({
       description:
         "Usernames enhance security by reducing the need for sharing personal information. They play a pivotal role in fostering community, making connections, and building a consistent online presence.",
       buttonTitle: "Change Username",
-      action: onChangeUsernameOpen,
     },
-    // {
-    //   title: "Background",
-    //   description:
-    //     "Backgrounds add a personal touch to your profile. They can be used to express your personality, interests, and hobbies.",
-    //   buttonTitle: "Change Background",
-    // },
   ];
 
   // These are the title labels for the settings
   enum SelectedSetting {
     AVATAR = "Avatar",
-    BACKGROUND = "Background",
     USERNAME = "Username",
-    FAMILY_ID = "Family Id",
     EMAIL = "Email",
     PERMISSIONS = "Permissions",
   }
@@ -118,41 +79,9 @@ export const Settings = ({
                   </AccordionButton>
                 </h2>
                 <AccordionPanel my={5}>
-                  {title === SelectedSetting.AVATAR && (
-                    <AvatarSelection
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
-
-                  {title === SelectedSetting.USERNAME && (
-                    <EditUsername
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
-                  {title === SelectedSetting.FAMILY_ID && (
-                    <EditFamilyId
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
-
-                  {title === SelectedSetting.BACKGROUND && (
-                    <BackgroundSelection
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                      onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-                      setBackgroundOpacity={setBackgroundOpacity}
-                      setCardOpacity={setCardOpacity}
-                    />
-                  )}
-                  {title === SelectedSetting.EMAIL && (
-                    <EditEmail
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
+                  {title === SelectedSetting.AVATAR && <AvatarSelection />}
+                  {title === SelectedSetting.USERNAME && <EditUsername />}
+                  {title === SelectedSetting.EMAIL && <EditEmail />}
                   {title === SelectedSetting.PERMISSIONS && (
                     <>
                       <Text>{description}</Text>

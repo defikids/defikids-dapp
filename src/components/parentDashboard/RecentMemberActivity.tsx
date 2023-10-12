@@ -1,4 +1,6 @@
-import { Fragment } from "react";
+"use client";
+
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Container,
   Flex,
@@ -11,57 +13,53 @@ import {
   Heading,
   Button,
 } from "@chakra-ui/react";
+import { getActivityByAccount } from "@/BFF/mongo/getActivityByAccount";
+import { IActivity } from "@/models/Activity";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
+import { IUser } from "@/models/User";
+import { formatDateToIsoString } from "@/utils/dateTime";
+import { User } from "@/data-schema/types";
 
-interface Activity {
-  activity: string;
-  dateTime: string;
+interface FormattedActivity {
+  activityText: string;
+  dateTime: number;
   userName: string;
   userAvatar: string;
 }
 
-const memberActivity: Activity[] = [
-  {
-    activity: `<span style="font-weight: 600">Dan Abrahmov</span> Updated Avatar.`,
-    dateTime: "September 10th at 9:10 AM",
-    userName: "Dan Abrahmov",
-    userAvatar: "https://bit.ly/dan-abramov",
-  },
-  {
-    activity: `<span style="font-weight: 600">Kent Dodds</span> Staked 1.5 ETH.`,
-    dateTime: "yesterday",
-    userName: "Kent Dodds",
-    userAvatar: "https://bit.ly/kent-c-dodds",
-  },
-  {
-    activity: `<span style="font-weight: 600">Jena Karlis</span> Timelocked 5 ETH.`,
-    dateTime: "4 days ago",
-    userName: "Jena Karlis",
-    userAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
-  },
-  {
-    activity: `<span style="font-weight: 600">Jena Karlis</span> Staked 2 ETH.`,
-    dateTime: "4 days ago",
-    userName: "Jena Karlis",
-    userAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
-  },
-  {
-    activity: `<span style="font-weight: 600">Jena Karlis</span> Updated Avatar.`,
-    dateTime: "4 days ago",
-    userName: "Jena Karlis",
-    userAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80",
-  },
-  {
-    activity: `<span style="font-weight: 600">Kent Dodds</span> Claimed 1.5 ETH in staking rewards.`,
-    dateTime: "5 days ago",
-    userName: "Kent Dodds",
-    userAvatar: "https://bit.ly/kent-c-dodds",
-  },
-];
+export const RecentMemberActivity = ({ user }: { user: User }) => {
+  const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
 
-const RecentMemberActivity = () => {
+  useEffect(() => {
+    const getData = async () => {
+      const data = (await getActivityByAccount(user.accountId!)) as IActivity[];
+      const members = (await getFamilyMembersByAccount(
+        user.accountId!,
+        true
+      )) as IUser[];
+
+      const previewData = data.slice(0, 5);
+
+      const formattedActivity = previewData.map((activity: IActivity) => {
+        if (user.accountId === activity.accountId) {
+          const member = members.find((m) => m.wallet === activity.wallet);
+
+          if (member) {
+            return {
+              activityText: `<span style="font-weight: 600">${member?.username}</span> ${activity.type}`,
+              dateTime: activity.date,
+              userName: member?.username || "",
+              userAvatar: member?.avatarURI || "",
+            };
+          }
+        }
+      }) as FormattedActivity[];
+
+      setMemberActivity(formattedActivity);
+    };
+    getData();
+  }, []);
+
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">
@@ -85,14 +83,8 @@ const RecentMemberActivity = () => {
         my="2.5rem"
       >
         {memberActivity.map((activity, index) => (
-          <Fragment key={index}>
-            <Flex
-              w="100%"
-              justify="space-between"
-              alignItems="center"
-              _hover={{ bg: "gray.600" }}
-              cursor="pointer"
-            >
+          <Fragment key={activity.dateTime}>
+            <Flex w="100%" justify="space-between" alignItems="center">
               <Stack spacing={0} direction="row" alignItems="center">
                 <Flex p={4}>
                   <Avatar
@@ -105,11 +97,11 @@ const RecentMemberActivity = () => {
                   <Text
                     fontSize={{ base: "sm", sm: "md", md: "lg" }}
                     dangerouslySetInnerHTML={{
-                      __html: activity.activity,
+                      __html: activity.activityText,
                     }}
                   />
                   <Text fontSize={{ base: "sm", sm: "md" }}>
-                    {activity.dateTime}
+                    {formatDateToIsoString(activity.dateTime)}
                   </Text>
                 </Flex>
               </Stack>
@@ -121,5 +113,3 @@ const RecentMemberActivity = () => {
     </Container>
   );
 };
-
-export default RecentMemberActivity;

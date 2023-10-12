@@ -7,9 +7,7 @@ import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
-import axios from "axios";
-import { User } from "@/data-schema/types";
-import { UserType } from "@/data-schema/enums";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("") as any;
@@ -35,7 +33,6 @@ const Auth = () => {
   });
 
   const {
-    setIsLoggedIn,
     setWalletConnected,
     setLogout,
     setUserDetails,
@@ -43,7 +40,6 @@ const Auth = () => {
     setFetchedUserDetails,
   } = useAuthStore(
     (state) => ({
-      setIsLoggedIn: state.setIsLoggedIn,
       userDetails: state.userDetails,
       setWalletConnected: state.setWalletConnected,
       setLogout: state.setLogout,
@@ -76,14 +72,10 @@ const Auth = () => {
       setProvider(provider);
       setConnectedSigner(signer);
 
-      const { data } = await axios.get(
-        `/api/vercel/get-json?key=${selectedAddress}`
-      );
-
-      const user: User = data;
+      const user = await getUserByWalletAddress(selectedAddress);
       setHasCheckedUserType(true);
 
-      if (user) {
+      if (user.response?.status !== 404) {
         setUserDetails(user);
       }
       setFetchedUserDetails(true);

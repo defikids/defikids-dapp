@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react/no-children-prop */
 
 import {
   Box,
@@ -14,43 +13,28 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { User } from "@/data-schema/types";
 import axios from "axios";
-import { UsernameModal } from "@/components/modals/UsernameModal";
-import { ParentDashboardTabs } from "@/data-schema/enums";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
-import BackgroundDefaults from "@/components/modals/BackgroundDefaults";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
-
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import RecentMemberActivity from "@/components/parentDashboard/RecentMemberActivity";
+import { RecentMemberActivity } from "@/components/parentDashboard/RecentMemberActivity";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
-import { NetworkModal } from "@/components/modals/NetworkModal";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { AirdropModal } from "@/components/modals/AirdropModal";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 
 const Parent: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
 
-  const [childKey, setChildKey] = useState<number>(0);
-  const [childrenLoading, setChildrenLoading] = useState(false);
-  const [children, setChildren] = useState<string[]>([]);
-  // const [stakeContract, setStakeContract] = useState<StakeContract>();
-  const [familyDetails, setFamilyDetails] = useState({} as User);
-
-  const [selectedTab, setSelectedTab] = useState<ParentDashboardTabs>(
-    ParentDashboardTabs.DASHBOARD
-  );
-  const [cardOpacity, setCardOpacity] = useState(0);
-  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
+  const [members, setMembers] = useState<User[]>([]);
 
   //=============================================================================
   //                               HOOKS
@@ -74,33 +58,9 @@ const Parent: React.FC = () => {
     useDisclosure();
 
   const {
-    isOpen: isAddChildOpen,
-    onOpen: onAddChildOpen,
-    onClose: onAddChildClose,
-  } = useDisclosure();
-
-  const {
     isOpen: isOpenEtherScan,
     onOpen: onOpenEtherScan,
     onClose: onCloseEtherScan,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenChildDetails,
-    onOpen: onOpenChildDetails,
-    onClose: onCloseChildDetails,
-  } = useDisclosure();
-
-  const {
-    isOpen: isChangeUsernameOpen,
-    onOpen: onChangeUsernameOpen,
-    onClose: onChangeUsernameClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenBackgroundDefaults,
-    onOpen: onOpenBackgroundDefaults,
-    onClose: onCloseBackgroundDefaults,
   } = useDisclosure();
 
   const {
@@ -122,12 +82,6 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenNetworkModal,
-    onOpen: onOpenNetworkModal,
-    onClose: onCloseNetworkModal,
-  } = useDisclosure();
-
-  const {
     isOpen: isOpenMembersTableModal,
     onOpen: onOpenMembersTableModal,
     onClose: onCloseMembersTableModal,
@@ -140,56 +94,29 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    fetchFamilyDetails();
-    fetchChildren();
+    fetchMembers();
   }, []);
-
-  // useEffect(() => {
-  //   if (!stakeContract || !children.length) {
-  //     setChildrenStakes({});
-  //     return;
-  //   }
-  // }, [stakeContract, children]);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
 
-  const fetchFamilyDetails = useCallback(async () => {
-    if (!userDetails?.wallet) return;
-
-    const { data } = await axios.get(
-      `/api/vercel/get-json?key=${userDetails?.wallet}`
-    );
-
-    const user = data as User;
-    setFamilyDetails(user);
-  }, [userDetails?.wallet]);
-
-  const fetchChildren = useCallback(async () => {
-    const getChildren = async () => {
+  const fetchMembers = useCallback(async () => {
+    const getMembers = async () => {
       if (!userDetails?.wallet) return;
 
-      const children = [] as User[];
+      const members = await getFamilyMembersByAccount(userDetails?.accountId!);
 
-      familyDetails.children?.forEach(async (walletAddress) => {
-        const { data } = await axios.get(
-          `/api/vercel/get-json?key=${walletAddress}`
-        );
-
-        children.push(data as User);
-      });
-
-      if (children.length) {
-        const childrenWalletBalances = await axios.post(
+      if (members.length) {
+        const membersWalletBalances = await axios.post(
           `/api/etherscan/balancemulti`,
           {
-            addresses: children.map((c) => c.wallet),
+            addresses: members.map((c) => c.wallet),
           }
         );
 
-        const childrenWithBalances = children.map((c) => {
-          const balance = childrenWalletBalances.data.find(
+        const membersWithBalances = members.map((c) => {
+          const balance = membersWalletBalances.data.find(
             (b) => b.account === c.wallet
           );
           return {
@@ -198,31 +125,21 @@ const Parent: React.FC = () => {
           };
         });
 
-        // setChildren(childrenWithBalances);
+        setMembers(membersWithBalances);
       } else {
-        // setChildren(children);
+        setMembers(members);
       }
-
-      setChildrenLoading(false);
     };
 
-    await getChildren();
+    await getMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length, userDetails?.wallet]);
-
-  const closeTab = () => {
-    setSelectedTab(ParentDashboardTabs.DASHBOARD);
-  };
+  }, [members.length, userDetails?.wallet]);
 
   return (
     <Box>
       <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
         <Box zIndex={1}>
           <ExpandedDashboardMenu
-            familyDetails={familyDetails}
-            children={children}
-            onAddChildOpen={onAddChildOpen}
-            setSelectedTab={setSelectedTab}
             onToggleCollapsedMenu={onToggleCollapsedMenu}
             onToggleExtendedMenu={onToggleExtendedMenu}
             isOpenExtendedMenu={isOpenExtendedMenu}
@@ -231,7 +148,6 @@ const Parent: React.FC = () => {
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
             onOpenSendFundsModal={onOpenSendFundsModal}
-            onOpenNetworkModal={onOpenNetworkModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
             onOpenAirdropModal={onOpenAirdropModal}
           />
@@ -258,11 +174,7 @@ const Parent: React.FC = () => {
           px={isMobileSize ? 0 : 5}
           bgPosition="center"
           bgSize="cover"
-          bgImage={
-            familyDetails?.backgroundURI
-              ? familyDetails?.backgroundURI
-              : "/images/backgrounds/purple-bg.jpg"
-          }
+          bgImage={"/images/backgrounds/purple-bg.jpg"}
         >
           {!isMobileSize && (
             <GridItem
@@ -310,7 +222,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity />
+            <RecentMemberActivity user={userDetails} />
           </GridItem>
 
           <GridItem
@@ -320,41 +232,16 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics members={userDetails.children || []} />
+            <FamilyStatistics members={members || []} />
           </GridItem>
         </Grid>
       </Flex>
 
       {/* Modals and other components */}
-      <UsernameModal
-        isOpen={isChangeUsernameOpen}
-        onClose={onChangeUsernameClose}
-        childKey={childKey}
-        children={children}
-        familyId={familyDetails.familyId}
-        fetchChildren={fetchChildren}
-        fetchFamilyDetails={fetchFamilyDetails}
-      />
-
-      <BackgroundDefaults
-        isOpen={isOpenBackgroundDefaults}
-        onClose={onCloseBackgroundDefaults}
-        fetchFamilyDetails={fetchFamilyDetails}
-      />
 
       <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
 
       <SettingsModal
-        familyDetails={familyDetails}
-        onChangeUsernameOpen={onChangeUsernameOpen}
-        fetchFamilyDetails={fetchFamilyDetails}
-        onOpenBackgroundDefaults={onOpenBackgroundDefaults}
-        setBackgroundOpacity={setBackgroundOpacity}
-        setCardOpacity={setCardOpacity}
-        cardOpacity={cardOpacity}
-        isMobileSize={isMobileSize}
-        isOpenExtendedMenu={isOpenExtendedMenu}
-        closeTab={closeTab}
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
       />
@@ -369,8 +256,6 @@ const Parent: React.FC = () => {
         isOpen={isOpenSendFundsModal}
         onClose={onCloseSendFundsModal}
       />
-
-      <NetworkModal isOpen={isOpenNetworkModal} onClose={onCloseNetworkModal} />
 
       <MembersTableModal
         isOpen={isOpenMembersTableModal}

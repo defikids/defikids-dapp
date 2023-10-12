@@ -6,13 +6,7 @@ import { shallow } from "zustand/shallow";
 import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User } from "@/data-schema/types";
-import {
-  AccountStatus,
-  AccountPackage,
-  NetworkType,
-  TestnetNetworks,
-  PermissionType,
-} from "@/data-schema/enums";
+import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
 
 type State = {
   isLoggedIn: boolean;
@@ -21,7 +15,6 @@ type State = {
   reset: () => void;
   logout: () => void;
   userDetails: User;
-  opacity: 0;
   mobileMenuOpen: boolean;
   fetchedUserDetails: boolean;
 };
@@ -32,7 +25,6 @@ type Actions = {
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
   setUserDetails: (userDetails: User) => void;
-  setOpacity: (opacity: number) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
   reset: () => void;
@@ -47,39 +39,20 @@ const initialState: State = {
   logout: () => {},
   reset: () => void {},
   userDetails: {
-    account: {
-      id: "",
-      status: AccountStatus.INACTIVE,
-      memberSince: 0,
-      package: AccountPackage.BASIC,
-    },
-    defaultNetwork: TestnetNetworks.GOERLI,
-    defaultNetworkType: NetworkType.TESTNET,
-    opacity: {
-      background: 0,
-      card: 0,
-    },
-    familyName: "",
+    _id: null,
+    accountId: null,
     email: "",
-    familyId: "",
     wallet: "",
     avatarURI: "",
-    backgroundURI: "",
+    defaultNetwork: TestnetNetworks.GOERLI,
+    defaultNetworkType: NetworkType.TESTNET,
     username: "",
     termsAgreed: false,
     userType: UserType.UNREGISTERED,
-    children: [],
-    invitations: [],
     sandboxMode: undefined,
-    permissions: {
-      general: {
-        avatar: PermissionType.ENABLED,
-        email: PermissionType.ENABLED,
-        username: PermissionType.ENABLED,
-      },
-    },
+    permissions: [],
+    balance: "",
   },
-  opacity: 0,
   mobileMenuOpen: false,
   fetchedUserDetails: false,
 };
@@ -128,11 +101,7 @@ const setters = (set: any) => ({
       state.userDetails = userDetails;
     }, shallow);
   },
-  setOpacity: (opacity: number) => {
-    set((state: { opacity: number }) => {
-      state.opacity = opacity;
-    }, shallow);
-  },
+
   setMobileMenuOpen: (mobileMenuOpen: boolean) => {
     set((state: { mobileMenuOpen: boolean }) => {
       state.mobileMenuOpen = mobileMenuOpen;

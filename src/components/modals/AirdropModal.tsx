@@ -37,6 +37,7 @@ import { ethers } from "ethers";
 import axios from "axios";
 import { User } from "@/data-schema/types";
 import { MdArrowDropDown } from "react-icons/md";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 
 export const AirdropModal = ({
   isOpen,
@@ -68,23 +69,10 @@ export const AirdropModal = ({
     if (!userDetails?.wallet) return;
 
     const fetchMembers = async () => {
-      const familyMembers = [] as User[];
-      //@ts-ignore
-      for (const memberAddress of userDetails.children) {
-        try {
-          const response = await axios.get(
-            `/api/vercel/get-json?key=${memberAddress}`
-          );
-          const user = response.data;
-
-          if (ethers.utils.isAddress(user.wallet)) {
-            familyMembers.push(user);
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        }
-      }
-      setMembers(familyMembers);
+      const members = (await getFamilyMembersByAccount(
+        userDetails.accountId!
+      )) as User[];
+      setMembers(members);
     };
 
     fetchMembers();

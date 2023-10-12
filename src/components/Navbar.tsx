@@ -37,7 +37,6 @@ export default function NavBar() {
   });
 
   const {
-    isLoggedIn,
     walletConnected,
     navigationSection,
     userDetails,
@@ -45,7 +44,6 @@ export default function NavBar() {
     setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
-      isLoggedIn: state.isLoggedIn,
       walletConnected: state.walletConnected,
       navigationSection: state.navigationSection,
       userDetails: state.userDetails,
@@ -85,9 +83,9 @@ export default function NavBar() {
         setIsLoggedIn(true);
         router.push("/parent-dashboard");
         break;
-      case UserType.CHILD:
+      case UserType.MEMBER:
         setIsLoggedIn(true);
-        router.push("/child");
+        router.push("/member-dashboard");
         break;
       default:
         router.push("/");
@@ -122,7 +120,7 @@ export default function NavBar() {
               <Button mr={5} size="lg" onClick={navigateUser}>
                 <Fade in={fetchedUserDetails}>
                   <Heading size="sm">
-                    {userDetails.userType != UserType.UNREGISTERED
+                    {userDetails?.userType != UserType.UNREGISTERED
                       ? "Dashboard"
                       : "Register"}
                   </Heading>

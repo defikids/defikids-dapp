@@ -18,8 +18,6 @@ import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
 import ButtonMenu from "./parentDashboard/ButtonMenu";
-import { ParentDashboardTabs } from "@/data-schema/enums";
-import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
@@ -28,10 +26,6 @@ import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";
 
 export const ExpandedDashboardMenu = ({
-  familyDetails,
-  children,
-  onAddChildOpen,
-  setSelectedTab,
   onToggleCollapsedMenu,
   onToggleExtendedMenu,
   isOpenExtendedMenu,
@@ -40,14 +34,9 @@ export const ExpandedDashboardMenu = ({
   onOpenSettingsModal,
   onOpenInfoModal,
   onOpenSendFundsModal,
-  onOpenNetworkModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
 }: {
-  familyDetails: User;
-  children: string[];
-  onAddChildOpen: () => void;
-  setSelectedTab: (tab: ParentDashboardTabs) => void;
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
   isOpenExtendedMenu: boolean;
@@ -56,7 +45,6 @@ export const ExpandedDashboardMenu = ({
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
   onOpenSendFundsModal: () => void;
-  onOpenNetworkModal: () => void;
   onOpenMembersTableModal: () => void;
   onOpenAirdropModal: () => void;
 }) => {
@@ -73,7 +61,6 @@ export const ExpandedDashboardMenu = ({
 
   const router = useRouter();
   const { chain } = useNetwork();
-  console.log("chain", chain);
 
   const showMenu = () => {
     if (isOpenExtendedMenu && !isMobileSize) {
@@ -122,21 +109,14 @@ export const ExpandedDashboardMenu = ({
                   icon={<TriangleUpIcon />}
                 />
               </Flex>
-              <Username familyDetails={familyDetails} mt={2} />
+              <Username />
               <ParentAvatar />
               <AccountBalance walletAddress={userDetails?.wallet} />
 
               <ButtonMenu
-                onAddChildOpen={onAddChildOpen}
-                setSelectedTab={setSelectedTab}
-                onOpenEtherScan={onOpenEtherScan}
-                onOpenSettingsModal={onOpenSettingsModal}
-                onOpenInfoModal={onOpenInfoModal}
                 onOpenSendFundsModal={onOpenSendFundsModal}
-                onOpenNetworkModal={onOpenNetworkModal}
                 onOpenMembersTableModal={onOpenMembersTableModal}
                 onOpenAirdropModal={onOpenAirdropModal}
-                children={children}
               />
             </Box>
 

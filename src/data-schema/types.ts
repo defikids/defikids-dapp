@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   UserType,
   AccountStatus,
@@ -8,44 +9,21 @@ import {
   PermissionType,
 } from "./enums";
 
-export type UserPermissions = {
-  general: {
-    avatar: PermissionType;
-    email: PermissionType;
-    username: PermissionType;
-  };
-};
-
 export type User = {
-  account?: AccountDetails;
-  permissions?: UserPermissions;
-  familyId: string;
-  familyName: string;
+  _id?: mongoose.Schema.Types.ObjectId | null;
+  accountId: mongoose.Schema.Types.ObjectId | null;
+  permissions: PermissionType[];
   email: string;
   wallet: string;
   avatarURI: string;
-  backgroundURI: string;
   defaultNetwork: MainnetNetworks | TestnetNetworks;
   defaultNetworkType: NetworkType;
-  opacity: {
-    background: number;
-    card: number;
-  };
   username: string;
   termsAgreed?: boolean;
   userType: UserType;
   emailVerified?: boolean;
   sandboxMode: boolean | undefined;
   balance?: string;
-  children?: string[];
-  invitations?:
-    | [
-        {
-          email: string;
-          dateSent: number;
-        }
-      ]
-    | [];
 };
 
 export type AccountDetails = {

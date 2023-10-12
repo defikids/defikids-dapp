@@ -1,20 +1,22 @@
 "use client";
 
 import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
-import { User } from "@/data-schema/types";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
 
-const Username = ({
-  familyDetails,
-  mt,
-}: {
-  familyDetails: User;
-  mt?: number;
-}) => {
+const Username = () => {
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+      setUserDetails: state.setUserDetails,
+    }),
+    shallow
+  );
   return (
-    <Flex align="center" mt={mt || 0} ml={4}>
+    <Flex align="center" mt={2 || 0} ml={4}>
       <Avatar
         size="md"
-        name={familyDetails.username}
+        name={userDetails.username}
         sx={{
           fontFamily: "Slackey",
           bgColor: "purple.500",
@@ -22,9 +24,9 @@ const Username = ({
       />
       <Flex direction="column" ml={2}>
         <Heading fontSize="lg" display="flex">
-          {familyDetails.username}
+          {userDetails.username}
         </Heading>
-        <Text fontSize="md">{familyDetails.userType}</Text>
+        <Text fontSize="md">{userDetails.userType}</Text>
       </Flex>
     </Flex>
   );

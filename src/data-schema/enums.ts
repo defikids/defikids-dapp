@@ -7,7 +7,6 @@ export enum SandboxFeatures {
 
 export enum StepperContext {
   AVATAR = "AVATAR",
-  BACKGROUND = "BACKGROUND",
   DEFAULT = "DEFAULT",
 }
 
@@ -24,7 +23,7 @@ export enum ChainId {
 export enum UserType {
   UNREGISTERED = "UNREGISTERED",
   PARENT = "PARENT",
-  CHILD = "CHILD",
+  MEMBER = "MEMBER",
 }
 
 export enum AccountStatus {
@@ -40,23 +39,9 @@ export enum AccountPackage {
 }
 export enum Explaination {
   NONE = "NONE",
-  FAMILY_ID = "FAMILY_ID",
   SANDBOX = "SANDBOX",
   FAMILY_NAME = "FAMILY_NAME",
   BLOCKCHAIN = "BLOCKCHAIN",
-}
-
-export enum ParentDashboardTabs {
-  DASHBOARD = "DASHBOARD",
-  MEMBER_PROFILES = "MEMBER_PROFILES",
-  SUPPORT = "SUPPORT",
-  SETTINGS = "SETTINGS",
-  INFORMATION = "INFORMATION",
-}
-
-export enum OpacityContext {
-  BACKGROUND = "BACKGROUND",
-  CARD = "CARD",
 }
 
 export enum MainnetNetworks {
@@ -75,7 +60,7 @@ export enum NetworkType {
 }
 
 export enum PermissionType {
-  ENABLED = "ENABLED",
-  DISABLED = "DISABLED",
-  FAMILY_ID_REQUIRED = "FAMILY_ID_REQUIRED",
+  AVATAR = "AVATAR",
+  EMAIL = "EMAIL",
+  USERNAME = "USERNAME",
 }

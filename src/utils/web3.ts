@@ -50,6 +50,3 @@ export const getEtherscanUrl = (
 
   return etherscanUrl;
 };
-
-export const hashedFamilyId = (familyId: string) =>
-  ethers.utils.keccak256(ethers.utils.toUtf8Bytes(familyId));

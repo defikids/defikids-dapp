@@ -1,3 +1,4 @@
+import { User } from "@/data-schema/types";
 import {
   Container,
   Flex,
@@ -14,7 +15,7 @@ interface Notification {
   unit: string;
 }
 
-const FamilyStatistics = ({ members }: { members: string[] }) => {
+const FamilyStatistics = ({ members }: { members: User[] }) => {
   const stats: Notification[] = [
     {
       title: "Members",

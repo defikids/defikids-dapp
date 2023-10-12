@@ -15,25 +15,27 @@ import {
   Select,
   Container,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { MdArrowDropDown } from "react-icons/md";
 import Navbar from "@/components/Navbar";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { User } from "@/data-schema/types";
-import axios from "axios";
-import { ethers } from "ethers";
 import { PermissionType, UserType } from "@/data-schema/enums";
 import { WalletNotFound } from "@/components/WalletNotFound";
 import { Restricted } from "@/components/Restricted";
 import { useAccount } from "wagmi";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
+import { editPermissions } from "@/services/mongo/routes/permission";
 
 const Permissions = () => {
   const [members, setMembers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
 
   const { address } = useAccount();
+  const toast = useToast();
 
   const { userDetails } = useAuthStore(
     (state) => ({
@@ -46,166 +48,97 @@ const Permissions = () => {
     if (!userDetails?.wallet) return;
 
     const fetchMembers = async () => {
-      const familyMembers = [] as User[];
-      //@ts-ignore
-      for (const memberAddress of userDetails.children) {
-        try {
-          const response = await axios.get(
-            `/api/vercel/get-json?key=${memberAddress}`
-          );
-          const user = response.data;
-
-          if (ethers.utils.isAddress(user.wallet)) {
-            familyMembers.push(user);
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        }
-      }
-      setMembers(familyMembers);
+      const members = (await getFamilyMembersByAccount(
+        userDetails.accountId!
+      )) as User[];
+      console.log(members);
+      setMembers(members);
     };
 
     fetchMembers();
-  }, []);
+  }, [userDetails?.wallet]);
 
-  const generalUserData = useCallback(() => {
-    const data = members.flatMap((member) => {
-      const generalPermissions = member.permissions?.general;
-
-      if (generalPermissions) {
-        return Object.entries(generalPermissions).map(([feature, status]) => ({
-          feature,
-          status,
-        }));
-      }
-
-      return [];
-    });
-
-    return data;
-  }, [members]);
-
-  const handleColor = (status: string) => {
-    switch (status) {
-      case PermissionType.ENABLED:
-        return "green";
-      case PermissionType.DISABLED:
-        return "red";
-      case PermissionType.FAMILY_ID_REQUIRED:
-        return "purple";
-      default:
-        return "green";
-    }
+  const handleColor = (item: string) => {
+    const status = selectedUser?.permissions?.find(
+      (permission) => permission === item
+    );
+    if (status) return "green";
+    return "red";
   };
 
-  const togglePermission = async (
-    category: string,
-    selectedDetails: {
-      feature: string;
-      status: string;
-    },
-    updatedStatus: string
-  ) => {
-    if (selectedDetails.status === updatedStatus) return;
+  const togglePermission = async (permission: PermissionType) => {
+    let userPermissions = selectedUser?.permissions as PermissionType[];
+    if (userPermissions?.includes(permission)) {
+      userPermissions = userPermissions.filter((p) => p !== permission);
+    } else {
+      userPermissions?.push(permission);
+    }
 
-    const body = {
-      ...selectedUser,
-      permissions: {
-        [category]: {
-          ...selectedUser?.permissions?.[category],
-          [selectedDetails.feature]: updatedStatus,
-        },
-      },
-    };
-
-    const payload = {
-      key: selectedUser?.wallet,
-      value: body,
-    };
-
-    await axios.post(`/api/vercel/set-json`, payload);
     setMembers((prevMembers) => {
       const updatedMembers = [...prevMembers];
       const userIndex = updatedMembers.findIndex(
         (user) => user.wallet === selectedUser?.wallet
       );
       if (userIndex !== -1) {
-        //@ts-ignore
-        updatedMembers[userIndex] = body;
+        updatedMembers[userIndex].permissions = userPermissions;
       }
       return updatedMembers;
     });
+
+    toast({
+      title: "Success",
+      description: `${permission.toLowerCase()} updated`,
+      status: "success",
+    });
+
+    const { accountId, wallet } = selectedUser as User;
+    await editPermissions(accountId!, wallet, userPermissions);
   };
 
   const generalPermissions = () => {
-    return generalUserData().map((item, index) => (
-      <Menu key={index}>
-        {({ isOpen }) => (
-          <>
-            <MenuButton
-              isActive={isOpen}
-              as={Button}
-              colorScheme={handleColor(item.status)}
-              w="100%"
-            >
-              {item.feature}
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                onClick={() => {
-                  togglePermission("general", item, PermissionType.ENABLED);
-                }}
-              >
-                Enable
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  togglePermission("general", item, PermissionType.DISABLED);
-                }}
-              >
-                Disable
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  togglePermission(
-                    "general",
-                    item,
-                    PermissionType.FAMILY_ID_REQUIRED
-                  );
-                }}
-              >
-                Family Id Required
-              </MenuItem>
-            </MenuList>
-          </>
-        )}
-      </Menu>
+    return Object.values(PermissionType).map((item, index) => (
+      <Button
+        key={index}
+        w={"100%"}
+        colorScheme={handleColor(item)}
+        onClick={() => {
+          togglePermission(item);
+        }}
+      >
+        {item}
+      </Button>
+      // <Menu key={index}>
+      //   {({ isOpen }) => (
+      //     <>
+      //       <MenuButton
+      //         isActive={isOpen}
+      //         as={Button}
+      //         colorScheme={handleColor(item)}
+      //         w="100%"
+      //       >
+      //         {item}
+      //       </MenuButton>
+      //       <MenuList>
+      //         <MenuItem
+      //           onClick={() => {
+      //             togglePermission(item);
+      //           }}
+      //         >
+      //           Enable
+      //         </MenuItem>
+      //         <MenuItem
+      //           onClick={() => {
+      //             togglePermission(item);
+      //           }}
+      //         >
+      //           Disable
+      //         </MenuItem>
+      //       </MenuList>
+      //     </>
+      //   )}
+      // </Menu>
     ));
   };
-
-  useEffect(() => {
-    const fetchMembers = async () => {
-      const familyMembers = [] as User[];
-      //@ts-ignore
-      for (const memberAddress of userDetails.children) {
-        try {
-          const response = await axios.get(
-            `/api/vercel/get-json?key=${memberAddress}`
-          );
-          const user = response.data;
-
-          if (ethers.utils.isAddress(user.wallet)) {
-            familyMembers.push(user);
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        }
-      }
-      setMembers(familyMembers);
-    };
-
-    fetchMembers();
-  }, []);
 
   if (!address) {
     return <WalletNotFound />;
@@ -228,35 +161,6 @@ const Permissions = () => {
         </Heading>
       </Center>
 
-      <Center pb="2rem">
-        <Flex align="center">
-          <Badge
-            px="2"
-            borderRadius="full"
-            colorScheme="green"
-            fontSize="0.8rem"
-          >
-            Enabled
-          </Badge>
-          <Badge
-            borderRadius="full"
-            px="2"
-            colorScheme="red"
-            fontSize="0.8rem"
-            mx={2}
-          >
-            Disabled
-          </Badge>
-          <Badge
-            borderRadius="full"
-            px="2"
-            colorScheme="purple"
-            fontSize="0.8rem"
-          >
-            Family Id Required
-          </Badge>
-        </Flex>
-      </Center>
       <VStack>
         <Container size="lg" px="1rem">
           <Flex justify="center" py={4}></Flex>

@@ -17,11 +17,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-export const Settings = ({
-  onChangeUsernameOpen,
-}: {
-  onChangeUsernameOpen: () => void;
-}) => {
+export const Settings = () => {
   const data = [
     {
       title: "Avatar",
@@ -47,7 +43,6 @@ export const Settings = ({
       description:
         "Usernames enhance security by reducing the need for sharing personal information. They play a pivotal role in fostering community, making connections, and building a consistent online presence.",
       buttonTitle: "Change Username",
-      action: onChangeUsernameOpen,
     },
   ];
 

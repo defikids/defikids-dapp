@@ -39,6 +39,7 @@ const initialState: State = {
   logout: () => {},
   reset: () => void {},
   userDetails: {
+    _id: null,
     accountId: null,
     email: "",
     wallet: "",

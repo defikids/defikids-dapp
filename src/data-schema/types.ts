@@ -10,6 +10,7 @@ import {
 } from "./enums";
 
 export type User = {
+  _id?: mongoose.Schema.Types.ObjectId | null;
   accountId: mongoose.Schema.Types.ObjectId | null;
   permissions: PermissionType[];
   email: string;

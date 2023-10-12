@@ -16,7 +16,6 @@ import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { User } from "@/data-schema/types";
 import axios from "axios";
-import { UsernameModal } from "@/components/modals/UsernameModal";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -27,7 +26,6 @@ import { getUserByWalletAddress } from "@/services/mongo/database";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import RecentMemberActivity from "@/components/parentDashboard/RecentMemberActivity";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
-import { NetworkModal } from "@/components/modals/NetworkModal";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
@@ -39,8 +37,6 @@ const Parent: React.FC = () => {
   //                               STATE
   //=============================================================================
 
-  const [childKey, setChildKey] = useState<number>(0);
-  const [childrenLoading, setMembersLoading] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
   const [familyDetails, setFamilyDetails] = useState({} as User);
 
@@ -72,12 +68,6 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isChangeUsernameOpen,
-    onOpen: onChangeUsernameOpen,
-    onClose: onChangeUsernameClose,
-  } = useDisclosure();
-
-  const {
     isOpen: isOpenSettingsModal,
     onOpen: onOpenSettingsModal,
     onClose: onCloseSettingsModal,
@@ -93,12 +83,6 @@ const Parent: React.FC = () => {
     isOpen: isOpenSendFundsModal,
     onOpen: onOpenSendFundsModal,
     onClose: onCloseSendFundsModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenNetworkModal,
-    onOpen: onOpenNetworkModal,
-    onClose: onCloseNetworkModal,
   } = useDisclosure();
 
   const {
@@ -157,8 +141,6 @@ const Parent: React.FC = () => {
       } else {
         setMembers(members);
       }
-
-      setMembersLoading(false);
     };
 
     await getChildren();
@@ -273,9 +255,6 @@ const Parent: React.FC = () => {
       <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
 
       <SettingsModal
-        familyDetails={familyDetails}
-        onChangeUsernameOpen={onChangeUsernameOpen}
-        fetchFamilyDetails={fetchFamilyDetails}
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
       />

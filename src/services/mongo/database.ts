@@ -156,3 +156,17 @@ export const editPermissions = async (
     return error;
   }
 };
+
+export const deleteUser = async (id: mongoose.Schema.Types.ObjectId) => {
+  try {
+    const { data } = await axios.post(
+      `/api/mongo/user/delete`,
+      JSON.stringify({ id }),
+      config
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

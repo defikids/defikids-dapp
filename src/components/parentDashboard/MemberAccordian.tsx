@@ -25,7 +25,12 @@ import { NetworkType } from "@/data-schema/enums";
 import { useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import { deleteUser, editUser } from "@/services/mongo/database";
+import {
+  createActivity,
+  deleteUser,
+  editUser,
+} from "@/services/mongo/database";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
 
 const MemberAccordian = ({
   users,
@@ -64,7 +69,6 @@ const MemberAccordian = ({
   };
 
   const handleDeleteMember = async (user: User) => {
-    console.log(user);
     const confirm = window.confirm(
       `Are you sure you want to delete ${user?.username} from your family.?`
     );
@@ -75,6 +79,13 @@ const MemberAccordian = ({
       const updatedUsers = users.filter((u) => u.wallet !== user?.wallet);
 
       setUsers(updatedUsers);
+
+      await createActivity({
+        accountId: userDetails.accountId,
+        wallet: user.wallet,
+        date: convertTimestampToSeconds(Date.now()),
+        type: "User removed from family.",
+      });
 
       await deleteUser(user?._id!);
 

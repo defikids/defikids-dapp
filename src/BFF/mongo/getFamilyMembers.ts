@@ -5,11 +5,19 @@ import { UserType } from "@/data-schema/enums";
 import mongoose from "mongoose";
 
 export const getFamilyMembers = async (
-  accountId: mongoose.Schema.Types.ObjectId
+  accountId: mongoose.Schema.Types.ObjectId,
+  includeParent?: boolean
 ) => {
   const users = (await getAllUsers()) as IUser[];
   const members = users.filter((user) => {
-    if (user.accountId === accountId && user.userType !== UserType.PARENT) {
+    const checkForParent = () => {
+      if (includeParent) {
+        return true;
+      }
+      return user.userType !== UserType.PARENT;
+    };
+
+    if (user.accountId === accountId && checkForParent()) {
       return {
         email: user.email,
         wallet: user.wallet,

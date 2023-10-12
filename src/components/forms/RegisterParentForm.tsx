@@ -30,7 +30,11 @@ import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
-import { createAccount, createUser } from "@/services/mongo/database";
+import {
+  createAccount,
+  createActivity,
+  createUser,
+} from "@/services/mongo/database";
 import { IUser } from "@/models/User";
 import { IAccount } from "@/models/Account";
 
@@ -103,6 +107,8 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
+    const wallet = address;
+
     const accountPayload = {
       status: AccountStatus.ACTIVE,
       memberSince: convertTimestampToSeconds(Date.now()),
@@ -115,7 +121,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       email,
       defaultNetwork: TestnetNetworks.GOERLI,
       defaultNetworkType: NetworkType.TESTNET,
-      wallet: address,
+      wallet,
       username,
       userType: UserType.PARENT,
       sandboxMode: false,
@@ -139,6 +145,13 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       userPayload.accountId = account._id;
       const user = await createUser(userPayload);
       const error = user.response?.data?.error || user.error;
+
+      await createActivity({
+        accountId: account._id,
+        wallet,
+        date: convertTimestampToSeconds(Date.now()),
+        type: "Account Created 🎉",
+      });
 
       if (error) {
         toast({

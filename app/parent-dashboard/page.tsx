@@ -21,7 +21,7 @@ import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import RecentMemberActivity from "@/components/parentDashboard/RecentMemberActivity";
+import { RecentMemberActivity } from "@/components/parentDashboard/RecentMemberActivity";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
@@ -222,7 +222,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity />
+            <RecentMemberActivity user={userDetails} />
           </GridItem>
 
           <GridItem

@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Invitation, IInvitation } from "@/models/Invitation";
 import dbConnect from "@/services/mongo/dbConnect";
-import { convertTimestampToSeconds } from "@/utils/dateTime";
 
 export default async function handler(
   req: NextApiRequest,

@@ -28,6 +28,7 @@ import shallow from "zustand/shallow";
 import { PermissionType } from "@/data-schema/enums";
 import { IUser } from "@/models/User";
 import {
+  createActivity,
   createUser,
   deleteInvitation,
   getInvitation,
@@ -35,6 +36,7 @@ import {
 } from "@/services/mongo/database";
 import { TestnetNetworks } from "@/data-schema/enums";
 import mongoose from "mongoose";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
 
 interface DecodedToken {
   accountId: mongoose.Schema.Types.ObjectId;
@@ -102,6 +104,13 @@ const MemberInvite = () => {
         });
         throw new Error(error);
       }
+
+      await createActivity({
+        accountId,
+        wallet: address,
+        date: convertTimestampToSeconds(Date.now()),
+        type: "Invition Accepted.",
+      });
     } catch (err) {
       console.error(err);
     }

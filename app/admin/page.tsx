@@ -1,10 +1,12 @@
 "use client";
 
 import { IAccount } from "@/models/Account";
+import { IActivity } from "@/models/Activity";
 import { IInvitation } from "@/models/Invitation";
 import { IUser } from "@/models/User";
 import {
   getAllAccounts,
+  getAllActivity,
   getAllInvitations,
   getAllUsers,
 } from "@/services/mongo/database";
@@ -23,6 +25,7 @@ const Admin = () => {
   const [accounts, setAccounts] = useState<IAccount[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
   const [invitations, setInvitations] = useState<IInvitation[]>([]);
+  const [activity, setActivity] = useState<IActivity[]>([]);
 
   interface Stats {
     title: string;
@@ -46,6 +49,11 @@ const Admin = () => {
       value: accounts.length.toString(),
       unit: "",
     },
+    {
+      title: "Activity Events",
+      value: activity.length.toString(),
+      unit: "",
+    },
   ];
 
   useEffect(() => {
@@ -53,10 +61,12 @@ const Admin = () => {
       const accounts = await getAllAccounts();
       const users = await getAllUsers();
       const invitations = await getAllInvitations();
+      const activity = await getAllActivity();
 
       setAccounts(accounts);
       setUsers(users);
       setInvitations(invitations);
+      setActivity(activity);
     };
     getData();
   }, []);

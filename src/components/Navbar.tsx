@@ -120,7 +120,7 @@ export default function NavBar() {
               <Button mr={5} size="lg" onClick={navigateUser}>
                 <Fade in={fetchedUserDetails}>
                   <Heading size="sm">
-                    {userDetails.userType != UserType.UNREGISTERED
+                    {userDetails?.userType != UserType.UNREGISTERED
                       ? "Dashboard"
                       : "Register"}
                   </Heading>

@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { getActivityByAccount } from "@/BFF/mongo/getActivityByAccount";
 import { IActivity } from "@/models/Activity";
-import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { IUser } from "@/models/User";
 import { formatDateToIsoString } from "@/utils/dateTime";
 import { User } from "@/data-schema/types";
@@ -33,7 +33,7 @@ export const RecentMemberActivity = ({ user }: { user: User }) => {
   useEffect(() => {
     const getData = async () => {
       const data = (await getActivityByAccount(user.accountId!)) as IActivity[];
-      const members = (await getFamilyMembers(
+      const members = (await getFamilyMembersByAccount(
         user.accountId!,
         true
       )) as IUser[];

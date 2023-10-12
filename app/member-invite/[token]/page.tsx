@@ -111,7 +111,7 @@ const MemberInvite = () => {
         accountId,
         wallet: address,
         date: convertTimestampToSeconds(Date.now()),
-        type: "Invition Accepted.",
+        type: "Invitation Accepted.",
       });
     } catch (err) {
       console.error(err);

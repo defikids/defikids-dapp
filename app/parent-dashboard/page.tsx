@@ -27,7 +27,7 @@ import StakingContracts from "@/components/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { AirdropModal } from "@/components/modals/AirdropModal";
-import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -105,7 +105,7 @@ const Parent: React.FC = () => {
     const getMembers = async () => {
       if (!userDetails?.wallet) return;
 
-      const members = await getFamilyMembers(userDetails?.accountId!);
+      const members = await getFamilyMembersByAccount(userDetails?.accountId!);
 
       if (members.length) {
         const membersWalletBalances = await axios.post(

@@ -37,7 +37,7 @@ import { ethers } from "ethers";
 import axios from "axios";
 import { User } from "@/data-schema/types";
 import { MdArrowDropDown } from "react-icons/md";
-import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 
 export const AirdropModal = ({
   isOpen,
@@ -69,7 +69,7 @@ export const AirdropModal = ({
     if (!userDetails?.wallet) return;
 
     const fetchMembers = async () => {
-      const members = (await getFamilyMembers(
+      const members = (await getFamilyMembersByAccount(
         userDetails.accountId!
       )) as User[];
       setMembers(members);

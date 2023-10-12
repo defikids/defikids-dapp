@@ -27,7 +27,7 @@ import { PermissionType, UserType } from "@/data-schema/enums";
 import { WalletNotFound } from "@/components/WalletNotFound";
 import { Restricted } from "@/components/Restricted";
 import { useAccount } from "wagmi";
-import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { editPermissions } from "@/services/mongo/routes/permission";
 
 const Permissions = () => {
@@ -48,7 +48,7 @@ const Permissions = () => {
     if (!userDetails?.wallet) return;
 
     const fetchMembers = async () => {
-      const members = (await getFamilyMembers(
+      const members = (await getFamilyMembersByAccount(
         userDetails.accountId!
       )) as User[];
       console.log(members);

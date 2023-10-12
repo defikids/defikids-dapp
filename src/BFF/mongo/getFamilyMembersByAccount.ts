@@ -4,7 +4,7 @@ import { getAllUsers } from "@/services/mongo/routes/user";
 import { UserType } from "@/data-schema/enums";
 import mongoose from "mongoose";
 
-export const getFamilyMembers = async (
+export const getFamilyMembersByAccount = async (
   accountId: mongoose.Schema.Types.ObjectId,
   includeParent?: boolean
 ) => {

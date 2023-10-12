@@ -24,7 +24,7 @@ import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";
 import MemberInvitationTable from "@/components/parentDashboard/MemberInvitationTable";
 import { EmailVerificationRequired } from "@/components/email/EmailVerificationRequired";
-import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { getAccount } from "@/services/mongo/routes/account";
 import { createInvitation } from "@/services/mongo/routes/invitation";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
@@ -68,7 +68,7 @@ export const MembersTableModal = ({
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const members = (await getFamilyMembers(
+      const members = (await getFamilyMembersByAccount(
         userDetails.accountId!
       )) as User[];
       setUsers(members);

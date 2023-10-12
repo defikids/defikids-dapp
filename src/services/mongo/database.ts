@@ -170,3 +170,13 @@ export const deleteUser = async (id: mongoose.Schema.Types.ObjectId) => {
     return error;
   }
 };
+
+export const getAllAccounts = async () => {
+  try {
+    const { data } = await axios.get(`/api/mongo/account/getAll`);
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

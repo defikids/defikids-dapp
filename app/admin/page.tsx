@@ -1,115 +1,65 @@
 "use client";
 
+import { IAccount } from "@/models/Account";
+import { IInvitation } from "@/models/Invitation";
+import { IUser } from "@/models/User";
+import {
+  getAllAccounts,
+  getAllInvitations,
+  getAllUsers,
+} from "@/services/mongo/database";
 import {
   Box,
-  Button,
   Container,
-  Divider,
-  FormControl,
-  FormLabel,
+  Grid,
+  GridItem,
   Heading,
-  Input,
   Text,
-  VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Admin = () => {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [setterValue, setSetterValue] = useState("");
-  const [setterKey, setSetterKey] = useState("");
+  const [accounts, setAccounts] = useState<IAccount[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [invitations, setInvitations] = useState<IInvitation[]>([]);
 
-  const flushAll = async () => {
-    const confirmFlush = window.confirm("Are you sure you want to flush all?");
-    if (!confirmFlush) {
-      return;
-    }
+  interface Stats {
+    title: string;
+    value: string;
+    unit: string;
+  }
 
-    const res = await fetch(`/api/vercel/flush-all`);
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const getAllKeys = async () => {
-    const res = await fetch(`/api/vercel/get-all-keys`);
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const getJsonData = async () => {
-    const res = await fetch(`/api/vercel/get-json?key=${inputValue}`);
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const getData = async () => {
-    const res = await fetch(`/api/vercel/get-data?key=${inputValue}`);
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const setData = async () => {
-    const res = await fetch(
-      `/api/vercel/set-data?key=${setterKey}&value=${setterValue}`
-    );
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const deleteJSONData = async () => {
-    const confirmFlush = window.confirm("Are you sure you want to delete?");
-    if (!confirmFlush) {
-      return;
-    }
-
-    const res = await fetch(`/api/vercel/delete-json-data?key=${inputValue}`);
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const deleteData = async () => {
-    const confirmFlush = window.confirm("Are you sure you want to delete?");
-    if (!confirmFlush) {
-      return;
-    }
-
-    const res = await fetch(`/api/vercel/delete-data?key=${inputValue}`);
-    const data = await res.json();
-    console.log(data);
-  };
-
-  const buttons = [
+  const stats: Stats[] = [
     {
-      name: "flushall",
-      method: () => flushAll(),
-    },
-
-    {
-      name: "keys *",
-      method: () => getAllKeys(),
+      title: "Users",
+      value: users.length.toString(),
+      unit: "",
     },
     {
-      name: "getJsonData",
-      method: () => getJsonData(),
+      title: "Invitations",
+      value: invitations.length.toString(),
+      unit: "",
     },
     {
-      name: "getData",
-      method: () => getData(),
-    },
-    {
-      name: "deleteJSONData",
-      method: () => deleteJSONData(),
-    },
-    {
-      name: "deleteData",
-      method: () => deleteData(),
-    },
-    {
-      name: "setData",
-      method: () => setData(),
+      title: "Accounts",
+      value: accounts.length.toString(),
+      unit: "",
     },
   ];
+
+  useEffect(() => {
+    const getData = async () => {
+      const accounts = await getAllAccounts();
+      const users = await getAllUsers();
+      const invitations = await getAllInvitations();
+
+      setAccounts(accounts);
+      setUsers(users);
+      setInvitations(invitations);
+    };
+    getData();
+  }, []);
 
   if (!isUnlocked) {
     return (
@@ -124,88 +74,29 @@ const Admin = () => {
 
   return (
     <Container mt="10rem" textAlign="center">
-      <Heading mb={3}>Redis</Heading>
-      <Text>--Open Console--</Text>
+      <Heading mb={3}>Admin Dashboard</Heading>
 
-      <Divider my={5} borderColor="white" />
-
-      <FormControl id="input">
-        <FormLabel>Getting / Deleting</FormLabel>
-        <Input
-          placeholder="Input value"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          borderColor="white"
-          _hover={{
-            borderColor: "white",
-          }}
-          _focus={{
-            borderColor: "blue.500",
-          }}
-          sx={{
-            "::placeholder": {
-              color: "gray.400",
-            },
-          }}
-        />
-      </FormControl>
-
-      <FormControl id="input" mt={5}>
-        <FormLabel>Setting</FormLabel>
-        <Input
-          mb={2}
-          placeholder="Key"
-          value={setterKey}
-          onChange={(e) => setSetterKey(e.target.value)}
-          borderColor="white"
-          _hover={{
-            borderColor: "white",
-          }}
-          _focus={{
-            borderColor: "blue.500",
-          }}
-          sx={{
-            "::placeholder": {
-              color: "gray.400",
-            },
-          }}
-        />
-        <Input
-          placeholder="Value"
-          value={setterValue}
-          onChange={(e) => setSetterValue(e.target.value)}
-          borderColor="white"
-          _hover={{
-            borderColor: "white",
-          }}
-          _focus={{
-            borderColor: "blue.500",
-          }}
-          sx={{
-            "::placeholder": {
-              color: "gray.400",
-            },
-          }}
-        />
-      </FormControl>
-
-      <Divider my={5} borderColor="white" />
-      <Heading>Commands</Heading>
-
-      <VStack spacing={3} my={5} width={"100%"}>
-        {buttons.map((button, i) => (
-          <Button
-            key={i}
-            onClick={button.method}
-            m={2}
-            style={{
-              width: "100%",
-            }}
-          >
-            {button.name}
-          </Button>
+      <Grid
+        templateRows="repeat(2, 1fr)"
+        templateColumns="repeat(2, 1fr)"
+        gap={4}
+        rounded="md"
+        overflow="hidden"
+        my="2rem"
+      >
+        {stats.map((stat, index) => (
+          <GridItem key={index} bg="gray.900" borderRadius="md" p={4}>
+            <Text fontSize="sm">{stat.title}</Text>
+            <Text
+              fontSize={{ base: "sm", sm: "md", md: "2xl" }}
+              color="primary"
+              fontWeight="bold"
+            >
+              {stat.value} {stat.unit}
+            </Text>
+          </GridItem>
         ))}
-      </VStack>
+      </Grid>
     </Container>
   );
 };

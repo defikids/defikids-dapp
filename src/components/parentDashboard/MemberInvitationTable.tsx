@@ -10,6 +10,7 @@ import {
   Box,
   Container,
 } from "@chakra-ui/react";
+import mongoose from "mongoose";
 
 const MemberInvitationTable = ({
   isMobileSize,
@@ -24,7 +25,7 @@ const MemberInvitationTable = ({
 }) => {
   const toast = useToast();
 
-  const removeInvitation = async (_id: string) => {
+  const removeInvitation = async (_id: mongoose.Schema.Types.ObjectId) => {
     try {
       const updatedInvitations = invitations.filter(
         (invitation) => invitation._id !== _id

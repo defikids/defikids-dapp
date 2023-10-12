@@ -18,6 +18,7 @@ import { IActivity } from "@/models/Activity";
 import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
 import { IUser } from "@/models/User";
 import { formatDateToIsoString } from "@/utils/dateTime";
+import { User } from "@/data-schema/types";
 
 interface FormattedActivity {
   activityText: string;
@@ -26,13 +27,16 @@ interface FormattedActivity {
   userAvatar: string;
 }
 
-export const RecentMemberActivity = ({ user }: { user: IUser }) => {
+export const RecentMemberActivity = ({ user }: { user: User }) => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
 
   useEffect(() => {
     const getData = async () => {
-      const data = (await getActivityByAccount(user.accountId)) as IActivity[];
-      const members = (await getFamilyMembers(user.accountId, true)) as IUser[];
+      const data = (await getActivityByAccount(user.accountId!)) as IActivity[];
+      const members = (await getFamilyMembers(
+        user.accountId!,
+        true
+      )) as IUser[];
 
       const previewData = data.slice(0, 5);
 

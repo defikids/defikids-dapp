@@ -18,7 +18,6 @@ import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
 import ButtonMenu from "./parentDashboard/ButtonMenu";
-import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
@@ -27,7 +26,6 @@ import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";
 
 export const ExpandedDashboardMenu = ({
-  familyDetails,
   onToggleCollapsedMenu,
   onToggleExtendedMenu,
   isOpenExtendedMenu,
@@ -39,7 +37,6 @@ export const ExpandedDashboardMenu = ({
   onOpenMembersTableModal,
   onOpenAirdropModal,
 }: {
-  familyDetails: User;
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
   isOpenExtendedMenu: boolean;

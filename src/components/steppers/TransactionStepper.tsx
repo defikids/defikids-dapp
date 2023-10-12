@@ -22,14 +22,6 @@ export const steps = (context: StepperContext) => {
     ];
   }
 
-  if (context === StepperContext.BACKGROUND) {
-    return [
-      {
-        title: "Saving your background on IPFS",
-      },
-    ];
-  }
-
   if (context === StepperContext.DEFAULT) {
     return [
       { title: "Step 1", description: "Approve Wallet Transaction" },

@@ -37,7 +37,6 @@ export default function NavBar() {
   });
 
   const {
-    isLoggedIn,
     walletConnected,
     navigationSection,
     userDetails,
@@ -45,7 +44,6 @@ export default function NavBar() {
     setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
-      isLoggedIn: state.isLoggedIn,
       walletConnected: state.walletConnected,
       navigationSection: state.navigationSection,
       userDetails: state.userDetails,

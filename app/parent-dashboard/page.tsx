@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react/no-children-prop */
 
 import {
   Box,
@@ -21,8 +20,6 @@ import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
-import { getUserByWalletAddress } from "@/services/mongo/database";
-
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import RecentMemberActivity from "@/components/parentDashboard/RecentMemberActivity";
 import { SendFundsModal } from "@/components/modals/SendFundsModal";
@@ -38,7 +35,6 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const [members, setMembers] = useState<User[]>([]);
-  const [familyDetails, setFamilyDetails] = useState({} as User);
 
   //=============================================================================
   //                               HOOKS
@@ -98,23 +94,15 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    fetchFamilyDetails();
-    fetchChildren();
+    fetchMembers();
   }, []);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
 
-  const fetchFamilyDetails = useCallback(async () => {
-    if (!userDetails?.wallet) return;
-
-    const user = await getUserByWalletAddress(userDetails.wallet);
-    setFamilyDetails(user);
-  }, [userDetails?.wallet]);
-
-  const fetchChildren = useCallback(async () => {
-    const getChildren = async () => {
+  const fetchMembers = useCallback(async () => {
+    const getMembers = async () => {
       if (!userDetails?.wallet) return;
 
       const members = await getFamilyMembers(userDetails?.accountId!);
@@ -143,7 +131,7 @@ const Parent: React.FC = () => {
       }
     };
 
-    await getChildren();
+    await getMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members.length, userDetails?.wallet]);
 
@@ -152,7 +140,6 @@ const Parent: React.FC = () => {
       <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
         <Box zIndex={1}>
           <ExpandedDashboardMenu
-            familyDetails={familyDetails}
             onToggleCollapsedMenu={onToggleCollapsedMenu}
             onToggleExtendedMenu={onToggleExtendedMenu}
             isOpenExtendedMenu={isOpenExtendedMenu}
@@ -245,7 +232,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics members={userDetails.members || []} />
+            <FamilyStatistics members={members || []} />
           </GridItem>
         </Grid>
       </Flex>

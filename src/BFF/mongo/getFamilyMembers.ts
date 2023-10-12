@@ -1,6 +1,6 @@
 import { IUser } from "@/models/User";
 import { User } from "@/data-schema/types";
-import { getAllUsers } from "@/services/mongo/database";
+import { getAllUsers } from "@/services/mongo/routes/user";
 import { UserType } from "@/data-schema/enums";
 import mongoose from "mongoose";
 

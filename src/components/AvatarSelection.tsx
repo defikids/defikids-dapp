@@ -15,7 +15,7 @@ import shallow from "zustand/shallow";
 import { TransactionStepper, steps } from "./steppers/TransactionStepper";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
-import { editUser } from "@/services/mongo/database";
+import { editUser } from "@/services/mongo/routes/user";
 
 export const AvatarSelection = () => {
   //=============================================================================

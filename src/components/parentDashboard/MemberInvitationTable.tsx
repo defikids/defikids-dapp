@@ -1,5 +1,5 @@
 import { IInvitation } from "@/models/Invitation";
-import { deleteInvitation } from "@/services/mongo/database";
+import { deleteInvitation } from "@/services/mongo/routes/invitation";
 import { formatDateToIsoString } from "@/utils/dateTime";
 import { DeleteIcon } from "@chakra-ui/icons";
 import {

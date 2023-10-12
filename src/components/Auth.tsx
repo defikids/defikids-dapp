@@ -7,7 +7,7 @@ import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
-import { getUserByWalletAddress } from "@/services/mongo/database";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("") as any;

@@ -1,4 +1,4 @@
-import { getAllActivity } from "@/services/mongo/database";
+import { getAllActivity } from "@/services/mongo/routes/activity";
 import mongoose from "mongoose";
 import { IActivity } from "@/models/Activity";
 

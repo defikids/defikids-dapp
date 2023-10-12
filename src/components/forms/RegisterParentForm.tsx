@@ -30,11 +30,9 @@ import shallow from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";
-import {
-  createAccount,
-  createActivity,
-  createUser,
-} from "@/services/mongo/database";
+import { createUser } from "@/services/mongo/routes/user";
+import { createAccount } from "@/services/mongo/routes/account";
+import { createActivity } from "@/services/mongo/routes/activity";
 import { IUser } from "@/models/User";
 import { IAccount } from "@/models/Account";
 

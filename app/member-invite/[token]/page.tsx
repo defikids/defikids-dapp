@@ -28,12 +28,14 @@ import shallow from "zustand/shallow";
 import { PermissionType } from "@/data-schema/enums";
 import { IUser } from "@/models/User";
 import {
-  createActivity,
   createUser,
+  getUserByWalletAddress,
+} from "@/services/mongo/routes/user";
+import { createActivity } from "@/services/mongo/routes/activity";
+import {
   deleteInvitation,
   getInvitation,
-  getUserByWalletAddress,
-} from "@/services/mongo/database";
+} from "@/services/mongo/routes/invitation";
 import { TestnetNetworks } from "@/data-schema/enums";
 import mongoose from "mongoose";
 import { convertTimestampToSeconds } from "@/utils/dateTime";

@@ -1,4 +1,4 @@
-import { getAllInvitations } from "@/services/mongo/database";
+import { getAllInvitations } from "@/services/mongo/routes/invitation";
 import { IInvitation } from "@/models/Invitation";
 import mongoose from "mongoose";
 

@@ -4,12 +4,10 @@ import { IAccount } from "@/models/Account";
 import { IActivity } from "@/models/Activity";
 import { IInvitation } from "@/models/Invitation";
 import { IUser } from "@/models/User";
-import {
-  getAllAccounts,
-  getAllActivity,
-  getAllInvitations,
-  getAllUsers,
-} from "@/services/mongo/database";
+import { getAllUsers } from "@/services/mongo/routes/user";
+import { getAllAccounts } from "@/services/mongo/routes/account";
+import { getAllActivity } from "@/services/mongo/routes/activity";
+import { getAllInvitations } from "@/services/mongo/routes/invitation";
 import {
   Box,
   Container,

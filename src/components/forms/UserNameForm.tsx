@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import shallow from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
-import { editUser } from "@/services/mongo/database";
+import { editUser } from "@/services/mongo/routes/user";
 
 export const EditUsername = () => {
   const [username, setUsername] = useState("");

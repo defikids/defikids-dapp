@@ -25,11 +25,8 @@ import { NetworkType } from "@/data-schema/enums";
 import { useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import {
-  createActivity,
-  deleteUser,
-  editUser,
-} from "@/services/mongo/database";
+import { deleteUser, editUser } from "@/services/mongo/routes/user";
+import { createActivity } from "@/services/mongo/routes/activity";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 
 const MemberAccordian = ({

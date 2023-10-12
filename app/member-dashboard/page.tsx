@@ -6,7 +6,7 @@ import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { useBalance } from "wagmi";
-import { getUserByWalletAddress } from "@/services/mongo/database";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 import { IUser } from "@/models/User";
 
 const MemberDashboard: React.FC = () => {

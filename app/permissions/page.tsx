@@ -28,7 +28,7 @@ import { WalletNotFound } from "@/components/WalletNotFound";
 import { Restricted } from "@/components/Restricted";
 import { useAccount } from "wagmi";
 import { getFamilyMembers } from "@/BFF/mongo/getFamilyMembers";
-import { editPermissions } from "@/services/mongo/database";
+import { editPermissions } from "@/services/mongo/routes/permission";
 
 const Permissions = () => {
   const [members, setMembers] = useState<User[]>([]);

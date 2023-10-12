@@ -19,7 +19,7 @@ import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
-import { editUser, getUserByWalletAddress } from "@/services/mongo/database";
+import { editUser, getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export default function ConfirmEmail() {
   const [isConfirmed, setIsConfirmed] = useState(false);

@@ -23,9 +23,7 @@ import {
   AccountStatus,
   PermissionType,
 } from "@/data-schema/enums";
-import { hashedFamilyId } from "@/utils/web3";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
-import { ExplainFamilyId } from "@/components/explainations/ExplainFamilyId";
 import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
@@ -44,12 +42,10 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [termsAgreed, setTermsAgreed] = useState(false);
-  const [familyId, setFamilyId] = useState("");
   const [familyName, setFamilyName] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const isNameError = username === "";
-  const isIdError = familyId === "";
   const isEmailError = email === "";
   const isFamilyNameError = familyName === "";
 
@@ -103,7 +99,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    if (isNameError || isIdError || isEmailError || isFamilyNameError) {
+    if (isNameError || isEmailError || isFamilyNameError) {
       return;
     }
 
@@ -173,15 +169,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       onClose();
     }
   };
-
-  if (showExplanation && explaination === Explaination.FAMILY_ID) {
-    return (
-      <ExplainFamilyId
-        explaination={explaination}
-        setShowExplanation={setShowExplanation}
-      />
-    );
-  }
 
   if (showExplanation && explaination === Explaination.FAMILY_NAME) {
     return (
@@ -293,50 +280,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
           {isFamilyNameError && hasSubmitted && (
             <FormErrorMessage color="red.500">
               Family name is required
-            </FormErrorMessage>
-          )}
-        </FormControl>
-
-        {/* Family Id */}
-        <FormControl isInvalid={isIdError && hasSubmitted} mt={5}>
-          <Flex direction="row" justify="flex-end" align="center">
-            <Text fontSize="xs" ml={3}>
-              <Link
-                as={NextLink}
-                color="blue.500"
-                href="#"
-                onClick={() => {
-                  setExplaination(Explaination.FAMILY_ID);
-                  setShowExplanation(true);
-                }}
-              >
-                What is this?
-              </Link>
-            </Text>
-          </Flex>
-
-          <Input
-            type="text"
-            color="black"
-            placeholder="Create Family Id"
-            value={familyId}
-            onChange={(e) => setFamilyId(e.target.value)}
-            borderColor={isIdError && hasSubmitted ? "red.500" : "black"}
-            _hover={{
-              borderColor: "gray.300",
-            }}
-            _focus={{
-              borderColor: "blue.500",
-            }}
-            sx={{
-              "::placeholder": {
-                color: "gray.400",
-              },
-            }}
-          />
-          {isIdError && hasSubmitted && (
-            <FormErrorMessage color="red.500">
-              Family Id is required.
             </FormErrorMessage>
           )}
         </FormControl>

@@ -40,7 +40,6 @@ const initialState: State = {
   reset: () => void {},
   userDetails: {
     accountId: null,
-    familyId: "",
     email: "",
     wallet: "",
     avatarURI: "",

@@ -46,11 +46,7 @@ export const SettingsModal = ({
         </ModalHeader>
         <ModalCloseButton color="black" />
         <ModalBody bgGradient={["linear(to-r, white, lightgray)"]}>
-          <Settings
-            onChangeUsernameOpen={onChangeUsernameOpen}
-            familyDetails={familyDetails}
-            fetchFamilyDetails={fetchFamilyDetails}
-          />
+          <Settings onChangeUsernameOpen={onChangeUsernameOpen} />
         </ModalBody>
         <ModalFooter />
       </ModalContent>

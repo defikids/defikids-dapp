@@ -1,5 +1,4 @@
 import { AvatarSelection } from "@/components/AvatarSelection";
-import { EditFamilyId } from "@/components/forms/FamilyIdForm";
 import { EditUsername } from "@/components/forms/UserNameForm";
 import { EditEmail } from "@/components/forms/EmailForm";
 import { User } from "@/data-schema/types";
@@ -20,12 +19,8 @@ import {
 
 export const Settings = ({
   onChangeUsernameOpen,
-  familyDetails,
-  fetchFamilyDetails,
 }: {
   onChangeUsernameOpen: () => void;
-  familyDetails: User;
-  fetchFamilyDetails: () => void;
 }) => {
   const data = [
     {
@@ -40,12 +35,7 @@ export const Settings = ({
         "Your email is used to verify your account and to send you notifications.",
       buttonTitle: "Change Email",
     },
-    {
-      title: "Family Id",
-      description:
-        "Your Family ID is a unique identifier that is used to link your family members together. It is also used to identify your family on the blockchain.",
-      buttonTitle: "Change Family Id",
-    },
+
     {
       title: "Permissions",
       description:
@@ -65,7 +55,6 @@ export const Settings = ({
   enum SelectedSetting {
     AVATAR = "Avatar",
     USERNAME = "Username",
-    FAMILY_ID = "Family Id",
     EMAIL = "Email",
     PERMISSIONS = "Permissions",
   }
@@ -97,13 +86,6 @@ export const Settings = ({
                 <AccordionPanel my={5}>
                   {title === SelectedSetting.AVATAR && <AvatarSelection />}
                   {title === SelectedSetting.USERNAME && <EditUsername />}
-                  {title === SelectedSetting.FAMILY_ID && (
-                    <EditFamilyId
-                      familyDetails={familyDetails}
-                      fetchFamilyDetails={fetchFamilyDetails}
-                    />
-                  )}
-
                   {title === SelectedSetting.EMAIL && <EditEmail />}
                   {title === SelectedSetting.PERMISSIONS && (
                     <>

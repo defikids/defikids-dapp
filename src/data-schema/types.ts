@@ -12,7 +12,6 @@ import {
 export type User = {
   accountId: mongoose.Schema.Types.ObjectId | null;
   permissions: PermissionType[];
-  familyId: string;
   email: string;
   wallet: string;
   avatarURI: string;

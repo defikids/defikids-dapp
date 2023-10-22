@@ -59,7 +59,7 @@ You choose because we think contributing to open source is fun :)
 
 ### Commits
 
-* All authors of all commits in a Pull Request must abide by the DefiKids Community [Code of Conduct](CODE_OF_CONDUCT.md).
+* All authors of all commits in a Pull Request must abide by the DefiKids Community [Code of Conduct](https://github.com/defikids/.github/blob/main/profile/CODE_OF_CONDUCT.md).
 * We follow a linear commit history in our git repositories, a pull request cannot contain merge commits. To apply upstream changes to a branch, please rebase it to the base branch.
 
 ### Commit Messages

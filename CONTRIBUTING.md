@@ -67,8 +67,7 @@ You choose because we think contributing to open source is fun :)
 Each commit message consists of a header which includes a type, a scope, and a subject:
 
 ```
-   <type>(<scope>): <subject>
-  
+   <type>(<scope>): <subject>  
 ```
 
 * `<type>(<scope>): <subject>` must not be longer that 100 characters.

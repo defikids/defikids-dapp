@@ -1,12 +1,9 @@
-
 ![DefiKids-alt](https://github.com/defikids/defikids-dapp/assets/66887028/e7038138-8f8b-4d38-acc5-1caf6446a441)
 
-
-   ### ⭐️ Crypto for Kids, parent approved
-
- 
+### ⭐️ Crypto for Kids, parent approved
 
 ## Why DefiKids
+
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
 ## ✨ Simplified Platform Overview:
@@ -88,6 +85,14 @@ Follow us on [Twitter](https://twitter.com/defikids_)
 ## 💻 Run the app
 
 Check it out [here](https://defikids.io/)
+
+## Contributors:
+
+<a href="https://github.com/defikids/defikids-dapp/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=defikids/defikids-dapp" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
 
 ## 📬 Contact Us
 

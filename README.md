@@ -57,13 +57,15 @@ Copy the `.env.example` to `.env` and populate the values.
 
 ## Docker
 
-1. Build the image and start application
+1. Make sure Docker is [installed](https://docs.docker.com/get-docker/) and running.
+
+2. Build the image and start application
 
    ```sh
    yarn docker
    ```
 
-2. Open `localhost:3000` in your browser
+3. Open `localhost:3000` in your browser
 
 <!-- CONTRIBUTING -->
 

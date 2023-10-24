@@ -28,6 +28,7 @@ import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { AirdropModal } from "@/components/modals/AirdropModal";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
+import { DefiKidsHeading } from "@/components/DefiKidsHeading";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -185,19 +186,7 @@ const Parent: React.FC = () => {
               h={isMobileSize ? "auto" : "105"}
               mt="1.2rem"
             >
-              <Flex justify="flex-end" alignItems="center">
-                <Box>
-                  <Heading
-                    size="4xl"
-                    color="white"
-                    mt={isMobileSize ? 0 : 6}
-                    pr={4}
-                  >
-                    DefiKids
-                  </Heading>
-                  <Text align="center">Earn. Save. Stake. Invest.</Text>
-                </Box>
-              </Flex>
+              <DefiKidsHeading />
             </GridItem>
           )}
 

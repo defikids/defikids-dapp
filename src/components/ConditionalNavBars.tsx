@@ -56,7 +56,7 @@ export const ConditionalNavBars = () => {
       top="0"
       left="0"
       width="100%"
-      p={pathname === "/parent-dashboard" ? 0 : 5}
+      // p={pathname === "/parent-dashboard" ? 0 : 5}
       zIndex={5}
     >
       <Box px={!isMobileSize ? 5 : 2} zIndex={5}>

@@ -17,7 +17,7 @@ import {
 import Username from "./parentDashboard/Username";
 import ParentAvatar from "./parentDashboard/Avatar";
 import AccountBalance from "./parentDashboard/AccountBalance";
-import ButtonMenu from "./parentDashboard/ButtonMenu";
+import ParentButtonMenu from "./parentDashboard/ParentButtonMenu";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
@@ -44,9 +44,9 @@ export const ExpandedDashboardMenu = ({
   isMobileSize: boolean;
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
-  onOpenSendFundsModal: () => void;
-  onOpenMembersTableModal: () => void;
-  onOpenAirdropModal: () => void;
+  onOpenSendFundsModal?: () => void;
+  onOpenMembersTableModal?: () => void;
+  onOpenAirdropModal?: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -113,10 +113,10 @@ export const ExpandedDashboardMenu = ({
               <ParentAvatar />
               <AccountBalance walletAddress={userDetails?.wallet} />
 
-              <ButtonMenu
-                onOpenSendFundsModal={onOpenSendFundsModal}
-                onOpenMembersTableModal={onOpenMembersTableModal}
-                onOpenAirdropModal={onOpenAirdropModal}
+              <ParentButtonMenu
+                onOpenSendFundsModal={onOpenSendFundsModal!}
+                onOpenMembersTableModal={onOpenMembersTableModal!}
+                onOpenAirdropModal={onOpenAirdropModal!}
               />
             </Box>
 

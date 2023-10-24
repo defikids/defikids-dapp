@@ -2,7 +2,7 @@
 
 import { Button, VStack } from "@chakra-ui/react";
 
-const ButtonMenu = ({
+const ParentButtonMenu = ({
   onOpenSendFundsModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
@@ -52,4 +52,4 @@ const ButtonMenu = ({
   );
 };
 
-export default ButtonMenu;
+export default ParentButtonMenu;

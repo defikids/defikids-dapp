@@ -94,6 +94,9 @@ Check it out [here](https://defikids.io/)
 ## 📬 Contact Us
 
 [Email](https://defikidsproject@gmail.com)
+
+## 🤩 Contributors
+
 <a href="https://github.com/defikids/defikids-dapp/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=defikids/defikids-dapp" />
 </a>

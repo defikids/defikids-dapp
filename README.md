@@ -90,8 +90,9 @@ Follow us on [Twitter](https://twitter.com/defikids_)
 Check it out [here](https://defikids.io/)
 
 ## 📬 Contact Us
+
+[Email](https://defikidsproject@gmail.com)
 <a href="https://github.com/defikids/defikids-dapp/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=defikids/defikids-dapp" />
 </a>
 
-[Email](https://defikidsproject@gmail.com)

@@ -62,12 +62,14 @@ Parents can activate full-access mode, enabling children to withdraw funds for u
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
 
+Before contributing, please read the Code of Conduct [here](./CODE_OF_CONDUCT.md).
+
 Please try to create bug reports that are:
 
-- <i>Reproducible:</i> Include steps to reproduce the problem.
-- <i>Specific</i> Include as much detail as possible: which version, what environment, etc.
-- <i>Unique:</i> Do not duplicate existing opened issues.
-- <i>Scoped to a Single Bug</i> One bug per report.
+- *Reproducible:* Include steps to reproduce the problem.
+- *Specific:* Include as much detail as possible: which version, what environment, etc.
+- *Unique:* Do not duplicate existing opened issues.
+- *Scoped to a Single Bug:* One bug per report.
 
 [Contributing Guide](https://github.com/defikids/.github/blob/main/profile/CONTRIBUTING.md)
 

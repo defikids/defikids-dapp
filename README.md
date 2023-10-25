@@ -57,7 +57,7 @@ Copy the `.env.example` to `.env` and populate the values.
 
 ## Docker
 
-1. Make sure Docker is [installed](https://docs.docker.com/get-docker/) and running.
+1. Make sure Docker is [installed](https://docs.docker.com/get-docker/){:target="\_blank"} and running.
 
 2. Build the image and start application
 

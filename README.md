@@ -57,7 +57,7 @@ Copy the `.env.example` to `.env` and populate the values.
 
 ## Docker
 
-1. Make sure Docker is [installed](https://docs.docker.com/get-docker/){:target="\_blank"} and running.
+1. Make sure Docker is [installed](https://docs.docker.com/get-docker/) and running.
 
 2. Build the image and start application
 
@@ -92,7 +92,7 @@ Please try to create bug reports that are:
 
 ## 💪 Community
 
-Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individuals looking to teach their kids about crypto.
+Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individuals looking to teach their kids about crypto
 
 Follow us on [Twitter](https://twitter.com/defikids_)
 

@@ -3,4 +3,5 @@ module.exports = {
   images: {
     domains: ["cryptologos.cc"],
   },
+  output: "standalone",
 };

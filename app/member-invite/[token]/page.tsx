@@ -209,7 +209,7 @@ const MemberInvite = () => {
         const user = await getUserByWalletAddress(address);
         const invitation = await getInvitation(accountId!, email);
 
-        if (user.response?.statusText !== "Not Found") {
+        if (user._id) {
           toast({
             title: "Error",
             description: "Wallet already registered.",

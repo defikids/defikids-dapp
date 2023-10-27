@@ -24,10 +24,11 @@ import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import StakingContracts from "@/components/parentDashboard/StakingContracts";
-import { RecentMemberActivity } from "@/components/parentDashboard/RecentMemberActivity";
-import FamilyStatistics from "@/components/parentDashboard/FamilyStatistics";
+import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
+import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
+import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
+import { SendFundsModal } from "@/components/modals/SendFundsModal";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
@@ -74,6 +75,12 @@ const MemberDashboard: React.FC = () => {
     onClose: onCloseInfoModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenSendFundsModal,
+    onOpen: onOpenSendFundsModal,
+    onClose: onCloseSendFundsModal,
+  } = useDisclosure();
+
   const { connectedSigner } = useContractStore(
     (state) => ({
       connectedSigner: state.connectedSigner,
@@ -93,6 +100,7 @@ const MemberDashboard: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
+            onOpenSendFundsModal={onOpenSendFundsModal}
           />
         </Box>
         {!isMobileSize && (
@@ -181,6 +189,11 @@ const MemberDashboard: React.FC = () => {
         isOpen={isOpenInfoModal}
         onClose={onCloseInfoModal}
         isOpenExtendedMenu={isOpenExtendedMenu}
+      />
+
+      <SendFundsModal
+        isOpen={isOpenSendFundsModal}
+        onClose={onCloseSendFundsModal}
       />
     </Box>
   );

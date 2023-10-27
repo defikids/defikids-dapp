@@ -5,7 +5,7 @@ import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 
-const ParentAvatar = () => {
+const DashboardAvatar = () => {
   const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
@@ -26,4 +26,4 @@ const ParentAvatar = () => {
   );
 };
 
-export default ParentAvatar;
+export default DashboardAvatar;

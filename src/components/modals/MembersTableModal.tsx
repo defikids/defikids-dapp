@@ -15,14 +15,14 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { useWindowSize } from "usehooks-ts";
-import MemberAccordian from "@/components/parentDashboard/MemberAccordian";
+import MemberAccordian from "@/components/dashboards/parentDashboard/MemberAccordian";
 import { RegisterMemberForm } from "../forms/RegisterMemberForm";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";
-import MemberInvitationTable from "@/components/parentDashboard/MemberInvitationTable";
+import MemberInvitationTable from "@/components/dashboards/parentDashboard/MemberInvitationTable";
 import { EmailVerificationRequired } from "@/components/email/EmailVerificationRequired";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { getAccount } from "@/services/mongo/routes/account";

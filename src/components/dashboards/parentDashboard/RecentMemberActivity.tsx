@@ -41,13 +41,13 @@ export const RecentMemberActivity = ({ user }: { user: User }) => {
       const previewData = data.slice(0, 5);
 
       const formattedActivity = previewData.map((activity: IActivity) => {
-        if (user.accountId === activity.accountId) {
-          const member = members.find((m) => m.wallet === activity.wallet);
+        if (user.accountId === activity?.accountId) {
+          const member = members.find((m) => m.wallet === activity?.wallet);
 
           if (member) {
             return {
-              activityText: `<span style="font-weight: 600">${member?.username}</span> ${activity.type}`,
-              dateTime: activity.date,
+              activityText: `<span style="font-weight: 600">${member?.username}</span> ${activity?.type}`,
+              dateTime: activity?.date,
               userName: member?.username || "",
               userAvatar: member?.avatarURI || "",
             };
@@ -83,25 +83,25 @@ export const RecentMemberActivity = ({ user }: { user: User }) => {
         my="2.5rem"
       >
         {memberActivity.map((activity, index) => (
-          <Fragment key={activity.dateTime}>
+          <Fragment key={activity?.dateTime}>
             <Flex w="100%" justify="space-between" alignItems="center">
               <Stack spacing={0} direction="row" alignItems="center">
                 <Flex p={4}>
                   <Avatar
                     size="md"
-                    name={activity.userName}
-                    src={activity.userAvatar || ""}
+                    name={activity?.userName}
+                    src={activity?.userAvatar || ""}
                   />
                 </Flex>
                 <Flex direction="column" p={2}>
                   <Text
                     fontSize={{ base: "sm", sm: "md", md: "lg" }}
                     dangerouslySetInnerHTML={{
-                      __html: activity.activityText,
+                      __html: activity?.activityText,
                     }}
                   />
                   <Text fontSize={{ base: "sm", sm: "md" }}>
-                    {formatDateToIsoString(activity.dateTime)}
+                    {formatDateToIsoString(activity?.dateTime)}
                   </Text>
                 </Flex>
               </Stack>

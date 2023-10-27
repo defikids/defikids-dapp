@@ -7,11 +7,21 @@ import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
+import { useSwitchNetwork } from "wagmi";
+import { getNetwork } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("") as any;
   const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
+  const { switchNetwork } = useSwitchNetwork();
+  const { chain } = getNetwork();
+
+  useEffect(() => {
+    if (chain?.id && chain.id !== 5) {
+      switchNetwork?.(5);
+    }
+  }, [chain]);
 
   watchAccount((account) => {
     const { isConnected, address } = account;

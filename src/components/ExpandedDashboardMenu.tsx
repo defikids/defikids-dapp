@@ -14,16 +14,18 @@ import {
   IconButton,
   Text,
 } from "@chakra-ui/react";
-import Username from "./parentDashboard/Username";
-import ParentAvatar from "./parentDashboard/Avatar";
-import AccountBalance from "./parentDashboard/AccountBalance";
-import ButtonMenu from "./parentDashboard/ButtonMenu";
+import DashboardUsername from "./dashboards/DashboardUsername";
+import DashboardAvatar from "./dashboards/DashboardAvatar";
+import DashboardAccountBalance from "./dashboards/DashboardAccountBalance";
+import ParentButtonMenu from "./dashboards/parentDashboard/ParentButtonMenu";
+import MemberButtonMenu from "./dashboards/memberDashboard/MemberButtonMenu";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";
+import { UserType } from "@/data-schema/enums";
 
 export const ExpandedDashboardMenu = ({
   onToggleCollapsedMenu,
@@ -44,9 +46,9 @@ export const ExpandedDashboardMenu = ({
   isMobileSize: boolean;
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
-  onOpenSendFundsModal: () => void;
-  onOpenMembersTableModal: () => void;
-  onOpenAirdropModal: () => void;
+  onOpenSendFundsModal?: () => void;
+  onOpenMembersTableModal?: () => void;
+  onOpenAirdropModal?: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -109,15 +111,21 @@ export const ExpandedDashboardMenu = ({
                   icon={<TriangleUpIcon />}
                 />
               </Flex>
-              <Username />
-              <ParentAvatar />
-              <AccountBalance walletAddress={userDetails?.wallet} />
+              <DashboardUsername />
+              <DashboardAvatar />
+              <DashboardAccountBalance walletAddress={userDetails?.wallet} />
 
-              <ButtonMenu
-                onOpenSendFundsModal={onOpenSendFundsModal}
-                onOpenMembersTableModal={onOpenMembersTableModal}
-                onOpenAirdropModal={onOpenAirdropModal}
-              />
+              {userDetails?.userType === UserType.PARENT ? (
+                <ParentButtonMenu
+                  onOpenSendFundsModal={onOpenSendFundsModal!}
+                  onOpenMembersTableModal={onOpenMembersTableModal!}
+                  onOpenAirdropModal={onOpenAirdropModal!}
+                />
+              ) : (
+                <MemberButtonMenu
+                  onOpenSendFundsModal={onOpenSendFundsModal!}
+                />
+              )}
             </Box>
 
             {/* Footer Buttons */}

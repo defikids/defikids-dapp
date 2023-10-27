@@ -12,11 +12,11 @@ export const menuCards = [
     link: "/resources",
   },
 
-  {
-    title: "Company",
-    description: "Learn more about the team and what we're passionate about",
-    link: "/company",
-  },
+  // {
+  //   title: "Company",
+  //   description: "Learn more about the team and what we're passionate about",
+  //   link: "/company",
+  // },
 
   {
     title: "Use DefiKids",

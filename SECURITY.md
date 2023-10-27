@@ -1,12 +1,13 @@
 # Security Policy
 
-We prioritize the security of our project and value the contributions of the community. If you come across a security vulnerability within our repository, we encourage you to report it responsibly. Here's how you can do that:
+We're working hard to make DefiKids safe and secure for everyone. Thank you for taking the time to responsibly disclose any issues you find.
 
-## Reporting a Vulnerability
+All security bugs in DefiKids should be reported by email to security@defikids.io.
 
-To report a security vulnerability, please follow these steps:
+This email address is delivered to a small security team. Your email will be acknowledged within 24 hours and please be specific with the issue you have found.
 
-1. Create a new issue in this repository to report the vulnerability. Use a clear and descriptive title to help us understand the issue.
-2. Provide detailed steps to reproduce the vulnerability, along with any additional context you can provide.
-3. Avoid sharing sensitive information or data when reporting the vulnerability.
-4. Our team will review the issue and respond to it as soon as possible.
+If you have not received a reply to your email within 48 hours, or have not heard from the security team for the past five days, please reach out in our [community](https://discord.gg/bDGMYNa8Ng).
+
+Please note that our community is a public area. When escalating at this venue, please do not discuss your issue. Simply say that you’re trying to get a hold of someone from the security team.
+
+Thank you for helping us make DefiKids more secure.

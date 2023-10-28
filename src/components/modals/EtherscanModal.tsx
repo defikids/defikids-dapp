@@ -18,9 +18,11 @@ import {
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import NextLink from "next/link";
-import { Explaination } from "@/data-schema/enums";
+import { ChainId, Explaination } from "@/data-schema/enums";
 import { useMemo, useState } from "react";
 import { ExplainBlockchain } from "@/components/explainations/ExplainBlockchain";
+import { useNetwork } from "wagmi";
+import { GOERLI_DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
 
 export const EtherscanModal = ({
   isOpen,
@@ -39,6 +41,8 @@ export const EtherscanModal = ({
     }),
     shallow
   );
+
+  const { chain } = useNetwork();
 
   //=============================================================================
   //                               STATE
@@ -90,8 +94,19 @@ export const EtherscanModal = ({
           >
             My Transaction History
           </Button>
-          <Button w="auto" h="40px" colorScheme="blue">
-            Staking Contract
+          <Button
+            w="auto"
+            h="40px"
+            colorScheme="blue"
+            onClick={() => {
+              if (chain?.id === ChainId.GOERLI)
+                window.open(
+                  `https://goerli.etherscan.io/address/${GOERLI_DEFI_DOLLARS_ADDRESS}`,
+                  "_blank"
+                );
+            }}
+          >
+            DefiDollars Contract
           </Button>
         </Stack>
       </>

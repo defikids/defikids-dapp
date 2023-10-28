@@ -10,7 +10,7 @@ import { watchAccount } from "@wagmi/core";
 import { useSwitchNetwork } from "wagmi";
 import { getNetwork } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
+import { GOERLI_DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
 import { abi } from "@/blockchain/artifacts/defi-dollars";
 
 const Auth = () => {
@@ -87,7 +87,7 @@ const Auth = () => {
       setConnectedSigner(signer);
 
       const defiDollarsContract = new ethers.Contract(
-        DEFI_DOLLARS_ADDRESS,
+        GOERLI_DEFI_DOLLARS_ADDRESS,
         abi,
         signer
       );

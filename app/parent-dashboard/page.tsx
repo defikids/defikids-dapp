@@ -29,11 +29,16 @@ import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { AirdropModal } from "@/components/modals/AirdropModal";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
+import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
+import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
+import { useContractStore } from "@/store/contract/contractStore";
+import { ethers } from "ethers";
 
 const Parent: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
+  const [tokenBalance, setTokenBalance] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -44,6 +49,13 @@ const Parent: React.FC = () => {
       userDetails: state.userDetails,
       familyMembers: state.familyMembers,
       setFamilyMembers: state.setFamilyMembers,
+    }),
+    shallow
+  );
+
+  const { defiDollarsContractInstance } = useContractStore(
+    (state) => ({
+      defiDollarsContractInstance: state.defiDollarsContractInstance,
     }),
     shallow
   );
@@ -94,9 +106,26 @@ const Parent: React.FC = () => {
     onClose: onCloseAirdropModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenDepositDefiDollarsModal,
+    onOpen: onOpenDepositDefiDollarsModal,
+    onClose: onCloseDepositDefiDollarsModal,
+  } = useDisclosure();
+
   useEffect(() => {
     fetchMembers();
   }, []);
+
+  useEffect(() => {
+    const defiDollarsBalance = async () => {
+      const balance = await defiDollarsContractInstance?.balanceOf(
+        userDetails.wallet
+      );
+      setTokenBalance(Number(ethers.utils.formatEther(balance)));
+    };
+
+    defiDollarsBalance();
+  }, [isOpenDepositDefiDollarsModal]);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -191,6 +220,21 @@ const Parent: React.FC = () => {
           )}
 
           <GridItem
+            rowStart={1}
+            rowEnd={isMobileSize ? 2 : 1}
+            colStart={isMobileSize ? 1 : 1}
+            colEnd={isMobileSize ? 1 : 9}
+            h={isMobileSize ? "auto" : "105"}
+            mt={isMobileSize ? "1.2rem" : "12rem"}
+            mb="0.5rem"
+          >
+            <DefiDollars
+              onOpenDepositDefiDollarsModal={onOpenDepositDefiDollarsModal}
+              tokenBalance={tokenBalance}
+            />
+          </GridItem>
+
+          <GridItem
             rowStart={
               isMobileSize || (isMobileSize && isOpenExtendedMenu) ? 2 : 0
             }
@@ -202,7 +246,6 @@ const Parent: React.FC = () => {
           >
             <StakingContracts />
           </GridItem>
-
           <GridItem
             rowSpan={2}
             colStart={isMobileSize ? 1 : 5}
@@ -213,7 +256,6 @@ const Parent: React.FC = () => {
           >
             <RecentMemberActivity user={userDetails} />
           </GridItem>
-
           <GridItem
             rowStart={isMobileSize ? 3 : 0}
             rowEnd={isMobileSize ? 3 : 0}
@@ -252,6 +294,11 @@ const Parent: React.FC = () => {
       />
 
       <AirdropModal isOpen={isOpenAirdropModal} onClose={onCloseAirdropModal} />
+
+      <DepositDefiDollarsModal
+        isOpen={isOpenDepositDefiDollarsModal}
+        onClose={onCloseDepositDefiDollarsModal}
+      />
     </Box>
   );
 };

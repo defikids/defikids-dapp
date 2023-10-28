@@ -42,6 +42,7 @@ export enum Explaination {
   SANDBOX = "SANDBOX",
   FAMILY_NAME = "FAMILY_NAME",
   BLOCKCHAIN = "BLOCKCHAIN",
+  DEFI_DOLLARS = "DEFI_DOLLARS",
 }
 
 export enum MainnetNetworks {

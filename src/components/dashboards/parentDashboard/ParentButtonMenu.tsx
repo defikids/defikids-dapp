@@ -22,10 +22,10 @@ const ParentButtonMenu = ({
           onOpenSendFundsModal();
         }}
       >
-        Send Funds
+        Send Allowance
       </Button>
 
-      <Button
+      {/* <Button
         variant="outline"
         colorScheme="white"
         _hover={{ borderColor: "gray" }}
@@ -35,7 +35,7 @@ const ParentButtonMenu = ({
         }}
       >
         Airdrop
-      </Button>
+      </Button> */}
 
       <Button
         variant="outline"

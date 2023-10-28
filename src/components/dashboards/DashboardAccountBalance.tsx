@@ -1,7 +1,6 @@
 "use client";
 
 import { trimAddress } from "@/utils/web3";
-import { CopyIcon } from "@chakra-ui/icons";
 import {
   Flex,
   Heading,

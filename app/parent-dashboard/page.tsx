@@ -35,15 +35,15 @@ const Parent: React.FC = () => {
   //                               STATE
   //=============================================================================
 
-  const [members, setMembers] = useState<User[]>([]);
-
   //=============================================================================
   //                               HOOKS
   //=============================================================================
 
-  const { userDetails } = useAuthStore(
+  const { userDetails, setFamilyMembers, familyMembers } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
+      familyMembers: state.familyMembers,
+      setFamilyMembers: state.setFamilyMembers,
     }),
     shallow
   );
@@ -126,15 +126,15 @@ const Parent: React.FC = () => {
           };
         });
 
-        setMembers(membersWithBalances);
+        setFamilyMembers(membersWithBalances);
       } else {
-        setMembers(members);
+        setFamilyMembers(members);
       }
     };
 
     await getMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [members.length, userDetails?.wallet]);
+  }, [familyMembers.length, userDetails?.wallet]);
 
   return (
     <Box>
@@ -221,7 +221,7 @@ const Parent: React.FC = () => {
             bg={useColorModeValue("gray.100", "gray.900")}
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics members={members || []} />
+            <FamilyStatistics members={familyMembers || []} />
           </GridItem>
         </Grid>
       </Flex>

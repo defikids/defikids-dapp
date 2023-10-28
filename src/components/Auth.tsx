@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import { providers } from "ethers";
+import { ethers, providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { useSwitchNetwork } from "wagmi";
 import { getNetwork } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
+import { abi } from "@/blockchain/artifacts/defi-dollars";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("") as any;
@@ -59,19 +61,21 @@ const Auth = () => {
     shallow
   );
 
-  const { setConnectedSigner, setProvider } = useContractStore(
-    (state) => ({
-      setConnectedSigner: state.setConnectedSigner,
-      setProvider: state.setProvider,
-    }),
-    shallow
-  );
+  const { setConnectedSigner, setProvider, setDefiDollarsContractInstance } =
+    useContractStore(
+      (state) => ({
+        setConnectedSigner: state.setConnectedSigner,
+        setProvider: state.setProvider,
+        setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
+      }),
+      shallow
+    );
 
   /*
    * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
    */
   useEffect(() => {
-    const fetchUserType = async () => {
+    const init = async () => {
       if (!selectedAddress || hasCheckedUserType) return;
 
       // @ts-ignore
@@ -82,6 +86,14 @@ const Auth = () => {
       setProvider(provider);
       setConnectedSigner(signer);
 
+      const defiDollarsContract = new ethers.Contract(
+        DEFI_DOLLARS_ADDRESS,
+        abi,
+        signer
+      );
+
+      setDefiDollarsContractInstance(defiDollarsContract);
+
       const user = await getUserByWalletAddress(selectedAddress);
       setHasCheckedUserType(true);
 
@@ -91,7 +103,7 @@ const Auth = () => {
       setFetchedUserDetails(true);
     };
 
-    fetchUserType();
+    init();
   }, [selectedAddress, hasCheckedUserType]);
 
   /*

@@ -9,7 +9,7 @@ const MemberButtonMenu = ({
 }) => {
   return (
     <VStack spacing={4} align="stretch" justify="space-between" mt={10} mx={5}>
-      <Button
+      {/* <Button
         variant="outline"
         colorScheme="white"
         _hover={{ borderColor: "gray" }}
@@ -19,7 +19,7 @@ const MemberButtonMenu = ({
         }}
       >
         Send Funds
-      </Button>
+      </Button> */}
     </VStack>
   );
 };

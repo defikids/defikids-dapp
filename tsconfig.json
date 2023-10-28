@@ -28,6 +28,7 @@
       "@/services/*": ["src/services/*"],
       "@/BFF/*": ["src/BFF/*"],
       "@/models/*": ["src/models/*"],
+      "@/blockchain/*": ["src/blockchain/*"],
       "@/*": ["./*"]
     },
     "plugins": [

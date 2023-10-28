@@ -17,6 +17,7 @@ type State = {
   userDetails: User;
   mobileMenuOpen: boolean;
   fetchedUserDetails: boolean;
+  familyMembers: User[];
 };
 
 type Actions = {
@@ -27,6 +28,7 @@ type Actions = {
   setUserDetails: (userDetails: User) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
+  setFamilyMembers: (familyMembers: User[]) => void;
   reset: () => void;
 };
 
@@ -55,6 +57,7 @@ const initialState: State = {
   },
   mobileMenuOpen: false,
   fetchedUserDetails: false,
+  familyMembers: [],
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -110,6 +113,11 @@ const setters = (set: any) => ({
   setFetchedUserDetails: (fetchedUserDetails: boolean) => {
     set((state: { fetchedUserDetails: boolean }) => {
       state.fetchedUserDetails = fetchedUserDetails;
+    }, shallow);
+  },
+  setFamilyMembers: (familyMembers: User[]) => {
+    set((state: { familyMembers: User[] }) => {
+      state.familyMembers = familyMembers;
     }, shallow);
   },
   reset: () => {

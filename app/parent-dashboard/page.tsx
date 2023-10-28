@@ -125,7 +125,7 @@ const Parent: React.FC = () => {
     };
 
     defiDollarsBalance();
-  }, [isOpenDepositDefiDollarsModal]);
+  }, [isOpenDepositDefiDollarsModal, isOpenSendFundsModal]);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -286,6 +286,7 @@ const Parent: React.FC = () => {
       <SendFundsModal
         isOpen={isOpenSendFundsModal}
         onClose={onCloseSendFundsModal}
+        tokenBalance={tokenBalance}
       />
 
       <MembersTableModal

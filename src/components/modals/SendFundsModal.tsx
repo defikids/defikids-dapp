@@ -19,7 +19,7 @@ import {
   Flex,
   Select,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   TransactionStepper,
   steps,
@@ -36,9 +36,11 @@ import Logo from "@/components/Logo";
 export const SendFundsModal = ({
   isOpen,
   onClose,
+  tokenBalance,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  tokenBalance: number;
 }) => {
   //=============================================================================
   //                               STATE
@@ -46,9 +48,7 @@ export const SendFundsModal = ({
   const [memberAddress, setMemberAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [tokenBalance, setTokenBalance] = useState(0);
   const [showExchangeDialog, setShowExchangeDialog] = useState(false);
-  const [amountToExchange, setAmountToExchange] = useState("");
 
   //=============================================================================
   //                               HOOKS
@@ -60,9 +60,8 @@ export const SendFundsModal = ({
     shallow
   );
 
-  const { userDetails, familyMembers } = useAuthStore(
+  const { familyMembers } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       familyMembers: state.familyMembers,
     }),
     shallow
@@ -75,57 +74,9 @@ export const SendFundsModal = ({
     count: steps.length,
   });
 
-  useEffect(() => {
-    const defiDollarsBalance = async () => {
-      const balance = await defiDollarsContractInstance?.balanceOf(
-        userDetails.wallet
-      );
-      setTokenBalance(Number(ethers.utils.formatEther(balance)));
-    };
-
-    defiDollarsBalance();
-  }, [isLoading]);
-
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
-
-  const performExchange = async () => {
-    if (!amountToExchange) {
-      toast({
-        title: "Please enter an amount",
-        status: "error",
-      });
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      setActiveStep(0);
-
-      const tx = (await defiDollarsContractInstance?.deposit({
-        value: ethers.utils.parseEther(amountToExchange),
-      })) as TransactionResponse;
-
-      setActiveStep(1);
-      await tx.wait();
-
-      setShowExchangeDialog(false);
-
-      toast({
-        title: "Exchange successful",
-        status: "success",
-      });
-      setIsLoading(false);
-      setAmountToExchange("");
-    } catch (e) {
-      const errorDetails = transactionErrors(e);
-      toast(errorDetails);
-      setIsLoading(false);
-      setAmountToExchange("");
-    }
-  };
 
   const onSubmit = async () => {
     const recipientAddress = memberAddress;
@@ -167,12 +118,12 @@ export const SendFundsModal = ({
       setActiveStep(1);
       await tx.wait();
 
-      setShowExchangeDialog(false);
-
       toast({
         title: "Allowance sent",
         status: "success",
       });
+
+      onClose();
       setAmount("");
       setMemberAddress("");
 
@@ -181,7 +132,6 @@ export const SendFundsModal = ({
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
       setIsLoading(false);
-      setAmountToExchange("");
     }
   };
 
@@ -205,11 +155,7 @@ export const SendFundsModal = ({
       />
       <ModalContent>
         <ModalHeader>
-          <Heading fontSize="sm">
-            {!showExchangeDialog
-              ? "Send Allowance"
-              : "Exchange ETH for Defi Dollars"}
-          </Heading>
+          <Heading fontSize="sm">Send Allowance</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -275,37 +221,6 @@ export const SendFundsModal = ({
                   />
                 </FormControl>
               </Box>
-              <Text fontSize="xs" mt="3">
-                All members require Defi Dollars. You need to exchange your ETH
-                for Defi Dollars before you can send funds.
-              </Text>
-            </Box>
-          )}
-
-          {/* Exchange */}
-          {!isLoading && showExchangeDialog && (
-            <Box>
-              <Text fontSize="xs" my="3">
-                Defi Dollars are tokens that are used by members to interact
-                with the features of the platform. You can exchange your ETH for
-                Defi Dollars at a rate of 1:1.
-              </Text>
-
-              <FormControl>
-                <Input
-                  placeholder="Amount to exchange"
-                  value={amountToExchange}
-                  onChange={(e) => setAmountToExchange(e.target.value)}
-                  style={{
-                    border: "1px solid lightgray",
-                  }}
-                  sx={{
-                    "::placeholder": {
-                      color: "gray.400",
-                    },
-                  }}
-                />
-              </FormControl>
             </Box>
           )}
         </ModalBody>
@@ -313,37 +228,11 @@ export const SendFundsModal = ({
           {/* Action Buttons */}
           {!isLoading && (
             <Box>
-              {!showExchangeDialog ? (
-                <Box>
-                  <Button
-                    colorScheme="black"
-                    variant="outline"
-                    mr="3"
-                    onClick={() => setShowExchangeDialog(true)}
-                  >
-                    Exchange ETH
-                  </Button>
-                  <Button colorScheme="blue" onClick={onSubmit}>
-                    Send Allowance
-                  </Button>
-                </Box>
-              ) : (
-                <Box>
-                  <Button
-                    colorScheme="red"
-                    mr="3"
-                    onClick={() => {
-                      setShowExchangeDialog(false);
-                      setAmountToExchange("");
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button colorScheme="blue" mr="3" onClick={performExchange}>
-                    Perform Exchange
-                  </Button>
-                </Box>
-              )}
+              <Box>
+                <Button colorScheme="blue" onClick={onSubmit}>
+                  Send Allowance
+                </Button>
+              </Box>
             </Box>
           )}
         </ModalFooter>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import {
@@ -5,34 +6,36 @@ import {
   Flex,
   Grid,
   GridItem,
-  Heading,
   useDisclosure,
   useColorModeValue,
-  Text,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import { User } from "@/data-schema/types";
+import { useContractStore } from "@/store/contract/contractStore";
+import shallow from "zustand/shallow";
 import axios from "axios";
-import { SettingsModal } from "@/components/modals/SettingsModal";
-import { InfoModal } from "@/components/modals/InfoModal";
+import { useWindowSize } from "usehooks-ts";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
+import { ethers } from "ethers";
+
+// Components
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
-import { useWindowSize } from "usehooks-ts";
-import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
-import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
-import { MembersTableModal } from "@/components/modals/MembersTableModal";
-import { AirdropModal } from "@/components/modals/AirdropModal";
-import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
 import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
+
+// Modals
+import { SettingsModal } from "@/components/modals/SettingsModal";
+import { InfoModal } from "@/components/modals/InfoModal";
+import { EtherscanModal } from "@/components/modals/EtherscanModal";
+import { SendFundsModal } from "@/components/modals/SendFundsModal";
+import { MembersTableModal } from "@/components/modals/MembersTableModal";
+import { AirdropModal } from "@/components/modals/AirdropModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
-import { useContractStore } from "@/store/contract/contractStore";
-import { ethers } from "ethers";
+import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -112,6 +115,12 @@ const Parent: React.FC = () => {
     onClose: onCloseDepositDefiDollarsModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenWithdrawDefiDollarsModal,
+    onOpen: onOpenWithdrawDefiDollarsModal,
+    onClose: onCloseWithdrawDefiDollarsModal,
+  } = useDisclosure();
+
   useEffect(() => {
     fetchMembers();
   }, []);
@@ -125,7 +134,11 @@ const Parent: React.FC = () => {
     };
 
     defiDollarsBalance();
-  }, [isOpenDepositDefiDollarsModal, isOpenSendFundsModal]);
+  }, [
+    isOpenDepositDefiDollarsModal,
+    isOpenWithdrawDefiDollarsModal,
+    isOpenSendFundsModal,
+  ]);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -231,6 +244,7 @@ const Parent: React.FC = () => {
             <DefiDollars
               onOpenDepositDefiDollarsModal={onOpenDepositDefiDollarsModal}
               tokenBalance={tokenBalance}
+              onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
             />
           </GridItem>
 
@@ -299,6 +313,11 @@ const Parent: React.FC = () => {
       <DepositDefiDollarsModal
         isOpen={isOpenDepositDefiDollarsModal}
         onClose={onCloseDepositDefiDollarsModal}
+      />
+
+      <WithdrawDefiDollarsModal
+        isOpen={isOpenWithdrawDefiDollarsModal}
+        onClose={onCloseWithdrawDefiDollarsModal}
       />
     </Box>
   );

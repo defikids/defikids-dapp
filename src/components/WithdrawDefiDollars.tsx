@@ -9,6 +9,7 @@ import {
   Box,
   Text,
   Flex,
+  Link,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import {
@@ -17,17 +18,26 @@ import {
 } from "@/components/steppers/TransactionStepper";
 import shallow from "zustand/shallow";
 import { useContractStore } from "@/store/contract/contractStore";
-import { StepperContext } from "@/data-schema/enums";
+import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
+import NextLink from "next/link";
 
-export const DepositDefiDollars = ({ onClose }: { onClose: () => void }) => {
+export const WithdrawDefiDollars = ({
+  onClose,
+  setShowExplanation,
+  setExplaination,
+}: {
+  onClose: () => void;
+  setShowExplanation: (show: boolean) => void;
+  setExplaination: (explaination: Explaination) => void;
+}) => {
   //=============================================================================
   //                               STATE
   //=============================================================================
   const [isLoading, setIsLoading] = useState(false);
-  const [amountToExchange, setAmountToExchange] = useState("");
+  const [amountToWithdraw, setAmountToWithdraw] = useState("");
 
   //=============================================================================
   //                               HOOKS
@@ -50,8 +60,8 @@ export const DepositDefiDollars = ({ onClose }: { onClose: () => void }) => {
   //                               FUNCTIONS
   //=============================================================================
 
-  const handleDeposit = async () => {
-    if (!amountToExchange) {
+  const handleWithdraw = async () => {
+    if (!amountToWithdraw) {
       toast({
         title: "Please enter an amount",
         status: "error",
@@ -64,25 +74,25 @@ export const DepositDefiDollars = ({ onClose }: { onClose: () => void }) => {
 
       setActiveStep(0);
 
-      const tx = (await defiDollarsContractInstance?.deposit({
-        value: ethers.utils.parseEther(amountToExchange),
-      })) as TransactionResponse;
+      const tx = (await defiDollarsContractInstance?.withdraw(
+        ethers.utils.parseEther(amountToWithdraw)
+      )) as TransactionResponse;
 
       setActiveStep(1);
       await tx.wait();
 
       toast({
-        title: "Deposit Successful",
+        title: "Withdraw Successful",
         status: "success",
       });
       onClose();
       setIsLoading(false);
-      setAmountToExchange("");
+      setAmountToWithdraw("");
     } catch (e) {
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
       setIsLoading(false);
-      setAmountToExchange("");
+      setAmountToWithdraw("");
     }
   };
 
@@ -97,17 +107,27 @@ export const DepositDefiDollars = ({ onClose }: { onClose: () => void }) => {
 
       {!isLoading && (
         <Box>
-          <Text fontSize="xs" my="3">
-            Defi Dollars are tokens that are used by members to interact with
-            the features of the platform. You can exchange your ETH for Defi
-            Dollars at a rate of 1:1
-          </Text>
+          <Flex direction="row" justify="flex-end" align="center" mb={3}>
+            <Text fontSize="xs" ml={3}>
+              <Link
+                as={NextLink}
+                color="blue.500"
+                href="#"
+                onClick={() => {
+                  setExplaination(Explaination.DEFI_DOLLARS);
+                  setShowExplanation(true);
+                }}
+              >
+                What is this?
+              </Link>
+            </Text>
+          </Flex>
 
           <FormControl>
             <Input
-              placeholder="Amount to exchange"
-              value={amountToExchange}
-              onChange={(e) => setAmountToExchange(e.target.value)}
+              placeholder="Amount to withdraw"
+              value={amountToWithdraw}
+              onChange={(e) => setAmountToWithdraw(e.target.value)}
               style={{
                 border: "1px solid lightgray",
               }}
@@ -120,8 +140,8 @@ export const DepositDefiDollars = ({ onClose }: { onClose: () => void }) => {
           </FormControl>
 
           <Flex justifyContent="flex-end">
-            <Button colorScheme="blue" onClick={handleDeposit} mt={3}>
-              Deposit
+            <Button colorScheme="blue" onClick={handleWithdraw} mt={3}>
+              Withdraw
             </Button>
           </Flex>
         </Box>

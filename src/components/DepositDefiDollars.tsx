@@ -125,7 +125,7 @@ export const DepositDefiDollars = ({
 
           <FormControl>
             <Input
-              placeholder="Amount to exchange"
+              placeholder="Amount to deposit"
               value={amountToExchange}
               onChange={(e) => setAmountToExchange(e.target.value)}
               style={{

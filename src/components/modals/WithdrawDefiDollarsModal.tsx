@@ -11,11 +11,11 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { DepositDefiDollars } from "@/components/DepositDefiDollars";
+import { WithdrawDefiDollars } from "@/components/WithdrawDefiDollars";
 import { ExplainDefiDollars } from "@/components/explainations/ExplainDefiDollars";
 import { Explaination } from "@/data-schema/enums";
 
-export const DepositDefiDollarsModal = ({
+export const WithdrawDefiDollarsModal = ({
   isOpen,
   onClose,
 }: {
@@ -34,9 +34,9 @@ export const DepositDefiDollarsModal = ({
     );
   };
 
-  const depositComponent = () => {
+  const withdrawComponent = () => {
     return (
-      <DepositDefiDollars
+      <WithdrawDefiDollars
         onClose={onClose}
         setShowExplanation={setShowExplanation}
         setExplaination={setExplaination}
@@ -54,11 +54,13 @@ export const DepositDefiDollarsModal = ({
       />
       <ModalContent>
         <ModalHeader>
-          <Heading fontSize="sm">Deposit DefiDollars</Heading>
+          <Heading fontSize="sm">Withdraw DefiDollars</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {showExplanation ? showDefiDollarsExplaination() : depositComponent()}
+          {showExplanation
+            ? showDefiDollarsExplaination()
+            : withdrawComponent()}
         </ModalBody>
 
         <ModalFooter m={0} p="3px" />

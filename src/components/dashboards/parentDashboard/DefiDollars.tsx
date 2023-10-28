@@ -11,9 +11,11 @@ import {
 export const DefiDollars = ({
   onOpenDepositDefiDollarsModal,
   tokenBalance,
+  onOpenWithdrawDefiDollarsModal,
 }: {
   onOpenDepositDefiDollarsModal: () => void;
   tokenBalance: number;
+  onOpenWithdrawDefiDollarsModal: () => void;
 }) => {
   return (
     <Box p={5} bg={useColorModeValue("gray.100", "gray.900")} rounded="lg">
@@ -44,7 +46,16 @@ export const DefiDollars = ({
           >
             Deposit
           </Button>
-          <Button colorScheme="blue" variant="outline" size="sm" mx={3}>
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            size="sm"
+            mx={3}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenWithdrawDefiDollarsModal();
+            }}
+          >
             Withdraw
           </Button>
         </Flex>

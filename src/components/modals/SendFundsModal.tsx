@@ -103,11 +103,14 @@ export const SendFundsModal = ({
       setIsLoading(true);
 
       setActiveStep(0);
+
       const tx = (await defiDollarsContractInstance?.deposit({
         value: ethers.utils.parseEther(amountToExchange),
       })) as TransactionResponse;
+
       setActiveStep(1);
       await tx.wait();
+
       setShowExchangeDialog(false);
 
       toast({
@@ -130,7 +133,7 @@ export const SendFundsModal = ({
 
     if (!recipientAddress) {
       toast({
-        title: "Please enter a member address",
+        title: "Please select a member",
         status: "error",
       });
       return;
@@ -203,7 +206,7 @@ export const SendFundsModal = ({
       <ModalContent>
         <ModalHeader>
           <Heading fontSize="sm">
-            {!isLoading && !showExchangeDialog
+            {!showExchangeDialog
               ? "Send Allowance"
               : "Exchange ETH for Defi Dollars"}
           </Heading>
@@ -217,6 +220,7 @@ export const SendFundsModal = ({
             />
           )}
 
+          {/* Send allowance */}
           {!isLoading && !showExchangeDialog && (
             <Box>
               <Flex alignItems="center" justify="center">
@@ -253,20 +257,6 @@ export const SendFundsModal = ({
                       </option>
                     ))}
                   </Select>
-                  {/* <Input
-                    placeholder="Member wallet address"
-                    value={memberAddress}
-                    onChange={(e) => setMemberAddress(e.target.value)}
-                    style={{
-                      border: "1px solid lightgray",
-                      marginBottom: "10px",
-                    }}
-                    sx={{
-                      "::placeholder": {
-                        color: "gray.400",
-                      },
-                    }}
-                  /> */}
                 </FormControl>
 
                 <FormControl>
@@ -320,6 +310,7 @@ export const SendFundsModal = ({
           )}
         </ModalBody>
         <ModalFooter>
+          {/* Action Buttons */}
           {!isLoading && (
             <Box>
               {!showExchangeDialog ? (

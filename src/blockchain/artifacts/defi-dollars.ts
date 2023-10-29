@@ -1,6 +1,8 @@
 export const abi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   { inputs: [], name: "ETHTransferFailed", type: "error" },
+  { inputs: [], name: "InsufficentFunds", type: "error" },
+  { inputs: [], name: "NoRecipients", type: "error" },
   {
     anonymous: false,
     inputs: [
@@ -66,8 +68,18 @@ export const abi = [
         type: "uint256",
       },
     ],
-    name: "Withdrawal",
+    name: "Withdraw",
     type: "event",
+  },
+  {
+    inputs: [
+      { internalType: "address[]", name: "recipients", type: "address[]" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "airdrop",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
   },
   {
     inputs: [

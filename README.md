@@ -36,9 +36,8 @@ Parents can activate full-access mode, enabling children to withdraw funds for u
 - Next.js powers the user-friendly frontend.
 - Solidity development using Forge.
 
-## 🚀 Getting Started
 
-### Development Setup
+## 🚀 Local Development Setup
 
 Copy the `.env.example` to `.env` and populate the values.
 
@@ -54,18 +53,17 @@ Copy the `.env.example` to `.env` and populate the values.
    ```sh
    yarn run dev
    ```
+## Docker Prerequisites
 
-## Docker
+Install [Docker Desktop](https://docs.docker.com/get-docker/) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
 
-1. Make sure Docker is [installed](https://docs.docker.com/get-docker/) and running.
-
-2. Build the image and start application
+- Development - simply run this command to build the production container
 
    ```sh
    yarn docker
    ```
 
-3. Open `localhost:3000` in your browser
+- Open `localhost:3000` in your browser
 
 <!-- CONTRIBUTING -->
 

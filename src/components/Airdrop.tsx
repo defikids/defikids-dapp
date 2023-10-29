@@ -14,6 +14,7 @@ import {
   Select,
   TagCloseButton,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import {
@@ -22,7 +23,7 @@ import {
 } from "@/components/steppers/TransactionStepper";
 import { useContractStore } from "@/store/contract/contractStore";
 import shallow from "zustand/shallow";
-import { StepperContext } from "@/data-schema/enums";
+import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
@@ -32,12 +33,18 @@ import { EtherIcon } from "@/components/logos/EtherIcon";
 import { useBalance } from "wagmi";
 import { useAuthStore } from "@/store/auth/authStore";
 
+import NextLink from "next/link";
+
 export const Airdrop = ({
   members,
   onClose,
+  setExplaination,
+  setShowExplanation,
 }: {
   members: User[];
   onClose: () => void;
+  setExplaination: (explaination: Explaination) => void;
+  setShowExplanation: (show: boolean) => void;
 }) => {
   //=============================================================================
   //                               STATE
@@ -179,11 +186,27 @@ export const Airdrop = ({
             </Tag>
           ))}
 
+        <Flex direction="row" justify="flex-end" align="center">
+          <Text fontSize="xs" ml={3}>
+            <Link
+              as={NextLink}
+              color="blue.500"
+              href="#"
+              onClick={() => {
+                setExplaination(Explaination.ALLOWANCE);
+                setShowExplanation(true);
+              }}
+            >
+              How it works?
+            </Link>
+          </Text>
+        </Flex>
+
         <FormControl>
           <Select
             placeholder="Select user"
-            mt={5}
             mb={2}
+            mt={2}
             style={{
               border: "1px solid lightgray",
             }}

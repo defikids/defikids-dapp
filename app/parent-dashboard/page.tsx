@@ -33,7 +33,6 @@ import { InfoModal } from "@/components/modals/InfoModal";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
-import { AirdropModal } from "@/components/modals/AirdropModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
 
@@ -300,7 +299,6 @@ const Parent: React.FC = () => {
       <SendAllowanceModal
         isOpen={isOpenSendAllowanceModal}
         onClose={onCloseSendAllowanceModal}
-        tokenBalance={tokenBalance}
         members={familyMembers}
       />
 
@@ -308,8 +306,6 @@ const Parent: React.FC = () => {
         isOpen={isOpenMembersTableModal}
         onClose={onCloseMembersTableModal}
       />
-
-      <AirdropModal isOpen={isOpenAirdropModal} onClose={onCloseAirdropModal} />
 
       <DepositDefiDollarsModal
         isOpen={isOpenDepositDefiDollarsModal}

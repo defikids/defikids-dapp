@@ -12,20 +12,29 @@ import {
 } from "@chakra-ui/react";
 import { Airdrop } from "@/components/Airdrop";
 import { User } from "@/data-schema/types";
+import { useState } from "react";
+import { ExplainAllowance } from "@/components/explainations/ExplainAllowance";
+import { Explaination } from "@/data-schema/enums";
 
 export const SendAllowanceModal = ({
   isOpen,
   onClose,
-  tokenBalance,
   members,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  tokenBalance: number;
   members: User[];
 }) => {
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [explaination, setExplaination] = useState(Explaination.NONE);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md" isCentered>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size={showExplanation ? "xl" : "md"}
+      isCentered
+    >
       <ModalOverlay
         bg="none"
         backdropFilter="auto"
@@ -38,7 +47,19 @@ export const SendAllowanceModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Airdrop onClose={onClose} members={members} />
+          {showExplanation && explaination === Explaination.ALLOWANCE ? (
+            <ExplainAllowance
+              explaination={explaination}
+              setShowExplanation={setShowExplanation}
+            />
+          ) : (
+            <Airdrop
+              onClose={onClose}
+              members={members}
+              setExplaination={setExplaination}
+              setShowExplanation={setShowExplanation}
+            />
+          )}
         </ModalBody>
         <ModalFooter />
       </ModalContent>

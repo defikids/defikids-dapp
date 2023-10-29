@@ -43,6 +43,7 @@ export enum Explaination {
   FAMILY_NAME = "FAMILY_NAME",
   BLOCKCHAIN = "BLOCKCHAIN",
   DEFI_DOLLARS = "DEFI_DOLLARS",
+  ALLOWANCE = "ALLOWANCE",
 }
 
 export enum MainnetNetworks {

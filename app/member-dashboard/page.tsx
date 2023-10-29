@@ -1,12 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import {
   Box,
-  Center,
   Flex,
   GridItem,
-  Heading,
-  Text,
   useDisclosure,
   useColorModeValue,
   Grid,
@@ -15,9 +13,6 @@ import React, { useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { useBalance } from "wagmi";
-import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { IUser } from "@/models/User";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -28,14 +23,12 @@ import StakingContracts from "@/components/dashboards/parentDashboard/StakingCon
 import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
-import { SendFundsModal } from "@/components/modals/SendFundsModal";
+import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
-
-  // const [member, setMember] = useState<IUser>();
 
   //=============================================================================
   //                               HOOKS
@@ -43,6 +36,8 @@ const MemberDashboard: React.FC = () => {
   const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
+      familyMembers: state.familyMembers,
+      setFamilyMembers: state.setFamilyMembers,
     }),
     shallow
   );
@@ -76,17 +71,10 @@ const MemberDashboard: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenSendFundsModal,
-    onOpen: onOpenSendFundsModal,
-    onClose: onCloseSendFundsModal,
+    isOpen: isOpenWithdrawDefiDollarsModal,
+    onOpen: onOpenWithdrawDefiDollarsModal,
+    onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
-
-  const { connectedSigner } = useContractStore(
-    (state) => ({
-      connectedSigner: state.connectedSigner,
-    }),
-    shallow
-  );
 
   return (
     <Box>
@@ -100,7 +88,7 @@ const MemberDashboard: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
-            onOpenSendFundsModal={onOpenSendFundsModal}
+            onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
           />
         </Box>
         {!isMobileSize && (
@@ -191,9 +179,9 @@ const MemberDashboard: React.FC = () => {
         isOpenExtendedMenu={isOpenExtendedMenu}
       />
 
-      <SendFundsModal
-        isOpen={isOpenSendFundsModal}
-        onClose={onCloseSendFundsModal}
+      <WithdrawDefiDollarsModal
+        isOpen={isOpenWithdrawDefiDollarsModal}
+        onClose={onCloseWithdrawDefiDollarsModal}
       />
     </Box>
   );

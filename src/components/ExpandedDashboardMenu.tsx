@@ -38,6 +38,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSendFundsModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
+  onOpenWithdrawDefiDollarsModal,
 }: {
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
@@ -49,6 +50,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSendFundsModal?: () => void;
   onOpenMembersTableModal?: () => void;
   onOpenAirdropModal?: () => void;
+  onOpenWithdrawDefiDollarsModal?: () => void;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -123,7 +125,9 @@ export const ExpandedDashboardMenu = ({
                 />
               ) : (
                 <MemberButtonMenu
-                  onOpenSendFundsModal={onOpenSendFundsModal!}
+                  onOpenWithdrawDefiDollarsModal={
+                    onOpenWithdrawDefiDollarsModal!
+                  }
                 />
               )}
             </Box>

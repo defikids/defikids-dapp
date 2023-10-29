@@ -301,6 +301,7 @@ const Parent: React.FC = () => {
         isOpen={isOpenSendFundsModal}
         onClose={onCloseSendFundsModal}
         tokenBalance={tokenBalance}
+        members={familyMembers}
       />
 
       <MembersTableModal

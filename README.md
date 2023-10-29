@@ -53,7 +53,7 @@ Copy the `.env.example` to `.env` and populate the values.
    ```sh
    yarn run dev
    ```
-## Docker Prerequisites
+## 🐳 Docker Prerequisites
 
 Install [Docker Desktop](https://docs.docker.com/get-docker/) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
 

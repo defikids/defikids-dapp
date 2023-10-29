@@ -35,7 +35,7 @@ export const ExpandedDashboardMenu = ({
   isMobileSize,
   onOpenSettingsModal,
   onOpenInfoModal,
-  onOpenSendFundsModal,
+  onOpenSendAllowanceModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
   onOpenWithdrawDefiDollarsModal,
@@ -47,7 +47,7 @@ export const ExpandedDashboardMenu = ({
   isMobileSize: boolean;
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
-  onOpenSendFundsModal?: () => void;
+  onOpenSendAllowanceModal?: () => void;
   onOpenMembersTableModal?: () => void;
   onOpenAirdropModal?: () => void;
   onOpenWithdrawDefiDollarsModal?: () => void;
@@ -119,7 +119,7 @@ export const ExpandedDashboardMenu = ({
 
               {userDetails?.userType === UserType.PARENT ? (
                 <ParentButtonMenu
-                  onOpenSendFundsModal={onOpenSendFundsModal!}
+                  onOpenSendAllowanceModal={onOpenSendAllowanceModal!}
                   onOpenMembersTableModal={onOpenMembersTableModal!}
                   onOpenAirdropModal={onOpenAirdropModal!}
                 />

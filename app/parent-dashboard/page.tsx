@@ -31,7 +31,7 @@ import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import { SendFundsModal } from "@/components/modals/SendFundsModal";
+import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { AirdropModal } from "@/components/modals/AirdropModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
@@ -92,9 +92,9 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenSendFundsModal,
-    onOpen: onOpenSendFundsModal,
-    onClose: onCloseSendFundsModal,
+    isOpen: isOpenSendAllowanceModal,
+    onOpen: onOpenSendAllowanceModal,
+    onClose: onCloseSendAllowanceModal,
   } = useDisclosure();
 
   const {
@@ -137,7 +137,7 @@ const Parent: React.FC = () => {
   }, [
     isOpenDepositDefiDollarsModal,
     isOpenWithdrawDefiDollarsModal,
-    isOpenSendFundsModal,
+    isOpenSendAllowanceModal,
   ]);
 
   //=============================================================================
@@ -190,7 +190,7 @@ const Parent: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
-            onOpenSendFundsModal={onOpenSendFundsModal}
+            onOpenSendAllowanceModal={onOpenSendAllowanceModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
             onOpenAirdropModal={onOpenAirdropModal}
           />
@@ -297,9 +297,9 @@ const Parent: React.FC = () => {
         isOpenExtendedMenu={isOpenExtendedMenu}
       />
 
-      <SendFundsModal
-        isOpen={isOpenSendFundsModal}
-        onClose={onCloseSendFundsModal}
+      <SendAllowanceModal
+        isOpen={isOpenSendAllowanceModal}
+        onClose={onCloseSendAllowanceModal}
         tokenBalance={tokenBalance}
         members={familyMembers}
       />

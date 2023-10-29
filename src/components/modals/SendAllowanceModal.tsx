@@ -13,7 +13,7 @@ import {
 import { Airdrop } from "@/components/Airdrop";
 import { User } from "@/data-schema/types";
 
-export const SendFundsModal = ({
+export const SendAllowanceModal = ({
   isOpen,
   onClose,
   tokenBalance,
@@ -38,11 +38,7 @@ export const SendFundsModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Airdrop
-            onClose={onClose}
-            members={members}
-            tokenBalance={tokenBalance}
-          />
+          <Airdrop onClose={onClose} members={members} />
         </ModalBody>
         <ModalFooter />
       </ModalContent>

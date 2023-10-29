@@ -3,11 +3,11 @@
 import { Button, VStack } from "@chakra-ui/react";
 
 const ParentButtonMenu = ({
-  onOpenSendFundsModal,
+  onOpenSendAllowanceModal,
   onOpenMembersTableModal,
   onOpenAirdropModal,
 }: {
-  onOpenSendFundsModal: () => void;
+  onOpenSendAllowanceModal: () => void;
   onOpenMembersTableModal: () => void;
   onOpenAirdropModal: () => void;
 }) => {
@@ -19,7 +19,7 @@ const ParentButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
-          onOpenSendFundsModal();
+          onOpenSendAllowanceModal();
         }}
       >
         Send Allowance

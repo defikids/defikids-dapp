@@ -18,11 +18,12 @@ import {
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import NextLink from "next/link";
-import { ChainId, Explaination } from "@/data-schema/enums";
-import { useMemo, useState } from "react";
+import { Explaination } from "@/data-schema/enums";
+import { useState } from "react";
 import { ExplainBlockchain } from "@/components/explainations/ExplainBlockchain";
 import { useNetwork } from "wagmi";
 import { GOERLI_DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
+import { validChainId } from "@/config";
 
 export const EtherscanModal = ({
   isOpen,
@@ -99,7 +100,7 @@ export const EtherscanModal = ({
             h="40px"
             colorScheme="blue"
             onClick={() => {
-              if (chain?.id === ChainId.GOERLI)
+              if (chain?.id === validChainId)
                 window.open(
                   `https://goerli.etherscan.io/address/${GOERLI_DEFI_DOLLARS_ADDRESS}`,
                   "_blank"

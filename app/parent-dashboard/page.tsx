@@ -17,6 +17,10 @@ import axios from "axios";
 import { useWindowSize } from "usehooks-ts";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { ethers } from "ethers";
+import { watchNetwork } from "@wagmi/core";
+import { WrongNetwork } from "@/components/WrongNetwork";
+import { validChainId } from "@/config";
+import { useNetwork } from "wagmi";
 
 // Components
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -41,6 +45,7 @@ const Parent: React.FC = () => {
   //                               STATE
   //=============================================================================
   const [tokenBalance, setTokenBalance] = useState(0);
+  const [isValidChain, setIsValidChain] = useState(false);
 
   //=============================================================================
   //                               HOOKS
@@ -65,6 +70,13 @@ const Parent: React.FC = () => {
   const { width } = useWindowSize();
 
   const isMobileSize = width < 768;
+  const { chain } = useNetwork();
+
+  watchNetwork((network) => {
+    if (validChainId === network.chain?.id) {
+      setIsValidChain(true);
+    }
+  });
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
     useDisclosure();
@@ -177,6 +189,10 @@ const Parent: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [familyMembers.length, userDetails?.wallet]);
 
+  if (!isValidChain || chain?.id !== validChainId) {
+    return <WrongNetwork />;
+  }
+
   return (
     <Box>
       <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
@@ -254,7 +270,7 @@ const Parent: React.FC = () => {
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
             h={isMobileSize ? "auto" : "320"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <StakingContracts />
@@ -264,7 +280,7 @@ const Parent: React.FC = () => {
             colStart={isMobileSize ? 1 : 5}
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "100%"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <RecentMemberActivity user={userDetails} />
@@ -273,7 +289,7 @@ const Parent: React.FC = () => {
             rowStart={isMobileSize ? 3 : 0}
             rowEnd={isMobileSize ? 3 : 0}
             colSpan={isMobileSize ? 1 : 4}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <FamilyStatistics members={familyMembers || []} />

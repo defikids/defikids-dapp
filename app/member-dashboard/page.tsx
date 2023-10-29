@@ -24,11 +24,16 @@ import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/Re
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
+import { watchNetwork } from "@wagmi/core";
+import { WrongNetwork } from "@/components/WrongNetwork";
+import { validChainId } from "@/config";
+import { useNetwork } from "wagmi";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
+  const [isValidChain, setIsValidChain] = useState(false);
 
   //=============================================================================
   //                               HOOKS
@@ -42,8 +47,16 @@ const MemberDashboard: React.FC = () => {
     shallow
   );
 
-  const { width } = useWindowSize();
+  const { chain } = useNetwork();
 
+  watchNetwork((network) => {
+    if (validChainId === network.chain?.id) {
+      setIsValidChain(true);
+    }
+  });
+
+  const { width } = useWindowSize();
+  4;
   const isMobileSize = width < 768;
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
@@ -75,6 +88,10 @@ const MemberDashboard: React.FC = () => {
     onOpen: onOpenWithdrawDefiDollarsModal,
     onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
+
+  if (!isValidChain || chain?.id !== validChainId) {
+    return <WrongNetwork />;
+  }
 
   return (
     <Box>
@@ -135,7 +152,7 @@ const MemberDashboard: React.FC = () => {
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
             h={isMobileSize ? "auto" : "320"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <StakingContracts />
@@ -146,7 +163,7 @@ const MemberDashboard: React.FC = () => {
             colStart={isMobileSize ? 1 : 5}
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "100%"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <RecentMemberActivity user={userDetails} />
@@ -156,7 +173,7 @@ const MemberDashboard: React.FC = () => {
             rowStart={isMobileSize ? 3 : 0}
             rowEnd={isMobileSize ? 3 : 0}
             colSpan={isMobileSize ? 1 : 4}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <FamilyStatistics members={[]} />

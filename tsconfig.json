@@ -29,6 +29,7 @@
       "@/BFF/*": ["src/BFF/*"],
       "@/models/*": ["src/models/*"],
       "@/blockchain/*": ["src/blockchain/*"],
+      "@/config/*": ["config/*"],
       "@/*": ["./*"]
     },
     "plugins": [

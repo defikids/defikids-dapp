@@ -22,7 +22,6 @@ import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/Re
 import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
-import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
 import { USDC } from "@/components/dashboards/parentDashboard/USDC";
 
 // Modals
@@ -38,7 +37,6 @@ const Parent: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
-  const [tokenBalance, setTokenBalance] = useState(0);
   const [isValidChain, setIsValidChain] = useState(false);
 
   //=============================================================================
@@ -133,21 +131,6 @@ const Parent: React.FC = () => {
     fetchMembers();
   }, []);
 
-  useEffect(() => {
-    const defiDollarsBalance = async () => {
-      const balance = await defiDollarsContractInstance?.balanceOf(
-        userDetails.wallet
-      );
-      setTokenBalance(Number(ethers.utils.formatEther(balance)));
-    };
-
-    defiDollarsBalance();
-  }, [
-    isOpenDepositDefiDollarsModal,
-    isOpenWithdrawDefiDollarsModal,
-    isOpenSendAllowanceModal,
-  ]);
-
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
@@ -192,7 +175,14 @@ const Parent: React.FC = () => {
 
   return (
     <Box>
-      <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
+      <Flex
+        direction={isMobileSize ? "column" : "row"}
+        height="100vh"
+        bgPosition="center"
+        bgSize="cover"
+        bgImage={"/images/backgrounds/purple-bg.jpg"}
+      >
+        {/* Menus */}
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -227,9 +217,9 @@ const Parent: React.FC = () => {
           templateRows={isMobileSize ? "auto" : "repeat(3, 1fr)"}
           gap={4}
           px={isMobileSize ? 0 : 5}
-          bgPosition="center"
-          bgSize="cover"
-          bgImage={"/images/backgrounds/purple-bg.jpg"}
+          // bgPosition="center"
+          // bgSize="cover"
+          // bgImage={"/images/backgrounds/purple-bg.jpg"}
         >
           {!isMobileSize && (
             <GridItem

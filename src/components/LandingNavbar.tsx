@@ -35,24 +35,17 @@ export default function LandingNavbar() {
     lg: false,
   });
 
-  const {
-    isLoggedIn,
-    walletConnected,
-    navigationSection,
-    userDetails,
-    fetchedUserDetails,
-    setIsLoggedIn,
-  } = useAuthStore(
-    (state) => ({
-      isLoggedIn: state.isLoggedIn,
-      walletConnected: state.walletConnected,
-      navigationSection: state.navigationSection,
-      userDetails: state.userDetails,
-      fetchedUserDetails: state.fetchedUserDetails,
-      setIsLoggedIn: state.setIsLoggedIn,
-    }),
-    shallow
-  );
+  const { walletConnected, navigationSection, userDetails, setIsLoggedIn } =
+    useAuthStore(
+      (state) => ({
+        isLoggedIn: state.isLoggedIn,
+        walletConnected: state.walletConnected,
+        navigationSection: state.navigationSection,
+        userDetails: state.userDetails,
+        setIsLoggedIn: state.setIsLoggedIn,
+      }),
+      shallow
+    );
 
   const {
     isOpen: isRegisterOpen,
@@ -77,15 +70,15 @@ export default function LandingNavbar() {
   const navigateUser = () => {
     switch (userDetails?.userType) {
       case UserType.UNREGISTERED:
-        setIsLoggedIn(false);
+        // setIsLoggedIn(false);
         onRegisterOpen();
         break;
       case UserType.PARENT:
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
         router.push("/parent-dashboard");
         break;
       case UserType.MEMBER:
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
         router.push("/member-dashboard");
         break;
       default:
@@ -115,15 +108,13 @@ export default function LandingNavbar() {
           <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
-            {userDetails?.userType == UserType.UNREGISTERED &&
-              !walletConnected && <CustomConnectButton />}
-
-            {userDetails?.userType != UserType.UNREGISTERED &&
-              walletConnected && (
-                <Button mr={5} size="lg" onClick={navigateUser}>
-                  <Heading size="sm">Dashboard</Heading>
-                </Button>
-              )}
+            {!walletConnected ? (
+              <CustomConnectButton />
+            ) : (
+              <Button mr={5} size="lg" onClick={navigateUser}>
+                <Heading size="sm">Dashboard</Heading>
+              </Button>
+            )}
 
             <IconButton
               size="lg"

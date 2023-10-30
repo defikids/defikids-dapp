@@ -13,6 +13,7 @@ import { abi } from "@/blockchain/artifacts/goerli/defi-dollars";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";
+import { User } from "@/data-schema/types";
 
 const Auth = () => {
   const [selectedAddress, setSelectedAddress] = useState("");
@@ -75,7 +76,7 @@ const Auth = () => {
     );
 
   /*
-   * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
+   * This hook will check for the user's wallet address and set the user type. It will also set the provider and signer in the store
    */
   useEffect(() => {
     const init = async () => {
@@ -98,9 +99,9 @@ const Auth = () => {
 
       setDefiDollarsContractInstance(defiDollarsContract);
 
-      const user = await getUserByWalletAddress(selectedAddress);
+      const user = (await getUserByWalletAddress(selectedAddress)) as any;
 
-      if (!user?.message) {
+      if (!user?.error) {
         setUserDetails(user);
         setIsLoggedIn(true);
         setFetchedUserDetails(true);
@@ -108,7 +109,6 @@ const Auth = () => {
       }
       setUserDetails({ ...initialState.userDetails });
       setSelectedAddress("");
-      setFetchedUserDetails(false);
       setIsLoggedIn(false);
     };
 

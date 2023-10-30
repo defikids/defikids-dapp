@@ -6,6 +6,11 @@ export const AddUSDCTokenToWallet = async () => {
   const customWindow = window as CustomWindow;
   const ethereum = customWindow.ethereum;
 
+  const response = {
+    message: "USDC Token",
+    error: "Something went wrong.",
+  };
+
   if (ethereum && ethereum.isMetaMask) {
     await ethereum
       .request({
@@ -23,20 +28,31 @@ export const AddUSDCTokenToWallet = async () => {
       })
       .then((success) => {
         if (success) {
-          console.log("USDC Token successfully added to wallet!");
+          response.error = "";
         } else {
+          response.message = "";
           throw new Error("Something went wrong.");
         }
       })
-      .catch(console.error);
+      .catch((error) => {
+        response.message = "";
+        console.error(error);
+      });
   } else {
     console.error("Please install MetaMask!");
   }
+
+  return response;
 };
 
 export const AddDefiDollarsTokenToWallet = async () => {
   const customWindow = window as CustomWindow;
   const ethereum = customWindow.ethereum;
+
+  const response = {
+    message: "DefiDollars Token",
+    error: "Something went wrong.",
+  };
 
   if (ethereum && ethereum.isMetaMask) {
     await ethereum
@@ -55,13 +71,19 @@ export const AddDefiDollarsTokenToWallet = async () => {
       })
       .then((success) => {
         if (success) {
-          console.log("DefiDollars Token successfully added to wallet!");
+          response.error = "";
         } else {
+          response.message = "";
           throw new Error("Something went wrong.");
         }
       })
-      .catch(console.error);
+      .catch((error) => {
+        response.message = "";
+        console.error(error);
+      });
   } else {
     console.error("Please install MetaMask!");
   }
+
+  return response;
 };

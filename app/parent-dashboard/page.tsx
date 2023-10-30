@@ -253,11 +253,7 @@ const Parent: React.FC = () => {
             mt={isMobileSize ? "1.2rem" : "12rem"}
             mb="1.5rem"
           >
-            <USDC
-              onOpenDepositDefiDollarsModal={onOpenDepositDefiDollarsModal}
-              tokenBalance={tokenBalance}
-              onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
-            />
+            <USDC />
           </GridItem>
 
           <GridItem

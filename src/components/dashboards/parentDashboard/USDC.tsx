@@ -8,20 +8,30 @@ import {
   Box,
   Image,
   Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import { AddUSDCTokenToWallet } from "@/services/metamask/addToken";
 import { useRouter } from "next/navigation";
 
-export const USDC = ({
-  onOpenDepositDefiDollarsModal,
-  tokenBalance,
-  onOpenWithdrawDefiDollarsModal,
-}: {
-  onOpenDepositDefiDollarsModal: () => void;
-  tokenBalance: number;
-  onOpenWithdrawDefiDollarsModal: () => void;
-}) => {
+export const USDC = () => {
   const router = useRouter();
+  const toast = useToast();
+
+  const handleToast = (response: { message: string; error: string }) => {
+    if (response?.message) {
+      toast({
+        title: response?.message,
+        description: "Successfully added to wallet!",
+        status: "success",
+      });
+    } else {
+      toast({
+        title: response?.error,
+        status: "error",
+      });
+    }
+  };
+
   return (
     <Box p={5} bg={useColorModeValue("gray.100", "gray.900")} rounded="lg">
       <Flex justifyContent="space-between" alignItems="center" pb={2}>
@@ -35,9 +45,14 @@ export const USDC = ({
             alt="Metamask"
             width={10}
             cursor="pointer"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              AddUSDCTokenToWallet();
+              const response = (await AddUSDCTokenToWallet()) as unknown as {
+                message: string;
+                error: string;
+              };
+
+              handleToast(response);
             }}
           />
         </Tooltip>

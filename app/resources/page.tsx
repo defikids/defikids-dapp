@@ -3,6 +3,7 @@
 import { Center, Flex, Box } from "@chakra-ui/react";
 import ResourcesModal from "@/components/modals/ResourcesModal";
 import Navbar from "@/components/LandingNavbar";
+import { PigLoader } from "@/components/PigLoader";
 
 const Resources = () => {
   return (
@@ -11,6 +12,7 @@ const Resources = () => {
       <Center mt="1rem">
         <Flex>
           <ResourcesModal />
+          {/* <PigLoader /> */}
         </Flex>
       </Center>
     </Box>

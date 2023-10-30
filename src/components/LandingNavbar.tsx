@@ -118,17 +118,8 @@ export default function LandingNavbar() {
             {userDetails?.userType == UserType.UNREGISTERED &&
               !walletConnected && <CustomConnectButton />}
 
-            {userDetails?.userType == UserType.UNREGISTERED &&
-              walletConnected &&
-              !isLoggedIn && (
-                <Button mr={5} size="lg" onClick={navigateUser}>
-                  <Heading size="sm">Register</Heading>
-                </Button>
-              )}
-
             {userDetails?.userType != UserType.UNREGISTERED &&
-              walletConnected &&
-              fetchedUserDetails && (
+              walletConnected && (
                 <Button mr={5} size="lg" onClick={navigateUser}>
                   <Heading size="sm">Dashboard</Heading>
                 </Button>

@@ -8,6 +8,7 @@ import {
   Box,
   Image,
   Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import { AddDefiDollarsTokenToWallet } from "@/services/metamask/addToken";
 
@@ -18,6 +19,22 @@ export const DefiDollars = ({
   tokenBalance: number;
   onOpenWithdrawDefiDollarsModal: () => void;
 }) => {
+  const toast = useToast();
+
+  const handleToast = (response: { message: string; error: string }) => {
+    if (response?.message) {
+      toast({
+        title: response?.message,
+        description: "Successfully added to wallet!",
+        status: "success",
+      });
+    } else {
+      toast({
+        title: response?.error,
+        status: "error",
+      });
+    }
+  };
   return (
     <Box p={5} bg={useColorModeValue("gray.100", "gray.900")} rounded="lg">
       <Flex justifyContent="space-between" alignItems="center">
@@ -33,9 +50,15 @@ export const DefiDollars = ({
             width={10}
             height={10}
             cursor="pointer"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              AddDefiDollarsTokenToWallet();
+              const response =
+                (await AddDefiDollarsTokenToWallet()) as unknown as {
+                  message: string;
+                  error: string;
+                };
+
+              handleToast(response);
             }}
           />
         </Tooltip>

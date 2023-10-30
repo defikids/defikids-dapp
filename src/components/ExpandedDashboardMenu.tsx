@@ -52,16 +52,22 @@ export const ExpandedDashboardMenu = ({
   onOpenAirdropModal?: () => void;
   onOpenWithdrawDefiDollarsModal?: () => void;
 }) => {
-  const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
-    useAuthStore(
-      (state) => ({
-        setLogout: state.setLogout,
-        userDetails: state.userDetails,
-        mobileMenuOpen: state.mobileMenuOpen,
-        setMobileMenuOpen: state.setMobileMenuOpen,
-      }),
-      shallow
-    );
+  const {
+    setLogout,
+    userDetails,
+    mobileMenuOpen,
+    setMobileMenuOpen,
+    setFetchedUserDetails,
+  } = useAuthStore(
+    (state) => ({
+      setLogout: state.setLogout,
+      userDetails: state.userDetails,
+      mobileMenuOpen: state.mobileMenuOpen,
+      setMobileMenuOpen: state.setMobileMenuOpen,
+      setFetchedUserDetails: state.setFetchedUserDetails,
+    }),
+    shallow
+  );
 
   const router = useRouter();
   const { chain } = useNetwork();

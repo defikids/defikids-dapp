@@ -1,14 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import {
-  Box,
-  Flex,
-  Grid,
-  GridItem,
-  useDisclosure,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
@@ -30,6 +23,7 @@ import StakingContracts from "@/components/dashboards/parentDashboard/StakingCon
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
 import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
+import { USDC } from "@/components/dashboards/parentDashboard/USDC";
 
 // Modals
 import { SettingsModal } from "@/components/modals/SettingsModal";
@@ -133,6 +127,9 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   useEffect(() => {
+    if (validChainId === chain?.id) {
+      setIsValidChain(true);
+    }
     fetchMembers();
   }, []);
 
@@ -254,9 +251,9 @@ const Parent: React.FC = () => {
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "105"}
             mt={isMobileSize ? "1.2rem" : "12rem"}
-            mb="0.5rem"
+            mb="1.5rem"
           >
-            <DefiDollars
+            <USDC
               onOpenDepositDefiDollarsModal={onOpenDepositDefiDollarsModal}
               tokenBalance={tokenBalance}
               onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}

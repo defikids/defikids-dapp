@@ -6,10 +6,6 @@ import { shallow } from "zustand/shallow";
 import { useWindowSize } from "usehooks-ts";
 
 export default function LoggedInNavBar() {
-  //=============================================================================
-  //                               HOOKS
-  //============================================================================
-
   const { userDetails, mobileMenuOpen, setMobileMenuOpen } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
@@ -20,12 +16,8 @@ export default function LoggedInNavBar() {
   );
 
   const { width } = useWindowSize();
-
   const isMobileSize = width < 768;
 
-  //=============================================================================
-  //                             FUNCTIONS
-  //=============================================================================
   if (mobileMenuOpen || !isMobileSize) return null;
 
   return (

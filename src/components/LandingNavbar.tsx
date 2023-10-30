@@ -10,7 +10,6 @@ import {
   Collapse,
   Button,
   useDisclosure,
-  Fade,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { useRouter } from "next/navigation";
@@ -23,7 +22,7 @@ import { UserType } from "@/data-schema/enums";
 import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 import RegisterModal from "@/components/modals/RegisterModal";
 
-export default function NavBar() {
+export default function LandingNavbar() {
   //=============================================================================
   //                               HOOKS
   //============================================================================
@@ -37,6 +36,7 @@ export default function NavBar() {
   });
 
   const {
+    isLoggedIn,
     walletConnected,
     navigationSection,
     userDetails,
@@ -44,6 +44,7 @@ export default function NavBar() {
     setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
+      isLoggedIn: state.isLoggedIn,
       walletConnected: state.walletConnected,
       navigationSection: state.navigationSection,
       userDetails: state.userDetails,
@@ -114,21 +115,24 @@ export default function NavBar() {
           <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
-            {!walletConnected ? (
-              <CustomConnectButton />
-            ) : fetchedUserDetails ? (
-              <Button mr={5} size="lg" onClick={navigateUser}>
-                <Fade in={fetchedUserDetails}>
-                  <Heading size="sm">
-                    {userDetails?.userType != UserType.UNREGISTERED
-                      ? "Dashboard"
-                      : "Register"}
-                  </Heading>
-                </Fade>
-              </Button>
-            ) : (
-              <></>
-            )}
+            {userDetails?.userType == UserType.UNREGISTERED &&
+              !walletConnected && <CustomConnectButton />}
+
+            {userDetails?.userType == UserType.UNREGISTERED &&
+              walletConnected &&
+              !isLoggedIn && (
+                <Button mr={5} size="lg" onClick={navigateUser}>
+                  <Heading size="sm">Register</Heading>
+                </Button>
+              )}
+
+            {userDetails?.userType != UserType.UNREGISTERED &&
+              walletConnected &&
+              fetchedUserDetails && (
+                <Button mr={5} size="lg" onClick={navigateUser}>
+                  <Heading size="sm">Dashboard</Heading>
+                </Button>
+              )}
 
             <IconButton
               size="lg"

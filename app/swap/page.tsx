@@ -3,7 +3,7 @@
 import "@uniswap/widgets/fonts.css";
 import { SwapWidget, darkTheme } from "@uniswap/widgets";
 import { Center, Box, Flex } from "@chakra-ui/react";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/LandingNavbar";
 
 const Swap = () => {
   const USD = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";

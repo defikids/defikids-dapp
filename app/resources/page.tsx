@@ -2,7 +2,7 @@
 
 import { Center, Flex, Box } from "@chakra-ui/react";
 import ResourcesModal from "@/components/modals/ResourcesModal";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/LandingNavbar";
 
 const Resources = () => {
   return (

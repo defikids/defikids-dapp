@@ -9,33 +9,35 @@ import {
   Image,
   Tooltip,
 } from "@chakra-ui/react";
-import { AddDefiDollarsTokenToWallet } from "@/services/metamask/addToken";
+import { AddUSDCTokenToWallet } from "@/services/metamask/addToken";
+import { useRouter } from "next/navigation";
 
-export const DefiDollars = ({
+export const USDC = ({
+  onOpenDepositDefiDollarsModal,
   tokenBalance,
   onOpenWithdrawDefiDollarsModal,
 }: {
+  onOpenDepositDefiDollarsModal: () => void;
   tokenBalance: number;
   onOpenWithdrawDefiDollarsModal: () => void;
 }) => {
+  const router = useRouter();
   return (
     <Box p={5} bg={useColorModeValue("gray.100", "gray.900")} rounded="lg">
-      <Flex justifyContent="space-between" alignItems="center">
+      <Flex justifyContent="space-between" alignItems="center" pb={2}>
         <Heading as="h3" size="sm" color="white">
-          Defi Dollars
+          USDC
         </Heading>
-
         <Tooltip label="Add to Metamask" hasArrow placement="top">
           <Image
             boxSize="100%"
             src="/icons/metamask-icon.svg"
             alt="Metamask"
             width={10}
-            height={10}
             cursor="pointer"
             onClick={(e) => {
               e.stopPropagation();
-              AddDefiDollarsTokenToWallet();
+              AddUSDCTokenToWallet();
             }}
           />
         </Tooltip>
@@ -48,7 +50,8 @@ export const DefiDollars = ({
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          {`${Number(tokenBalance).toFixed(4)}`}
+          {`${100}`}
+          {/* {`${Number(tokenBalance).toFixed(4)}`} */}
         </Heading>
 
         {/* Actions */}
@@ -57,10 +60,19 @@ export const DefiDollars = ({
             colorScheme="blue"
             variant="outline"
             size="sm"
+            onClick={() => {
+              router.push("/swap");
+            }}
+          >
+            Deposit
+          </Button>
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            size="sm"
             ml={3}
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenWithdrawDefiDollarsModal();
+            onClick={() => {
+              router.push("/swap");
             }}
           >
             Withdraw

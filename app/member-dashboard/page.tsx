@@ -28,12 +28,15 @@ import { watchNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
 import { useNetwork } from "wagmi";
+import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
+import { ethers } from "ethers";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
   const [isValidChain, setIsValidChain] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -43,6 +46,13 @@ const MemberDashboard: React.FC = () => {
       userDetails: state.userDetails,
       familyMembers: state.familyMembers,
       setFamilyMembers: state.setFamilyMembers,
+    }),
+    shallow
+  );
+
+  const { defiDollarsContractInstance } = useContractStore(
+    (state) => ({
+      defiDollarsContractInstance: state.defiDollarsContractInstance,
     }),
     shallow
   );
@@ -88,6 +98,23 @@ const MemberDashboard: React.FC = () => {
     onOpen: onOpenWithdrawDefiDollarsModal,
     onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
+
+  useEffect(() => {
+    const defiDollarsBalance = async () => {
+      const balance = await defiDollarsContractInstance?.balanceOf(
+        userDetails.wallet
+      );
+      setTokenBalance(Number(ethers.utils.formatEther(balance)));
+    };
+
+    defiDollarsBalance();
+  }, [isOpenWithdrawDefiDollarsModal]);
+
+  useEffect(() => {
+    if (validChainId === chain?.id) {
+      setIsValidChain(true);
+    }
+  }, []);
 
   if (!isValidChain || chain?.id !== validChainId) {
     return <WrongNetwork />;
@@ -144,6 +171,21 @@ const MemberDashboard: React.FC = () => {
               <DefiKidsHeading />
             </GridItem>
           )}
+
+          <GridItem
+            rowStart={1}
+            rowEnd={isMobileSize ? 2 : 1}
+            colStart={isMobileSize ? 1 : 1}
+            colEnd={isMobileSize ? 1 : 9}
+            h={isMobileSize ? "auto" : "105"}
+            mt={isMobileSize ? "1.2rem" : "12rem"}
+            mb="1.5rem"
+          >
+            <DefiDollars
+              tokenBalance={tokenBalance}
+              onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
+            />
+          </GridItem>
 
           <GridItem
             rowStart={

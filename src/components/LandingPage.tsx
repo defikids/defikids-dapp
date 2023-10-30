@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/store/auth/authStore";
-import { Box } from "@chakra-ui/react";
+import { Box, useBreakpointValue } from "@chakra-ui/react";
 import { useEffect } from "react";
 import shallow from "zustand/shallow";
 import Sandbox from "@/components/landingPage/Sandbox";
@@ -9,6 +9,7 @@ import SplashText from "@/components/landingPage/SplashText";
 import Earning from "@/components/landingPage/Earning";
 import Staking from "@/components/landingPage/Staking";
 import Investing from "@/components/landingPage/Investing";
+import LandingNavbar from "./LandingNavbar";
 
 export const LandingPage = () => {
   const { setNavigationSection } = useAuthStore(
@@ -44,8 +45,27 @@ export const LandingPage = () => {
     };
   }, []);
 
+  const isMobileSize = useBreakpointValue({
+    base: true,
+    sm: false,
+    md: false,
+    lg: false,
+  });
+
   return (
     <Box>
+      <Box
+        bgGradient={["linear(to-b, black,#4F1B7C)"]}
+        position="fixed"
+        top="0"
+        left="0"
+        width="100%"
+        zIndex={5}
+      >
+        <Box px={!isMobileSize ? 5 : 2} zIndex={5}>
+          <LandingNavbar />
+        </Box>
+      </Box>
       <SplashText />
       <Sandbox />
       <Earning />

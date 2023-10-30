@@ -18,7 +18,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { MdArrowDropDown } from "react-icons/md";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/LandingNavbar";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";

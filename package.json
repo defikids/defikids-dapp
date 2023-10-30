@@ -31,6 +31,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.0.8",
     "@fontsource/permanent-marker": "^5.0.7",
     "@fontsource/slackey": "^5.0.7",
+    "@metamask/sdk": "^0.10.1",
     "@pinata/sdk": "^2.1.0",
     "@rainbow-me/rainbowkit": "^1.0.8",
     "@sendgrid/mail": "^7.7.0",

@@ -9,44 +9,57 @@ import { ethers, providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 import { GOERLI_DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
-import { abi } from "@/blockchain/artifacts/defi-dollars";
+import { abi } from "@/blockchain/artifacts/goerli/defi-dollars";
+import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
+import { initialState } from "@/store/auth/createAuthStore";
 
 const Auth = () => {
-  const [selectedAddress, setSelectedAddress] = useState("") as any;
-  const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
+  const router = useRouter();
+  const { address: connectedAccount } = useAccount();
+
+  /*
+   *  Sets the selected address to the connected account on initial load
+   */
+  useEffect(() => {
+    if (connectedAccount) {
+      setSelectedAddress(connectedAccount);
+    }
+  }, [connectedAccount]);
+
+  /*
+   * Watches for changes on the connected account
+   */
   watchAccount((account) => {
     const { isConnected, address } = account;
 
-    if (
-      userDetails?.wallet &&
-      address &&
-      userDetails?.wallet !== (address as string)
-    ) {
-      setHasCheckedUserType(false);
-      setWalletConnected(false);
-      setLogout();
-    }
-    if (isConnected) {
-      setHasCheckedUserType(false);
+    if (address && address !== selectedAddress) {
       setSelectedAddress(address);
-      setWalletConnected(true);
+      router.push("/");
+    }
+
+    if (!isConnected && selectedAddress) {
+      setFetchedUserDetails(false);
+      setWalletConnected(false);
+      setIsLoggedIn(false);
+      setSelectedAddress("");
+      setUserDetails({ ...initialState.userDetails });
     }
   });
 
   const {
     setWalletConnected,
-    setLogout,
     setUserDetails,
-    userDetails,
     setFetchedUserDetails,
+    setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setWalletConnected: state.setWalletConnected,
-      setLogout: state.setLogout,
       setUserDetails: state.setUserDetails,
       setFetchedUserDetails: state.setFetchedUserDetails,
+      setIsLoggedIn: state.setIsLoggedIn,
     }),
     shallow
   );
@@ -66,7 +79,8 @@ const Auth = () => {
    */
   useEffect(() => {
     const init = async () => {
-      if (!selectedAddress || hasCheckedUserType) return;
+      if (!selectedAddress) return;
+      setWalletConnected(true);
 
       // @ts-ignore
       const provider = new providers.Web3Provider(window.ethereum);
@@ -85,16 +99,21 @@ const Auth = () => {
       setDefiDollarsContractInstance(defiDollarsContract);
 
       const user = await getUserByWalletAddress(selectedAddress);
-      setHasCheckedUserType(true);
 
-      if (user.response?.status !== 404) {
+      if (!user?.message) {
         setUserDetails(user);
+        setIsLoggedIn(true);
+        setFetchedUserDetails(true);
+        return;
       }
-      setFetchedUserDetails(true);
+      setUserDetails({ ...initialState.userDetails });
+      setSelectedAddress("");
+      setFetchedUserDetails(false);
+      setIsLoggedIn(false);
     };
 
     init();
-  }, [selectedAddress, hasCheckedUserType]);
+  }, [selectedAddress]);
 
   /*
    * This hook will check if the user has a dark mode preference set in local storage

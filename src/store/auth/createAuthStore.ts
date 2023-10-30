@@ -34,7 +34,7 @@ type Actions = {
 
 type MyStore = State & Actions;
 
-const initialState: State = {
+export const initialState: State = {
   isLoggedIn: false,
   walletConnected: false,
   navigationSection: "DefiKids",
@@ -83,20 +83,6 @@ const setters = (set: any) => ({
     }, shallow);
   },
   setLogout: () => {
-    set(
-      (state: {
-        walletAddress: string;
-        isLoggedIn: boolean;
-        userType: UserType;
-        walletConnected: boolean;
-      }) => {
-        state.walletAddress = "";
-        state.isLoggedIn = false;
-        state.userType = UserType.UNREGISTERED;
-        state.walletConnected = false;
-      },
-      shallow
-    );
     disconnect();
   },
   setUserDetails: (userDetails: User) => {

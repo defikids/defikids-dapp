@@ -53,9 +53,23 @@ Copy the `.env.example` to `.env` and populate the values.
    ```sh
    yarn run dev
    ```
-## 🐳 Docker Prerequisites
+<hr />
+
+<details>
+<summary align="left"><h2>🐳 Docker Prerequisites</h2></summary>
 
 Install [Docker Desktop](https://docs.docker.com/get-docker/) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
+   
+- To see containers running `docker ps`
+   
+- To stop a container `docker stop your-container-id`
+- To stop all containers `docker stop $(docker ps -aq)`
+
+- To remove a container `docker rm your-container-kd`
+- To remove all containers `docker rm $(docker ps -aq)`
+</details>
+
+<hr />
 
 - Development - simply run this command to build the production container
 

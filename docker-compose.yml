@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  app:
+    container_name: defikids-dapp
+    image: node:18-alpine
+    command: sh -c "cd app && yarn install && yarn run dev"
+    ports:
+      - 127.0.0.1:3000:3000
+    working_dir: /app
+    restart: always
+    volumes:
+      - ./:/app

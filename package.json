@@ -20,7 +20,8 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "docker": "docker build -t defikids-dapp . && docker run -p 3000:3000 defikids-dapp"
+    "docker-build": "docker build -t defikids-dapp . && docker run -p 3000:3000 defikids-dapp",
+    "docker-start": "docker run -p 3000:3000 defikids-dapp"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.0",

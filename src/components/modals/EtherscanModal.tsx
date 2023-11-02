@@ -22,7 +22,7 @@ import { Explaination } from "@/data-schema/enums";
 import { useState } from "react";
 import { ExplainBlockchain } from "@/components/explainations/ExplainBlockchain";
 import { useNetwork } from "wagmi";
-import { GOERLI_DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
+import { DEFIKIDS_PROXY_ADDRESS } from "@/blockchain/contract-addresses";
 import { validChainId } from "@/config";
 
 export const EtherscanModal = ({
@@ -102,7 +102,7 @@ export const EtherscanModal = ({
             onClick={() => {
               if (chain?.id === validChainId)
                 window.open(
-                  `https://goerli.etherscan.io/address/${GOERLI_DEFI_DOLLARS_ADDRESS}`,
+                  `https://goerli.etherscan.io/address/${DEFIKIDS_PROXY_ADDRESS}`,
                   "_blank"
                 );
             }}

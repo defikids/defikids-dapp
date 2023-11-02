@@ -8,7 +8,7 @@ import { shallow } from "zustand/shallow";
 import { ethers, providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { GOERLI_DEFI_DOLLARS_ADDRESS } from "@/blockchain/contract-addresses";
+import { DEFIKIDS_PROXY_ADDRESS } from "@/blockchain/contract-addresses";
 import { abi } from "@/blockchain/artifacts/goerli/defi-dollars";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -92,7 +92,7 @@ const Auth = () => {
       setConnectedSigner(signer);
 
       const defiDollarsContract = new ethers.Contract(
-        GOERLI_DEFI_DOLLARS_ADDRESS,
+        DEFIKIDS_PROXY_ADDRESS,
         abi,
         signer
       );

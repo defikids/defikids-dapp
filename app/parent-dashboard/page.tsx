@@ -38,6 +38,7 @@ const Parent: React.FC = () => {
   //                               STATE
   //=============================================================================
   const [isValidChain, setIsValidChain] = useState(false);
+  const [stableTokenBalance, setStableTokenBalance] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -129,11 +130,19 @@ const Parent: React.FC = () => {
       setIsValidChain(true);
     }
     fetchMembers();
+    getStableTokenBalance();
   }, []);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
+
+  const getStableTokenBalance = async () => {
+    const balance = await defiDollarsContractInstance?.getStableTokenBalance(
+      userDetails?.wallet
+    );
+    setStableTokenBalance(Number(balance));
+  };
 
   const fetchMembers = useCallback(async () => {
     const getMembers = async () => {
@@ -142,20 +151,29 @@ const Parent: React.FC = () => {
       const members = await getFamilyMembersByAccount(userDetails?.accountId!);
 
       if (members.length) {
-        const membersWalletBalances = await axios.post(
-          `/api/etherscan/balancemulti`,
-          {
-            addresses: members.map((c) => c.wallet),
-          }
-        );
+        const membersWalletBalances = [] as {
+          account: string;
+          balance: string;
+        }[];
+
+        for (let i = 0; i < members.length; i++) {
+          const balance = await defiDollarsContractInstance?.balanceOf(
+            members[i].wallet
+          );
+
+          membersWalletBalances.push({
+            account: members[i].wallet,
+            balance: ethers.utils.formatUnits(balance, 18),
+          });
+        }
 
         const membersWithBalances = members.map((c) => {
-          const balance = membersWalletBalances.data.find(
+          const balance = membersWalletBalances.find(
             (b) => b.account === c.wallet
           );
           return {
             ...c,
-            balance: balance ? balance.balance : 0,
+            balance: balance ? balance.balance : "0",
           };
         });
 
@@ -195,6 +213,7 @@ const Parent: React.FC = () => {
             onOpenSendAllowanceModal={onOpenSendAllowanceModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
             onOpenAirdropModal={onOpenAirdropModal}
+            stableTokenBalance={stableTokenBalance}
           />
         </Box>
         {!isMobileSize && (
@@ -243,7 +262,7 @@ const Parent: React.FC = () => {
             mt={isMobileSize ? "1.2rem" : "12rem"}
             mb="1.5rem"
           >
-            <USDC />
+            <USDC stableTokenBalance={stableTokenBalance} />
           </GridItem>
 
           <GridItem
@@ -299,6 +318,7 @@ const Parent: React.FC = () => {
         isOpen={isOpenSendAllowanceModal}
         onClose={onCloseSendAllowanceModal}
         members={familyMembers}
+        stableTokenBalance={stableTokenBalance}
       />
 
       <MembersTableModal

@@ -13,7 +13,11 @@ import {
 import { AddUSDCTokenToWallet } from "@/services/metamask/addToken";
 import { useRouter } from "next/navigation";
 
-export const USDC = () => {
+export const USDC = ({
+  stableTokenBalance,
+}: {
+  stableTokenBalance: number;
+}) => {
   const router = useRouter();
   const toast = useToast();
 
@@ -65,8 +69,7 @@ export const USDC = () => {
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          {`${100}`}
-          {/* {`${Number(tokenBalance).toFixed(4)}`} */}
+          {stableTokenBalance.toFixed(4)}
         </Heading>
 
         {/* Actions */}

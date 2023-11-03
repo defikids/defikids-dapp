@@ -9,7 +9,7 @@ import { ethers, providers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 import { DEFIKIDS_PROXY_ADDRESS } from "@/blockchain/contract-addresses";
-import { abi } from "@/blockchain/artifacts/goerli/defi-dollars";
+import { abi } from "@/blockchain/artifacts/goerli/defikids-core";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";

@@ -39,6 +39,7 @@ export const ExpandedDashboardMenu = ({
   onOpenMembersTableModal,
   onOpenAirdropModal,
   onOpenWithdrawDefiDollarsModal,
+  stableTokenBalance,
 }: {
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
@@ -51,23 +52,18 @@ export const ExpandedDashboardMenu = ({
   onOpenMembersTableModal?: () => void;
   onOpenAirdropModal?: () => void;
   onOpenWithdrawDefiDollarsModal?: () => void;
+  stableTokenBalance: number;
 }) => {
-  const {
-    setLogout,
-    userDetails,
-    mobileMenuOpen,
-    setMobileMenuOpen,
-    setFetchedUserDetails,
-  } = useAuthStore(
-    (state) => ({
-      setLogout: state.setLogout,
-      userDetails: state.userDetails,
-      mobileMenuOpen: state.mobileMenuOpen,
-      setMobileMenuOpen: state.setMobileMenuOpen,
-      setFetchedUserDetails: state.setFetchedUserDetails,
-    }),
-    shallow
-  );
+  const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
+    useAuthStore(
+      (state) => ({
+        setLogout: state.setLogout,
+        userDetails: state.userDetails,
+        mobileMenuOpen: state.mobileMenuOpen,
+        setMobileMenuOpen: state.setMobileMenuOpen,
+      }),
+      shallow
+    );
 
   const router = useRouter();
   const { chain } = useNetwork();
@@ -121,7 +117,10 @@ export const ExpandedDashboardMenu = ({
               </Flex>
               <DashboardUsername />
               <DashboardAvatar />
-              <DashboardAccountBalance walletAddress={userDetails?.wallet} />
+              <DashboardAccountBalance
+                walletAddress={userDetails?.wallet}
+                tokenBalance={stableTokenBalance}
+              />
 
               {userDetails?.userType === UserType.PARENT ? (
                 <ParentButtonMenu

@@ -16,7 +16,7 @@ import {
   Text,
   Link,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TransactionStepper,
   steps,
@@ -32,6 +32,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import { EtherIcon } from "@/components/logos/EtherIcon";
 import { useBalance } from "wagmi";
 import { useAuthStore } from "@/store/auth/authStore";
+import UsdcTokenIcon from "@/components/icons/UsdcIcon";
 
 import NextLink from "next/link";
 
@@ -40,11 +41,13 @@ export const Airdrop = ({
   onClose,
   setExplaination,
   setShowExplanation,
+  stableTokenBalance,
 }: {
   members: User[];
   onClose: () => void;
   setExplaination: (explaination: Explaination) => void;
   setShowExplanation: (show: boolean) => void;
+  stableTokenBalance: number;
 }) => {
   //=============================================================================
   //                               STATE
@@ -53,7 +56,6 @@ export const Airdrop = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
-  //
   //=============================================================================
   //                               HOOKS
   //=============================================================================
@@ -71,18 +73,6 @@ export const Airdrop = ({
     }),
     shallow
   );
-
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
-
-  const { data } = useBalance({
-    address: userDetails?.wallet as `0x${string}`,
-    watch: true,
-  });
 
   //=============================================================================
   //                               FUNCTIONS
@@ -150,13 +140,13 @@ export const Airdrop = ({
     return (
       <Box>
         <Flex alignItems="center" justify="center">
-          {EtherIcon(35, 35)}
+          <UsdcTokenIcon width={40} height={40} />
           <Flex direction="row" alignItems="baseline" justify="center" my={5}>
-            <Heading size="2xl" display="flex" alignItems="baseline">
-              {`${Number(data?.formatted).toFixed(4)}`}
+            <Heading size="xl" display="flex" alignItems="baseline" ml={3}>
+              {`${Number(stableTokenBalance).toFixed(4)}`}
             </Heading>
             <Text fontSize="sm" ml={2}>
-              ETH
+              USDC
             </Text>
           </Flex>
         </Flex>

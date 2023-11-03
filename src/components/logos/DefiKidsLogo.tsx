@@ -22,7 +22,6 @@ const DefiKidsLogo = ({ direction = "row" }: DefiKidsProps) => {
       align="center"
       cursor="pointer"
       onClick={() => {
-        localStorage.removeItem("defi-kids.family-id");
         router.push("/");
       }}
     >

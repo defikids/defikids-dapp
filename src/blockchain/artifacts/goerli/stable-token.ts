@@ -1,4 +1,4 @@
-export const abi = [
+export const stableTokenABI = [
   {
     anonymous: false,
     inputs: [

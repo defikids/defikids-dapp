@@ -8,6 +8,7 @@ export enum SandboxFeatures {
 export enum StepperContext {
   AVATAR = "AVATAR",
   DEFAULT = "DEFAULT",
+  PERMIT = "PERMIT",
 }
 
 export enum EtherscanContext {

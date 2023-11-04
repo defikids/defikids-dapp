@@ -95,8 +95,7 @@ export default function ConfirmEmail() {
         setIsConfirmed(false);
 
         const verified =
-          decodedWalletAddress ===
-          ethers.utils.verifyMessage(message, signature);
+          decodedWalletAddress === ethers.verifyMessage(message, signature);
 
         if (verified) {
           await updateUserEmailVerified(true);

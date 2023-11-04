@@ -12,6 +12,7 @@ type State = {
   provider: any;
   connectedSigner: Signer | null;
   defiDollarsContractInstance: Contract | null;
+  stableTokenContractInstance: Contract | null;
 };
 
 type Actions = {
@@ -19,6 +20,7 @@ type Actions = {
   setProvider: (provider: any) => void;
   setConnectedSigner: (signer: Signer) => void;
   setDefiDollarsContractInstance: (contractInstance: Contract) => void;
+  setStableTokenContractInstance: (contractInstance: Contract) => void;
 };
 
 type MyStore = State & Actions;
@@ -28,6 +30,7 @@ const initialState: State = {
   provider: null,
   connectedSigner: null,
   defiDollarsContractInstance: null,
+  stableTokenContractInstance: null,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -54,6 +57,11 @@ const setters = (set: any) => ({
   setDefiDollarsContractInstance: (contractInstance: Contract) => {
     set((state: { defiDollarsContractInstance: Contract }) => {
       state.defiDollarsContractInstance = contractInstance;
+    }, shallow);
+  },
+  setStableTokenContractInstance: (contractInstance: Contract) => {
+    set((state: { stableTokenContractInstance: Contract }) => {
+      state.stableTokenContractInstance = contractInstance;
     }, shallow);
   },
 });

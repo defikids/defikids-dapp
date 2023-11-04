@@ -5,11 +5,15 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import { ethers, providers } from "ethers";
+import { ethers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { DEFIKIDS_PROXY_ADDRESS } from "@/blockchain/contract-addresses";
-import { abi } from "@/blockchain/artifacts/goerli/defikids-core";
+import {
+  DEFIKIDS_PROXY_ADDRESS,
+  GOERLI_DK_STABLETOKEN_ADDRESS,
+} from "@/blockchain/contract-addresses";
+import { defikidsCoreABI } from "@/blockchain/artifacts/goerli/defikids-core";
+import { stableTokenABI } from "@/blockchain/artifacts/goerli/stable-token";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";
@@ -65,15 +69,20 @@ const Auth = () => {
     shallow
   );
 
-  const { setConnectedSigner, setProvider, setDefiDollarsContractInstance } =
-    useContractStore(
-      (state) => ({
-        setConnectedSigner: state.setConnectedSigner,
-        setProvider: state.setProvider,
-        setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
-      }),
-      shallow
-    );
+  const {
+    setConnectedSigner,
+    setProvider,
+    setDefiDollarsContractInstance,
+    setStableTokenContractInstance,
+  } = useContractStore(
+    (state) => ({
+      setConnectedSigner: state.setConnectedSigner,
+      setProvider: state.setProvider,
+      setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
+      setStableTokenContractInstance: state.setStableTokenContractInstance,
+    }),
+    shallow
+  );
 
   /*
    * This hook will check for the user's wallet address and set the user type. It will also set the provider and signer in the store
@@ -84,8 +93,8 @@ const Auth = () => {
       setWalletConnected(true);
 
       // @ts-ignore
-      const provider = new providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner(selectedAddress);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner(selectedAddress);
 
       // add provider and signer to store
       setProvider(provider);
@@ -93,11 +102,18 @@ const Auth = () => {
 
       const defiDollarsContract = new ethers.Contract(
         DEFIKIDS_PROXY_ADDRESS,
-        abi,
+        defikidsCoreABI,
+        signer
+      );
+
+      const stableTokenContract = new ethers.Contract(
+        GOERLI_DK_STABLETOKEN_ADDRESS,
+        stableTokenABI,
         signer
       );
 
       setDefiDollarsContractInstance(defiDollarsContract);
+      setStableTokenContractInstance(stableTokenContract);
 
       const user = (await getUserByWalletAddress(selectedAddress)) as any;
 

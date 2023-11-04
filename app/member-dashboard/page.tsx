@@ -104,7 +104,7 @@ const MemberDashboard: React.FC = () => {
       const balance = await defiDollarsContractInstance?.balanceOf(
         userDetails.wallet
       );
-      setTokenBalance(Number(ethers.utils.formatEther(balance)));
+      setTokenBalance(Number(ethers.formatEther(balance)));
     };
 
     defiDollarsBalance();

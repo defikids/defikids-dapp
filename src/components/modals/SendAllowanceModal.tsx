@@ -10,7 +10,7 @@ import {
   ModalFooter,
   Heading,
 } from "@chakra-ui/react";
-import { Airdrop } from "@/components/Airdrop";
+import { DepositAndMint } from "@/components/DepositAndMint";
 import { User } from "@/data-schema/types";
 import { useState } from "react";
 import { ExplainAllowance } from "@/components/explainations/ExplainAllowance";
@@ -55,7 +55,7 @@ export const SendAllowanceModal = ({
               setShowExplanation={setShowExplanation}
             />
           ) : (
-            <Airdrop
+            <DepositAndMint
               onClose={onClose}
               members={members}
               setExplaination={setExplaination}

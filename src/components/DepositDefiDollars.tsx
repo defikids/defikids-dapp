@@ -75,7 +75,7 @@ export const DepositDefiDollars = ({
       setActiveStep(0);
 
       const tx = (await defiDollarsContractInstance?.deposit({
-        value: ethers.utils.parseEther(amountToExchange),
+        value: ethers.parseEther(amountToExchange),
       })) as TransactionResponse;
 
       setActiveStep(1);

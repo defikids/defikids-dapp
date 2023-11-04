@@ -37,7 +37,6 @@ export const ExpandedDashboardMenu = ({
   onOpenInfoModal,
   onOpenSendAllowanceModal,
   onOpenMembersTableModal,
-  onOpenAirdropModal,
   onOpenWithdrawDefiDollarsModal,
   stableTokenBalance,
 }: {
@@ -50,7 +49,6 @@ export const ExpandedDashboardMenu = ({
   onOpenInfoModal: () => void;
   onOpenSendAllowanceModal?: () => void;
   onOpenMembersTableModal?: () => void;
-  onOpenAirdropModal?: () => void;
   onOpenWithdrawDefiDollarsModal?: () => void;
   stableTokenBalance: number;
 }) => {
@@ -126,7 +124,6 @@ export const ExpandedDashboardMenu = ({
                 <ParentButtonMenu
                   onOpenSendAllowanceModal={onOpenSendAllowanceModal!}
                   onOpenMembersTableModal={onOpenMembersTableModal!}
-                  onOpenAirdropModal={onOpenAirdropModal!}
                 />
               ) : (
                 <MemberButtonMenu

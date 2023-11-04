@@ -127,14 +127,6 @@ export const ParentDetailsDrawer = ({
                   >
                     Add Member
                   </Button>
-                  <Button
-                    leftIcon={<BiTransfer />}
-                    colorScheme="blue"
-                    variant="solid"
-                    onClick={() => alert("Transfer to all kids")}
-                  >
-                    Airdrop
-                  </Button>
                 </VStack>
               </Box>
             </VStack>

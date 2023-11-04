@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 
 // wei to eth
 export const weiToEth = (wei: string) => {
-  return ethers.utils.formatEther(wei);
+  return ethers.formatEther(wei);
 };
 
 export const trimAddress = (address: string) => {

@@ -16,7 +16,7 @@ import {
   Text,
   Link,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   TransactionStepper,
   steps,
@@ -27,16 +27,20 @@ import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
+import { SignatureLike } from "@ethersproject/bytes";
 import { User } from "@/data-schema/types";
 import { MdArrowDropDown } from "react-icons/md";
-import { EtherIcon } from "@/components/logos/EtherIcon";
-import { useBalance } from "wagmi";
-import { useAuthStore } from "@/store/auth/authStore";
 import UsdcTokenIcon from "@/components/icons/UsdcIcon";
-
+import { createStableTokenPermitMessage } from "@/utils/permit";
 import NextLink from "next/link";
 
-export const Airdrop = ({
+type PermitResult = {
+  data?: SignatureLike;
+  deadline?: number;
+  error?: string;
+};
+
+export const DepositAndMint = ({
   members,
   onClose,
   setExplaination,
@@ -67,9 +71,15 @@ export const Airdrop = ({
     count: steps.length,
   });
 
-  const { defiDollarsContractInstance } = useContractStore(
+  const {
+    defiDollarsContractInstance,
+    stableTokenContractInstance,
+    connectedSigner,
+  } = useContractStore(
     (state) => ({
       defiDollarsContractInstance: state.defiDollarsContractInstance,
+      stableTokenContractInstance: state.stableTokenContractInstance,
+      connectedSigner: state.connectedSigner,
     }),
     shallow
   );
@@ -78,7 +88,7 @@ export const Airdrop = ({
   //                               FUNCTIONS
   //=============================================================================
 
-  const handleAirdrop = async () => {
+  const validiateInputs = () => {
     if (selectedUsers.length === 0) {
       toast({
         title: "Please select at least one user",
@@ -95,48 +105,93 @@ export const Airdrop = ({
       return;
     }
 
+    return true;
+  };
+
+  const handlePermit = async () => {
+    setActiveStep(0); // set to signing message
+
+    const totalValueToPermit = ethers.parseEther(
+      String(+amount * selectedUsers.length)
+    );
+
+    const result = (await createStableTokenPermitMessage(
+      connectedSigner!,
+      defiDollarsContractInstance!,
+      totalValueToPermit,
+      stableTokenContractInstance!
+    )) as PermitResult;
+
+    return result;
+  };
+
+  const handleTransaction = async (
+    deadline: number,
+    v: number,
+    r: string,
+    s: string
+  ) => {
+    setActiveStep(1); // set to approve transaction
+
+    const formattedAmount = ethers.parseEther(String(+amount));
+    const recipients = selectedUsers.map((user) => user.wallet);
+
+    const tx = (await defiDollarsContractInstance?.depositAndMint(
+      formattedAmount,
+      recipients,
+      deadline,
+      v,
+      r,
+      s
+    )) as TransactionResponse;
+
+    return tx;
+  };
+
+  const resetState = () => {
+    setIsLoading(false);
+    setAmount("");
+    setSelectedUsers([]);
+  };
+
+  const handleDeposit = async () => {
+    if (!validiateInputs()) return;
+
     try {
       setIsLoading(true);
+      const result = (await handlePermit()) as PermitResult;
 
-      setActiveStep(0);
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
-      const recipients = selectedUsers.map((user) => user.wallet);
+      const deadline = result.deadline as number;
+      const { r, s, v } = result.data as {
+        r: string;
+        s: string;
+        v: number;
+      };
 
-      const formattedAmount = ethers.utils.parseEther(amount);
+      const tx = await handleTransaction(deadline, v, r, s);
 
-      const formattedValue = ethers.utils.parseEther(
-        String(Number(amount) * recipients.length)
-      );
-
-      const tx = (await defiDollarsContractInstance?.airdrop(
-        recipients,
-        formattedAmount,
-        {
-          value: formattedValue,
-        }
-      )) as TransactionResponse;
-
-      setActiveStep(1);
+      setActiveStep(2); // set to waiting for confirmation
       await tx.wait();
 
       toast({
         title: "Allowance Sent Successful",
         status: "success",
       });
+
       onClose();
-      setIsLoading(false);
-      setAmount("");
-      setSelectedUsers([]);
+      resetState();
     } catch (e) {
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
-      setIsLoading(false);
-      setAmount("");
-      setSelectedUsers([]);
+      resetState();
     }
   };
 
-  const airdropComponent = () => {
+  const depositComponent = () => {
     return (
       <Box>
         <Flex alignItems="center" justify="center">
@@ -249,15 +304,15 @@ export const Airdrop = ({
       {isLoading ? (
         <TransactionStepper
           activeStep={activeStep}
-          context={StepperContext.DEFAULT}
+          context={StepperContext.PERMIT}
         />
       ) : (
-        airdropComponent()
+        depositComponent()
       )}
 
       {!isLoading && (
         <Flex justifyContent="flex-end" mt={5}>
-          <Button colorScheme="blue" onClick={handleAirdrop}>
+          <Button colorScheme="blue" onClick={handleDeposit}>
             Send Allowance
           </Button>
         </Flex>

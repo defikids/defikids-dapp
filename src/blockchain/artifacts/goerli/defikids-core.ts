@@ -1,4 +1,4 @@
-export const abi = [
+export const defikidsCoreABI = [
   { inputs: [], name: "ETHTransferFailed", type: "error" },
   { inputs: [], name: "InsufficentFunds", type: "error" },
   { inputs: [], name: "InvalidRecipient", type: "error" },
@@ -161,6 +161,10 @@ export const abi = [
     inputs: [
       { internalType: "uint256", name: "amountPerRecipient_", type: "uint256" },
       { internalType: "address[]", name: "recipients_", type: "address[]" },
+      { internalType: "uint256", name: "deadline", type: "uint256" },
+      { internalType: "uint8", name: "v", type: "uint8" },
+      { internalType: "bytes32", name: "r", type: "bytes32" },
+      { internalType: "bytes32", name: "s", type: "bytes32" },
     ],
     name: "depositAndMint",
     outputs: [],

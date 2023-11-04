@@ -108,12 +108,6 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenAirdropModal,
-    onOpen: onOpenAirdropModal,
-    onClose: onCloseAirdropModal,
-  } = useDisclosure();
-
-  const {
     isOpen: isOpenDepositDefiDollarsModal,
     onOpen: onOpenDepositDefiDollarsModal,
     onClose: onCloseDepositDefiDollarsModal,
@@ -141,7 +135,7 @@ const Parent: React.FC = () => {
     const balance = await defiDollarsContractInstance?.getStableTokenBalance(
       userDetails?.wallet
     );
-    setStableTokenBalance(Number(balance));
+    setStableTokenBalance(Number(ethers.formatEther(balance)));
   };
 
   const fetchMembers = useCallback(async () => {
@@ -163,7 +157,7 @@ const Parent: React.FC = () => {
 
           membersWalletBalances.push({
             account: members[i].wallet,
-            balance: ethers.utils.formatUnits(balance, 18),
+            balance: ethers.formatUnits(balance, 18),
           });
         }
 
@@ -212,7 +206,6 @@ const Parent: React.FC = () => {
             onOpenInfoModal={onOpenInfoModal}
             onOpenSendAllowanceModal={onOpenSendAllowanceModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
-            onOpenAirdropModal={onOpenAirdropModal}
             stableTokenBalance={stableTokenBalance}
           />
         </Box>

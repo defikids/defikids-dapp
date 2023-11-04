@@ -75,7 +75,7 @@ export const WithdrawDefiDollars = ({
       setActiveStep(0);
 
       const tx = (await defiDollarsContractInstance?.withdraw(
-        ethers.utils.parseEther(amountToWithdraw)
+        ethers.parseEther(amountToWithdraw)
       )) as TransactionResponse;
 
       setActiveStep(1);

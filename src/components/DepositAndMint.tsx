@@ -22,7 +22,7 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { useContractStore } from "@/store/contract/contractStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";

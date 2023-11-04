@@ -18,7 +18,7 @@ import { useWindowSize } from "usehooks-ts";
 import MemberAccordian from "@/components/dashboards/parentDashboard/MemberAccordian";
 import { RegisterMemberForm } from "../forms/RegisterMemberForm";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";

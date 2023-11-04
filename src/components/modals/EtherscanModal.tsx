@@ -15,7 +15,7 @@ import {
   Link,
   Heading,
 } from "@chakra-ui/react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import NextLink from "next/link";
 import { Explaination } from "@/data-schema/enums";

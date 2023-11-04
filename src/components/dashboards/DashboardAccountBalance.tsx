@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useBalance } from "wagmi";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 const AccountBalance = ({
   walletAddress,

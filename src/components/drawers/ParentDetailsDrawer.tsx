@@ -24,7 +24,7 @@ import { EditIcon } from "@chakra-ui/icons";
 import { RxAvatar } from "react-icons/rx";
 import { BiTransfer, BiWalletAlt } from "react-icons/bi";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 export const ParentDetailsDrawer = ({
   isOpen,

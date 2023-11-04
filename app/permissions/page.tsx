@@ -21,7 +21,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import Navbar from "@/components/LandingNavbar";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { User } from "@/data-schema/types";
 import { PermissionType, UserType } from "@/data-schema/enums";
 import { WalletNotFound } from "@/components/WalletNotFound";

@@ -20,7 +20,7 @@ import DashboardAccountBalance from "./dashboards/DashboardAccountBalance";
 import ParentButtonMenu from "./dashboards/parentDashboard/ParentButtonMenu";
 import MemberButtonMenu from "./dashboards/memberDashboard/MemberButtonMenu";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 import { useRouter } from "next/navigation";

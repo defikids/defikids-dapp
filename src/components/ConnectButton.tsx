@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store/auth/authStore";
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { usePathname } from "next/navigation";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 export const CustomConnectButton = () => {
   const pathname = usePathname();

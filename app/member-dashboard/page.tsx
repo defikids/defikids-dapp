@@ -10,7 +10,7 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { SettingsModal } from "@/components/modals/SettingsModal";

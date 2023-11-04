@@ -3,7 +3,7 @@
 import { useAuthStore } from "@/store/auth/authStore";
 import { Box, useBreakpointValue } from "@chakra-ui/react";
 import { useEffect } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import Sandbox from "@/components/landingPage/Sandbox";
 import SplashText from "@/components/landingPage/SplashText";
 import Earning from "@/components/landingPage/Earning";

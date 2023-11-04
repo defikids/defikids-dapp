@@ -26,7 +26,7 @@ import {
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { ExplainFamilyName } from "@/components/explainations/ExplainFamilyName";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { TestnetNetworks, NetworkType } from "@/data-schema/enums";

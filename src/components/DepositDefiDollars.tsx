@@ -16,7 +16,7 @@ import {
   TransactionStepper,
   steps,
 } from "@/components/steppers/TransactionStepper";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { useContractStore } from "@/store/contract/contractStore";
 import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";

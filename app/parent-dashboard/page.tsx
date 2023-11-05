@@ -31,6 +31,7 @@ import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
+import { IActivity } from "@/models/Activity";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -131,11 +132,9 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const getStableTokenBalance = useCallback(async () => {
-    console.log("getting balance");
     const balance = await defiDollarsContractInstance?.getStableTokenBalance(
       userDetails?.wallet
     );
-    console.log("balance", balance);
     setStableTokenBalance(Number(ethers.formatEther(balance)));
   }, []);
 
@@ -190,7 +189,7 @@ const Parent: React.FC = () => {
     <Box>
       <Flex
         direction={isMobileSize ? "column" : "row"}
-        height="100vh"
+        height="100%"
         bgPosition="center"
         bgSize="cover"
         bgImage={"/images/backgrounds/purple-bg.jpg"}
@@ -230,9 +229,6 @@ const Parent: React.FC = () => {
           templateRows={isMobileSize ? "auto" : "repeat(3, 1fr)"}
           gap={4}
           px={isMobileSize ? 0 : 5}
-          // bgPosition="center"
-          // bgSize="cover"
-          // bgImage={"/images/backgrounds/purple-bg.jpg"}
         >
           {!isMobileSize && (
             <GridItem
@@ -254,7 +250,6 @@ const Parent: React.FC = () => {
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "105"}
             mt={isMobileSize ? "1.2rem" : "12rem"}
-            mb="1.5rem"
           >
             <USDC stableTokenBalance={stableTokenBalance} />
           </GridItem>

@@ -33,6 +33,10 @@ import { MdArrowDropDown } from "react-icons/md";
 import UsdcTokenIcon from "@/components/icons/UsdcIcon";
 import { createStableTokenPermitMessage } from "@/utils/permit";
 import NextLink from "next/link";
+import { createActivity } from "@/services/mongo/routes/activity";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
+import { IActivity } from "@/models/Activity";
+import { useAuthStore } from "@/store/auth/authStore";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -72,6 +76,14 @@ export const DepositAndMint = ({
     index: 1,
     count: steps.length,
   });
+
+  const { userDetails, setRecentActivity } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+      setRecentActivity: state.setRecentActivity,
+    }),
+    shallow
+  );
 
   const {
     defiDollarsContractInstance,
@@ -114,7 +126,7 @@ export const DepositAndMint = ({
     setActiveStep(0); // set to signing message
 
     const totalValueToPermit = ethers.parseEther(
-      String(+amount * selectedUsers.length)
+      String(+amount.trim() * selectedUsers.length)
     );
 
     const result = (await createStableTokenPermitMessage(
@@ -135,7 +147,7 @@ export const DepositAndMint = ({
   ) => {
     setActiveStep(1); // set to approve transaction
 
-    const formattedAmount = ethers.parseEther(String(+amount));
+    const formattedAmount = ethers.parseEther(String(+amount.trim()));
     const recipients = selectedUsers.map((user) => user.wallet);
 
     const tx = (await defiDollarsContractInstance?.depositAndMint(
@@ -148,6 +160,34 @@ export const DepositAndMint = ({
     )) as TransactionResponse;
 
     return tx;
+  };
+
+  const postTransaction = async () => {
+    toast({
+      title: "Allowance Sent Successful",
+      status: "success",
+    });
+
+    const address = await connectedSigner?.getAddress();
+    const accountId = userDetails?.accountId;
+    const newActivities: IActivity[] = [];
+
+    await Promise.all(
+      selectedUsers.map(async (user) => {
+        const newActivity = await createActivity({
+          accountId,
+          wallet: address,
+          date: convertTimestampToSeconds(Date.now()),
+          type: `Sent allowance. ${amount.trim()} USDC to ${user.username}`,
+        });
+        newActivities.push(newActivity);
+      })
+    );
+
+    setRecentActivity(newActivities);
+    getStableTokenBalance();
+    onClose();
+    resetState();
   };
 
   const resetState = () => {
@@ -179,14 +219,7 @@ export const DepositAndMint = ({
       setActiveStep(2); // set to waiting for confirmation
       await tx.wait();
 
-      toast({
-        title: "Allowance Sent Successful",
-        status: "success",
-      });
-
-      getStableTokenBalance();
-      onClose();
-      resetState();
+      await postTransaction();
     } catch (e) {
       const errorDetails = transactionErrors(e);
       toast(errorDetails);

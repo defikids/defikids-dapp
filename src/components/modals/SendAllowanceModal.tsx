@@ -15,6 +15,7 @@ import { User } from "@/data-schema/types";
 import { useState } from "react";
 import { ExplainAllowance } from "@/components/explainations/ExplainAllowance";
 import { Explaination } from "@/data-schema/enums";
+import { IActivity } from "@/models/Activity";
 
 export const SendAllowanceModal = ({
   isOpen,

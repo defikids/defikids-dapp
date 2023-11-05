@@ -17,10 +17,10 @@ export const transactionErrors = (e: Error) => {
     } as ToastProps;
   }
 
-  if (e.message.includes("User denied message signature.")) {
+  if (e.message.includes("User denied transaction signature")) {
     return {
       title: "Transaction Error",
-      description: "User denied message signature",
+      description: "User rejected transaction",
       status: "error",
     } as ToastProps;
   }

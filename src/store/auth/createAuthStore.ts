@@ -7,6 +7,7 @@ import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User } from "@/data-schema/types";
 import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
+import { IActivity } from "@/models/Activity";
 
 type State = {
   isLoggedIn: boolean;
@@ -18,6 +19,7 @@ type State = {
   mobileMenuOpen: boolean;
   fetchedUserDetails: boolean;
   familyMembers: User[];
+  recentActivity: IActivity[];
 };
 
 type Actions = {
@@ -30,6 +32,7 @@ type Actions = {
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
   setFamilyMembers: (familyMembers: User[]) => void;
   reset: () => void;
+  setRecentActivity: (recentActivity: IActivity[]) => void;
 };
 
 type MyStore = State & Actions;
@@ -38,6 +41,9 @@ export const initialState: State = {
   isLoggedIn: false,
   walletConnected: false,
   navigationSection: "DefiKids",
+  mobileMenuOpen: false,
+  fetchedUserDetails: false,
+  familyMembers: [],
   logout: () => {},
   reset: () => void {},
   userDetails: {
@@ -55,9 +61,7 @@ export const initialState: State = {
     permissions: [],
     balance: "",
   },
-  mobileMenuOpen: false,
-  fetchedUserDetails: false,
-  familyMembers: [],
+  recentActivity: [],
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -104,6 +108,11 @@ const setters = (set: any) => ({
   setFamilyMembers: (familyMembers: User[]) => {
     set((state: { familyMembers: User[] }) => {
       state.familyMembers = familyMembers;
+    }, shallow);
+  },
+  setRecentActivity: (recentActivity: IActivity[]) => {
+    set((state: { recentActivity: IActivity[] }) => {
+      state.recentActivity = recentActivity;
     }, shallow);
   },
   reset: () => {

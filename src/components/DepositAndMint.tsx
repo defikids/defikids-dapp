@@ -46,12 +46,14 @@ export const DepositAndMint = ({
   setExplaination,
   setShowExplanation,
   stableTokenBalance,
+  getStableTokenBalance,
 }: {
   members: User[];
   onClose: () => void;
   setExplaination: (explaination: Explaination) => void;
   setShowExplanation: (show: boolean) => void;
   stableTokenBalance: number;
+  getStableTokenBalance: () => void;
 }) => {
   //=============================================================================
   //                               STATE
@@ -182,6 +184,7 @@ export const DepositAndMint = ({
         status: "success",
       });
 
+      getStableTokenBalance();
       onClose();
       resetState();
     } catch (e) {
@@ -264,8 +267,7 @@ export const DepositAndMint = ({
                 (member) => member.username === selectedUsername
               );
 
-              //@ts-ignore
-              if (selectedUsers.includes(selectedUser)) {
+              if (selectedUsers.includes(selectedUser!)) {
                 e.target.value = "";
                 return;
               }

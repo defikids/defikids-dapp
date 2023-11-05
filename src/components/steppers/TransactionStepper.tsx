@@ -4,7 +4,6 @@ import {
   StepDescription,
   StepIcon,
   StepIndicator,
-  StepNumber,
   StepSeparator,
   StepStatus,
   StepTitle,
@@ -25,12 +24,12 @@ export const steps = (context: StepperContext) => {
   if (context === StepperContext.PERMIT) {
     return [
       {
-        title: "Step 1: Signing Permit Approval",
-        description: "Permit DefiKids to spend USDC",
+        title: "Step 1",
+        description: "Sign Permit Approval",
       },
-      { title: "Step 2:", description: "Approve Wallet Transaction" },
+      { title: "Step 2", description: "Approve Wallet Transaction" },
       {
-        title: "Step 3: Processing Transaction",
+        title: "Step 3",
         description: "Processing Transaction",
       },
     ];

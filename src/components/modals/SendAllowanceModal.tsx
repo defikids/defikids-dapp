@@ -21,11 +21,13 @@ export const SendAllowanceModal = ({
   onClose,
   members,
   stableTokenBalance,
+  getStableTokenBalance,
 }: {
   isOpen: boolean;
   onClose: () => void;
   members: User[];
   stableTokenBalance: number;
+  getStableTokenBalance: () => void;
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);
@@ -61,6 +63,7 @@ export const SendAllowanceModal = ({
               setExplaination={setExplaination}
               setShowExplanation={setShowExplanation}
               stableTokenBalance={stableTokenBalance}
+              getStableTokenBalance={getStableTokenBalance}
             />
           )}
         </ModalBody>

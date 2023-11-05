@@ -124,18 +124,20 @@ const Parent: React.FC = () => {
     }
     fetchMembers();
     getStableTokenBalance();
-  }, []);
+  }, [onCloseSendAllowanceModal]);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
 
-  const getStableTokenBalance = async () => {
+  const getStableTokenBalance = useCallback(async () => {
+    console.log("getting balance");
     const balance = await defiDollarsContractInstance?.getStableTokenBalance(
       userDetails?.wallet
     );
+    console.log("balance", balance);
     setStableTokenBalance(Number(ethers.formatEther(balance)));
-  };
+  }, []);
 
   const fetchMembers = useCallback(async () => {
     const getMembers = async () => {
@@ -311,6 +313,7 @@ const Parent: React.FC = () => {
         onClose={onCloseSendAllowanceModal}
         members={familyMembers}
         stableTokenBalance={stableTokenBalance}
+        getStableTokenBalance={getStableTokenBalance}
       />
 
       <MembersTableModal

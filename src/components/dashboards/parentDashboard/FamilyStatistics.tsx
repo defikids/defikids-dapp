@@ -8,6 +8,7 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
+import { stable_coin_symbol } from "@/config";
 
 interface Notification {
   title: string;
@@ -16,6 +17,17 @@ interface Notification {
 }
 
 const FamilyStatistics = ({ members }: { members: User[] }) => {
+  const totalActiveAllowances: number = members.reduce(
+    (acc: number, member: User) => {
+      const balanceAsNumber =
+        typeof member.balance === "number"
+          ? member.balance
+          : parseFloat(member.balance!) || 0;
+      return acc + balanceAsNumber;
+    },
+    0
+  );
+
   const stats: Notification[] = [
     {
       title: "Members",
@@ -23,9 +35,9 @@ const FamilyStatistics = ({ members }: { members: User[] }) => {
       unit: "",
     },
     {
-      title: "Currently Staked",
-      value: "31,573",
-      unit: "ETH",
+      title: "Total Active Allowances",
+      value: totalActiveAllowances.toString(),
+      unit: stable_coin_symbol,
     },
     {
       title: "Rewards Earned",

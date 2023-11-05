@@ -11,8 +11,8 @@ import {
   useToast,
   Tooltip,
 } from "@chakra-ui/react";
-import { useBalance } from "wagmi";
 import { shallow } from "zustand/shallow";
+import { stable_coin_symbol } from "@/config";
 
 const AccountBalance = ({
   walletAddress,
@@ -21,11 +21,6 @@ const AccountBalance = ({
   walletAddress: string;
   tokenBalance: number;
 }) => {
-  const { data } = useBalance({
-    address: walletAddress as `0x${string}`,
-    watch: true,
-  });
-
   const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
@@ -49,10 +44,12 @@ const AccountBalance = ({
           display="flex"
           alignItems="baseline"
         >
-          {Number(tokenBalance).toFixed(4)}
+          {Number(tokenBalance).toFixed(2)}
         </Heading>
         <Text fontSize="sm" ml={2}>
-          {userDetails?.userType === UserType.PARENT ? "USDC" : "DFD"}
+          {userDetails?.userType === UserType.PARENT
+            ? stable_coin_symbol
+            : "DFD"}
         </Text>
       </Flex>
 

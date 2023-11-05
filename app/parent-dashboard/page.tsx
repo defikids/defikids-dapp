@@ -21,7 +21,8 @@ import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/Re
 import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
-import { USDC } from "@/components/dashboards/parentDashboard/USDC";
+import { StableToken } from "@/components/dashboards/parentDashboard/StableToken";
+import { MemberWithdrawRequest } from "@/components/dashboards/parentDashboard/MemberWithdrawRequest";
 
 // Modals
 import { SettingsModal } from "@/components/modals/SettingsModal";
@@ -31,7 +32,6 @@ import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
-import { IActivity } from "@/models/Activity";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -247,11 +247,22 @@ const Parent: React.FC = () => {
             rowStart={1}
             rowEnd={isMobileSize ? 2 : 1}
             colStart={isMobileSize ? 1 : 1}
+            colEnd={isMobileSize ? 1 : 5}
+            h={isMobileSize ? "auto" : "105"}
+            mt={isMobileSize ? "1.2rem" : "12rem"}
+          >
+            <StableToken stableTokenBalance={stableTokenBalance} />
+          </GridItem>
+
+          <GridItem
+            rowStart={1}
+            rowEnd={isMobileSize ? 2 : 1}
+            colStart={isMobileSize ? 1 : 5}
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "105"}
             mt={isMobileSize ? "1.2rem" : "12rem"}
           >
-            <USDC stableTokenBalance={stableTokenBalance} />
+            <MemberWithdrawRequest />
           </GridItem>
 
           <GridItem

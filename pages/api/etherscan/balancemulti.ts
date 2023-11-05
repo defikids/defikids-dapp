@@ -30,7 +30,7 @@ export default async function uploadToIpfsRoute(
 
     const normalizedData = data.result.map((item: any) => {
       return {
-        balance: Number(ethers.formatEther(item.balance)).toFixed(4),
+        balance: Number(ethers.formatEther(item.balance)).toFixed(2),
         account: item.account,
       };
     });

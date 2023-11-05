@@ -12,8 +12,9 @@ import {
 } from "@chakra-ui/react";
 import { AddUSDCTokenToWallet } from "@/services/metamask/addToken";
 import { useRouter } from "next/navigation";
+import { stable_coin_symbol } from "@/config";
 
-export const USDC = ({
+export const StableToken = ({
   stableTokenBalance,
 }: {
   stableTokenBalance: number;
@@ -40,7 +41,7 @@ export const USDC = ({
     <Box p={5} bg={useColorModeValue("gray.100", "gray.900")} rounded="lg">
       <Flex justifyContent="space-between" alignItems="center" pb={2}>
         <Heading as="h3" size="sm" color="white">
-          USDC
+          {stable_coin_symbol}
         </Heading>
         <Tooltip label="Add to Metamask" hasArrow placement="top">
           <Image
@@ -69,7 +70,7 @@ export const USDC = ({
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          {stableTokenBalance.toFixed(4)}
+          {stableTokenBalance.toFixed(2)}
         </Heading>
 
         {/* Actions */}

@@ -71,7 +71,7 @@ export const DefiDollars = ({
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          {`${Number(tokenBalance).toFixed(4)}`}
+          {`${Number(tokenBalance).toFixed(2)}`}
         </Heading>
 
         {/* Actions */}

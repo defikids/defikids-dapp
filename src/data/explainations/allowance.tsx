@@ -1,8 +1,10 @@
+import { stable_coin_symbol } from "@/config";
+
 export const data = {
   title: "Allowance",
   paragraphs: [
     {
-      text: "When sending an allowance you are exchanging the underlying asset (USDC) for a sandbox version of the asset. This sandbox token is called Defi Dollars and is only usable within the sandbox. The Defi Dollars are pegged to the underlying asset at a 1:1 ratio. This means that 1 Defi Dollar is always worth 1 USDC.",
+      text: `When sending an allowance you are exchanging the underlying asset (${stable_coin_symbol}) for a sandbox version of the asset. This sandbox token is called Defi Dollars and is only usable within the sandbox. The Defi Dollars are pegged to the underlying asset at a 1:1 ratio. This means that 1 Defi Dollar is always worth 1 ${stable_coin_symbol}.`,
     },
     {
       text: "The Defi Dollars are used to pay the allowance. The members are able to use these tokens to interact with the features of the sandbox.  When a member would like to withdraw the Defi Dollars for fiat the Parent will recieve a notification of the withdraw request via email.",

@@ -37,6 +37,7 @@ import { createActivity } from "@/services/mongo/routes/activity";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { IActivity } from "@/models/Activity";
 import { useAuthStore } from "@/store/auth/authStore";
+import { stable_coin_symbol } from "@/config";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -178,7 +179,9 @@ export const DepositAndMint = ({
           accountId,
           wallet: address,
           date: convertTimestampToSeconds(Date.now()),
-          type: `Sent allowance. ${amount.trim()} USDC to ${user.username}`,
+          type: `Sent allowance. ${amount.trim()} ${stable_coin_symbol} to ${
+            user.username
+          }`,
         });
         newActivities.push(newActivity);
       })
@@ -234,10 +237,10 @@ export const DepositAndMint = ({
           <UsdcTokenIcon width={40} height={40} />
           <Flex direction="row" alignItems="baseline" justify="center" my={5}>
             <Heading size="xl" display="flex" alignItems="baseline" ml={3}>
-              {`${Number(stableTokenBalance).toFixed(4)}`}
+              {`${Number(stableTokenBalance).toFixed(2)}`}
             </Heading>
             <Text fontSize="sm" ml={2}>
-              USDC
+              {stable_coin_symbol}
             </Text>
           </Flex>
         </Flex>

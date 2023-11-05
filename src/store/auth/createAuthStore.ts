@@ -7,6 +7,7 @@ import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
 import { User } from "@/data-schema/types";
 import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
+import { IActivity } from "@/models/Activity";
 
 type State = {
   isLoggedIn: boolean;
@@ -17,6 +18,8 @@ type State = {
   userDetails: User;
   mobileMenuOpen: boolean;
   fetchedUserDetails: boolean;
+  familyMembers: User[];
+  recentActivity: IActivity[];
 };
 
 type Actions = {
@@ -27,15 +30,20 @@ type Actions = {
   setUserDetails: (userDetails: User) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
+  setFamilyMembers: (familyMembers: User[]) => void;
   reset: () => void;
+  setRecentActivity: (recentActivity: IActivity[]) => void;
 };
 
 type MyStore = State & Actions;
 
-const initialState: State = {
+export const initialState: State = {
   isLoggedIn: false,
   walletConnected: false,
   navigationSection: "DefiKids",
+  mobileMenuOpen: false,
+  fetchedUserDetails: false,
+  familyMembers: [],
   logout: () => {},
   reset: () => void {},
   userDetails: {
@@ -53,8 +61,7 @@ const initialState: State = {
     permissions: [],
     balance: "",
   },
-  mobileMenuOpen: false,
-  fetchedUserDetails: false,
+  recentActivity: [],
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -80,20 +87,6 @@ const setters = (set: any) => ({
     }, shallow);
   },
   setLogout: () => {
-    set(
-      (state: {
-        walletAddress: string;
-        isLoggedIn: boolean;
-        userType: UserType;
-        walletConnected: boolean;
-      }) => {
-        state.walletAddress = "";
-        state.isLoggedIn = false;
-        state.userType = UserType.UNREGISTERED;
-        state.walletConnected = false;
-      },
-      shallow
-    );
     disconnect();
   },
   setUserDetails: (userDetails: User) => {
@@ -110,6 +103,16 @@ const setters = (set: any) => ({
   setFetchedUserDetails: (fetchedUserDetails: boolean) => {
     set((state: { fetchedUserDetails: boolean }) => {
       state.fetchedUserDetails = fetchedUserDetails;
+    }, shallow);
+  },
+  setFamilyMembers: (familyMembers: User[]) => {
+    set((state: { familyMembers: User[] }) => {
+      state.familyMembers = familyMembers;
+    }, shallow);
+  },
+  setRecentActivity: (recentActivity: IActivity[]) => {
+    set((state: { recentActivity: IActivity[] }) => {
+      state.recentActivity = recentActivity;
     }, shallow);
   },
   reset: () => {

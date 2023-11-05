@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useRef, useState } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { TransactionStepper, steps } from "./steppers/TransactionStepper";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";

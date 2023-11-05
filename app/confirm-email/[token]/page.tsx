@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { editUser, getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export default function ConfirmEmail() {
@@ -95,8 +95,7 @@ export default function ConfirmEmail() {
         setIsConfirmed(false);
 
         const verified =
-          decodedWalletAddress ===
-          ethers.utils.verifyMessage(message, signature);
+          decodedWalletAddress === ethers.verifyMessage(message, signature);
 
         if (verified) {
           await updateUserEmailVerified(true);

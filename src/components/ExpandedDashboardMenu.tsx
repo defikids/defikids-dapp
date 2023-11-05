@@ -20,7 +20,7 @@ import DashboardAccountBalance from "./dashboards/DashboardAccountBalance";
 import ParentButtonMenu from "./dashboards/parentDashboard/ParentButtonMenu";
 import MemberButtonMenu from "./dashboards/memberDashboard/MemberButtonMenu";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { EtherscanLogoCircle } from "@/components/logos/EtherscanLogoCircle";
 import { colors } from "@/services/chakra/theme";
 import { useRouter } from "next/navigation";
@@ -35,9 +35,10 @@ export const ExpandedDashboardMenu = ({
   isMobileSize,
   onOpenSettingsModal,
   onOpenInfoModal,
-  onOpenSendFundsModal,
+  onOpenSendAllowanceModal,
   onOpenMembersTableModal,
-  onOpenAirdropModal,
+  onOpenWithdrawDefiDollarsModal,
+  stableTokenBalance,
 }: {
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
@@ -46,9 +47,10 @@ export const ExpandedDashboardMenu = ({
   isMobileSize: boolean;
   onOpenSettingsModal: () => void;
   onOpenInfoModal: () => void;
-  onOpenSendFundsModal?: () => void;
+  onOpenSendAllowanceModal?: () => void;
   onOpenMembersTableModal?: () => void;
-  onOpenAirdropModal?: () => void;
+  onOpenWithdrawDefiDollarsModal?: () => void;
+  stableTokenBalance: number;
 }) => {
   const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
     useAuthStore(
@@ -113,17 +115,21 @@ export const ExpandedDashboardMenu = ({
               </Flex>
               <DashboardUsername />
               <DashboardAvatar />
-              <DashboardAccountBalance walletAddress={userDetails?.wallet} />
+              <DashboardAccountBalance
+                walletAddress={userDetails?.wallet}
+                tokenBalance={stableTokenBalance}
+              />
 
               {userDetails?.userType === UserType.PARENT ? (
                 <ParentButtonMenu
-                  onOpenSendFundsModal={onOpenSendFundsModal!}
+                  onOpenSendAllowanceModal={onOpenSendAllowanceModal!}
                   onOpenMembersTableModal={onOpenMembersTableModal!}
-                  onOpenAirdropModal={onOpenAirdropModal!}
                 />
               ) : (
                 <MemberButtonMenu
-                  onOpenSendFundsModal={onOpenSendFundsModal!}
+                  onOpenWithdrawDefiDollarsModal={
+                    onOpenWithdrawDefiDollarsModal!
+                  }
                 />
               )}
             </Box>

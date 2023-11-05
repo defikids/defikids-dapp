@@ -10,7 +10,6 @@ import {
   Collapse,
   Button,
   useDisclosure,
-  Fade,
 } from "@chakra-ui/react";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { useRouter } from "next/navigation";
@@ -23,7 +22,7 @@ import { UserType } from "@/data-schema/enums";
 import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 import RegisterModal from "@/components/modals/RegisterModal";
 
-export default function NavBar() {
+export default function LandingNavbar() {
   //=============================================================================
   //                               HOOKS
   //============================================================================
@@ -36,22 +35,17 @@ export default function NavBar() {
     lg: false,
   });
 
-  const {
-    walletConnected,
-    navigationSection,
-    userDetails,
-    fetchedUserDetails,
-    setIsLoggedIn,
-  } = useAuthStore(
-    (state) => ({
-      walletConnected: state.walletConnected,
-      navigationSection: state.navigationSection,
-      userDetails: state.userDetails,
-      fetchedUserDetails: state.fetchedUserDetails,
-      setIsLoggedIn: state.setIsLoggedIn,
-    }),
-    shallow
-  );
+  const { walletConnected, navigationSection, userDetails, setIsLoggedIn } =
+    useAuthStore(
+      (state) => ({
+        isLoggedIn: state.isLoggedIn,
+        walletConnected: state.walletConnected,
+        navigationSection: state.navigationSection,
+        userDetails: state.userDetails,
+        setIsLoggedIn: state.setIsLoggedIn,
+      }),
+      shallow
+    );
 
   const {
     isOpen: isRegisterOpen,
@@ -76,15 +70,15 @@ export default function NavBar() {
   const navigateUser = () => {
     switch (userDetails?.userType) {
       case UserType.UNREGISTERED:
-        setIsLoggedIn(false);
+        // setIsLoggedIn(false);
         onRegisterOpen();
         break;
       case UserType.PARENT:
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
         router.push("/parent-dashboard");
         break;
       case UserType.MEMBER:
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
         router.push("/member-dashboard");
         break;
       default:
@@ -116,18 +110,10 @@ export default function NavBar() {
           <Flex justifyContent="flex-end">
             {!walletConnected ? (
               <CustomConnectButton />
-            ) : fetchedUserDetails ? (
-              <Button mr={5} size="lg" onClick={navigateUser}>
-                <Fade in={fetchedUserDetails}>
-                  <Heading size="sm">
-                    {userDetails?.userType != UserType.UNREGISTERED
-                      ? "Dashboard"
-                      : "Register"}
-                  </Heading>
-                </Fade>
-              </Button>
             ) : (
-              <></>
+              <Button mr={5} size="lg" onClick={navigateUser}>
+                <Heading size="sm">Dashboard</Heading>
+              </Button>
             )}
 
             <IconButton

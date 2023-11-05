@@ -24,7 +24,7 @@ import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { NetworkType, UserType } from "@/data-schema/enums";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { PermissionType } from "@/data-schema/enums";
 import { IUser } from "@/models/User";
 import {

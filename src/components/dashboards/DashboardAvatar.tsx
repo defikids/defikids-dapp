@@ -3,7 +3,7 @@
 import { Avatar, Flex } from "@chakra-ui/react";
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 const DashboardAvatar = () => {
   const { userDetails } = useAuthStore(

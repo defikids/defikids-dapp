@@ -3,23 +3,24 @@ import { createWithEqualityFn } from "zustand/traditional";
 
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { Contract } from "ethers";
+import { Contract, Signer } from "ethers";
 
 import { shallow } from "zustand/shallow";
-import { ethers } from "ethers";
 
 type State = {
   readOnlyProvider: any;
   provider: any;
-  connectedSigner: ethers.providers.JsonRpcSigner | null;
-  contractInstance: Contract | null;
+  connectedSigner: Signer | null;
+  defiDollarsContractInstance: Contract | null;
+  stableTokenContractInstance: Contract | null;
 };
 
 type Actions = {
   setReadOnlyProvider: (readOnlyProvider: any) => void;
   setProvider: (provider: any) => void;
-  setConnectedSigner: (signer: ethers.providers.JsonRpcSigner) => void;
-  setContactInstance: (contractInstance: Contract) => void;
+  setConnectedSigner: (signer: Signer) => void;
+  setDefiDollarsContractInstance: (contractInstance: Contract) => void;
+  setStableTokenContractInstance: (contractInstance: Contract) => void;
 };
 
 type MyStore = State & Actions;
@@ -28,7 +29,8 @@ const initialState: State = {
   readOnlyProvider: null,
   provider: null,
   connectedSigner: null,
-  contractInstance: null,
+  defiDollarsContractInstance: null,
+  stableTokenContractInstance: null,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -47,14 +49,19 @@ const setters = (set: any) => ({
       state.provider = provider;
     }, shallow);
   },
-  setConnectedSigner: (signer: ethers.providers.JsonRpcSigner) => {
-    set((state: { connectedSigner: ethers.providers.JsonRpcSigner }) => {
+  setConnectedSigner: (signer: Signer) => {
+    set((state: { connectedSigner: Signer }) => {
       state.connectedSigner = signer;
     }, shallow);
   },
-  setContactInstance: (contractInstance: Contract) => {
-    set((state: { contractInstance: Contract }) => {
-      state.contractInstance = contractInstance;
+  setDefiDollarsContractInstance: (contractInstance: Contract) => {
+    set((state: { defiDollarsContractInstance: Contract }) => {
+      state.defiDollarsContractInstance = contractInstance;
+    }, shallow);
+  },
+  setStableTokenContractInstance: (contractInstance: Contract) => {
+    set((state: { stableTokenContractInstance: Contract }) => {
+      state.stableTokenContractInstance = contractInstance;
     }, shallow);
   },
 });

@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { TriangleDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 export const CollapsedDashboardMenu = ({

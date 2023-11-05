@@ -9,7 +9,7 @@ const Plus: React.FC<IProps> = ({ width = 24, height = 24, ...props }) => {
   return (
     <Image
       {...props}
-      src="//icons/plus.svg"
+      src="/icons/plus.svg"
       alt={`Add`}
       width={width}
       height={height}

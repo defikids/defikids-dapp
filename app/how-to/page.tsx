@@ -1,5 +1,5 @@
 import { Center } from "@chakra-ui/react";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/LandingNavbar";
 
 const HowTo = () => {
   return (

@@ -4,7 +4,6 @@ import {
   StepDescription,
   StepIcon,
   StepIndicator,
-  StepNumber,
   StepSeparator,
   StepStatus,
   StepTitle,
@@ -18,6 +17,20 @@ export const steps = (context: StepperContext) => {
     return [
       {
         title: "Saving your avatar on IPFS",
+      },
+    ];
+  }
+
+  if (context === StepperContext.PERMIT) {
+    return [
+      {
+        title: "Step 1",
+        description: "Sign Permit Approval",
+      },
+      { title: "Step 2", description: "Approve Wallet Transaction" },
+      {
+        title: "Step 3",
+        description: "Processing Transaction",
       },
     ];
   }

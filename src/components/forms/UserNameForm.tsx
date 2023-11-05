@@ -10,7 +10,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
 import { editUser } from "@/services/mongo/routes/user";
 

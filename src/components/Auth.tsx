@@ -5,94 +5,131 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import { providers } from "ethers";
+import { ethers } from "ethers";
 import { watchAccount } from "@wagmi/core";
-import { useSwitchNetwork } from "wagmi";
-import { getNetwork } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import {
+  DEFIKIDS_PROXY_ADDRESS,
+  GOERLI_DK_STABLETOKEN_ADDRESS,
+} from "@/blockchain/contract-addresses";
+import { defikidsCoreABI } from "@/blockchain/artifacts/goerli/defikids-core";
+import { stableTokenABI } from "@/blockchain/artifacts/goerli/stable-token";
+import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
+import { initialState } from "@/store/auth/createAuthStore";
+import { User } from "@/data-schema/types";
 
 const Auth = () => {
-  const [selectedAddress, setSelectedAddress] = useState("") as any;
-  const [hasCheckedUserType, setHasCheckedUserType] = useState(false);
-  const { switchNetwork } = useSwitchNetwork();
-  const { chain } = getNetwork();
+  const [selectedAddress, setSelectedAddress] = useState("");
 
+  const router = useRouter();
+  const { address: connectedAccount } = useAccount();
+
+  /*
+   *  Sets the selected address to the connected account on initial load
+   */
   useEffect(() => {
-    if (chain?.id && chain.id !== 5) {
-      switchNetwork?.(5);
+    if (connectedAccount) {
+      setSelectedAddress(connectedAccount);
     }
-  }, [chain]);
+  }, [connectedAccount]);
 
+  /*
+   * Watches for changes on the connected account
+   */
   watchAccount((account) => {
     const { isConnected, address } = account;
 
-    if (
-      userDetails?.wallet &&
-      address &&
-      userDetails?.wallet !== (address as string)
-    ) {
-      setHasCheckedUserType(false);
-      setWalletConnected(false);
-      setLogout();
-    }
-    if (isConnected) {
-      setHasCheckedUserType(false);
+    if (address && address !== selectedAddress) {
       setSelectedAddress(address);
-      setWalletConnected(true);
+      router.push("/");
+    }
+
+    if (!isConnected && selectedAddress) {
+      setFetchedUserDetails(false);
+      setWalletConnected(false);
+      setIsLoggedIn(false);
+      setSelectedAddress("");
+      setUserDetails({ ...initialState.userDetails });
     }
   });
 
   const {
     setWalletConnected,
-    setLogout,
     setUserDetails,
-    userDetails,
     setFetchedUserDetails,
+    setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setWalletConnected: state.setWalletConnected,
-      setLogout: state.setLogout,
       setUserDetails: state.setUserDetails,
       setFetchedUserDetails: state.setFetchedUserDetails,
+      setIsLoggedIn: state.setIsLoggedIn,
     }),
     shallow
   );
 
-  const { setConnectedSigner, setProvider } = useContractStore(
+  const {
+    setConnectedSigner,
+    setProvider,
+    setDefiDollarsContractInstance,
+    setStableTokenContractInstance,
+  } = useContractStore(
     (state) => ({
       setConnectedSigner: state.setConnectedSigner,
       setProvider: state.setProvider,
+      setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
+      setStableTokenContractInstance: state.setStableTokenContractInstance,
     }),
     shallow
   );
 
   /*
-   * This hook will check for the user's wallet address and set the user type and family id. It will also set the provider and signer in the store
+   * This hook will check for the user's wallet address and set the user type. It will also set the provider and signer in the store
    */
   useEffect(() => {
-    const fetchUserType = async () => {
-      if (!selectedAddress || hasCheckedUserType) return;
+    const init = async () => {
+      if (!selectedAddress) return;
+      setWalletConnected(true);
 
       // @ts-ignore
-      const provider = new providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner(selectedAddress);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner(selectedAddress);
 
       // add provider and signer to store
       setProvider(provider);
       setConnectedSigner(signer);
 
-      const user = await getUserByWalletAddress(selectedAddress);
-      setHasCheckedUserType(true);
+      const defiDollarsContract = new ethers.Contract(
+        DEFIKIDS_PROXY_ADDRESS,
+        defikidsCoreABI,
+        signer
+      );
 
-      if (user.response?.status !== 404) {
+      const stableTokenContract = new ethers.Contract(
+        GOERLI_DK_STABLETOKEN_ADDRESS,
+        stableTokenABI,
+        signer
+      );
+
+      setDefiDollarsContractInstance(defiDollarsContract);
+      setStableTokenContractInstance(stableTokenContract);
+
+      const user = (await getUserByWalletAddress(selectedAddress)) as any;
+
+      if (!user?.error) {
         setUserDetails(user);
+        setIsLoggedIn(true);
+        setFetchedUserDetails(true);
+        return;
       }
-      setFetchedUserDetails(true);
+      setUserDetails({ ...initialState.userDetails });
+      setSelectedAddress("");
+      setIsLoggedIn(false);
     };
 
-    fetchUserType();
-  }, [selectedAddress, hasCheckedUserType]);
+    init();
+  }, [selectedAddress]);
 
   /*
    * This hook will check if the user has a dark mode preference set in local storage

@@ -3,9 +3,9 @@
 import { Button, VStack } from "@chakra-ui/react";
 
 const MemberButtonMenu = ({
-  onOpenSendFundsModal,
+  onOpenWithdrawDefiDollarsModal,
 }: {
-  onOpenSendFundsModal: () => void;
+  onOpenWithdrawDefiDollarsModal: () => void;
 }) => {
   return (
     <VStack spacing={4} align="stretch" justify="space-between" mt={10} mx={5}>
@@ -15,10 +15,10 @@ const MemberButtonMenu = ({
         _hover={{ borderColor: "gray" }}
         onClick={(e) => {
           e.stopPropagation();
-          onOpenSendFundsModal();
+          onOpenWithdrawDefiDollarsModal();
         }}
       >
-        Send Funds
+        Withdraw Funds
       </Button>
     </VStack>
   );

@@ -12,7 +12,7 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/LandingNavbar";
 
 export default function Community() {
   const isMobileSize = useBreakpointValue({

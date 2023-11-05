@@ -1,7 +1,8 @@
 "use client";
 
+import { UserType } from "@/data-schema/enums";
+import { useAuthStore } from "@/store/auth/authStore";
 import { trimAddress } from "@/utils/web3";
-import { CopyIcon } from "@chakra-ui/icons";
 import {
   Flex,
   Heading,
@@ -10,15 +11,25 @@ import {
   useToast,
   Tooltip,
 } from "@chakra-ui/react";
-import { useBalance } from "wagmi";
+import { shallow } from "zustand/shallow";
+import { stable_coin_symbol } from "@/config";
 
-const AccountBalance = ({ walletAddress }: { walletAddress: string }) => {
-  const { data } = useBalance({
-    address: walletAddress as `0x${string}`,
-    watch: true,
-  });
+const AccountBalance = ({
+  walletAddress,
+  tokenBalance,
+}: {
+  walletAddress: string;
+  tokenBalance: number;
+}) => {
+  const { userDetails } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+    }),
+    shallow
+  );
 
   const toast = useToast();
+
   return (
     <>
       <Flex
@@ -28,11 +39,17 @@ const AccountBalance = ({ walletAddress }: { walletAddress: string }) => {
         mt={5}
         ml={5}
       >
-        <Heading size="2xl" display="flex" alignItems="baseline">
-          {`${Number(data?.formatted).toFixed(4)}`}
+        <Heading
+          size={tokenBalance > 1000 ? "xl" : "2xl"}
+          display="flex"
+          alignItems="baseline"
+        >
+          {Number(tokenBalance).toFixed(2)}
         </Heading>
         <Text fontSize="sm" ml={2}>
-          {data?.symbol}
+          {userDetails?.userType === UserType.PARENT
+            ? stable_coin_symbol
+            : "DFD"}
         </Text>
       </Flex>
 

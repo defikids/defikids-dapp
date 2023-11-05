@@ -8,6 +8,7 @@ export enum SandboxFeatures {
 export enum StepperContext {
   AVATAR = "AVATAR",
   DEFAULT = "DEFAULT",
+  PERMIT = "PERMIT",
 }
 
 export enum EtherscanContext {
@@ -42,6 +43,8 @@ export enum Explaination {
   SANDBOX = "SANDBOX",
   FAMILY_NAME = "FAMILY_NAME",
   BLOCKCHAIN = "BLOCKCHAIN",
+  DEFI_DOLLARS = "DEFI_DOLLARS",
+  ALLOWANCE = "ALLOWANCE",
 }
 
 export enum MainnetNetworks {

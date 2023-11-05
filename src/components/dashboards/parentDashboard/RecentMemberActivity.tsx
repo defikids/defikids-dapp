@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Container,
   Flex,
@@ -19,6 +20,8 @@ import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount
 import { IUser } from "@/models/User";
 import { formatDateToIsoString } from "@/utils/dateTime";
 import { User } from "@/data-schema/types";
+import { useAuthStore } from "@/store/auth/authStore";
+import { shallow } from "zustand/shallow";
 
 interface FormattedActivity {
   activityText: string;
@@ -30,35 +33,53 @@ interface FormattedActivity {
 export const RecentMemberActivity = ({ user }: { user: User }) => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
 
+  const { recentActivity, setRecentActivity } = useAuthStore(
+    (state) => ({
+      recentActivity: state.recentActivity,
+      setRecentActivity: state.setRecentActivity,
+    }),
+    shallow
+  );
+
+  /* This useEffect is used to get the recent activity for the user upon page load */
   useEffect(() => {
     const getData = async () => {
-      const data = (await getActivityByAccount(user.accountId!)) as IActivity[];
-      const members = (await getFamilyMembersByAccount(
-        user.accountId!,
-        true
-      )) as IUser[];
-
-      const previewData = data.slice(0, 5);
-
-      const formattedActivity = previewData.map((activity: IActivity) => {
-        if (user.accountId === activity?.accountId) {
-          const member = members.find((m) => m.wallet === activity?.wallet);
-
-          if (member) {
-            return {
-              activityText: `<span style="font-weight: 600">${member?.username}</span> ${activity?.type}`,
-              dateTime: activity?.date,
-              userName: member?.username || "",
-              userAvatar: member?.avatarURI || "",
-            };
-          }
-        }
-      }) as FormattedActivity[];
-
-      setMemberActivity(formattedActivity);
+      const activity = await getActivityByAccount(user.accountId!);
+      await normaliseActivity(activity);
     };
     getData();
   }, []);
+
+  /* This useEffect is used to update the recent activity when a user deposits or mints */
+  useEffect(() => {
+    const getData = async () => {
+      await normaliseActivity(recentActivity);
+      setRecentActivity([]);
+    };
+    if (recentActivity.length > 0) getData();
+  }, [recentActivity]);
+
+  const normaliseActivity = async (activities: IActivity[]) => {
+    const members = (await getFamilyMembersByAccount(
+      user.accountId!,
+      true
+    )) as IUser[];
+
+    const formattedActivity = activities.map((activity: IActivity) => {
+      const member = members.find((m) => m.wallet === activity?.wallet);
+
+      return {
+        activityText: `<span style="font-weight: 600">${member?.username}</span> ${activity?.type}`,
+        dateTime: activity?.date,
+        userName: member?.username || "",
+        userAvatar: member?.avatarURI || "",
+      };
+    }) as FormattedActivity[];
+
+    const previewData = [...formattedActivity, ...memberActivity].slice(0, 6);
+
+    setMemberActivity(previewData);
+  };
 
   return (
     <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>

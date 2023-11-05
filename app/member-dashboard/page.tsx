@@ -1,12 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import {
   Box,
-  Center,
   Flex,
   GridItem,
-  Heading,
-  Text,
   useDisclosure,
   useColorModeValue,
   Grid,
@@ -15,9 +13,6 @@ import React, { useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useContractStore } from "@/store/contract/contractStore";
-import { useBalance } from "wagmi";
-import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { IUser } from "@/models/User";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -28,14 +23,20 @@ import StakingContracts from "@/components/dashboards/parentDashboard/StakingCon
 import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
-import { SendFundsModal } from "@/components/modals/SendFundsModal";
+import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
+import { watchNetwork } from "@wagmi/core";
+import { WrongNetwork } from "@/components/WrongNetwork";
+import { validChainId } from "@/config";
+import { useNetwork } from "wagmi";
+import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
+import { ethers } from "ethers";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
-
-  // const [member, setMember] = useState<IUser>();
+  const [isValidChain, setIsValidChain] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -43,12 +44,29 @@ const MemberDashboard: React.FC = () => {
   const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
+      familyMembers: state.familyMembers,
+      setFamilyMembers: state.setFamilyMembers,
     }),
     shallow
   );
 
-  const { width } = useWindowSize();
+  const { defiDollarsContractInstance } = useContractStore(
+    (state) => ({
+      defiDollarsContractInstance: state.defiDollarsContractInstance,
+    }),
+    shallow
+  );
 
+  const { chain } = useNetwork();
+
+  watchNetwork((network) => {
+    if (validChainId === network.chain?.id) {
+      setIsValidChain(true);
+    }
+  });
+
+  const { width } = useWindowSize();
+  4;
   const isMobileSize = width < 768;
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
@@ -76,17 +94,31 @@ const MemberDashboard: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenSendFundsModal,
-    onOpen: onOpenSendFundsModal,
-    onClose: onCloseSendFundsModal,
+    isOpen: isOpenWithdrawDefiDollarsModal,
+    onOpen: onOpenWithdrawDefiDollarsModal,
+    onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
 
-  const { connectedSigner } = useContractStore(
-    (state) => ({
-      connectedSigner: state.connectedSigner,
-    }),
-    shallow
-  );
+  useEffect(() => {
+    const defiDollarsBalance = async () => {
+      const balance = await defiDollarsContractInstance?.balanceOf(
+        userDetails.wallet
+      );
+      setTokenBalance(Number(ethers.formatEther(balance)));
+    };
+
+    defiDollarsBalance();
+  }, [isOpenWithdrawDefiDollarsModal]);
+
+  useEffect(() => {
+    if (validChainId === chain?.id) {
+      setIsValidChain(true);
+    }
+  }, []);
+
+  if (!isValidChain || chain?.id !== validChainId) {
+    return <WrongNetwork />;
+  }
 
   return (
     <Box>
@@ -100,7 +132,8 @@ const MemberDashboard: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
-            onOpenSendFundsModal={onOpenSendFundsModal}
+            onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
+            stableTokenBalance={tokenBalance}
           />
         </Box>
         {!isMobileSize && (
@@ -141,13 +174,28 @@ const MemberDashboard: React.FC = () => {
           )}
 
           <GridItem
+            rowStart={1}
+            rowEnd={isMobileSize ? 2 : 1}
+            colStart={isMobileSize ? 1 : 1}
+            colEnd={isMobileSize ? 1 : 9}
+            h={isMobileSize ? "auto" : "105"}
+            mt={isMobileSize ? "1.2rem" : "12rem"}
+            mb="1.5rem"
+          >
+            <DefiDollars
+              tokenBalance={tokenBalance}
+              onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
+            />
+          </GridItem>
+
+          <GridItem
             rowStart={
               isMobileSize || (isMobileSize && isOpenExtendedMenu) ? 2 : 0
             }
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
             h={isMobileSize ? "auto" : "320"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <StakingContracts />
@@ -158,7 +206,7 @@ const MemberDashboard: React.FC = () => {
             colStart={isMobileSize ? 1 : 5}
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "100%"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <RecentMemberActivity user={userDetails} />
@@ -168,7 +216,7 @@ const MemberDashboard: React.FC = () => {
             rowStart={isMobileSize ? 3 : 0}
             rowEnd={isMobileSize ? 3 : 0}
             colSpan={isMobileSize ? 1 : 4}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <FamilyStatistics members={[]} />
@@ -191,9 +239,9 @@ const MemberDashboard: React.FC = () => {
         isOpenExtendedMenu={isOpenExtendedMenu}
       />
 
-      <SendFundsModal
-        isOpen={isOpenSendFundsModal}
-        onClose={onCloseSendFundsModal}
+      <WithdrawDefiDollarsModal
+        isOpen={isOpenWithdrawDefiDollarsModal}
+        onClose={onCloseWithdrawDefiDollarsModal}
       />
     </Box>
   );

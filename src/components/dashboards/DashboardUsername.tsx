@@ -2,7 +2,7 @@
 
 import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 const Username = () => {
   const { userDetails } = useAuthStore(

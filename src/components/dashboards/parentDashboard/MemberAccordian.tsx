@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { NetworkType } from "@/data-schema/enums";
 import { useState } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
 import { deleteUser, editUser } from "@/services/mongo/routes/user";
 import { createActivity } from "@/services/mongo/routes/activity";

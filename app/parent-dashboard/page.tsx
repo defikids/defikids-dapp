@@ -1,49 +1,61 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import {
-  Box,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  useDisclosure,
-  useColorModeValue,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import { User } from "@/data-schema/types";
-import axios from "axios";
-import { SettingsModal } from "@/components/modals/SettingsModal";
-import { InfoModal } from "@/components/modals/InfoModal";
+import { useContractStore } from "@/store/contract/contractStore";
+import { shallow } from "zustand/shallow";
+import { useWindowSize } from "usehooks-ts";
+import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
+import { ethers } from "ethers";
+import { watchNetwork } from "@wagmi/core";
+import { WrongNetwork } from "@/components/WrongNetwork";
+import { validChainId } from "@/config";
+import { useNetwork } from "wagmi";
+
+// Components
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
-import { useWindowSize } from "usehooks-ts";
-import { EtherscanModal } from "@/components/modals/EtherscanModal";
 import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
-import { SendFundsModal } from "@/components/modals/SendFundsModal";
 import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
-import { MembersTableModal } from "@/components/modals/MembersTableModal";
-import { AirdropModal } from "@/components/modals/AirdropModal";
-import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
+import { StableToken } from "@/components/dashboards/parentDashboard/StableToken";
+import { MemberWithdrawRequest } from "@/components/dashboards/parentDashboard/MemberWithdrawRequest";
+
+// Modals
+import { SettingsModal } from "@/components/modals/SettingsModal";
+import { InfoModal } from "@/components/modals/InfoModal";
+import { EtherscanModal } from "@/components/modals/EtherscanModal";
+import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
+import { MembersTableModal } from "@/components/modals/MembersTableModal";
+import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
+import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
 
 const Parent: React.FC = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
-
-  const [members, setMembers] = useState<User[]>([]);
+  const [isValidChain, setIsValidChain] = useState(false);
+  const [stableTokenBalance, setStableTokenBalance] = useState(0);
 
   //=============================================================================
   //                               HOOKS
   //=============================================================================
 
-  const { userDetails } = useAuthStore(
+  const { userDetails, setFamilyMembers, familyMembers } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
+      familyMembers: state.familyMembers,
+      setFamilyMembers: state.setFamilyMembers,
+    }),
+    shallow
+  );
+
+  const { defiDollarsContractInstance } = useContractStore(
+    (state) => ({
+      defiDollarsContractInstance: state.defiDollarsContractInstance,
     }),
     shallow
   );
@@ -51,6 +63,13 @@ const Parent: React.FC = () => {
   const { width } = useWindowSize();
 
   const isMobileSize = width < 768;
+  const { chain } = useNetwork();
+
+  watchNetwork((network) => {
+    if (validChainId === network.chain?.id) {
+      setIsValidChain(true);
+    }
+  });
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
     useDisclosure();
@@ -77,9 +96,9 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenSendFundsModal,
-    onOpen: onOpenSendFundsModal,
-    onClose: onCloseSendFundsModal,
+    isOpen: isOpenSendAllowanceModal,
+    onOpen: onOpenSendAllowanceModal,
+    onClose: onCloseSendAllowanceModal,
   } = useDisclosure();
 
   const {
@@ -89,18 +108,35 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenAirdropModal,
-    onOpen: onOpenAirdropModal,
-    onClose: onCloseAirdropModal,
+    isOpen: isOpenDepositDefiDollarsModal,
+    onOpen: onOpenDepositDefiDollarsModal,
+    onClose: onCloseDepositDefiDollarsModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenWithdrawDefiDollarsModal,
+    onOpen: onOpenWithdrawDefiDollarsModal,
+    onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
 
   useEffect(() => {
+    if (validChainId === chain?.id) {
+      setIsValidChain(true);
+    }
     fetchMembers();
-  }, []);
+    getStableTokenBalance();
+  }, [onCloseSendAllowanceModal]);
 
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
+
+  const getStableTokenBalance = useCallback(async () => {
+    const balance = await defiDollarsContractInstance?.getStableTokenBalance(
+      userDetails?.wallet
+    );
+    setStableTokenBalance(Number(ethers.formatEther(balance)));
+  }, []);
 
   const fetchMembers = useCallback(async () => {
     const getMembers = async () => {
@@ -109,36 +145,56 @@ const Parent: React.FC = () => {
       const members = await getFamilyMembersByAccount(userDetails?.accountId!);
 
       if (members.length) {
-        const membersWalletBalances = await axios.post(
-          `/api/etherscan/balancemulti`,
-          {
-            addresses: members.map((c) => c.wallet),
-          }
-        );
+        const membersWalletBalances = [] as {
+          account: string;
+          balance: string;
+        }[];
+
+        for (let i = 0; i < members.length; i++) {
+          const balance = await defiDollarsContractInstance?.balanceOf(
+            members[i].wallet
+          );
+
+          membersWalletBalances.push({
+            account: members[i].wallet,
+            balance: ethers.formatUnits(balance, 18),
+          });
+        }
 
         const membersWithBalances = members.map((c) => {
-          const balance = membersWalletBalances.data.find(
+          const balance = membersWalletBalances.find(
             (b) => b.account === c.wallet
           );
           return {
             ...c,
-            balance: balance ? balance.balance : 0,
+            balance: balance ? balance.balance : "0",
           };
         });
 
-        setMembers(membersWithBalances);
+        setFamilyMembers(membersWithBalances);
       } else {
-        setMembers(members);
+        setFamilyMembers(members);
       }
     };
 
     await getMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [members.length, userDetails?.wallet]);
+  }, [familyMembers.length, userDetails?.wallet]);
+
+  if (!isValidChain || chain?.id !== validChainId) {
+    return <WrongNetwork />;
+  }
 
   return (
     <Box>
-      <Flex direction={isMobileSize ? "column" : "row"} height="100vh">
+      <Flex
+        direction={isMobileSize ? "column" : "row"}
+        height="100%"
+        bgPosition="center"
+        bgSize="cover"
+        bgImage={"/images/backgrounds/purple-bg.jpg"}
+      >
+        {/* Menus */}
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -148,9 +204,9 @@ const Parent: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
-            onOpenSendFundsModal={onOpenSendFundsModal}
+            onOpenSendAllowanceModal={onOpenSendAllowanceModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
-            onOpenAirdropModal={onOpenAirdropModal}
+            stableTokenBalance={stableTokenBalance}
           />
         </Box>
         {!isMobileSize && (
@@ -173,9 +229,6 @@ const Parent: React.FC = () => {
           templateRows={isMobileSize ? "auto" : "repeat(3, 1fr)"}
           gap={4}
           px={isMobileSize ? 0 : 5}
-          bgPosition="center"
-          bgSize="cover"
-          bgImage={"/images/backgrounds/purple-bg.jpg"}
         >
           {!isMobileSize && (
             <GridItem
@@ -191,37 +244,57 @@ const Parent: React.FC = () => {
           )}
 
           <GridItem
+            rowStart={1}
+            rowEnd={isMobileSize ? 2 : 1}
+            colStart={isMobileSize ? 1 : 1}
+            colEnd={isMobileSize ? 1 : 5}
+            h={isMobileSize ? "auto" : "105"}
+            mt={isMobileSize ? "1.2rem" : "12rem"}
+          >
+            <StableToken stableTokenBalance={stableTokenBalance} />
+          </GridItem>
+
+          <GridItem
+            rowStart={1}
+            rowEnd={isMobileSize ? 2 : 1}
+            colStart={isMobileSize ? 1 : 5}
+            colEnd={isMobileSize ? 1 : 9}
+            h={isMobileSize ? "auto" : "105"}
+            mt={isMobileSize ? "1.2rem" : "12rem"}
+          >
+            <MemberWithdrawRequest />
+          </GridItem>
+
+          <GridItem
             rowStart={
               isMobileSize || (isMobileSize && isOpenExtendedMenu) ? 2 : 0
             }
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
             h={isMobileSize ? "auto" : "320"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <StakingContracts />
           </GridItem>
-
           <GridItem
             rowSpan={2}
             colStart={isMobileSize ? 1 : 5}
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "100%"}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <RecentMemberActivity user={userDetails} />
           </GridItem>
-
           <GridItem
             rowStart={isMobileSize ? 3 : 0}
             rowEnd={isMobileSize ? 3 : 0}
             colSpan={isMobileSize ? 1 : 4}
-            bg={useColorModeValue("gray.100", "gray.900")}
+            bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics members={members || []} />
+            <FamilyStatistics members={familyMembers || []} />
           </GridItem>
         </Grid>
       </Flex>
@@ -241,9 +314,12 @@ const Parent: React.FC = () => {
         isOpenExtendedMenu={isOpenExtendedMenu}
       />
 
-      <SendFundsModal
-        isOpen={isOpenSendFundsModal}
-        onClose={onCloseSendFundsModal}
+      <SendAllowanceModal
+        isOpen={isOpenSendAllowanceModal}
+        onClose={onCloseSendAllowanceModal}
+        members={familyMembers}
+        stableTokenBalance={stableTokenBalance}
+        getStableTokenBalance={getStableTokenBalance}
       />
 
       <MembersTableModal
@@ -251,7 +327,15 @@ const Parent: React.FC = () => {
         onClose={onCloseMembersTableModal}
       />
 
-      <AirdropModal isOpen={isOpenAirdropModal} onClose={onCloseAirdropModal} />
+      <DepositDefiDollarsModal
+        isOpen={isOpenDepositDefiDollarsModal}
+        onClose={onCloseDepositDefiDollarsModal}
+      />
+
+      <WithdrawDefiDollarsModal
+        isOpen={isOpenWithdrawDefiDollarsModal}
+        onClose={onCloseWithdrawDefiDollarsModal}
+      />
     </Box>
   );
 };

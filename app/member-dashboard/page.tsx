@@ -30,6 +30,7 @@ import { validChainId } from "@/config";
 import { useNetwork } from "wagmi";
 import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
 import { ethers } from "ethers";
+import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
@@ -198,7 +199,7 @@ const MemberDashboard: React.FC = () => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <StakingContracts />
+            <TokenLockers />
           </GridItem>
 
           <GridItem

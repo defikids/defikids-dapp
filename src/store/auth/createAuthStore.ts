@@ -10,6 +10,7 @@ import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
 import { IActivity } from "@/models/Activity";
 
 type State = {
+  connectedWallet: string;
   isLoggedIn: boolean;
   walletConnected: boolean;
   navigationSection: string;
@@ -23,6 +24,7 @@ type State = {
 };
 
 type Actions = {
+  setConnectedWallet: (connectedWallet: string) => void;
   setIsLoggedIn: (isLoggingIn: boolean) => void;
   setWalletConnected: (walletConnected: boolean) => void;
   setNavigationSection: (section: string) => void;
@@ -38,6 +40,7 @@ type Actions = {
 type MyStore = State & Actions;
 
 export const initialState: State = {
+  connectedWallet: "",
   isLoggedIn: false,
   walletConnected: false,
   navigationSection: "DefiKids",
@@ -70,6 +73,11 @@ type WithSelectors<S> = S extends { getState: () => infer T }
 
 // Setters
 const setters = (set: any) => ({
+  setConnectedWallet: (connectedWallet: string) => {
+    set((state: { connectedWallet: string }) => {
+      state.connectedWallet = connectedWallet;
+    }, shallow);
+  },
   setIsLoggedIn: (isLoggedIn: boolean) => {
     set((state: { isLoggedIn: boolean }) => {
       state.isLoggedIn = isLoggedIn;

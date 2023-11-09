@@ -17,11 +17,8 @@ import { stableTokenABI } from "@/blockchain/artifacts/goerli/stable-token";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";
-import { User } from "@/data-schema/types";
 
 const Auth = () => {
-  const [selectedAddress, setSelectedAddress] = useState("");
-
   const router = useRouter();
   const { address: connectedAccount } = useAccount();
 
@@ -30,7 +27,7 @@ const Auth = () => {
    */
   useEffect(() => {
     if (connectedAccount) {
-      setSelectedAddress(connectedAccount);
+      setConnectedWallet(connectedAccount);
     }
   }, [connectedAccount]);
 
@@ -40,27 +37,31 @@ const Auth = () => {
   watchAccount((account) => {
     const { isConnected, address } = account;
 
-    if (address && address !== selectedAddress) {
-      setSelectedAddress(address);
+    if (address && connectedWallet && address !== connectedWallet) {
+      setConnectedWallet(address);
       router.push("/");
     }
 
-    if (!isConnected && selectedAddress) {
+    if (!isConnected && connectedWallet) {
       setFetchedUserDetails(false);
       setWalletConnected(false);
       setIsLoggedIn(false);
-      setSelectedAddress("");
+      setConnectedWallet("");
       setUserDetails({ ...initialState.userDetails });
     }
   });
 
   const {
+    connectedWallet,
+    setConnectedWallet,
     setWalletConnected,
     setUserDetails,
     setFetchedUserDetails,
     setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
+      connectedWallet: state.connectedWallet,
+      setConnectedWallet: state.setConnectedWallet,
       setWalletConnected: state.setWalletConnected,
       setUserDetails: state.setUserDetails,
       setFetchedUserDetails: state.setFetchedUserDetails,
@@ -89,12 +90,12 @@ const Auth = () => {
    */
   useEffect(() => {
     const init = async () => {
-      if (!selectedAddress) return;
+      if (!connectedWallet) return;
       setWalletConnected(true);
 
       // @ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner(selectedAddress);
+      const signer = await provider.getSigner(connectedWallet);
 
       // add provider and signer to store
       setProvider(provider);
@@ -115,7 +116,7 @@ const Auth = () => {
       setDefiDollarsContractInstance(defiDollarsContract);
       setStableTokenContractInstance(stableTokenContract);
 
-      const user = (await getUserByWalletAddress(selectedAddress)) as any;
+      const user = (await getUserByWalletAddress(connectedWallet)) as any;
 
       if (!user?.error) {
         setUserDetails(user);
@@ -124,12 +125,12 @@ const Auth = () => {
         return;
       }
       setUserDetails({ ...initialState.userDetails });
-      setSelectedAddress("");
+      setConnectedWallet("");
       setIsLoggedIn(false);
     };
 
     init();
-  }, [selectedAddress]);
+  }, [connectedWallet]);
 
   /*
    * This hook will check if the user has a dark mode preference set in local storage

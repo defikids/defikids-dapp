@@ -6,8 +6,8 @@
 <p  align="center">
 <img src="https://m3-markdown-badges.vercel.app/stars/9/1/defikids/defikids-dapp">
 <img src="https://m3-markdown-badges.vercel.app/issues/8/2/defikids/defikids-dapp">
-<a href="https://discord.gg/bDGMYNa8Ng" target="blank" /><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Discord/discord1.svg" /></a>
-<a href="https://twitter.com/defikids_" target="blank" /><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Twitter/twitter2.svg" /></a>
+<a href="https://discord.gg/bDGMYNa8Ng" target="_blank" /><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Discord/discord1.svg" /></a>
+<a href="https://twitter.com/defikids_" target="_blank" /><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Twitter/twitter2.svg" /></a>
 </p>
 
 ### ⭐️ Crypto for Kids, parent approved

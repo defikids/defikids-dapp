@@ -12,8 +12,6 @@
 
 ### ⭐️ Crypto for Kids, parent approved
 
- 
-
 ## Why DefiKids
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
@@ -47,13 +45,15 @@ Parents can activate full-access mode, enabling children to withdraw funds for u
 - Next.js powers the user-friendly frontend.
 - Solidity development using Forge.
 
-## 🚀 Getting Started
+<!-- SETUP -->
 
-### Installation:
+## 🚀 Local Development Setup
 
-1. Clone the repo
+Copy the `.env.example` to `.env` and populate the values.
+
+1. Fork the repo
    ```sh
-   git clone https://github.com/defikids/defikids-dapp.git
+   git clone https://github.com/<your username>/defikids-dapp.git
    ```
 2. Install Yarn packages
    ```sh
@@ -63,6 +63,7 @@ Parents can activate full-access mode, enabling children to withdraw funds for u
    ```sh
    yarn run dev
    ```
+<hr />
 
 <!-- CONTRIBUTING -->
 
@@ -74,14 +75,14 @@ Before contributing, please read the Code of Conduct [here](./CODE_OF_CONDUCT.md
 
 Please try to create bug reports that are:
 
-- *Reproducible:* Include steps to reproduce the problem.
-- *Specific:* Include as much detail as possible: which version, what environment, etc.
-- *Unique:* Do not duplicate existing opened issues.
-- *Scoped to a Single Bug:* One bug per report.
+- <i>Reproducible:</i> Include steps to reproduce the problem.
+- <i>Specific</i> Include as much detail as possible: which version, what environment, etc.
+- <i>Unique:</i> Do not duplicate existing opened issues.
+- <i>Scoped to a Single Bug</i> One bug per report.
 
 [Contributing Guide](https://github.com/defikids/.github/blob/main/profile/CONTRIBUTING.md)
 
-### Steps:
+### Steps
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -104,4 +105,5 @@ Follow us on [Twitter](https://twitter.com/defikids_)
 <a href="https://github.com/defikids/defikids-dapp/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=defikids/defikids-dapp" />
 </a>
+
 

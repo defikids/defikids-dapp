@@ -1,8 +1,16 @@
 
 ![DefiKids-alt](https://github.com/defikids/defikids-dapp/assets/66887028/e7038138-8f8b-4d38-acc5-1caf6446a441)
+<br />
 
 
-   ### ⭐️ Crypto for Kids, parent approved
+<p  align="center">
+<img src="https://m3-markdown-badges.vercel.app/stars/9/1/defikids/defikids-dapp">
+<img src="https://m3-markdown-badges.vercel.app/issues/8/2/defikids/defikids-dapp">
+<a href="https://discord.gg/bDGMYNa8Ng" target="blank" /><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Discord/discord1.svg" /></a>
+<a href="https://twitter.com/defikids_" target="blank" /><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Twitter/twitter2.svg" /></a>
+</p>
+
+### ⭐️ Crypto for Kids, parent approved
 
  
 

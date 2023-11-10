@@ -95,13 +95,9 @@ Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individua
 
 Follow us on [Twitter](https://twitter.com/defikids_)
 
-## 💻 Run the app
-
-Check it out [here](https://defikids.io/)
-
 ## 📬 Contact Us
 
-[Email](https://defikidsproject@gmail.com)
+`hello@defikids.io`
 
 ## 🤩 Contributors
 

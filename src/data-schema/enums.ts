@@ -67,3 +67,12 @@ export enum PermissionType {
   EMAIL = "EMAIL",
   USERNAME = "USERNAME",
 }
+
+export enum TokenLockerFunctions {
+  NONE = "NONE",
+  CREATE_LOCKER = "CREATE_LOCKER",
+  ADD_TO_LOCKER = "ADD_TO_LOCKER",
+  EMPTY_LOCKER = "EMPTY_LOCKER",
+  REMOVE_FROM_LOCKER = "REMOVE_FROM_LOCKER",
+  APPLY_NEW_LOCK = "APPLY_NEW_LOCK",
+}

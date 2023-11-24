@@ -8,15 +8,23 @@ import {
   Container,
   Button,
   Flex,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
+import { TokenLockerDrawer } from "@/components/tokenLockers/TokenLockerDrawer";
+import { TokenLockerFunctions } from "@/data-schema/enums";
+import { useState } from "react";
 
 export const TokenLockersMemberLayout = ({
   memberAddress,
 }: {
   memberAddress: string;
 }) => {
+  const [currentFunction, setCurrentFunction] = useState<TokenLockerFunctions>(
+    TokenLockerFunctions.NONE
+  );
   const { address: connectedAddress } = useAccount();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
@@ -39,7 +47,8 @@ export const TokenLockersMemberLayout = ({
             <Button
               colorScheme="blue"
               onClick={() => {
-                window.location.href = `/token-lockers/${memberAddress}/create`;
+                setCurrentFunction(TokenLockerFunctions.CREATE_LOCKER);
+                onOpen();
               }}
             >
               Create Locker
@@ -58,6 +67,14 @@ export const TokenLockersMemberLayout = ({
           </Center>
         </Container>
       )}
+
+      {/* Drawer */}
+      <TokenLockerDrawer
+        isOpen={isOpen}
+        onClose={onClose}
+        placement={"right"}
+        currentFunction={currentFunction}
+      />
     </Box>
   );
 };

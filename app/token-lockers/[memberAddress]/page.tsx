@@ -1,4 +1,4 @@
-import { Box, Center } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import Navbar from "@/components/LandingNavbar";
 import { TokenLockersMemberLayout } from "@/components/tokenLockers/TokenLockersMemberLayout";
 
@@ -16,7 +16,7 @@ export default async function MemberLockerPage(context: any) {
   return (
     <Box height="100vh">
       <Navbar />
-      <Box mt="10rem" />
+      <Box mt="8rem" />
       <TokenLockersMemberLayout memberAddress={memberAddress} />
     </Box>
   );

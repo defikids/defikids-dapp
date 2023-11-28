@@ -39,6 +39,9 @@ export const TokenLockersMemberLayout = ({
   const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
   const [fetchLockers, setFetchLockers] = useState<boolean>(false);
   const [selectedLocker, setSelectedLocker] = useState<Locker | null>(null);
+  const [totalValueInLockers, setTotalValueInLockers] =
+    useState<number>(totalLockerValue);
+
   const { address: connectedAddress } = useAccount();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -61,12 +64,21 @@ export const TokenLockersMemberLayout = ({
     const getLockers = async () => {
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
+      const wallet = provider.getSigner().then((signer) => signer.getAddress());
+
       const tokenLockerContract = await tokenLockersContractInstance(provider);
       const lockersByUser = await tokenLockerContract.fetchAllLockersByUser();
+
+      const totalValue = await tokenLockerContract.getTotalValueLockedByUser(
+        wallet
+      );
       const formattedLockers = lockersByUser.map((locker: Locker) =>
         formattedLocker(locker)
       );
+
+      console.log("faormatted lockers", formattedLockers);
       setLockersByUser(formattedLockers);
+      setTotalValueInLockers(totalValue.toString());
     };
     getLockers();
   }, [fetchLockers]);
@@ -106,7 +118,7 @@ export const TokenLockersMemberLayout = ({
                   <StatLabel> Total Locked Value</StatLabel>
                   <StatNumber>
                     {ethers
-                      .formatEther(totalLockerValue.toString())
+                      .formatEther(totalValueInLockers.toString())
                       .toString() || 0}{" "}
                     DFD
                   </StatNumber>

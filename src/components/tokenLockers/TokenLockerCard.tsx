@@ -36,14 +36,6 @@ export const TokenLockerCard = ({
       alignItems="center"
       direction="column"
     >
-      {/* <Image
-        src="/images/Vault-Wallpaper.jpeg"
-        maxW="100%"
-        borderRadius="20px"
-        borderBottomRadius={0}
-        alt="vault-wallpaper"
-      /> */}
-
       <Flex flexDirection="column" mb="10px">
         <Text
           fontWeight="600"

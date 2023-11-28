@@ -234,7 +234,7 @@ export const AddToLocker = ({
       {isLoading && (
         <Box>
           <Heading fontSize={"xl"} my={5}>
-            Interacting With Blockchain
+            Updating the Blockchain
           </Heading>
           <TransactionStepper
             activeStep={activeStep}

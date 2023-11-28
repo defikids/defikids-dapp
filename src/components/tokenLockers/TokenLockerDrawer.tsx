@@ -61,10 +61,18 @@ export const TokenLockerDrawer = ({
               />
             )}
             {currentFunction === TokenLockerFunctions.APPLY_NEW_LOCK && (
-              <ApplyNewLock selectedLocker={selectedLocker} />
+              <ApplyNewLock
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={setFetchLockers}
+              />
             )}
             {currentFunction === TokenLockerFunctions.EMPTY_LOCKER && (
-              <EmptyLocker selectedLocker={selectedLocker} />
+              <EmptyLocker
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={setFetchLockers}
+              />
             )}
             {currentFunction === TokenLockerFunctions.REMOVE_FROM_LOCKER && (
               <RemoveFromLocker selectedLocker={selectedLocker} />

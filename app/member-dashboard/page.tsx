@@ -6,8 +6,8 @@ import {
   Flex,
   GridItem,
   useDisclosure,
-  useColorModeValue,
   Grid,
+  Button,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import shallow from "zustand/shallow";
@@ -19,7 +19,6 @@ import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
 import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
 import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
 import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
@@ -31,6 +30,7 @@ import { useNetwork } from "wagmi";
 import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
 import { ethers } from "ethers";
 import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
+import { useRouter } from "next/navigation";
 
 const MemberDashboard: React.FC = () => {
   //=============================================================================
@@ -50,6 +50,8 @@ const MemberDashboard: React.FC = () => {
     }),
     shallow
   );
+
+  const router = useRouter();
 
   const { defiDollarsContractInstance } = useContractStore(
     (state) => ({
@@ -199,7 +201,7 @@ const MemberDashboard: React.FC = () => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <TokenLockers />
+            <TokenLockers userDetails={userDetails} />
           </GridItem>
 
           <GridItem

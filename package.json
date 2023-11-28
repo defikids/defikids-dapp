@@ -34,6 +34,7 @@
     "@pinata/sdk": "^2.1.0",
     "@rainbow-me/rainbowkit": "^1.0.8",
     "@sendgrid/mail": "^7.7.0",
+    "@tabler/icons-react": "^2.42.0",
     "@uniswap/widgets": "^2.59.0",
     "@vercel/kv": "^0.2.2",
     "autoprefixer": "^10.4.14",

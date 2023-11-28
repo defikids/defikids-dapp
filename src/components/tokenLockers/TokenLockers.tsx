@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { TokenLockersList } from "@/components/tokenLockers/TokenLockersList";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
+import { User } from "@/data-schema/types";
 
 interface LockerSchema {
   lockTime: string;
@@ -47,9 +47,8 @@ const lockers: LockerSchema[] = [
   },
 ];
 
-export const TokenLockers = () => {
+export const TokenLockers = ({ userDetails }: { userDetails: User }) => {
   const router = useRouter();
-  const { address } = useAccount();
   return (
     <Container
       maxW="5xl"
@@ -66,7 +65,7 @@ export const TokenLockers = () => {
             colorScheme="blue"
             variant="outline"
             onClick={() => {
-              router.push(`/token-lockers/${address}`);
+              router.push(`/token-lockers/${userDetails?.wallet}`);
             }}
           >
             View All

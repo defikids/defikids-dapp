@@ -23,11 +23,13 @@ export const TokenLockerDrawer = ({
   onClose,
   placement,
   currentFunction,
+  setFetchLockers,
 }: {
   isOpen: boolean;
   onClose: () => void;
   placement: any;
   currentFunction: TokenLockerFunctions;
+  setFetchLockers: (fetchLockers: boolean) => void;
 }) => {
   return (
     <>
@@ -44,7 +46,10 @@ export const TokenLockerDrawer = ({
           <DrawerHeader />
           <DrawerBody>
             {currentFunction === TokenLockerFunctions.CREATE_LOCKER && (
-              <CreateLocker />
+              <CreateLocker
+                onClose={onClose}
+                setFetchLockers={setFetchLockers}
+              />
             )}
 
             {currentFunction === TokenLockerFunctions.ADD_TO_LOCKER && (

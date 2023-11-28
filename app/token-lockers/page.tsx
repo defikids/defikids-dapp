@@ -8,7 +8,7 @@ const TokenLockers = () => {
     <Box height="100vh" bgGradient={["linear(to-b, black,#4F1B7C)"]}>
       <Navbar />
       <Center mt="1rem" height="100%">
-        Token Lockers - All
+        Token Lockers - Overview Page
       </Center>
     </Box>
   );

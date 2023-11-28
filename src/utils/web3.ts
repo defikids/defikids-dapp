@@ -50,3 +50,14 @@ export const getEtherscanUrl = (
 
   return etherscanUrl;
 };
+
+export const networkName = (networkId: number) => {
+  switch (networkId) {
+    case 1:
+      return "mainnet";
+    case 5:
+      return "goerli";
+    default:
+      return "mainnet";
+  }
+};

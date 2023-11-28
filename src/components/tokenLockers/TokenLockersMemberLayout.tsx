@@ -16,7 +16,7 @@ import {
 import { useAccount } from "wagmi";
 import { TokenLockerDrawer } from "@/components/tokenLockers/TokenLockerDrawer";
 import { TokenLockerFunctions } from "@/data-schema/enums";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { TokenLockerCard } from "@/components/tokenLockers/TokenLockerCard";
 import { Locker } from "@/data-schema/types";
@@ -64,6 +64,22 @@ export const TokenLockersMemberLayout = ({
     const getLockers = async () => {
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
+      const tokenLockerContract = await tokenLockersContractInstance(provider);
+      const lockersByUser = await tokenLockerContract.fetchAllLockersByUser();
+
+      const formattedLockers = lockersByUser.map((locker: Locker) =>
+        formattedLocker(locker)
+      );
+
+      setLockersByUser(formattedLockers);
+    };
+    getLockers();
+  }, [fetchLockers]);
+
+  const refreshBlockchainData = useCallback(() => {
+    const getLockers = async () => {
+      //@ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
       const wallet = provider.getSigner().then((signer) => signer.getAddress());
 
       const tokenLockerContract = await tokenLockersContractInstance(provider);
@@ -81,7 +97,7 @@ export const TokenLockersMemberLayout = ({
       setTotalValueInLockers(totalValue.toString());
     };
     getLockers();
-  }, [fetchLockers]);
+  }, []);
 
   return (
     <Box>
@@ -179,6 +195,7 @@ export const TokenLockersMemberLayout = ({
         currentFunction={currentFunction}
         setFetchLockers={setFetchLockers}
         selectedLocker={selectedLocker}
+        refreshBlockchainData={refreshBlockchainData}
       />
     </Box>
   );

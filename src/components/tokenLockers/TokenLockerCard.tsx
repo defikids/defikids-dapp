@@ -24,8 +24,10 @@ export const TokenLockerCard = ({
   onOpen: any;
   setSelectedLocker: any;
 }) => {
-  let mainText = useColorModeValue("gray.800", "white");
-  let secondaryText = useColorModeValue("gray.400", "gray.400");
+  const mainText = useColorModeValue("gray.800", "white");
+  const secondaryText = useColorModeValue("gray.400", "gray.400");
+
+  const isLocked = locker.lockTimeRemaining !== 0;
 
   return (
     <Flex
@@ -91,6 +93,15 @@ export const TokenLockerCard = ({
           <MenuList>
             <MenuItem
               onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.RENAME_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Rename Locker
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
                 setCurrentFunction(TokenLockerFunctions.ADD_TO_LOCKER);
                 setSelectedLocker(locker);
                 onOpen();
@@ -98,42 +109,48 @@ export const TokenLockerCard = ({
             >
               Add to Locker
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setCurrentFunction(TokenLockerFunctions.APPLY_NEW_LOCK);
-                setSelectedLocker(locker);
-                onOpen();
-              }}
-            >
-              Apply New Lock
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setCurrentFunction(TokenLockerFunctions.EMPTY_LOCKER);
-                setSelectedLocker(locker);
-                onOpen();
-              }}
-            >
-              Empty Locker
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setCurrentFunction(TokenLockerFunctions.REMOVE_FROM_LOCKER);
-                setSelectedLocker(locker);
-                onOpen();
-              }}
-            >
-              Remove From Locker
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setCurrentFunction(TokenLockerFunctions.DELETE_LOCKER);
-                setSelectedLocker(locker);
-                onOpen();
-              }}
-            >
-              Delete Locker
-            </MenuItem>
+
+            {!isLocked && (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.APPLY_NEW_LOCK);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Apply New Lock
+                </MenuItem>
+
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.EMPTY_LOCKER);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Empty Locker
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.REMOVE_FROM_LOCKER);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Remove From Locker
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.DELETE_LOCKER);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Delete Locker
+                </MenuItem>
+              </>
+            )}
           </MenuList>
         </Menu>
       </Flex>

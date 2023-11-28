@@ -3,13 +3,12 @@ import {
   VStack,
   Text,
   Box,
-  FormControl,
-  Input,
   Button,
   useToast,
   useSteps,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { ethers, TransactionResponse } from "ethers";
+import shallow from "zustand/shallow";
 import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
@@ -21,10 +20,9 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
-import { TransactionResponse, ethers } from "ethers";
+import { useState } from "react";
 
-export const RemoveFromLocker = ({
+export const DeleteLocker = ({
   selectedLocker,
   onClose,
   setFetchLockers,
@@ -33,7 +31,6 @@ export const RemoveFromLocker = ({
   onClose: () => void;
   setFetchLockers: (fetchLockers: boolean) => void;
 }) => {
-  const [amountToRemove, setAmountToRemove] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
@@ -53,7 +50,6 @@ export const RemoveFromLocker = ({
 
   const resetState = () => {
     setIsLoading(false);
-    setAmountToRemove("");
   };
 
   const handleTransaction = async () => {
@@ -63,11 +59,8 @@ export const RemoveFromLocker = ({
     const provider = new ethers.BrowserProvider(window.ethereum);
     const tokenLockerContract = await tokenLockersContractInstance(provider);
 
-    const totalValue = ethers.parseEther(String(+amountToRemove.trim()));
-
-    const tx = (await tokenLockerContract.removeFromLocker(
-      selectedLocker.lockerNumber,
-      totalValue
+    const tx = (await tokenLockerContract.deleteLocker(
+      selectedLocker.lockerNumber
     )) as TransactionResponse;
 
     return tx;
@@ -75,7 +68,7 @@ export const RemoveFromLocker = ({
 
   const postTransaction = async () => {
     toast({
-      title: "Fund removed from locker.",
+      title: "Locker emptied.",
       status: "success",
     });
 
@@ -88,7 +81,7 @@ export const RemoveFromLocker = ({
       accountId,
       wallet: address,
       date: convertTimestampToSeconds(Date.now()),
-      type: `Removed funds from TokenLocker (${selectedLocker.lockerName})`,
+      type: `Deleted TokenLocker (${selectedLocker.lockerName})`,
     });
 
     newActivities.push(newActivity);
@@ -100,23 +93,11 @@ export const RemoveFromLocker = ({
   };
 
   const handleContinue = async () => {
-    // Validate input
-    if (!amountToRemove) {
+    if (selectedLocker.amount > 0) {
       toast({
-        title: "Error.",
-        description: "No empty fields allowed.",
         status: "error",
-      });
-      return;
-    }
-
-    // check if locktime is greater than now
-    if (selectedLocker.lockTimeRemaining > 0) {
-      toast({
-        title: "Error.",
         description:
-          "Cannot remove funds from a locker that is currently locked.",
-        status: "error",
+          "Cannot delete locker. Locker still has funds in it. Please empty the locker first.",
       });
       return;
     }
@@ -137,37 +118,21 @@ export const RemoveFromLocker = ({
       resetState();
     }
   };
-
   return (
     <Box>
       <VStack spacing={4} align="stretch">
         <Heading fontSize={"xl"} mb={1}>
-          Removing From A Locker
+          Deleting A Locker
         </Heading>
         <Text fontSize={"md"} mb={1}>
-          By removing funds from a locker, you will be able to transfer them
-          freely.
+          By deleting a locker, you will be removing all funds from the locker
+          and the locker will be deleted from the blockchain.
         </Text>
 
         <Text fontSize={"md"} mb={1}>
-          You will only be able to remove funds from a locker if it is unlocked.
+          You will not be able to delete a locker if it is still locked or if it
+          contains funds.
         </Text>
-
-        <FormControl>
-          <Input
-            placeholder="Amount to remove"
-            value={amountToRemove}
-            onChange={(e) => setAmountToRemove(e.target.value)}
-            style={{
-              border: "1px solid lightgray",
-            }}
-            sx={{
-              "::placeholder": {
-                color: "gray.400",
-              },
-            }}
-          />
-        </FormControl>
       </VStack>
       <Button
         isDisabled={isLoading}
@@ -177,6 +142,7 @@ export const RemoveFromLocker = ({
       >
         Continue
       </Button>
+
       {isLoading && (
         <Box>
           <Heading fontSize={"xl"} my={5}>

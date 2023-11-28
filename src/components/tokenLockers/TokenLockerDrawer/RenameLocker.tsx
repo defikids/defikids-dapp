@@ -1,4 +1,9 @@
 import {
+  TransactionStepper,
+  steps,
+} from "@/components/steppers/TransactionStepper";
+import { useAuthStore } from "@/store/auth/authStore";
+import {
   Heading,
   VStack,
   Text,
@@ -9,22 +14,23 @@ import {
   useToast,
   useSteps,
 } from "@chakra-ui/react";
+import { ethers, SignatureLike, TransactionResponse } from "ethers";
 import { useState } from "react";
+import shallow from "zustand/shallow";
 import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
-import {
-  TransactionStepper,
-  steps,
-} from "@/components/steppers/TransactionStepper";
-import { useAuthStore } from "@/store/auth/authStore";
-import shallow from "zustand/shallow";
-import { TransactionResponse, ethers } from "ethers";
 
-export const RemoveFromLocker = ({
+type PermitResult = {
+  data?: SignatureLike;
+  deadline?: number;
+  error?: string;
+};
+
+export const RenameLocker = ({
   selectedLocker,
   onClose,
   setFetchLockers,
@@ -33,7 +39,7 @@ export const RemoveFromLocker = ({
   onClose: () => void;
   setFetchLockers: (fetchLockers: boolean) => void;
 }) => {
-  const [amountToRemove, setAmountToRemove] = useState("");
+  const [newLockerName, setNewLockerName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
@@ -53,7 +59,7 @@ export const RemoveFromLocker = ({
 
   const resetState = () => {
     setIsLoading(false);
-    setAmountToRemove("");
+    setNewLockerName("");
   };
 
   const handleTransaction = async () => {
@@ -63,11 +69,9 @@ export const RemoveFromLocker = ({
     const provider = new ethers.BrowserProvider(window.ethereum);
     const tokenLockerContract = await tokenLockersContractInstance(provider);
 
-    const totalValue = ethers.parseEther(String(+amountToRemove.trim()));
-
-    const tx = (await tokenLockerContract.removeFromLocker(
+    const tx = (await tokenLockerContract.renameLocker(
       selectedLocker.lockerNumber,
-      totalValue
+      newLockerName
     )) as TransactionResponse;
 
     return tx;
@@ -75,7 +79,7 @@ export const RemoveFromLocker = ({
 
   const postTransaction = async () => {
     toast({
-      title: "Fund removed from locker.",
+      title: "Locker successfully renamed.",
       status: "success",
     });
 
@@ -88,7 +92,7 @@ export const RemoveFromLocker = ({
       accountId,
       wallet: address,
       date: convertTimestampToSeconds(Date.now()),
-      type: `Removed funds from TokenLocker (${selectedLocker.lockerName})`,
+      type: `Renamed TokenLocker (${selectedLocker.lockerName}) to ${newLockerName}`,
     });
 
     newActivities.push(newActivity);
@@ -101,7 +105,7 @@ export const RemoveFromLocker = ({
 
   const handleContinue = async () => {
     // Validate input
-    if (!amountToRemove) {
+    if (!newLockerName) {
       toast({
         title: "Error.",
         description: "No empty fields allowed.",
@@ -110,12 +114,10 @@ export const RemoveFromLocker = ({
       return;
     }
 
-    // check if locktime is greater than now
-    if (selectedLocker.lockTimeRemaining > 0) {
+    if (newLockerName.length > 20) {
       toast({
         title: "Error.",
-        description:
-          "Cannot remove funds from a locker that is currently locked.",
+        description: "Locker name must be less than 20 characters.",
         status: "error",
       });
       return;
@@ -142,22 +144,23 @@ export const RemoveFromLocker = ({
     <Box>
       <VStack spacing={4} align="stretch">
         <Heading fontSize={"xl"} mb={1}>
-          Removing From A Locker
+          {`Renaming locker ${selectedLocker.name}`}
         </Heading>
         <Text fontSize={"md"} mb={1}>
-          By removing funds from a locker, you will be able to transfer them
-          freely.
+          It is recommended to give your locker a name that the is associated
+          with the goal of the locker.
         </Text>
 
         <Text fontSize={"md"} mb={1}>
-          You will only be able to remove funds from a locker if it is unlocked.
+          You are free to choose any name you like.
         </Text>
 
         <FormControl>
           <Input
-            placeholder="Amount to remove"
-            value={amountToRemove}
-            onChange={(e) => setAmountToRemove(e.target.value)}
+            disabled={isLoading}
+            placeholder="New locker name"
+            value={newLockerName}
+            onChange={(e) => setNewLockerName(e.target.value)}
             style={{
               border: "1px solid lightgray",
             }}
@@ -177,6 +180,7 @@ export const RemoveFromLocker = ({
       >
         Continue
       </Button>
+
       {isLoading && (
         <Box>
           <Heading fontSize={"xl"} my={5}>

@@ -17,6 +17,8 @@ import { AddToLocker } from "./TokenLockerDrawer/AddToLocker";
 import { ApplyNewLock } from "./TokenLockerDrawer/ApplyNewLock";
 import { EmptyLocker } from "./TokenLockerDrawer/EmptyLocker";
 import { RemoveFromLocker } from "./TokenLockerDrawer/RemoveFromLocker";
+import { DeleteLocker } from "./TokenLockerDrawer/DeleteLocker";
+import { RenameLocker } from "./TokenLockerDrawer/RenameLocker";
 
 export const TokenLockerDrawer = ({
   isOpen,
@@ -25,6 +27,7 @@ export const TokenLockerDrawer = ({
   currentFunction,
   setFetchLockers,
   selectedLocker,
+  refreshBlockchainData,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -32,6 +35,7 @@ export const TokenLockerDrawer = ({
   currentFunction: TokenLockerFunctions;
   setFetchLockers: (fetchLockers: boolean) => void;
   selectedLocker: any;
+  refreshBlockchainData: () => void;
 }) => {
   return (
     <>
@@ -50,34 +54,51 @@ export const TokenLockerDrawer = ({
             {currentFunction === TokenLockerFunctions.CREATE_LOCKER && (
               <CreateLocker
                 onClose={onClose}
-                setFetchLockers={setFetchLockers}
+                setFetchLockers={refreshBlockchainData}
               />
             )}
             {currentFunction === TokenLockerFunctions.ADD_TO_LOCKER && (
               <AddToLocker
                 selectedLocker={selectedLocker}
                 onClose={onClose}
-                setFetchLockers={setFetchLockers}
+                setFetchLockers={refreshBlockchainData}
               />
             )}
             {currentFunction === TokenLockerFunctions.APPLY_NEW_LOCK && (
               <ApplyNewLock
                 selectedLocker={selectedLocker}
                 onClose={onClose}
-                setFetchLockers={setFetchLockers}
+                setFetchLockers={refreshBlockchainData}
               />
             )}
             {currentFunction === TokenLockerFunctions.EMPTY_LOCKER && (
               <EmptyLocker
                 selectedLocker={selectedLocker}
                 onClose={onClose}
-                setFetchLockers={setFetchLockers}
+                setFetchLockers={refreshBlockchainData}
               />
             )}
             {currentFunction === TokenLockerFunctions.REMOVE_FROM_LOCKER && (
-              <RemoveFromLocker selectedLocker={selectedLocker} />
+              <RemoveFromLocker
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={refreshBlockchainData}
+              />
             )}
-            {currentFunction === TokenLockerFunctions.DELETE_LOCKER && <></>}
+            {currentFunction === TokenLockerFunctions.DELETE_LOCKER && (
+              <DeleteLocker
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={refreshBlockchainData}
+              />
+            )}
+            {currentFunction === TokenLockerFunctions.RENAME_LOCKER && (
+              <RenameLocker
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={refreshBlockchainData}
+              />
+            )}
           </DrawerBody>
           <DrawerFooter />
         </DrawerContent>

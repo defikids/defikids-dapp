@@ -1,6 +1,6 @@
 import { Heading, VStack, Text, Box, Button } from "@chakra-ui/react";
 
-export const EmptyLocker = () => {
+export const EmptyLocker = ({ selectedLocker }: { selectedLocker: any }) => {
   return (
     <Box>
       <VStack spacing={4} align="stretch">

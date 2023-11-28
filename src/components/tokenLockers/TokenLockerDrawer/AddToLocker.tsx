@@ -1,4 +1,9 @@
 import {
+  TransactionStepper,
+  steps,
+} from "@/components/steppers/TransactionStepper";
+import { useAuthStore } from "@/store/auth/authStore";
+import {
   Heading,
   VStack,
   Text,
@@ -6,11 +11,183 @@ import {
   FormControl,
   Input,
   Button,
+  useToast,
+  useSteps,
 } from "@chakra-ui/react";
+import { ethers, SignatureLike, TransactionResponse } from "ethers";
 import { useState } from "react";
+import shallow from "zustand/shallow";
+import {
+  defiDollarsContractInstance,
+  tokenLockersContractInstance,
+} from "@/blockchain/instances";
+import { StepperContext } from "@/data-schema/enums";
+import { transactionErrors } from "@/utils/errorHanding";
+import { createTokenLockersPermitMessage } from "@/utils/permit";
+import { convertTimestampToSeconds } from "@/utils/dateTime";
+import { createActivity } from "@/services/mongo/routes/activity";
+import { IActivity } from "@/models/Activity";
 
-export const AddToLocker = () => {
+type PermitResult = {
+  data?: SignatureLike;
+  deadline?: number;
+  error?: string;
+};
+
+export const AddToLocker = ({
+  selectedLocker,
+  onClose,
+  setFetchLockers,
+}: {
+  selectedLocker: any;
+  onClose: () => void;
+  setFetchLockers: (fetchLockers: boolean) => void;
+}) => {
   const [amountToLock, setAmountToLock] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
+
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
+
+  const { userDetails, setRecentActivity } = useAuthStore(
+    (state) => ({
+      userDetails: state.userDetails,
+      setRecentActivity: state.setRecentActivity,
+    }),
+    shallow
+  );
+
+  const resetState = () => {
+    setIsLoading(false);
+    setAmountToLock("");
+  };
+
+  const handlePermit = async () => {
+    setActiveStep(0); // set to signing message
+
+    const totalValueToPermit = ethers.parseEther(String(+amountToLock.trim()));
+
+    // @ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const defiDollarsContract = await defiDollarsContractInstance(provider);
+    const tokenLockerContract = await tokenLockersContractInstance(provider);
+    const signer = await provider.getSigner();
+
+    const result = (await createTokenLockersPermitMessage(
+      signer,
+      tokenLockerContract,
+      totalValueToPermit,
+      defiDollarsContract!
+    )) as PermitResult;
+
+    return result;
+  };
+
+  const handleTransaction = async (
+    deadline: number,
+    v: number,
+    r: string,
+    s: string
+  ) => {
+    setActiveStep(1); // set to approve transaction
+
+    // @ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const tokenLockerContract = await tokenLockersContractInstance(provider);
+
+    const totalValue = ethers.parseEther(String(+amountToLock.trim()));
+
+    const tx = (await tokenLockerContract.addToLocker(
+      totalValue,
+      selectedLocker.lockerNumber,
+      deadline,
+      v,
+      r,
+      s
+    )) as TransactionResponse;
+
+    return tx;
+  };
+
+  const postTransaction = async () => {
+    toast({
+      title: "Fund added to locker.",
+      status: "success",
+    });
+
+    const address = userDetails.wallet;
+    const accountId = userDetails?.accountId;
+
+    const newActivities: IActivity[] = [];
+
+    const newActivity = await createActivity({
+      accountId,
+      wallet: address,
+      date: convertTimestampToSeconds(Date.now()),
+      type: `Added additional funds to TokenLocker (${selectedLocker.lockerName})`,
+    });
+
+    newActivities.push(newActivity);
+
+    setRecentActivity(newActivities);
+    onClose(); // close drawer
+    resetState();
+    setFetchLockers(true);
+  };
+
+  const handleContinue = async () => {
+    // Validate input
+    if (!amountToLock) {
+      toast({
+        title: "Error.",
+        description: "No empty fields allowed.",
+        status: "error",
+      });
+      return;
+    }
+
+    if (+amountToLock === 0) {
+      toast({
+        title: "Error.",
+        description: "You can't lock 0 tokens.",
+        status: "error",
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(true); // show transaction stepper
+
+      const result = (await handlePermit()) as PermitResult;
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      const deadline = result.deadline as number;
+      const { r, s, v } = result.data as {
+        r: string;
+        s: string;
+        v: number;
+      };
+
+      const tx = await handleTransaction(deadline, v, r, s);
+
+      setActiveStep(2); // set to waiting for confirmation
+      await tx.wait();
+
+      await postTransaction();
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose(); // close drawer
+      resetState();
+    }
+  };
 
   return (
     <Box>
@@ -30,6 +207,7 @@ export const AddToLocker = () => {
 
         <FormControl>
           <Input
+            disabled={isLoading}
             placeholder="Amount to lock"
             value={amountToLock}
             onChange={(e) => setAmountToLock(e.target.value)}
@@ -44,9 +222,26 @@ export const AddToLocker = () => {
           />
         </FormControl>
       </VStack>
-      <Button mt={4} colorScheme="blue" onClick={() => {}}>
+      <Button
+        isDisabled={isLoading}
+        mt={4}
+        colorScheme="blue"
+        onClick={handleContinue}
+      >
         Continue
       </Button>
+
+      {isLoading && (
+        <Box>
+          <Heading fontSize={"xl"} my={5}>
+            Interacting With Blockchain
+          </Heading>
+          <TransactionStepper
+            activeStep={activeStep}
+            context={StepperContext.PERMIT}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

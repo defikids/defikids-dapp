@@ -58,7 +58,7 @@ export const createStableTokenPermitMessage = async (
   }
 };
 
-export const createLockerPermitMessage = async (
+export const createTokenLockersPermitMessage = async (
   signer: Signer,
   spenderContract: Contract,
   value: BigNumberish,

@@ -38,6 +38,7 @@ export const TokenLockersMemberLayout = ({
   );
   const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
   const [fetchLockers, setFetchLockers] = useState<boolean>(false);
+  const [selectedLocker, setSelectedLocker] = useState<Locker | null>(null);
   const { address: connectedAddress } = useAccount();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -68,7 +69,7 @@ export const TokenLockersMemberLayout = ({
       setLockersByUser(formattedLockers);
     };
     getLockers();
-  }, [onClose]);
+  }, [fetchLockers]);
 
   return (
     <Box>
@@ -130,7 +131,13 @@ export const TokenLockersMemberLayout = ({
               >
                 {lockersByUser?.length > 0 ? (
                   lockersByUser?.map((locker, index) => (
-                    <TokenLockerCard key={index} locker={locker} />
+                    <TokenLockerCard
+                      key={index}
+                      locker={locker}
+                      setCurrentFunction={setCurrentFunction}
+                      onOpen={onOpen}
+                      setSelectedLocker={setSelectedLocker}
+                    />
                   ))
                 ) : (
                   <Text fontSize={"xl"}>No lockers found</Text>
@@ -156,9 +163,10 @@ export const TokenLockersMemberLayout = ({
       <TokenLockerDrawer
         isOpen={isOpen}
         onClose={onClose}
-        placement={"right"}
+        placement={"left"}
         currentFunction={currentFunction}
         setFetchLockers={setFetchLockers}
+        selectedLocker={selectedLocker}
       />
     </Box>
   );

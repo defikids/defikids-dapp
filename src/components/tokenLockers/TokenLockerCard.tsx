@@ -11,8 +11,19 @@ import {
 } from "@chakra-ui/react";
 import { Locker } from "@/data-schema/types";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { TokenLockerFunctions } from "@/data-schema/enums";
 
-export const TokenLockerCard = ({ locker }: { locker: Locker }) => {
+export const TokenLockerCard = ({
+  locker,
+  setCurrentFunction,
+  onOpen,
+  setSelectedLocker,
+}: {
+  locker: Locker;
+  setCurrentFunction: any;
+  onOpen: any;
+  setSelectedLocker: any;
+}) => {
   let mainText = useColorModeValue("gray.800", "white");
   let secondaryText = useColorModeValue("gray.400", "gray.400");
 
@@ -25,13 +36,13 @@ export const TokenLockerCard = ({ locker }: { locker: Locker }) => {
       alignItems="center"
       direction="column"
     >
-      <Image
+      {/* <Image
         src="/images/Vault-Wallpaper.jpeg"
         maxW="100%"
         borderRadius="20px"
         borderBottomRadius={0}
         alt="vault-wallpaper"
-      />
+      /> */}
 
       <Flex flexDirection="column" mb="10px">
         <Text
@@ -86,11 +97,51 @@ export const TokenLockerCard = ({ locker }: { locker: Locker }) => {
             Actions
           </MenuButton>
           <MenuList>
-            <MenuItem>Add to Locker</MenuItem>
-            <MenuItem>Apply New Lock</MenuItem>
-            <MenuItem>Empty Locker</MenuItem>
-            <MenuItem>Remove From Locker</MenuItem>
-            <MenuItem>Delete Locker</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.ADD_TO_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Add to Locker
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.APPLY_NEW_LOCK);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Apply New Lock
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.EMPTY_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Empty Locker
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.REMOVE_FROM_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Remove From Locker
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.DELETE_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Delete Locker
+            </MenuItem>
           </MenuList>
         </Menu>
       </Flex>

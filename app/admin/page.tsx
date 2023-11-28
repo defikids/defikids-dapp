@@ -9,14 +9,26 @@ import { getAllAccounts } from "@/services/mongo/routes/account";
 import { getAllActivity } from "@/services/mongo/routes/activity";
 import { getAllInvitations } from "@/services/mongo/routes/invitation";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
+  Button,
   Container,
+  FormLabel,
   Grid,
   GridItem,
   Heading,
+  Input,
   Text,
+  useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { tokenLockersContractInstance } from "@/blockchain/instances";
+import { getEtherscanUrl } from "@/utils/web3";
+import { ethers } from "ethers";
 
 const Admin = () => {
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -24,6 +36,8 @@ const Admin = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [invitations, setInvitations] = useState<IInvitation[]>([]);
   const [activity, setActivity] = useState<IActivity[]>([]);
+
+  const toast = useToast();
 
   interface Stats {
     title: string;
@@ -53,6 +67,61 @@ const Admin = () => {
       unit: "",
     },
   ];
+
+  const tokenLockerActions = [
+    {
+      function: "removeLock",
+      inputs: [
+        {
+          name: "lockerNumber",
+          type: "number",
+        },
+        {
+          name: "lockerOwner",
+          type: "string",
+        },
+      ],
+    },
+    {
+      function: "withdraw",
+      inputs: [],
+    },
+  ];
+
+  const writeMethod = async (methodName: string, index: number) => {
+    let inputs: any = document.querySelectorAll(
+      `[data-write=${methodName}_${index}]`
+    );
+
+    const parsedInputs = Array.from(inputs).map((input: any) => {
+      return input.value;
+    });
+
+    try {
+      // @ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const tokenLockerContract = await tokenLockersContractInstance(provider);
+      const chainId = (await provider.getNetwork()).chainId;
+
+      const tx = await tokenLockerContract[methodName](...parsedInputs);
+      toast({
+        title: "Transaction Sent",
+        description: `View on Etherscan: ${getEtherscanUrl(
+          +chainId.toString(),
+          "tx",
+          tx.hash
+        )}`,
+        status: "success",
+      });
+    } catch (e) {
+      console.log("error", e);
+      toast({
+        title: "Error",
+        description: `${(e as Error).message}`,
+        status: "error",
+      });
+    }
+  };
 
   useEffect(() => {
     const getData = async () => {
@@ -105,6 +174,60 @@ const Admin = () => {
           </GridItem>
         ))}
       </Grid>
+
+      <Heading mt="4rem" mb={3} size="sm">
+        TokenLockers Contract - Owner Actions
+      </Heading>
+
+      <Accordion allowToggle>
+        {tokenLockerActions.map((action, index) => (
+          <AccordionItem key={index}>
+            <h2>
+              <AccordionButton>
+                <Box as="span" flex="1" textAlign="left">
+                  <Heading as="h3" size="md" color="white">
+                    {action.function}
+                  </Heading>
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4}>
+              {action.inputs.map(({ name, type }, i) => (
+                <Box key={name + i}>
+                  <Fragment key={i}>
+                    <FormLabel>{name}</FormLabel>
+                    <Input
+                      data-write={`${action.function}_${index}`}
+                      type="text"
+                      placeholder={type}
+                      style={{
+                        border: "1px solid lightgray",
+                        marginBottom: "1rem",
+                      }}
+                      sx={{
+                        "::placeholder": {
+                          color: "gray.400",
+                        },
+                      }}
+                    />
+                  </Fragment>
+                </Box>
+              ))}
+              <Button
+                mt={4}
+                size={"sm"}
+                colorScheme="blue"
+                onClick={() => {
+                  writeMethod(action.function, index);
+                }}
+              >
+                Submit
+              </Button>
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </Container>
   );
 };

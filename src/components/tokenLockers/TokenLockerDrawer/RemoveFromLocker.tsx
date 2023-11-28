@@ -9,7 +9,11 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 
-export const RemoveFromLocker = () => {
+export const RemoveFromLocker = ({
+  selectedLocker,
+}: {
+  selectedLocker: any;
+}) => {
   const [amountToRemove, setAmountToRemove] = useState("");
 
   return (

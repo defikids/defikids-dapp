@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { MdArrowDropDown } from "react-icons/md";
 
-export const ApplyNewLock = () => {
+export const ApplyNewLock = ({ selectedLocker }: { selectedLocker: any }) => {
   const [lockTime, setLockTime] = useState("");
 
   const DAY_IN_SECONDS = 86400;

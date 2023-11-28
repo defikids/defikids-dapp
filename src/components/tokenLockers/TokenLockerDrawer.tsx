@@ -24,12 +24,14 @@ export const TokenLockerDrawer = ({
   placement,
   currentFunction,
   setFetchLockers,
+  selectedLocker,
 }: {
   isOpen: boolean;
   onClose: () => void;
   placement: any;
   currentFunction: TokenLockerFunctions;
   setFetchLockers: (fetchLockers: boolean) => void;
+  selectedLocker: any;
 }) => {
   return (
     <>
@@ -51,22 +53,23 @@ export const TokenLockerDrawer = ({
                 setFetchLockers={setFetchLockers}
               />
             )}
-
             {currentFunction === TokenLockerFunctions.ADD_TO_LOCKER && (
-              <AddToLocker />
+              <AddToLocker
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={setFetchLockers}
+              />
             )}
-
             {currentFunction === TokenLockerFunctions.APPLY_NEW_LOCK && (
-              <ApplyNewLock />
+              <ApplyNewLock selectedLocker={selectedLocker} />
             )}
-
             {currentFunction === TokenLockerFunctions.EMPTY_LOCKER && (
-              <EmptyLocker />
+              <EmptyLocker selectedLocker={selectedLocker} />
             )}
-
             {currentFunction === TokenLockerFunctions.REMOVE_FROM_LOCKER && (
-              <RemoveFromLocker />
+              <RemoveFromLocker selectedLocker={selectedLocker} />
             )}
+            {currentFunction === TokenLockerFunctions.DELETE_LOCKER && <></>}
           </DrawerBody>
           <DrawerFooter />
         </DrawerContent>

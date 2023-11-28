@@ -1,4 +1,3 @@
-import { useContractStore } from "@/store/contract/contractStore";
 import {
   Heading,
   VStack,
@@ -19,7 +18,7 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { SignatureLike, TransactionResponse, ethers } from "ethers";
-import { createLockerPermitMessage } from "@/utils/permit";
+import { createTokenLockersPermitMessage } from "@/utils/permit";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -28,7 +27,6 @@ import { transactionErrors } from "@/utils/errorHanding";
 import { MdArrowDropDown } from "react-icons/md";
 import { locktimes } from "@/utils/tokenLockerLockTimes";
 import {
-  connectedSigner,
   defiDollarsContractInstance,
   tokenLockersContractInstance,
 } from "@/blockchain/instances";
@@ -87,7 +85,7 @@ export const CreateLocker = ({
     const tokenLockerContract = await tokenLockersContractInstance(provider);
     const signer = await provider.getSigner();
 
-    const result = (await createLockerPermitMessage(
+    const result = (await createTokenLockersPermitMessage(
       signer,
       tokenLockerContract,
       totalValueToPermit,
@@ -279,7 +277,7 @@ export const CreateLocker = ({
       {isLoading && (
         <Box>
           <Heading fontSize={"xl"} my={5}>
-            Processing Transaction
+            Interacting With Blockchain
           </Heading>
           <TransactionStepper
             activeStep={activeStep}

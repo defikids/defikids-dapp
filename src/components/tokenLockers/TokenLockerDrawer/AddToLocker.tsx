@@ -24,7 +24,7 @@ import { createTokenLockersPermitMessage } from "@/utils/permit";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
-import TokenLockerContract from "@/blockchain/TokenLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 type PermitResult = {

@@ -22,7 +22,7 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
-import TokenLockerContract from "@/blockchain/TokenLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 export const TransferFundsBetweenLockers = ({
   selectedLocker,

@@ -32,7 +32,7 @@ import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
 import { useRouter } from "next/navigation";
 import { Locker } from "@/data-schema/types";
 import { formattedLocker } from "@/utils/formatLockers";
-import TokenLockerContract from "@/blockchain/TokenLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 const MemberDashboardClientLayout = ({

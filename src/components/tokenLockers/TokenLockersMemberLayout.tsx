@@ -21,7 +21,7 @@ import { ethers } from "ethers";
 import { TokenLockerCard } from "@/components/tokenLockers/TokenLockerCard";
 import { Locker } from "@/data-schema/types";
 
-import TokenLockerContract from "@/blockchain/TokenLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 import { getSignerAddress } from "@/blockchain/utils";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 

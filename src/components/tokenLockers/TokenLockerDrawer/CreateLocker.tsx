@@ -28,7 +28,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import { locktimes } from "@/utils/tokenLockerLockTimes";
 
 import { StepperContext } from "@/data-schema/enums";
-import TokenLockerContract from "@/blockchain/TokenLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 type PermitResult = {

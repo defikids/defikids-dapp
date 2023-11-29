@@ -20,7 +20,7 @@ import {
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useState } from "react";
-import TokenLockerContract from "@/blockchain/TokenLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 export const DeleteLocker = ({
   selectedLocker,

@@ -33,6 +33,7 @@ import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsM
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -126,19 +127,31 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const getStableTokenBalance = useCallback(async () => {
-    const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
 
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+      provider
+    );
+    const userAddress = await getSignerAddress(provider);
     const balance = await defiDollarsInstance?.getStableTokenBalance(
-      userDetails?.wallet
+      userAddress
     );
     setStableTokenBalance(balance);
   }, []);
 
   const fetchMembers = useCallback(async () => {
     const getMembers = async () => {
-      if (!userDetails?.wallet) return;
+      //@ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const userAddress = await getSignerAddress(provider);
+      if (!userAddress) return;
+      console.log("user details", userDetails);
+      const user = await getUserByWalletAddress(userAddress);
+      const members = await getFamilyMembersByAccount(user?.accountId!);
 
-      const members = await getFamilyMembersByAccount(userDetails?.accountId!);
+      console.log("user address", userAddress);
+      console.log("members", members);
 
       if (members.length) {
         const membersWalletBalances = [] as {
@@ -146,7 +159,9 @@ const Parent: React.FC = () => {
           balance: string;
         }[];
 
-        const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+        const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+          provider
+        );
 
         for (let i = 0; i < members.length; i++) {
           const balance = await defiDollarsInstance?.balanceOf(
@@ -155,7 +170,7 @@ const Parent: React.FC = () => {
 
           membersWalletBalances.push({
             account: members[i].wallet,
-            balance: ethers.formatUnits(balance, 18),
+            balance: balance.toString(),
           });
         }
 
@@ -168,7 +183,7 @@ const Parent: React.FC = () => {
             balance: balance ? balance.balance : "0",
           };
         });
-
+        console.log("member balances", membersWithBalances);
         setFamilyMembers(membersWithBalances);
       } else {
         setFamilyMembers(members);

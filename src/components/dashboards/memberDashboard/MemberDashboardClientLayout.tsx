@@ -68,7 +68,9 @@ const MemberDashboardClientLayout = ({
         provider
       );
 
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
       const lockersByUser = await TokenLockerInstance.fetchAllLockersByUser();
 
@@ -124,7 +126,9 @@ const MemberDashboardClientLayout = ({
 
   useEffect(() => {
     const defiDollarsBalance = async () => {
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
       const balance = await defiDollarsInstance?.balanceOf(memberAddress);
       setTokenBalance(Number(ethers.formatEther(balance)));

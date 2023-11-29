@@ -56,7 +56,9 @@ export const TokenLockersMemberLayout = ({
         provider
       );
 
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
       const lockersByUser = await tokenLockerInstance.fetchAllLockersByUser();
 
@@ -84,7 +86,9 @@ export const TokenLockersMemberLayout = ({
         wallet
       );
 
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
       const balance = await defiDollarsInstance.balanceOf(wallet);
       setDefiDollarsBalance(balance);

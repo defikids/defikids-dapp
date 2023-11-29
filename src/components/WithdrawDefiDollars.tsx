@@ -16,13 +16,12 @@ import {
   TransactionStepper,
   steps,
 } from "@/components/steppers/TransactionStepper";
-import { shallow } from "zustand/shallow";
-import { useContractStore } from "@/store/contract/contractStore";
 import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
 import NextLink from "next/link";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 export const WithdrawDefiDollars = ({
   onClose,
@@ -42,12 +41,6 @@ export const WithdrawDefiDollars = ({
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { defiDollarsContractInstance } = useContractStore(
-    (state) => ({
-      defiDollarsContractInstance: state.defiDollarsContractInstance,
-    }),
-    shallow
-  );
 
   const toast = useToast();
 
@@ -74,12 +67,19 @@ export const WithdrawDefiDollars = ({
 
       setActiveStep(0);
 
-      const tx = (await defiDollarsContractInstance?.withdraw(
-        ethers.parseEther(amountToWithdraw)
-      )) as TransactionResponse;
+      //@ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
-      setActiveStep(1);
-      await tx.wait();
+      //! FIX THIS
+      // const tx = (await defiDollarsInstance?.withdraw(
+      //   ethers.parseEther(amountToWithdraw)
+      // )) as TransactionResponse;
+
+      // setActiveStep(1);
+      // await tx.wait();
 
       toast({
         title: "Withdraw Successful",

@@ -34,3 +34,13 @@ export type AccountDetails = {
   maxMembers?: number;
   expiry?: number; // timestamp in seconds
 };
+
+export type Locker = {
+  amount: number;
+  lockTime: number;
+  name: string;
+  lockerNumber: number;
+  owner: string;
+  lockAppliedAt: number;
+  lockTimeRemaining: number;
+};

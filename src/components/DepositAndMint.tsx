@@ -21,7 +21,6 @@ import {
   TransactionStepper,
   steps,
 } from "@/components/steppers/TransactionStepper";
-import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
@@ -38,6 +37,10 @@ import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { IActivity } from "@/models/Activity";
 import { useAuthStore } from "@/store/auth/authStore";
 import { stable_coin_symbol } from "@/config";
+import { getSigner, getSignerAddress } from "@/blockchain/utils";
+import { GOERLI_DK_STABLETOKEN_ADDRESS } from "@/blockchain/contract-addresses";
+import { stableTokenABI } from "@/blockchain/artifacts/stable-token";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -86,19 +89,6 @@ export const DepositAndMint = ({
     shallow
   );
 
-  const {
-    defiDollarsContractInstance,
-    stableTokenContractInstance,
-    connectedSigner,
-  } = useContractStore(
-    (state) => ({
-      defiDollarsContractInstance: state.defiDollarsContractInstance,
-      stableTokenContractInstance: state.stableTokenContractInstance,
-      connectedSigner: state.connectedSigner,
-    }),
-    shallow
-  );
-
   //=============================================================================
   //                               FUNCTIONS
   //=============================================================================
@@ -130,9 +120,20 @@ export const DepositAndMint = ({
       String(+amount.trim() * selectedUsers.length)
     );
 
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await getSigner(provider);
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
+    const stableTokenContractInstance = new ethers.Contract(
+      GOERLI_DK_STABLETOKEN_ADDRESS,
+      stableTokenABI,
+      signer
+    );
+
     const result = (await createStableTokenPermitMessage(
-      connectedSigner!,
-      defiDollarsContractInstance!,
+      signer,
+      await defiDollarsInstance.contractAddress(),
       totalValueToPermit,
       stableTokenContractInstance!
     )) as PermitResult;
@@ -148,10 +149,16 @@ export const DepositAndMint = ({
   ) => {
     setActiveStep(1); // set to approve transaction
 
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+      provider
+    );
+
     const formattedAmount = ethers.parseEther(String(+amount.trim()));
     const recipients = selectedUsers.map((user) => user.wallet);
 
-    const tx = (await defiDollarsContractInstance?.depositAndMint(
+    const tx = (await defiDollarsInstance?.depositAndMint(
       formattedAmount,
       recipients,
       deadline,
@@ -169,7 +176,10 @@ export const DepositAndMint = ({
       status: "success",
     });
 
-    const address = await connectedSigner?.getAddress();
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const address = await getSignerAddress(provider);
+
     const accountId = userDetails?.accountId;
     const newActivities: IActivity[] = [];
 

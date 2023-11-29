@@ -9,7 +9,7 @@ interface ToastProps {
 export const transactionErrors = (e: Error) => {
   console.error("transactionErrors", e.message);
 
-  if (e.message.includes("user rejected transaction")) {
+  if (e.message.includes("user rejected")) {
     return {
       title: "Transaction Error",
       description: "User rejected transaction",

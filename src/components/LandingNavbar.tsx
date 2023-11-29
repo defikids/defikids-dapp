@@ -79,7 +79,7 @@ export default function LandingNavbar() {
         break;
       case UserType.MEMBER:
         // setIsLoggedIn(true);
-        router.push("/member-dashboard");
+        router.push(`/member-dashboard/${userDetails?.wallet}`);
         break;
       default:
         router.push("/");

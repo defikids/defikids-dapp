@@ -1,27 +1,16 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import { ethers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import {
-  DEFIKIDS_PROXY_ADDRESS,
-  GOERLI_DK_STABLETOKEN_ADDRESS,
-} from "@/blockchain/contract-addresses";
-import { defikidsCoreABI } from "@/blockchain/artifacts/goerli/defikids-core";
-import { stableTokenABI } from "@/blockchain/artifacts/goerli/stable-token";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";
-import { User } from "@/data-schema/types";
 
 const Auth = () => {
-  const [selectedAddress, setSelectedAddress] = useState("");
-
   const router = useRouter();
   const { address: connectedAccount } = useAccount();
 
@@ -30,7 +19,7 @@ const Auth = () => {
    */
   useEffect(() => {
     if (connectedAccount) {
-      setSelectedAddress(connectedAccount);
+      setConnectedWallet(connectedAccount);
     }
   }, [connectedAccount]);
 
@@ -40,46 +29,35 @@ const Auth = () => {
   watchAccount((account) => {
     const { isConnected, address } = account;
 
-    if (address && address !== selectedAddress) {
-      setSelectedAddress(address);
+    if (address && connectedWallet && address !== connectedWallet) {
+      setConnectedWallet(address);
       router.push("/");
     }
 
-    if (!isConnected && selectedAddress) {
+    if (!isConnected && connectedWallet) {
       setFetchedUserDetails(false);
       setWalletConnected(false);
       setIsLoggedIn(false);
-      setSelectedAddress("");
+      setConnectedWallet("");
       setUserDetails({ ...initialState.userDetails });
     }
   });
 
   const {
+    connectedWallet,
+    setConnectedWallet,
     setWalletConnected,
     setUserDetails,
     setFetchedUserDetails,
     setIsLoggedIn,
   } = useAuthStore(
     (state) => ({
+      connectedWallet: state.connectedWallet,
+      setConnectedWallet: state.setConnectedWallet,
       setWalletConnected: state.setWalletConnected,
       setUserDetails: state.setUserDetails,
       setFetchedUserDetails: state.setFetchedUserDetails,
       setIsLoggedIn: state.setIsLoggedIn,
-    }),
-    shallow
-  );
-
-  const {
-    setConnectedSigner,
-    setProvider,
-    setDefiDollarsContractInstance,
-    setStableTokenContractInstance,
-  } = useContractStore(
-    (state) => ({
-      setConnectedSigner: state.setConnectedSigner,
-      setProvider: state.setProvider,
-      setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
-      setStableTokenContractInstance: state.setStableTokenContractInstance,
     }),
     shallow
   );
@@ -89,33 +67,10 @@ const Auth = () => {
    */
   useEffect(() => {
     const init = async () => {
-      if (!selectedAddress) return;
+      if (!connectedWallet) return;
       setWalletConnected(true);
 
-      // @ts-ignore
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner(selectedAddress);
-
-      // add provider and signer to store
-      setProvider(provider);
-      setConnectedSigner(signer);
-
-      const defiDollarsContract = new ethers.Contract(
-        DEFIKIDS_PROXY_ADDRESS,
-        defikidsCoreABI,
-        signer
-      );
-
-      const stableTokenContract = new ethers.Contract(
-        GOERLI_DK_STABLETOKEN_ADDRESS,
-        stableTokenABI,
-        signer
-      );
-
-      setDefiDollarsContractInstance(defiDollarsContract);
-      setStableTokenContractInstance(stableTokenContract);
-
-      const user = (await getUserByWalletAddress(selectedAddress)) as any;
+      const user = (await getUserByWalletAddress(connectedWallet)) as any;
 
       if (!user?.error) {
         setUserDetails(user);
@@ -124,12 +79,12 @@ const Auth = () => {
         return;
       }
       setUserDetails({ ...initialState.userDetails });
-      setSelectedAddress("");
+      setConnectedWallet("");
       setIsLoggedIn(false);
     };
 
     init();
-  }, [selectedAddress]);
+  }, [connectedWallet]);
 
   /*
    * This hook will check if the user has a dark mode preference set in local storage

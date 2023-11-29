@@ -1,21 +1,11 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
-import { ethers } from "ethers";
 import { watchAccount } from "@wagmi/core";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import {
-  DEFIKIDS_PROXY_ADDRESS,
-  GOERLI_DK_STABLETOKEN_ADDRESS,
-  TOKEN_LOCKERS_ADDRESS,
-} from "@/blockchain/contract-addresses";
-import { defikidsCoreABI } from "@/blockchain/artifacts/defikids-core";
-import { stableTokenABI } from "@/blockchain/artifacts/stable-token";
-import { tokenLockersABI } from "@/blockchain/artifacts/tokenLockers";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";
@@ -72,21 +62,6 @@ const Auth = () => {
     shallow
   );
 
-  const {
-    setConnectedSigner,
-    setProvider,
-
-    setStableTokenContractInstance,
-  } = useContractStore(
-    (state) => ({
-      setConnectedSigner: state.setConnectedSigner,
-      setProvider: state.setProvider,
-
-      setStableTokenContractInstance: state.setStableTokenContractInstance,
-    }),
-    shallow
-  );
-
   /*
    * This hook will check for the user's wallet address and set the user type. It will also set the provider and signer in the store
    */
@@ -94,22 +69,6 @@ const Auth = () => {
     const init = async () => {
       if (!connectedWallet) return;
       setWalletConnected(true);
-
-      // @ts-ignore
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner(connectedWallet);
-
-      // add provider and signer to store
-      setProvider(provider);
-      setConnectedSigner(signer);
-
-      const stableTokenContract = new ethers.Contract(
-        GOERLI_DK_STABLETOKEN_ADDRESS,
-        stableTokenABI,
-        signer
-      );
-
-      setStableTokenContractInstance(stableTokenContract);
 
       const user = (await getUserByWalletAddress(connectedWallet)) as any;
 

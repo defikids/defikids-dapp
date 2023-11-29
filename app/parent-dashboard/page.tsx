@@ -4,7 +4,6 @@
 import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
 import { shallow } from "zustand/shallow";
 import { useWindowSize } from "usehooks-ts";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
@@ -32,7 +31,7 @@ import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
-import DefiDollarsContract from "@/blockchain/defiDollars";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 import { getSignerAddress } from "@/blockchain/utils";
 
 const Parent: React.FC = () => {

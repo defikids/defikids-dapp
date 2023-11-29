@@ -33,7 +33,8 @@ import { useRouter } from "next/navigation";
 import { Locker } from "@/data-schema/types";
 import { formattedLocker } from "@/utils/formatLockers";
 import TokenLockerContract from "@/blockchain/TokenLockers";
-import DefiDollarsContract from "@/blockchain/defiDollars";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
+
 const MemberDashboardClientLayout = ({
   memberAddress,
 }: {

@@ -21,10 +21,9 @@ import { ethers } from "ethers";
 import { TokenLockerCard } from "@/components/tokenLockers/TokenLockerCard";
 import { Locker } from "@/data-schema/types";
 
-import { formattedLocker } from "@/utils/formatLockers";
 import TokenLockerContract from "@/blockchain/TokenLockers";
 import { getSignerAddress } from "@/blockchain/utils";
-import DefiDollarsContract from "@/blockchain/defiDollars";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 export const TokenLockersMemberLayout = ({
   memberAddress,

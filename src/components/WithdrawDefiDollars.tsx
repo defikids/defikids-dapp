@@ -16,14 +16,12 @@ import {
   TransactionStepper,
   steps,
 } from "@/components/steppers/TransactionStepper";
-import { shallow } from "zustand/shallow";
-import { useContractStore } from "@/store/contract/contractStore";
 import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
 import NextLink from "next/link";
-import DefiDollarsContract from "@/blockchain/defiDollars";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 export const WithdrawDefiDollars = ({
   onClose,
@@ -76,12 +74,12 @@ export const WithdrawDefiDollars = ({
       );
 
       //! FIX THIS
-      const tx = (await defiDollarsInstance?.withdraw(
-        ethers.parseEther(amountToWithdraw)
-      )) as TransactionResponse;
+      // const tx = (await defiDollarsInstance?.withdraw(
+      //   ethers.parseEther(amountToWithdraw)
+      // )) as TransactionResponse;
 
-      setActiveStep(1);
-      await tx.wait();
+      // setActiveStep(1);
+      // await tx.wait();
 
       toast({
         title: "Withdraw Successful",

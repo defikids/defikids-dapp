@@ -19,6 +19,8 @@ import {
   Container,
   VStack,
   Avatar,
+  MenuGroup,
+  MenuDivider,
 } from "@chakra-ui/react";
 import { Locker } from "@/data-schema/types";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -45,76 +47,79 @@ export const TokenLockerCard = ({
           Actions
         </MenuButton>
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              setCurrentFunction(TokenLockerFunctions.RENAME_LOCKER);
-              setSelectedLocker(locker);
-              onOpen();
-            }}
-          >
-            Rename Locker
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              setCurrentFunction(TokenLockerFunctions.ADD_TO_LOCKER);
-              setSelectedLocker(locker);
-              onOpen();
-            }}
-          >
-            Add to Locker
-          </MenuItem>
+          <MenuGroup title={`Locker #${locker.lockerNumber}`}>
+            <MenuDivider />
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.RENAME_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Rename Locker
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setCurrentFunction(TokenLockerFunctions.ADD_TO_LOCKER);
+                setSelectedLocker(locker);
+                onOpen();
+              }}
+            >
+              Add to Locker
+            </MenuItem>
 
-          {!isLocked && (
-            <>
-              <MenuItem
-                onClick={() => {
-                  setCurrentFunction(TokenLockerFunctions.APPLY_NEW_LOCK);
-                  setSelectedLocker(locker);
-                  onOpen();
-                }}
-              >
-                Apply New Lock
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setCurrentFunction(
-                    TokenLockerFunctions.TRANSFER_FUNDS_BETWEEN_LOCKERS
-                  );
-                  setSelectedLocker(locker);
-                  onOpen();
-                }}
-              >
-                Transfer Funds Between Lockers
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setCurrentFunction(TokenLockerFunctions.EMPTY_LOCKER);
-                  setSelectedLocker(locker);
-                  onOpen();
-                }}
-              >
-                Empty Locker
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setCurrentFunction(TokenLockerFunctions.REMOVE_FROM_LOCKER);
-                  setSelectedLocker(locker);
-                  onOpen();
-                }}
-              >
-                Remove From Locker
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setCurrentFunction(TokenLockerFunctions.DELETE_LOCKER);
-                  setSelectedLocker(locker);
-                  onOpen();
-                }}
-              >
-                Delete Locker
-              </MenuItem>
-            </>
-          )}
+            {!isLocked && (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.APPLY_NEW_LOCK);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Apply New Lock
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(
+                      TokenLockerFunctions.TRANSFER_FUNDS_BETWEEN_LOCKERS
+                    );
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Transfer Funds Between Lockers
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.EMPTY_LOCKER);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Empty Locker
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.REMOVE_FROM_LOCKER);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Remove From Locker
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setCurrentFunction(TokenLockerFunctions.DELETE_LOCKER);
+                    setSelectedLocker(locker);
+                    onOpen();
+                  }}
+                >
+                  Delete Locker
+                </MenuItem>
+              </>
+            )}
+          </MenuGroup>
         </MenuList>
       </Menu>
     );
@@ -158,9 +163,22 @@ export const TokenLockerCard = ({
                   src={"/logos/pig_logo.png"}
                 />
               </Flex>
+              <Flex direction="column" p={2} mr={5}>
+                <Text fontSize="sm" textAlign="center">
+                  Locker
+                </Text>
+                <Text fontSize={{ base: "sm", sm: "md" }} textAlign="center">
+                  {locker.lockerNumber}
+                </Text>
+              </Flex>
+
               <Flex direction="column" p={2}>
-                <Text fontSize="sm">DefiDollars</Text>
-                <Text fontSize={{ base: "sm", sm: "md" }}>{locker.amount}</Text>
+                <Text fontSize="sm" textAlign="center">
+                  DefiDollars
+                </Text>
+                <Text fontSize={{ base: "sm", sm: "md" }} textAlign="center">
+                  {locker.amount}
+                </Text>
               </Flex>
             </Stack>
 

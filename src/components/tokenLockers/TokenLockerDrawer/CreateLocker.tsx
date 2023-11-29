@@ -29,7 +29,7 @@ import { locktimes } from "@/utils/tokenLockerLockTimes";
 
 import { StepperContext } from "@/data-schema/enums";
 import TokenLockerContract from "@/blockchain/TokenLockers";
-import DefiDollarsContract from "@/blockchain/defiDollars";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 type PermitResult = {
   data?: SignatureLike;

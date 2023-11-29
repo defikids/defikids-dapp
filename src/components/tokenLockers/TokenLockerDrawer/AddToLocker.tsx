@@ -25,7 +25,7 @@ import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
 import TokenLockerContract from "@/blockchain/TokenLockers";
-import DefiDollarsContract from "@/blockchain/defiDollars";
+import DefiDollarsContract from "@/blockchain/DefiDollars";
 
 type PermitResult = {
   data?: SignatureLike;

@@ -49,12 +49,10 @@ class TokenLockerContract {
 
   async fetchAllLockersByUser() {
     const response = await this.contract.fetchAllLockersByUser();
-    console.log(response);
     const formattedLockers = response.map((locker: Locker) =>
       formattedLocker(locker)
     );
 
-    console.log(formattedLockers);
     return formattedLockers;
   }
 

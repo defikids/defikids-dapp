@@ -13,9 +13,9 @@ import {
   GOERLI_DK_STABLETOKEN_ADDRESS,
   TOKEN_LOCKERS_ADDRESS,
 } from "@/blockchain/contract-addresses";
-import { defikidsCoreABI } from "@/blockchain/artifacts/goerli/defikids-core";
-import { stableTokenABI } from "@/blockchain/artifacts/goerli/stable-token";
-import { tokenLockersABI } from "@/blockchain/artifacts/goerli/tokenLockers";
+import { defikidsCoreABI } from "@/blockchain/artifacts/defikids-core";
+import { stableTokenABI } from "@/blockchain/artifacts/stable-token";
+import { tokenLockersABI } from "@/blockchain/artifacts/tokenLockers";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { initialState } from "@/store/auth/createAuthStore";
@@ -77,14 +77,12 @@ const Auth = () => {
     setProvider,
     setDefiDollarsContractInstance,
     setStableTokenContractInstance,
-    setTokenLockersContractInstance,
   } = useContractStore(
     (state) => ({
       setConnectedSigner: state.setConnectedSigner,
       setProvider: state.setProvider,
       setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
       setStableTokenContractInstance: state.setStableTokenContractInstance,
-      setTokenLockersContractInstance: state.setTokenLockersContractInstance,
     }),
     shallow
   );
@@ -117,15 +115,8 @@ const Auth = () => {
         signer
       );
 
-      const tokenLockers = new ethers.Contract(
-        GOERLI_DK_STABLETOKEN_ADDRESS,
-        tokenLockersABI,
-        signer
-      );
-
       setDefiDollarsContractInstance(defiDollarsContract);
       setStableTokenContractInstance(stableTokenContract);
-      setTokenLockersContractInstance(tokenLockers);
 
       const user = (await getUserByWalletAddress(connectedWallet)) as any;
 

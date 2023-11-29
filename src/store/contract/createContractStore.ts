@@ -13,7 +13,6 @@ type State = {
   connectedSigner: Signer | null;
   defiDollarsContractInstance: Contract | null;
   stableTokenContractInstance: Contract | null;
-  tokenLockersContractInstance: Contract | null;
 };
 
 type Actions = {
@@ -22,7 +21,6 @@ type Actions = {
   setConnectedSigner: (signer: Signer) => void;
   setDefiDollarsContractInstance: (contractInstance: Contract) => void;
   setStableTokenContractInstance: (contractInstance: Contract) => void;
-  setTokenLockersContractInstance: (contractInstance: Contract) => void;
 };
 
 type MyStore = State & Actions;
@@ -33,7 +31,6 @@ const initialState: State = {
   connectedSigner: null,
   defiDollarsContractInstance: null,
   stableTokenContractInstance: null,
-  tokenLockersContractInstance: null,
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -63,11 +60,6 @@ const setters = (set: any) => ({
     }, shallow);
   },
   setStableTokenContractInstance: (contractInstance: Contract) => {
-    set((state: { stableTokenContractInstance: Contract }) => {
-      state.stableTokenContractInstance = contractInstance;
-    }, shallow);
-  },
-  setTokenLockersContractInstance: (contractInstance: Contract) => {
     set((state: { stableTokenContractInstance: Contract }) => {
       state.stableTokenContractInstance = contractInstance;
     }, shallow);

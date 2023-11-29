@@ -3,10 +3,13 @@ import {
   VStack,
   Text,
   Box,
+  FormControl,
   Button,
   useToast,
   useSteps,
+  Input,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { ethers, TransactionResponse } from "ethers";
 import shallow from "zustand/shallow";
 import { StepperContext } from "@/data-schema/enums";
@@ -19,10 +22,9 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useState } from "react";
 import TokenLockerContract from "@/blockchain/tokenLockers";
 
-export const DeleteLocker = ({
+export const TransferFundsBetweenLockers = ({
   selectedLocker,
   onClose,
   setFetchLockers,
@@ -32,6 +34,9 @@ export const DeleteLocker = ({
   setFetchLockers: (fetchLockers: boolean) => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [lockerNumber, setLockerNumber] = useState("");
+  const [recipientLockerNumber, setRecipientLockerNumber] = useState("");
+  const [amountToTransfer, setAmountToTransfer] = useState("");
 
   const toast = useToast();
 
@@ -50,6 +55,9 @@ export const DeleteLocker = ({
 
   const resetState = () => {
     setIsLoading(false);
+    setLockerNumber("");
+    setRecipientLockerNumber("");
+    setAmountToTransfer("");
   };
 
   const handleTransaction = async () => {
@@ -62,8 +70,12 @@ export const DeleteLocker = ({
       provider
     );
 
-    const tx = (await tokenLockerInstance.deleteLocker(
-      selectedLocker.lockerNumber
+    const totalValue = ethers.parseEther(String(+amountToTransfer.trim()));
+
+    const tx = (await tokenLockerInstance.transferFundsBetweenLockers(
+      +lockerNumber,
+      +recipientLockerNumber,
+      totalValue
     )) as TransactionResponse;
 
     return tx;
@@ -71,7 +83,7 @@ export const DeleteLocker = ({
 
   const postTransaction = async () => {
     toast({
-      title: "Locker emptied.",
+      title: "Transfer Successful.",
       status: "success",
     });
 
@@ -84,7 +96,7 @@ export const DeleteLocker = ({
       accountId,
       wallet: address,
       date: convertTimestampToSeconds(Date.now()),
-      type: `Deleted TokenLocker (${selectedLocker.lockerName})`,
+      type: `Transferred funds from TokenLocker (${lockerNumber}) to TokenLocker (${recipientLockerNumber})`,
     });
 
     newActivities.push(newActivity);
@@ -96,11 +108,12 @@ export const DeleteLocker = ({
   };
 
   const handleContinue = async () => {
-    if (selectedLocker.amount > 0) {
+    // Validate input
+    if (!lockerNumber || !recipientLockerNumber || !amountToTransfer) {
       toast({
+        title: "Error.",
+        description: "No empty fields allowed.",
         status: "error",
-        description:
-          "Cannot delete locker. Locker still has funds in it. Please empty the locker first.",
       });
       return;
     }
@@ -121,21 +134,69 @@ export const DeleteLocker = ({
       resetState();
     }
   };
+
   return (
     <Box>
       <VStack spacing={4} align="stretch">
         <Heading fontSize={"xl"} mb={1}>
-          Deleting A Locker
+          Transferring funds between lockers
         </Heading>
         <Text fontSize={"md"} mb={1}>
-          By deleting a locker, you will be removing all funds from the locker
-          and the locker will be deleted from the blockchain.
+          When you transfer funds between lockers it allows you to move funds to
+          a different locker.
         </Text>
 
         <Text fontSize={"md"} mb={1}>
-          You will not be able to delete a locker if it is still locked or if it
-          contains funds.
+          You will only be able to transfer funds from unlocked lockers.
         </Text>
+        <FormControl>
+          <Input
+            disabled={isLoading}
+            placeholder="From Locker Number"
+            value={lockerNumber}
+            onChange={(e) => setLockerNumber(e.target.value)}
+            style={{
+              border: "1px solid lightgray",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400",
+              },
+            }}
+          />
+        </FormControl>
+        <FormControl>
+          <Input
+            disabled={isLoading}
+            placeholder="To Locker Number"
+            value={recipientLockerNumber}
+            onChange={(e) => setRecipientLockerNumber(e.target.value)}
+            style={{
+              border: "1px solid lightgray",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400",
+              },
+            }}
+          />
+        </FormControl>
+        <FormControl>
+          <Input
+            disabled={isLoading}
+            placeholder="Amount to transfer"
+            value={amountToTransfer}
+            onChange={(e) => setAmountToTransfer(e.target.value)}
+            style={{
+              border: "1px solid lightgray",
+            }}
+            sx={{
+              "::placeholder": {
+                color: "gray.400",
+              },
+            }}
+          />
+        </FormControl>
       </VStack>
       <Button
         isDisabled={isLoading}

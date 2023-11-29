@@ -19,6 +19,7 @@ import { EmptyLocker } from "./TokenLockerDrawer/EmptyLocker";
 import { RemoveFromLocker } from "./TokenLockerDrawer/RemoveFromLocker";
 import { DeleteLocker } from "./TokenLockerDrawer/DeleteLocker";
 import { RenameLocker } from "./TokenLockerDrawer/RenameLocker";
+import { TransferFundsBetweenLockers } from "./TokenLockerDrawer/TransferFundsBetweenLockers";
 
 export const TokenLockerDrawer = ({
   isOpen,
@@ -59,6 +60,14 @@ export const TokenLockerDrawer = ({
             )}
             {currentFunction === TokenLockerFunctions.ADD_TO_LOCKER && (
               <AddToLocker
+                selectedLocker={selectedLocker}
+                onClose={onClose}
+                setFetchLockers={refreshBlockchainData}
+              />
+            )}
+            {currentFunction ===
+              TokenLockerFunctions.TRANSFER_FUNDS_BETWEEN_LOCKERS && (
+              <TransferFundsBetweenLockers
                 selectedLocker={selectedLocker}
                 onClose={onClose}
                 setFetchLockers={refreshBlockchainData}

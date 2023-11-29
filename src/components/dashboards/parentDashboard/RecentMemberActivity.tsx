@@ -22,6 +22,7 @@ import { formatDateToIsoString } from "@/utils/dateTime";
 import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 interface FormattedActivity {
   activityText: string;
@@ -30,8 +31,15 @@ interface FormattedActivity {
   userAvatar: string;
 }
 
-export const RecentMemberActivity = ({ user }: { user: User }) => {
+export const RecentMemberActivity = ({
+  memberAddress,
+  onlyMemberActivity,
+}: {
+  memberAddress: string;
+  onlyMemberActivity?: boolean;
+}) => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
+  const [user, setUser] = useState<User>({} as User);
 
   const { recentActivity, setRecentActivity } = useAuthStore(
     (state) => ({
@@ -44,7 +52,13 @@ export const RecentMemberActivity = ({ user }: { user: User }) => {
   /* This useEffect is used to get the recent activity for the user upon page load */
   useEffect(() => {
     const getData = async () => {
+      const user = (await getUserByWalletAddress(memberAddress)) as any;
+      setUser(user);
+
+      console.log("user", user);
+
       const activity = await getActivityByAccount(user.accountId!);
+      console.log("activity", activity);
       await normaliseActivity(activity);
     };
     getData();
@@ -64,6 +78,8 @@ export const RecentMemberActivity = ({ user }: { user: User }) => {
       user.accountId!,
       true
     )) as IUser[];
+
+    console.log("members", members);
 
     const formattedActivity = activities.map((activity: IActivity) => {
       const member = members.find((m) => m.wallet === activity?.wallet);

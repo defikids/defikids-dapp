@@ -26,9 +26,9 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Fragment, useEffect, useState } from "react";
-import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { getEtherscanUrl } from "@/utils/web3";
 import { ethers } from "ethers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 const Admin = () => {
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -100,10 +100,12 @@ const Admin = () => {
     try {
       // @ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const tokenLockerContract = await tokenLockersContractInstance(provider);
+      const tokenLockerInstance = await TokenLockerContract.fromProvider(
+        provider
+      );
       const chainId = (await provider.getNetwork()).chainId;
 
-      const tx = await tokenLockerContract[methodName](...parsedInputs);
+      const tx = await tokenLockerInstance[methodName](...parsedInputs);
       toast({
         title: "Transaction Sent",
         description: `View on Etherscan: ${getEtherscanUrl(

@@ -60,7 +60,7 @@ export const createStableTokenPermitMessage = async (
 
 export const createTokenLockersPermitMessage = async (
   signer: Signer,
-  spenderContract: Contract,
+  spender: string,
   value: BigNumberish,
   contract: Contract
 ): Promise<{
@@ -70,7 +70,6 @@ export const createTokenLockersPermitMessage = async (
 }> => {
   try {
     const owner = await signer.getAddress();
-    const spender = await spenderContract.getAddress();
     const transactionDeadline = Math.floor(Date.now() / 1000) + 20 * 60;
     const nonce = (await contract.nonces(owner)) as BigNumberish;
     const contractName = await contract.name();

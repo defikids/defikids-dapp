@@ -1,20 +1,20 @@
 import { Box } from "@chakra-ui/react";
 import Navbar from "@/components/LandingNavbar";
 import { TokenLockersMemberLayout } from "@/components/tokenLockers/TokenLockersMemberLayout";
-import { tokenLockersContractInstance } from "@/blockchain/instances";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 const getProps = async (context: any) => {
   const { memberAddress } = context.params || {};
 
-  const tokenLockerContract = await tokenLockersContractInstance();
+  const TokenLockerInstance = await TokenLockerContract.fromProvider();
 
-  const totalLockerOwned = await tokenLockerContract
-    .getLockerCountByUser(memberAddress)
-    .then((res: any) => res.toString());
+  const totalLockerOwned = await TokenLockerInstance.getLockerCountByUser(
+    memberAddress
+  );
 
-  const totalLockerValue = await tokenLockerContract
-    .getTotalValueLockedByUser(memberAddress)
-    .then((res: any) => res.toString());
+  const totalLockerValue = await TokenLockerInstance.getTotalValueLockedByUser(
+    memberAddress
+  );
 
   return {
     memberAddress,

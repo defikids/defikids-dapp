@@ -9,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import { ethers, TransactionResponse } from "ethers";
 import shallow from "zustand/shallow";
-import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
@@ -21,6 +20,7 @@ import {
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useRef, useState } from "react";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 export const EmptyLocker = ({
   selectedLocker,
@@ -57,9 +57,12 @@ export const EmptyLocker = ({
 
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const tokenLockerContract = await tokenLockersContractInstance(provider);
 
-    const tx = (await tokenLockerContract.emptyLocker(
+    const tokenLockerInstance = await TokenLockerContract.fromProvider(
+      provider
+    );
+
+    const tx = (await tokenLockerInstance.emptyLocker(
       selectedLocker.lockerNumber
     )) as TransactionResponse;
 

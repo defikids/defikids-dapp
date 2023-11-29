@@ -17,12 +17,12 @@ import {
 import { ethers, SignatureLike, TransactionResponse } from "ethers";
 import { useState } from "react";
 import shallow from "zustand/shallow";
-import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -67,9 +67,11 @@ export const RenameLocker = ({
 
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const tokenLockerContract = await tokenLockersContractInstance(provider);
+    const tokenLockerInstance = await TokenLockerContract.fromProvider(
+      provider
+    );
 
-    const tx = (await tokenLockerContract.renameLocker(
+    const tx = (await tokenLockerInstance.renameLocker(
       selectedLocker.lockerNumber,
       newLockerName
     )) as TransactionResponse;

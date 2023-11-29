@@ -9,19 +9,18 @@ import {
   Text,
   Badge,
 } from "@chakra-ui/react";
+import { Locker } from "@/data-schema/types";
 
-interface LockerSchema {
-  lockTime: string;
-  lockerName: string;
-  lockedValue: string;
-  isLocked: boolean;
-  lockDuration: string;
-  logo?: string;
-}
+// interface LockerSchema {
+//   lockTime: string;
+//   lockerName: string;
+//   lockedValue: string;
+//   isLocked: boolean;
+//   lockDuration: string;
+//   logo?: string;
+// }
 
-export const TokenLockersList = ({ lockers }: { lockers: LockerSchema[] }) => {
-  console.log("TokenLockersList -  length", lockers.length);
-
+export const TokenLockersList = ({ lockers }: { lockers: Locker[] }) => {
   return (
     <VStack
       boxShadow={useColorModeValue(
@@ -36,43 +35,37 @@ export const TokenLockersList = ({ lockers }: { lockers: LockerSchema[] }) => {
     >
       {lockers.map((locker, index) => (
         <Fragment key={index + Number(locker.lockTime)}>
-          <Flex
-            w="100%"
-            justify="space-between"
-            alignItems="center"
-            _hover={{ bg: "gray.600" }}
-            cursor="pointer"
-          >
+          <Flex w="100%" justify="space-between" alignItems="center">
             <Stack spacing={0} direction="row" alignItems="center">
               <Flex p={4}>
                 <Avatar
                   size="md"
-                  name={locker.lockerName}
-                  src={locker.logo || "/logos/ethereum-logo.png"}
+                  name={locker.name}
+                  src={"/logos/pig_logo.png"}
                 />
               </Flex>
               <Flex direction="column" p={2}>
                 <Text
                   fontSize={{ base: "sm", sm: "md", md: "lg" }}
                   dangerouslySetInnerHTML={{
-                    __html: locker.lockerName,
+                    __html: locker.name,
                   }}
                 />
                 <Text fontSize={{ base: "sm", sm: "md" }}>
-                  {locker.lockedValue} DFD
+                  {locker.amount} DFD
                 </Text>
               </Flex>
             </Stack>
-            {locker.isLocked && (
+            {locker.lockTimeRemaining > 0 && (
               <Badge
-                colorScheme={locker.isLocked ? "red" : "green"}
+                colorScheme={locker.lockTimeRemaining > 0 ? "red" : "green"}
                 variant="outline"
                 fontSize={{ base: "xs", sm: "sm" }}
                 px={2}
                 borderRadius={5}
                 mr={5}
               >
-                {locker.isLocked ? "Locked" : "Unlocked"}
+                {locker.lockTimeRemaining > 0 ? "Locked" : "Unlocked"}
               </Badge>
             )}
           </Flex>

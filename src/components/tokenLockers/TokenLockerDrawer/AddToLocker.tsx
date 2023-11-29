@@ -17,16 +17,14 @@ import {
 import { ethers, SignatureLike, TransactionResponse } from "ethers";
 import { useState } from "react";
 import shallow from "zustand/shallow";
-import {
-  defiDollarsContractInstance,
-  tokenLockersContractInstance,
-} from "@/blockchain/instances";
+import { defiDollarsContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { createTokenLockersPermitMessage } from "@/utils/permit";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -73,13 +71,16 @@ export const AddToLocker = ({
 
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const defiDollarsContract = await defiDollarsContractInstance(provider);
-    const tokenLockerContract = await tokenLockersContractInstance(provider);
     const signer = await provider.getSigner();
+    const defiDollarsContract = await defiDollarsContractInstance(provider);
+
+    const tokenLockerInstance = await TokenLockerContract.fromProvider(
+      provider
+    );
 
     const result = (await createTokenLockersPermitMessage(
       signer,
-      tokenLockerContract,
+      await tokenLockerInstance.contractAddress(),
       totalValueToPermit,
       defiDollarsContract!
     )) as PermitResult;
@@ -97,11 +98,14 @@ export const AddToLocker = ({
 
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const tokenLockerContract = await tokenLockersContractInstance(provider);
+
+    const TokenLockerInstance = await TokenLockerContract.fromProvider(
+      provider
+    );
 
     const totalValue = ethers.parseEther(String(+amountToLock.trim()));
 
-    const tx = (await tokenLockerContract.addToLocker(
+    const tx = (await TokenLockerInstance.addToLocker(
       totalValue,
       selectedLocker.lockerNumber,
       deadline,

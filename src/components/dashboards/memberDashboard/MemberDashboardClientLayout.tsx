@@ -1,50 +1,55 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useState } from "react";
+import {
+  Box,
+  Flex,
+  GridItem,
+  useDisclosure,
+  Grid,
+  Button,
+} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import shallow from "zustand/shallow";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useContractStore } from "@/store/contract/contractStore";
-import { shallow } from "zustand/shallow";
+import { SettingsModal } from "@/components/modals/SettingsModal";
+import { InfoModal } from "@/components/modals/InfoModal";
+import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
+import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
 import { useWindowSize } from "usehooks-ts";
-import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
-import { ethers } from "ethers";
+import { EtherscanModal } from "@/components/modals/EtherscanModal";
+import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
+import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
+import { DefiKidsHeading } from "@/components/DefiKidsHeading";
+import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
 import { watchNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
 import { useNetwork } from "wagmi";
-
-// Components
-import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
-import { CollapsedDashboardMenu } from "@/components/CollapsedDashboardMenu";
-import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/RecentMemberActivity";
-import StakingContracts from "@/components/dashboards/parentDashboard/StakingContracts";
-import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
-import { DefiKidsHeading } from "@/components/DefiKidsHeading";
-import { StableToken } from "@/components/dashboards/parentDashboard/StableToken";
-import { MemberWithdrawRequest } from "@/components/dashboards/parentDashboard/MemberWithdrawRequest";
-
-// Modals
-import { SettingsModal } from "@/components/modals/SettingsModal";
-import { InfoModal } from "@/components/modals/InfoModal";
-import { EtherscanModal } from "@/components/modals/EtherscanModal";
-import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
-import { MembersTableModal } from "@/components/modals/MembersTableModal";
-import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
-import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
-
-const Parent: React.FC = () => {
+import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
+import { ethers } from "ethers";
+import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
+import { useRouter } from "next/navigation";
+import { Locker } from "@/data-schema/types";
+import { defiDollarsContractInstance } from "@/blockchain/instances";
+import { formattedLocker } from "@/utils/formatLockers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
+const MemberDashboardClientLayout = ({
+  memberAddress,
+}: {
+  memberAddress: string;
+}) => {
   //=============================================================================
   //                               STATE
   //=============================================================================
   const [isValidChain, setIsValidChain] = useState(false);
-  const [stableTokenBalance, setStableTokenBalance] = useState(0);
+  const [tokenBalance, setTokenBalance] = useState(0);
+  const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
 
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-
-  const { userDetails, setFamilyMembers, familyMembers } = useAuthStore(
+  const { userDetails } = useAuthStore(
     (state) => ({
       userDetails: state.userDetails,
       familyMembers: state.familyMembers,
@@ -53,16 +58,25 @@ const Parent: React.FC = () => {
     shallow
   );
 
-  const { defiDollarsContractInstance } = useContractStore(
-    (state) => ({
-      defiDollarsContractInstance: state.defiDollarsContractInstance,
-    }),
-    shallow
-  );
+  useEffect(() => {
+    const getLockers = async () => {
+      //@ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const TokenLockerInstance = await TokenLockerContract.fromProvider(
+        provider
+      );
 
-  const { width } = useWindowSize();
+      const defiDollarsContract = await defiDollarsContractInstance();
+      const lockersByUser = await TokenLockerInstance.fetchAllLockersByUser();
 
-  const isMobileSize = width < 768;
+      const balance = await defiDollarsContract.balanceOf(memberAddress);
+
+      setLockersByUser(lockersByUser);
+      setTokenBalance(Number(ethers.formatEther(balance)));
+    };
+    getLockers();
+  }, []);
+
   const { chain } = useNetwork();
 
   watchNetwork((network) => {
@@ -70,6 +84,10 @@ const Parent: React.FC = () => {
       setIsValidChain(true);
     }
   });
+
+  const { width } = useWindowSize();
+  4;
+  const isMobileSize = width < 768;
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
     useDisclosure();
@@ -96,90 +114,26 @@ const Parent: React.FC = () => {
   } = useDisclosure();
 
   const {
-    isOpen: isOpenSendAllowanceModal,
-    onOpen: onOpenSendAllowanceModal,
-    onClose: onCloseSendAllowanceModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenMembersTableModal,
-    onOpen: onOpenMembersTableModal,
-    onClose: onCloseMembersTableModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenDepositDefiDollarsModal,
-    onOpen: onOpenDepositDefiDollarsModal,
-    onClose: onCloseDepositDefiDollarsModal,
-  } = useDisclosure();
-
-  const {
     isOpen: isOpenWithdrawDefiDollarsModal,
     onOpen: onOpenWithdrawDefiDollarsModal,
     onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
 
   useEffect(() => {
+    const defiDollarsBalance = async () => {
+      const defiDollarsContract = await defiDollarsContractInstance();
+      const balance = await defiDollarsContract?.balanceOf(memberAddress);
+      setTokenBalance(Number(ethers.formatEther(balance)));
+    };
+
+    defiDollarsBalance();
+  }, [isOpenWithdrawDefiDollarsModal]);
+
+  useEffect(() => {
     if (validChainId === chain?.id) {
       setIsValidChain(true);
     }
-    fetchMembers();
-    getStableTokenBalance();
-  }, [onCloseSendAllowanceModal]);
-
-  //=============================================================================
-  //                               FUNCTIONS
-  //=============================================================================
-
-  const getStableTokenBalance = useCallback(async () => {
-    const balance = await defiDollarsContractInstance?.getStableTokenBalance(
-      userDetails?.wallet
-    );
-    setStableTokenBalance(Number(ethers.formatEther(balance)));
   }, []);
-
-  const fetchMembers = useCallback(async () => {
-    const getMembers = async () => {
-      if (!userDetails?.wallet) return;
-
-      const members = await getFamilyMembersByAccount(userDetails?.accountId!);
-
-      if (members.length) {
-        const membersWalletBalances = [] as {
-          account: string;
-          balance: string;
-        }[];
-
-        for (let i = 0; i < members.length; i++) {
-          const balance = await defiDollarsContractInstance?.balanceOf(
-            members[i].wallet
-          );
-
-          membersWalletBalances.push({
-            account: members[i].wallet,
-            balance: ethers.formatUnits(balance, 18),
-          });
-        }
-
-        const membersWithBalances = members.map((c) => {
-          const balance = membersWalletBalances.find(
-            (b) => b.account === c.wallet
-          );
-          return {
-            ...c,
-            balance: balance ? balance.balance : "0",
-          };
-        });
-
-        setFamilyMembers(membersWithBalances);
-      } else {
-        setFamilyMembers(members);
-      }
-    };
-
-    await getMembers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [familyMembers.length, userDetails?.wallet]);
 
   if (!isValidChain || chain?.id !== validChainId) {
     return <WrongNetwork />;
@@ -194,7 +148,6 @@ const Parent: React.FC = () => {
         bgSize="cover"
         bgImage={"/images/backgrounds/purple-bg.jpg"}
       >
-        {/* Menus */}
         <Box zIndex={1}>
           <ExpandedDashboardMenu
             onToggleCollapsedMenu={onToggleCollapsedMenu}
@@ -204,9 +157,8 @@ const Parent: React.FC = () => {
             isMobileSize={isMobileSize}
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
-            onOpenSendAllowanceModal={onOpenSendAllowanceModal}
-            onOpenMembersTableModal={onOpenMembersTableModal}
-            stableTokenBalance={stableTokenBalance}
+            onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
+            stableTokenBalance={tokenBalance}
           />
         </Box>
         {!isMobileSize && (
@@ -229,6 +181,9 @@ const Parent: React.FC = () => {
           templateRows={isMobileSize ? "auto" : "repeat(3, 1fr)"}
           gap={4}
           px={isMobileSize ? 0 : 5}
+          bgPosition="center"
+          bgSize="cover"
+          bgImage={"/images/backgrounds/purple-bg.jpg"}
         >
           {!isMobileSize && (
             <GridItem
@@ -247,22 +202,15 @@ const Parent: React.FC = () => {
             rowStart={1}
             rowEnd={isMobileSize ? 2 : 1}
             colStart={isMobileSize ? 1 : 1}
-            colEnd={isMobileSize ? 1 : 5}
-            h={isMobileSize ? "auto" : "105"}
-            mt={isMobileSize ? "1.2rem" : "12rem"}
-          >
-            <StableToken stableTokenBalance={stableTokenBalance} />
-          </GridItem>
-
-          <GridItem
-            rowStart={1}
-            rowEnd={isMobileSize ? 2 : 1}
-            colStart={isMobileSize ? 1 : 5}
             colEnd={isMobileSize ? 1 : 9}
             h={isMobileSize ? "auto" : "105"}
             mt={isMobileSize ? "1.2rem" : "12rem"}
+            mb="1.5rem"
           >
-            <MemberWithdrawRequest />
+            <DefiDollars
+              tokenBalance={tokenBalance}
+              onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
+            />
           </GridItem>
 
           <GridItem
@@ -275,8 +223,12 @@ const Parent: React.FC = () => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <StakingContracts />
+            <TokenLockers
+              userDetails={userDetails}
+              lockersByUser={lockersByUser}
+            />
           </GridItem>
+
           <GridItem
             rowSpan={2}
             colStart={isMobileSize ? 1 : 5}
@@ -285,8 +237,12 @@ const Parent: React.FC = () => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            {/* <RecentMemberActivity user={userDetails} /> */}
+            <RecentMemberActivity
+              memberAddress={memberAddress}
+              onlyMemberActivity
+            />
           </GridItem>
+
           <GridItem
             rowStart={isMobileSize ? 3 : 0}
             rowEnd={isMobileSize ? 3 : 0}
@@ -294,7 +250,7 @@ const Parent: React.FC = () => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <FamilyStatistics members={familyMembers || []} />
+            <FamilyStatistics members={[]} />
           </GridItem>
         </Grid>
       </Flex>
@@ -314,24 +270,6 @@ const Parent: React.FC = () => {
         isOpenExtendedMenu={isOpenExtendedMenu}
       />
 
-      <SendAllowanceModal
-        isOpen={isOpenSendAllowanceModal}
-        onClose={onCloseSendAllowanceModal}
-        members={familyMembers}
-        stableTokenBalance={stableTokenBalance}
-        getStableTokenBalance={getStableTokenBalance}
-      />
-
-      <MembersTableModal
-        isOpen={isOpenMembersTableModal}
-        onClose={onCloseMembersTableModal}
-      />
-
-      <DepositDefiDollarsModal
-        isOpen={isOpenDepositDefiDollarsModal}
-        onClose={onCloseDepositDefiDollarsModal}
-      />
-
       <WithdrawDefiDollarsModal
         isOpen={isOpenWithdrawDefiDollarsModal}
         onClose={onCloseWithdrawDefiDollarsModal}
@@ -340,4 +278,4 @@ const Parent: React.FC = () => {
   );
 };
 
-export default Parent;
+export default MemberDashboardClientLayout;

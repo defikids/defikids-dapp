@@ -10,7 +10,6 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
@@ -23,6 +22,7 @@ import {
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { TransactionResponse, ethers } from "ethers";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 export const RemoveFromLocker = ({
   selectedLocker,
@@ -61,11 +61,14 @@ export const RemoveFromLocker = ({
 
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const tokenLockerContract = await tokenLockersContractInstance(provider);
+
+    const tokenLockerInstance = await TokenLockerContract.fromProvider(
+      provider
+    );
 
     const totalValue = ethers.parseEther(String(+amountToRemove.trim()));
 
-    const tx = (await tokenLockerContract.removeFromLocker(
+    const tx = (await tokenLockerInstance.removeFromLocker(
       selectedLocker.lockerNumber,
       totalValue
     )) as TransactionResponse;

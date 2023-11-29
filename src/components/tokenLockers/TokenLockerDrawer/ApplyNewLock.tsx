@@ -13,7 +13,6 @@ import { useRef, useState } from "react";
 import { MdArrowDropDown } from "react-icons/md";
 import { ethers, TransactionResponse } from "ethers";
 import shallow from "zustand/shallow";
-import { tokenLockersContractInstance } from "@/blockchain/instances";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
@@ -24,6 +23,7 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
+import TokenLockerContract from "@/blockchain/tokenLockers";
 
 export const ApplyNewLock = ({
   selectedLocker,
@@ -89,11 +89,14 @@ export const ApplyNewLock = ({
 
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const tokenLockerContract = await tokenLockersContractInstance(provider);
 
-    const tx = (await tokenLockerContract.applyNewLock(
+    const tokenLockerInstance = await TokenLockerContract.fromProvider(
+      provider
+    );
+
+    const tx = (await tokenLockerInstance.applyNewLock(
       selectedLocker.lockerNumber,
-      lockTime
+      +lockTime
     )) as TransactionResponse;
 
     return tx;

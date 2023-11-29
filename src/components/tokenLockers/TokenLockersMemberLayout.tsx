@@ -20,10 +20,11 @@ import { useCallback, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { TokenLockerCard } from "@/components/tokenLockers/TokenLockerCard";
 import { Locker } from "@/data-schema/types";
-import { defiDollarsContractInstance } from "@/blockchain/instances";
+
 import { formattedLocker } from "@/utils/formatLockers";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
 import { getSignerAddress } from "@/blockchain/utils";
+import DefiDollarsContract from "@/blockchain/defiDollars";
 
 export const TokenLockersMemberLayout = ({
   memberAddress,
@@ -56,17 +57,14 @@ export const TokenLockersMemberLayout = ({
         provider
       );
 
-      const defiDollarsContract = await defiDollarsContractInstance();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
       const lockersByUser = await tokenLockerInstance.fetchAllLockersByUser();
 
-      const formattedLockers = lockersByUser.map((locker: Locker) =>
-        formattedLocker(locker)
-      );
+      const balance = await defiDollarsInstance.balanceOf(memberAddress);
 
-      const balance = await defiDollarsContract.balanceOf(memberAddress);
-
-      setLockersByUser(formattedLockers);
-      setDefiDollarsBalance(Number(ethers.formatEther(balance)));
+      setLockersByUser(lockersByUser);
+      setDefiDollarsBalance(balance);
     };
     getLockers();
   }, [fetchLockers]);
@@ -86,16 +84,14 @@ export const TokenLockersMemberLayout = ({
       const totalValue = await tokenLockerInstance.getTotalValueLockedByUser(
         wallet
       );
-      const formattedLockers = lockersByUser.map((locker: Locker) =>
-        formattedLocker(locker)
-      );
 
-      const defiDollarsContract = await defiDollarsContractInstance();
-      const balance = await defiDollarsContract.balanceOf(wallet);
-      setDefiDollarsBalance(Number(ethers.formatEther(balance)));
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
 
-      setLockersByUser(formattedLockers);
-      setTotalValueInLockers(totalValue.toString());
+      const balance = await defiDollarsInstance.balanceOf(wallet);
+      setDefiDollarsBalance(balance);
+
+      setLockersByUser(lockersByUser);
+      setTotalValueInLockers(totalValue);
     };
     getLockers();
   }, []);

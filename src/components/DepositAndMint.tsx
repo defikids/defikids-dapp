@@ -38,6 +38,7 @@ import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { IActivity } from "@/models/Activity";
 import { useAuthStore } from "@/store/auth/authStore";
 import { stable_coin_symbol } from "@/config";
+import DefiDollarsContract from "@/blockchain/defiDollars";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -86,13 +87,8 @@ export const DepositAndMint = ({
     shallow
   );
 
-  const {
-    defiDollarsContractInstance,
-    stableTokenContractInstance,
-    connectedSigner,
-  } = useContractStore(
+  const { stableTokenContractInstance, connectedSigner } = useContractStore(
     (state) => ({
-      defiDollarsContractInstance: state.defiDollarsContractInstance,
       stableTokenContractInstance: state.stableTokenContractInstance,
       connectedSigner: state.connectedSigner,
     }),
@@ -130,9 +126,11 @@ export const DepositAndMint = ({
       String(+amount.trim() * selectedUsers.length)
     );
 
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
     const result = (await createStableTokenPermitMessage(
       connectedSigner!,
-      defiDollarsContractInstance!,
+      await defiDollarsInstance.contractAddress(),
       totalValueToPermit,
       stableTokenContractInstance!
     )) as PermitResult;
@@ -148,10 +146,16 @@ export const DepositAndMint = ({
   ) => {
     setActiveStep(1); // set to approve transaction
 
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+      provider
+    );
+
     const formattedAmount = ethers.parseEther(String(+amount.trim()));
     const recipients = selectedUsers.map((user) => user.wallet);
 
-    const tx = (await defiDollarsContractInstance?.depositAndMint(
+    const tx = (await defiDollarsInstance?.depositAndMint(
       formattedAmount,
       recipients,
       deadline,

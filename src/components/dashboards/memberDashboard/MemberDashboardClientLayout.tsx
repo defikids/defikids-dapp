@@ -31,9 +31,9 @@ import { ethers } from "ethers";
 import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
 import { useRouter } from "next/navigation";
 import { Locker } from "@/data-schema/types";
-import { defiDollarsContractInstance } from "@/blockchain/instances";
 import { formattedLocker } from "@/utils/formatLockers";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
+import DefiDollarsContract from "@/blockchain/defiDollars";
 const MemberDashboardClientLayout = ({
   memberAddress,
 }: {
@@ -62,17 +62,19 @@ const MemberDashboardClientLayout = ({
     const getLockers = async () => {
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
+
       const TokenLockerInstance = await TokenLockerContract.fromProvider(
         provider
       );
 
-      const defiDollarsContract = await defiDollarsContractInstance();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
       const lockersByUser = await TokenLockerInstance.fetchAllLockersByUser();
 
-      const balance = await defiDollarsContract.balanceOf(memberAddress);
+      const balance = await defiDollarsInstance.balanceOf(memberAddress);
 
       setLockersByUser(lockersByUser);
-      setTokenBalance(Number(ethers.formatEther(balance)));
+      setTokenBalance(balance);
     };
     getLockers();
   }, []);
@@ -121,8 +123,9 @@ const MemberDashboardClientLayout = ({
 
   useEffect(() => {
     const defiDollarsBalance = async () => {
-      const defiDollarsContract = await defiDollarsContractInstance();
-      const balance = await defiDollarsContract?.balanceOf(memberAddress);
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
+      const balance = await defiDollarsInstance?.balanceOf(memberAddress);
       setTokenBalance(Number(ethers.formatEther(balance)));
     };
 

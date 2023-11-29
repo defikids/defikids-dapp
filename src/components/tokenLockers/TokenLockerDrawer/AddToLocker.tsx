@@ -17,14 +17,15 @@ import {
 import { ethers, SignatureLike, TransactionResponse } from "ethers";
 import { useState } from "react";
 import shallow from "zustand/shallow";
-import { defiDollarsContractInstance } from "@/blockchain/instances";
+
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { createTokenLockersPermitMessage } from "@/utils/permit";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
+import DefiDollarsContract from "@/blockchain/defiDollars";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -72,7 +73,9 @@ export const AddToLocker = ({
     // @ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
-    const defiDollarsContract = await defiDollarsContractInstance(provider);
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+      provider
+    );
 
     const tokenLockerInstance = await TokenLockerContract.fromProvider(
       provider
@@ -82,7 +85,7 @@ export const AddToLocker = ({
       signer,
       await tokenLockerInstance.contractAddress(),
       totalValueToPermit,
-      defiDollarsContract!
+      defiDollarsInstance.contract
     )) as PermitResult;
 
     return result;

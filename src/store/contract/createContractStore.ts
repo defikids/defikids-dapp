@@ -11,7 +11,7 @@ type State = {
   readOnlyProvider: any;
   provider: any;
   connectedSigner: Signer | null;
-  defiDollarsContractInstance: Contract | null;
+
   stableTokenContractInstance: Contract | null;
 };
 
@@ -19,7 +19,7 @@ type Actions = {
   setReadOnlyProvider: (readOnlyProvider: any) => void;
   setProvider: (provider: any) => void;
   setConnectedSigner: (signer: Signer) => void;
-  setDefiDollarsContractInstance: (contractInstance: Contract) => void;
+
   setStableTokenContractInstance: (contractInstance: Contract) => void;
 };
 
@@ -29,7 +29,6 @@ const initialState: State = {
   readOnlyProvider: null,
   provider: null,
   connectedSigner: null,
-  defiDollarsContractInstance: null,
   stableTokenContractInstance: null,
 };
 
@@ -52,11 +51,6 @@ const setters = (set: any) => ({
   setConnectedSigner: (signer: Signer) => {
     set((state: { connectedSigner: Signer }) => {
       state.connectedSigner = signer;
-    }, shallow);
-  },
-  setDefiDollarsContractInstance: (contractInstance: Contract) => {
-    set((state: { defiDollarsContractInstance: Contract }) => {
-      state.defiDollarsContractInstance = contractInstance;
     }, shallow);
   },
   setStableTokenContractInstance: (contractInstance: Contract) => {

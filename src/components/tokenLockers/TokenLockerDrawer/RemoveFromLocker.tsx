@@ -22,7 +22,7 @@ import {
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { TransactionResponse, ethers } from "ethers";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
 
 export const RemoveFromLocker = ({
   selectedLocker,

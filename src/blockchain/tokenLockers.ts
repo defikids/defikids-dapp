@@ -21,7 +21,7 @@ const formattedLocker = (locker: Locker) => {
 };
 
 class TokenLockerContract {
-  private contract: Contract;
+  contract: Contract;
 
   constructor(contract: Contract) {
     this.contract = contract;
@@ -49,22 +49,24 @@ class TokenLockerContract {
 
   async fetchAllLockersByUser() {
     const response = await this.contract.fetchAllLockersByUser();
+    console.log(response);
     const formattedLockers = response.map((locker: Locker) =>
       formattedLocker(locker)
     );
 
+    console.log(formattedLockers);
     return formattedLockers;
   }
 
   async getTotalValueLockedByUser(wallet: string) {
     const response = await this.contract.getTotalValueLockedByUser(wallet);
-    const totalValue = response.totalValue.toString();
+    const totalValue = response.toString();
     return totalValue;
   }
 
   async getLockerCountByUser(wallet: string) {
     const response = await this.contract.getLockerCountByUser(wallet);
-    const lockerCount = response.lockerCount.toString();
+    const lockerCount = response.toString();
     return lockerCount;
   }
 

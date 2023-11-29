@@ -28,7 +28,7 @@ import {
 import { Fragment, useEffect, useState } from "react";
 import { getEtherscanUrl } from "@/utils/web3";
 import { ethers } from "ethers";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
 
 const Admin = () => {
   const [isUnlocked, setIsUnlocked] = useState(false);

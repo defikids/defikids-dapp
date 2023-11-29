@@ -22,7 +22,7 @@ import { transactionErrors } from "@/utils/errorHanding";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
 
 type PermitResult = {
   data?: SignatureLike;

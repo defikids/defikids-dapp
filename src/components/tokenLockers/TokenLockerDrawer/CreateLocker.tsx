@@ -26,9 +26,10 @@ import { IActivity } from "@/models/Activity";
 import { transactionErrors } from "@/utils/errorHanding";
 import { MdArrowDropDown } from "react-icons/md";
 import { locktimes } from "@/utils/tokenLockerLockTimes";
-import { defiDollarsContractInstance } from "@/blockchain/instances";
+
 import { StepperContext } from "@/data-schema/enums";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
+import DefiDollarsContract from "@/blockchain/defiDollars";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -81,7 +82,9 @@ export const CreateLocker = ({
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
 
-    const defiDollarsContract = await defiDollarsContractInstance(provider);
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+      provider
+    );
 
     const tokenLockerInstance = await TokenLockerContract.fromProvider(
       provider
@@ -91,7 +94,7 @@ export const CreateLocker = ({
       signer,
       await tokenLockerInstance.contractAddress(),
       totalValueToPermit,
-      defiDollarsContract!
+      defiDollarsInstance.contract
     )) as PermitResult;
 
     return result;

@@ -75,13 +75,13 @@ const Auth = () => {
   const {
     setConnectedSigner,
     setProvider,
-    setDefiDollarsContractInstance,
+
     setStableTokenContractInstance,
   } = useContractStore(
     (state) => ({
       setConnectedSigner: state.setConnectedSigner,
       setProvider: state.setProvider,
-      setDefiDollarsContractInstance: state.setDefiDollarsContractInstance,
+
       setStableTokenContractInstance: state.setStableTokenContractInstance,
     }),
     shallow
@@ -103,19 +103,12 @@ const Auth = () => {
       setProvider(provider);
       setConnectedSigner(signer);
 
-      const defiDollarsContract = new ethers.Contract(
-        DEFIKIDS_PROXY_ADDRESS,
-        defikidsCoreABI,
-        signer
-      );
-
       const stableTokenContract = new ethers.Contract(
         GOERLI_DK_STABLETOKEN_ADDRESS,
         stableTokenABI,
         signer
       );
 
-      setDefiDollarsContractInstance(defiDollarsContract);
       setStableTokenContractInstance(stableTokenContract);
 
       const user = (await getUserByWalletAddress(connectedWallet)) as any;

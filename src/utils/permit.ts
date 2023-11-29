@@ -3,7 +3,7 @@ import { SignatureLike } from "@ethersproject/bytes";
 
 export const createStableTokenPermitMessage = async (
   signer: Signer,
-  spenderContract: Contract,
+  spender: string,
   value: BigNumberish,
   contract: Contract
 ): Promise<{
@@ -13,7 +13,6 @@ export const createStableTokenPermitMessage = async (
 }> => {
   try {
     const owner = await signer.getAddress();
-    const spender = await spenderContract.getAddress();
     const transactionDeadline = Math.floor(Date.now() / 1000) + 20 * 60;
     const nonce = (await contract.nonces(owner)) as BigNumberish;
     const contractName = await contract.name();

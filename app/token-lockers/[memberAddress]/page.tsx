@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import Navbar from "@/components/LandingNavbar";
 import { TokenLockersMemberLayout } from "@/components/tokenLockers/TokenLockersMemberLayout";
-import TokenLockerContract from "@/blockchain/tokenLockers";
+import TokenLockerContract from "@/blockchain/TokenLockers";
 
 const getProps = async (context: any) => {
   const { memberAddress } = context.params || {};

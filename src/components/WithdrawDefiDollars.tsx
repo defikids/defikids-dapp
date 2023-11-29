@@ -23,6 +23,7 @@ import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { ethers } from "ethers";
 import NextLink from "next/link";
+import DefiDollarsContract from "@/blockchain/defiDollars";
 
 export const WithdrawDefiDollars = ({
   onClose,
@@ -42,12 +43,6 @@ export const WithdrawDefiDollars = ({
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { defiDollarsContractInstance } = useContractStore(
-    (state) => ({
-      defiDollarsContractInstance: state.defiDollarsContractInstance,
-    }),
-    shallow
-  );
 
   const toast = useToast();
 
@@ -74,7 +69,14 @@ export const WithdrawDefiDollars = ({
 
       setActiveStep(0);
 
-      const tx = (await defiDollarsContractInstance?.withdraw(
+      //@ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
+
+      //! FIX THIS
+      const tx = (await defiDollarsInstance?.withdraw(
         ethers.parseEther(amountToWithdraw)
       )) as TransactionResponse;
 

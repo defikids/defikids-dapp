@@ -32,6 +32,8 @@ import { SendAllowanceModal } from "@/components/modals/SendAllowanceModal";
 import { MembersTableModal } from "@/components/modals/MembersTableModal";
 import { DepositDefiDollarsModal } from "@/components/modals/DepositDefiDollarsModal";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
+import DefiDollarsContract from "@/blockchain/defiDollars";
+import { getSignerAddress } from "@/blockchain/utils";
 
 const Parent: React.FC = () => {
   //=============================================================================
@@ -49,13 +51,6 @@ const Parent: React.FC = () => {
       userDetails: state.userDetails,
       familyMembers: state.familyMembers,
       setFamilyMembers: state.setFamilyMembers,
-    }),
-    shallow
-  );
-
-  const { defiDollarsContractInstance } = useContractStore(
-    (state) => ({
-      defiDollarsContractInstance: state.defiDollarsContractInstance,
     }),
     shallow
   );
@@ -132,10 +127,12 @@ const Parent: React.FC = () => {
   //=============================================================================
 
   const getStableTokenBalance = useCallback(async () => {
-    const balance = await defiDollarsContractInstance?.getStableTokenBalance(
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
+    const balance = await defiDollarsInstance?.getStableTokenBalance(
       userDetails?.wallet
     );
-    setStableTokenBalance(Number(ethers.formatEther(balance)));
+    setStableTokenBalance(balance);
   }, []);
 
   const fetchMembers = useCallback(async () => {
@@ -150,8 +147,10 @@ const Parent: React.FC = () => {
           balance: string;
         }[];
 
+        const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+
         for (let i = 0; i < members.length; i++) {
-          const balance = await defiDollarsContractInstance?.balanceOf(
+          const balance = await defiDollarsInstance?.balanceOf(
             members[i].wallet
           );
 

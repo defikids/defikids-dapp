@@ -5,7 +5,14 @@ import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
 
-export const EmailVerificationRequired = ({ user }: { user: User }) => {
+export const EmailVerificationRequired = ({
+  user,
+  isUpdated,
+}: {
+  user: User;
+  isUpdated: boolean;
+}) => {
+  console.log("user", user);
   const [emailSent, setEmailSent] = useState(false);
   const toast = useToast();
 
@@ -41,7 +48,24 @@ export const EmailVerificationRequired = ({ user }: { user: User }) => {
     return (
       <Flex direction="column">
         <Text mb={3}>{`Email Sent to ${user?.email}.`}</Text>
-        <Text mb={3}>{`If you don't see it, check your spam folder.`}</Text>
+        <Text
+          mb={3}
+        >{`Note: If you don't see it, check your spam folder.`}</Text>
+      </Flex>
+    );
+  }
+
+  if (isUpdated) {
+    return (
+      <Flex direction="column">
+        <Text mb={3}>{`Your email has been updated to ${user?.email}.`}</Text>
+        <Text
+          mb={3}
+        >{`You will first have to verify your email address.`}</Text>
+        <Text mb={3}>{`Check your inbox for an email from us.`}</Text>
+        <Button colorScheme="blue" onClick={resendEmail}>
+          Resend Email
+        </Button>
       </Flex>
     );
   }

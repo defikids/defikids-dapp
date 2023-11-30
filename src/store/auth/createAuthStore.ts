@@ -3,10 +3,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { shallow } from "zustand/shallow";
-import { UserType } from "@/data-schema/enums";
 import { disconnect } from "@wagmi/core";
-import { User } from "@/data-schema/types";
-import { NetworkType, TestnetNetworks } from "@/data-schema/enums";
 import { IActivity } from "@/models/Activity";
 
 type State = {
@@ -16,7 +13,6 @@ type State = {
   reset: () => void;
   logout: () => void;
   mobileMenuOpen: boolean;
-  fetchedUserDetails: boolean;
   recentActivity: IActivity[];
 };
 
@@ -26,7 +22,6 @@ type Actions = {
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
-  setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
   reset: () => void;
   setRecentActivity: (recentActivity: IActivity[]) => void;
 };
@@ -38,7 +33,6 @@ export const initialState: State = {
   isLoggedIn: false,
   navigationSection: "DefiKids",
   mobileMenuOpen: false,
-  fetchedUserDetails: false,
   logout: () => {},
   reset: () => void {},
   recentActivity: [],
@@ -73,11 +67,6 @@ const setters = (set: any) => ({
   setMobileMenuOpen: (mobileMenuOpen: boolean) => {
     set((state: { mobileMenuOpen: boolean }) => {
       state.mobileMenuOpen = mobileMenuOpen;
-    }, shallow);
-  },
-  setFetchedUserDetails: (fetchedUserDetails: boolean) => {
-    set((state: { fetchedUserDetails: boolean }) => {
-      state.fetchedUserDetails = fetchedUserDetails;
     }, shallow);
   },
 

@@ -68,6 +68,7 @@ export const MembersTableModal = ({
       const members = (await getFamilyMembersByAccount(
         user.accountId!
       )) as User[];
+      console.log("members", members);
       setUsers(members);
     };
 
@@ -251,7 +252,7 @@ export const MembersTableModal = ({
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {user.emailVerified ? (
+            {user.emailVerified && (
               <>
                 {showRegisterMemberForm && (
                   <RegisterMemberForm
@@ -293,8 +294,10 @@ export const MembersTableModal = ({
                     </Heading>
                   )}
               </>
-            ) : (
-              <EmailVerificationRequired user={user} />
+            )}
+
+            {!user.emailVerified && users.length && (
+              <EmailVerificationRequired user={user} isUpdated />
             )}
           </ModalBody>
           <ModalFooter>

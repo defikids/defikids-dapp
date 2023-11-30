@@ -6,6 +6,8 @@ const config = {
     "Content-Type": "application/json",
   },
 };
+const HOST = process.env.HOST || "";
+
 export const editPermissions = async (
   id: mongoose.Schema.Types.ObjectId,
   wallet: string,
@@ -13,7 +15,7 @@ export const editPermissions = async (
 ) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/permissions/edit?_id=${id}&wallet=${wallet}`,
+      `${HOST}/api/mongo/permissions/edit?_id=${id}&wallet=${wallet}`,
       JSON.stringify({ permissions }),
       config
     );

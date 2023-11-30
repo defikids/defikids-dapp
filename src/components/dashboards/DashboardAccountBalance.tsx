@@ -1,7 +1,6 @@
 "use client";
 
 import { UserType } from "@/data-schema/enums";
-import { useAuthStore } from "@/store/auth/authStore";
 import { trimAddress } from "@/utils/web3";
 import {
   Flex,
@@ -11,23 +10,18 @@ import {
   useToast,
   Tooltip,
 } from "@chakra-ui/react";
-import { shallow } from "zustand/shallow";
 import { stable_coin_symbol } from "@/config";
+import { User } from "@/data-schema/types";
 
 const AccountBalance = ({
   walletAddress,
   tokenBalance,
+  user,
 }: {
   walletAddress: string;
   tokenBalance: number;
+  user: User;
 }) => {
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
-
   const toast = useToast();
 
   return (
@@ -47,9 +41,7 @@ const AccountBalance = ({
           {Number(tokenBalance).toFixed(2)}
         </Heading>
         <Text fontSize="sm" ml={2}>
-          {userDetails?.userType === UserType.PARENT
-            ? stable_coin_symbol
-            : "DFD"}
+          {user?.userType === UserType.PARENT ? stable_coin_symbol : "DFD"}
         </Text>
       </Flex>
 

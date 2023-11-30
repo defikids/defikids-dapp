@@ -23,6 +23,8 @@ import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
 import TokenLockerContract from "@/blockchain/tokenLockers";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -49,9 +51,8 @@ export const RenameLocker = ({
     count: steps.length,
   });
 
-  const { userDetails, setRecentActivity } = useAuthStore(
+  const { setRecentActivity } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setRecentActivity: state.setRecentActivity,
     }),
     shallow
@@ -85,8 +86,9 @@ export const RenameLocker = ({
       status: "success",
     });
 
-    const address = userDetails.wallet;
-    const accountId = userDetails?.accountId;
+    const address = await getSignerAddress();
+    const user = await getUserByWalletAddress(address);
+    const accountId = user?.accountId;
 
     const newActivities: IActivity[] = [];
 

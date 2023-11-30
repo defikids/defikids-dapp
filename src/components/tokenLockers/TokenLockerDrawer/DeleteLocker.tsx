@@ -21,6 +21,8 @@ import {
 import { useAuthStore } from "@/store/auth/authStore";
 import { useState } from "react";
 import TokenLockerContract from "@/blockchain/tokenLockers";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export const DeleteLocker = ({
   selectedLocker,
@@ -40,9 +42,8 @@ export const DeleteLocker = ({
     count: steps.length,
   });
 
-  const { userDetails, setRecentActivity } = useAuthStore(
+  const { setRecentActivity } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setRecentActivity: state.setRecentActivity,
     }),
     shallow
@@ -75,8 +76,9 @@ export const DeleteLocker = ({
       status: "success",
     });
 
-    const address = userDetails.wallet;
-    const accountId = userDetails?.accountId;
+    const address = await getSignerAddress();
+    const user = await getUserByWalletAddress(address);
+    const accountId = user?.accountId;
 
     const newActivities: IActivity[] = [];
 

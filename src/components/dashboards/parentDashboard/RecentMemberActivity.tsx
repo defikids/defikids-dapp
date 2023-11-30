@@ -32,14 +32,13 @@ interface FormattedActivity {
 }
 
 export const RecentMemberActivity = ({
-  memberAddress,
-  onlyMemberActivity,
+  user,
+  setUser,
 }: {
-  memberAddress: string;
-  onlyMemberActivity?: boolean;
+  user: User;
+  setUser: (user: User) => void;
 }) => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
-  const [user, setUser] = useState<User>({} as User);
 
   const { recentActivity, setRecentActivity } = useAuthStore(
     (state) => ({
@@ -52,13 +51,7 @@ export const RecentMemberActivity = ({
   /* This useEffect is used to get the recent activity for the user upon page load */
   useEffect(() => {
     const getData = async () => {
-      const user = (await getUserByWalletAddress(memberAddress)) as any;
-      setUser(user);
-
-      console.log("user", user);
-
       const activity = await getActivityByAccount(user.accountId!);
-      console.log("activity", activity);
       await normaliseActivity(activity);
     };
     getData();

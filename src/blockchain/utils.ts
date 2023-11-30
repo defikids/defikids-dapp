@@ -22,8 +22,18 @@ export const getSigner = async (provider?: any) => {
   return signer;
 };
 
-export const getSignerAddress = async (provider?: any) => {
+export const getSignerAddress = async () => {
+  //@ts-ignore
+  const provider = new ethers.BrowserProvider(window.ethereum);
   const signer = await provider.getSigner();
   const signerAddress = await signer.getAddress();
   return signerAddress;
+};
+
+export const isWalletConnected = async () => {
+  const connectedAccount = await getSignerAddress();
+  if (!connectedAccount) {
+    return false;
+  }
+  return true;
 };

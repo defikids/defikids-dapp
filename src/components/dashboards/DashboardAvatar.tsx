@@ -2,25 +2,17 @@
 
 import { Avatar, Flex } from "@chakra-ui/react";
 import { User } from "@/data-schema/types";
-import { useAuthStore } from "@/store/auth/authStore";
-import { shallow } from "zustand/shallow";
 
-const DashboardAvatar = () => {
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
+const DashboardAvatar = ({ user }: { user: User }) => {
   return (
     <Flex align="center" mt="4rem" justify="center" ml={4}>
       <Avatar
         size="2xl"
-        name={userDetails?.avatarURI}
+        name={user?.avatarURI}
         sx={{
-          bgColor: `${!userDetails?.avatarURI && "purple.500"}`,
+          bgColor: `${!user?.avatarURI && "purple.500"}`,
         }}
-        src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
+        src={user?.avatarURI || "/images/placeholder-avatar.jpeg"}
       />
     </Flex>
   );

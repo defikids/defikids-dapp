@@ -30,6 +30,8 @@ import { locktimes } from "@/utils/tokenLockerLockTimes";
 import { StepperContext } from "@/data-schema/enums";
 import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -57,9 +59,8 @@ export const CreateLocker = ({
     count: steps.length,
   });
 
-  const { userDetails, setRecentActivity } = useAuthStore(
+  const { setRecentActivity } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setRecentActivity: state.setRecentActivity,
     }),
     shallow
@@ -136,8 +137,9 @@ export const CreateLocker = ({
       status: "success",
     });
 
-    const address = userDetails.wallet;
-    const accountId = userDetails?.accountId;
+    const address = await getSignerAddress();
+    const user = await getUserByWalletAddress(address);
+    const accountId = user?.accountId;
 
     const newActivities: IActivity[] = [];
 

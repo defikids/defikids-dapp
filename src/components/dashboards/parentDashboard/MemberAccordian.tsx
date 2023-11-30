@@ -30,20 +30,15 @@ import { createActivity } from "@/services/mongo/routes/activity";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 
 const MemberAccordian = ({
+  parent,
   users,
   setUsers,
 }: {
+  parent: User;
   users: User[];
   setUsers: (users: User[]) => void;
 }) => {
   const toast = useToast();
-
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
 
   const [toggleSwitch, setToggleSwitch] = useState(false);
 
@@ -78,7 +73,7 @@ const MemberAccordian = ({
       setUsers(updatedUsers);
 
       await createActivity({
-        accountId: userDetails.accountId,
+        accountId: parent.accountId,
         wallet: user.wallet,
         date: convertTimestampToSeconds(Date.now()),
         type: "User removed from family.",
@@ -158,8 +153,7 @@ const MemberAccordian = ({
                           </Tooltip>
                         </Td>
                         <Td>
-                          {userDetails.defaultNetworkType ===
-                          NetworkType.TESTNET ? (
+                          {parent.defaultNetworkType === NetworkType.TESTNET ? (
                             <Text>Testnet</Text>
                           ) : (
                             <Select

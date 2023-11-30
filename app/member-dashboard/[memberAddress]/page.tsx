@@ -9,7 +9,7 @@ const getProps = async (context: any) => {
   };
 };
 
-export default async function MemberLockerPage(context: any) {
+export default async function MemberDashboard(context: any) {
   const { memberAddress } = (await getProps(context)) as {
     memberAddress: string;
   };

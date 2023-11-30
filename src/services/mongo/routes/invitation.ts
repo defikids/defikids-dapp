@@ -6,11 +6,12 @@ const config = {
     "Content-Type": "application/json",
   },
 };
+const HOST = process.env.HOST || "";
 
 export const createInvitation = async (values: any) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/invitation/create`,
+      `${HOST}/api/mongo/invitation/create`,
       JSON.stringify(values),
       config
     );
@@ -23,7 +24,7 @@ export const createInvitation = async (values: any) => {
 
 export const getAllInvitations = async () => {
   try {
-    const { data } = await axios.get(`/api/mongo/invitation/getAll`);
+    const { data } = await axios.get(`${HOST}/api/mongo/invitation/getAll`);
     return data;
   } catch (error) {
     console.log(error);
@@ -34,7 +35,7 @@ export const getAllInvitations = async () => {
 export const deleteInvitation = async (id: mongoose.Schema.Types.ObjectId) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/invitation/delete`,
+      `${HOST}/api/mongo/invitation/delete`,
       JSON.stringify({ id }),
       config
     );
@@ -51,7 +52,7 @@ export const getInvitation = async (
 ) => {
   try {
     const { data } = await axios.get(
-      `/api/mongo/invitation/get?accountId=${accountId}&email=${email}`
+      `${HOST}/api/mongo/invitation/get?accountId=${accountId}&email=${email}`
     );
     return data;
   } catch (error) {

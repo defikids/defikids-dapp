@@ -11,13 +11,18 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { Settings } from "@/components/Settings";
+import { User } from "@/data-schema/types";
 
 export const SettingsModal = ({
   isOpen,
   onClose,
+  user,
+  setUser,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  user: User;
+  setUser: (user: User) => void;
 }) => {
   return (
     <Modal
@@ -39,7 +44,7 @@ export const SettingsModal = ({
         </ModalHeader>
         <ModalCloseButton color="black" />
         <ModalBody bgGradient={["linear(to-r, white, lightgray)"]}>
-          <Settings />
+          <Settings user={user} setUser={setUser} />
         </ModalBody>
         <ModalFooter />
       </ModalContent>

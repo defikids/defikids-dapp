@@ -9,6 +9,7 @@ export const getFamilyMembersByAccount = async (
   includeParent?: boolean
 ) => {
   const users = (await getAllUsers()) as IUser[];
+  console.log("getFamilyMembersByAccount", users);
   const members = users.filter((user) => {
     const checkForParent = () => {
       if (includeParent) {

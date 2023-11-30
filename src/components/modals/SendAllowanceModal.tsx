@@ -30,7 +30,6 @@ export const SendAllowanceModal = ({
   stableTokenBalance: number;
   getStableTokenBalance: () => void;
 }) => {
-  console.log("members//", members);
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);
 

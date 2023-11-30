@@ -16,12 +16,11 @@ import {
   Text,
   Link,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TransactionStepper,
   steps,
 } from "@/components/steppers/TransactionStepper";
-import { shallow } from "zustand/shallow";
 import { Explaination, StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -35,12 +34,14 @@ import NextLink from "next/link";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { IActivity } from "@/models/Activity";
-import { useAuthStore } from "@/store/auth/authStore";
 import { stable_coin_symbol } from "@/config";
 import { getSigner, getSignerAddress } from "@/blockchain/utils";
 import { GOERLI_DK_STABLETOKEN_ADDRESS } from "@/blockchain/contract-addresses";
 import { stableTokenABI } from "@/blockchain/artifacts/stable-token";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -69,6 +70,7 @@ export const DepositAndMint = ({
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [user, setUser] = useState<User>();
 
   //=============================================================================
   //                               HOOKS
@@ -81,13 +83,21 @@ export const DepositAndMint = ({
     count: steps.length,
   });
 
-  const { userDetails, setRecentActivity } = useAuthStore(
+  const { setRecentActivity } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setRecentActivity: state.setRecentActivity,
     }),
     shallow
   );
+
+  useEffect(() => {
+    const init = async () => {
+      // Get the user details
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setUser(user);
+    };
+    init();
+  }, []);
 
   //=============================================================================
   //                               FUNCTIONS
@@ -177,17 +187,15 @@ export const DepositAndMint = ({
     });
 
     //@ts-ignore
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const address = await getSignerAddress(provider);
 
-    const accountId = userDetails?.accountId;
+    const accountId = user?.accountId;
     const newActivities: IActivity[] = [];
 
     await Promise.all(
       selectedUsers.map(async (user) => {
         const newActivity = await createActivity({
           accountId,
-          wallet: address,
+          wallet: user.wallet,
           date: convertTimestampToSeconds(Date.now()),
           type: `Sent allowance. ${amount.trim()} ${stable_coin_symbol} to ${
             user.username

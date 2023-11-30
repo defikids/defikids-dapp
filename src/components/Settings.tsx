@@ -17,7 +17,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-export const Settings = () => {
+export const Settings = ({
+  user,
+  setUser,
+}: {
+  user: User;
+  setUser: (user: User) => void;
+}) => {
   const data = [
     {
       title: "Avatar",
@@ -79,9 +85,15 @@ export const Settings = () => {
                   </AccordionButton>
                 </h2>
                 <AccordionPanel my={5}>
-                  {title === SelectedSetting.AVATAR && <AvatarSelection />}
-                  {title === SelectedSetting.USERNAME && <EditUsername />}
-                  {title === SelectedSetting.EMAIL && <EditEmail />}
+                  {title === SelectedSetting.AVATAR && (
+                    <AvatarSelection user={user} setUser={setUser} />
+                  )}
+                  {title === SelectedSetting.USERNAME && (
+                    <EditUsername user={user} setUser={setUser} />
+                  )}
+                  {title === SelectedSetting.EMAIL && (
+                    <EditEmail user={user} setUser={setUser} />
+                  )}
                   {title === SelectedSetting.PERMISSIONS && (
                     <>
                       <Text>{description}</Text>

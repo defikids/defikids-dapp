@@ -39,6 +39,8 @@ import {
 import { TestnetNetworks } from "@/data-schema/enums";
 import mongoose from "mongoose";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
+import { ethers } from "ethers";
+import { getSignerAddress } from "@/blockchain/utils";
 
 interface DecodedToken {
   accountId: mongoose.Schema.Types.ObjectId;
@@ -68,10 +70,8 @@ const MemberInvite = () => {
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
 
-  const { setUserDetails, userDetails, reset } = useAuthStore(
+  const { reset } = useAuthStore(
     (state) => ({
-      setUserDetails: state.setUserDetails,
-      userDetails: state.userDetails,
       reset: state.reset,
     }),
     shallow
@@ -81,7 +81,7 @@ const MemberInvite = () => {
     if (!decodedToken) return;
 
     const { email, accountId } = decodedToken;
-    console.log("createMember - userDetails", userDetails);
+
     try {
       let userPayload = {
         accountId,
@@ -124,8 +124,6 @@ const MemberInvite = () => {
     // Countdown function
     const countdown = async () => {
       if (count === 0) {
-        const updatedUserDetails = await getUserByWalletAddress(address);
-        setUserDetails(updatedUserDetails.data);
         router.push("/");
       } else {
         setTimeout(() => {
@@ -195,6 +193,12 @@ const MemberInvite = () => {
   // Reset store on page load
   useEffect(() => {
     reset();
+
+    // const init = async () => {
+    //   //@ts-ignore
+    //   const provider = ethers.BrowserProvider(window.ethereum);
+    //   const user = await getUserByWalletAddress(await getSignerAddress());
+    //   set
   }, []);
 
   // Check if wallet has already been registered and if invite has already been accepted

@@ -1,17 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import {
-  Box,
-  Flex,
-  GridItem,
-  useDisclosure,
-  Grid,
-  Button,
-} from "@chakra-ui/react";
+import { Box, Flex, GridItem, useDisclosure, Grid } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import shallow from "zustand/shallow";
-import { useAuthStore } from "@/store/auth/authStore";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -29,11 +20,11 @@ import { useNetwork } from "wagmi";
 import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
 import { ethers } from "ethers";
 import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
-import { useRouter } from "next/navigation";
-import { Locker } from "@/data-schema/types";
-import { formattedLocker } from "@/utils/formatLockers";
+import { Locker, User } from "@/data-schema/types";
 import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getSignerAddress } from "@/blockchain/utils";
 
 const MemberDashboardClientLayout = ({
   memberAddress,
@@ -46,40 +37,36 @@ const MemberDashboardClientLayout = ({
   const [isValidChain, setIsValidChain] = useState(false);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
+  const [user, setUser] = useState({} as User);
 
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      familyMembers: state.familyMembers,
-      setFamilyMembers: state.setFamilyMembers,
-    }),
-    shallow
-  );
 
   useEffect(() => {
-    const getLockers = async () => {
+    const init = async () => {
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
 
+      // Get the lockers by user
       const TokenLockerInstance = await TokenLockerContract.fromProvider(
         provider
       );
+      const lockersByUser = await TokenLockerInstance.fetchAllLockersByUser();
+      setLockersByUser(lockersByUser);
 
+      // Get the token balance
       const defiDollarsInstance = await DefiDollarsContract.fromProvider(
         provider
       );
-
-      const lockersByUser = await TokenLockerInstance.fetchAllLockersByUser();
-
       const balance = await defiDollarsInstance.balanceOf(memberAddress);
-
-      setLockersByUser(lockersByUser);
       setTokenBalance(balance);
+
+      // Get the user details
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setUser(user);
     };
-    getLockers();
+    init();
   }, []);
 
   const { chain } = useNetwork();
@@ -125,6 +112,9 @@ const MemberDashboardClientLayout = ({
   } = useDisclosure();
 
   useEffect(() => {
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+
     const defiDollarsBalance = async () => {
       const defiDollarsInstance = await DefiDollarsContract.fromProvider(
         provider
@@ -167,6 +157,7 @@ const MemberDashboardClientLayout = ({
             onOpenInfoModal={onOpenInfoModal}
             onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
             stableTokenBalance={tokenBalance}
+            user={user}
           />
         </Box>
         {!isMobileSize && (
@@ -176,6 +167,7 @@ const MemberDashboardClientLayout = ({
               onToggleExtendedMenu={onToggleExtendedMenu}
               isOpenCollapsedMenu={isOpenCollapsedMenu}
               isMobileSize={isMobileSize}
+              user={user}
             />
           </Box>
         )}
@@ -231,10 +223,7 @@ const MemberDashboardClientLayout = ({
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <TokenLockers
-              userDetails={userDetails}
-              lockersByUser={lockersByUser}
-            />
+            <TokenLockers user={user} lockersByUser={lockersByUser} />
           </GridItem>
 
           <GridItem
@@ -265,18 +254,20 @@ const MemberDashboardClientLayout = ({
 
       {/* Modals and other components */}
 
-      <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
+      <EtherscanModal
+        isOpen={isOpenEtherScan}
+        onClose={onCloseEtherScan}
+        user={user}
+      />
 
       <SettingsModal
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
+        user={user}
+        setUser={setUser}
       />
 
-      <InfoModal
-        isOpen={isOpenInfoModal}
-        onClose={onCloseInfoModal}
-        isOpenExtendedMenu={isOpenExtendedMenu}
-      />
+      <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} />
 
       <WithdrawDefiDollarsModal
         isOpen={isOpenWithdrawDefiDollarsModal}

@@ -62,9 +62,8 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
   const { address } = useAccount();
   const router = useRouter();
 
-  const { setUserDetails, setIsLoggedIn } = useAuthStore(
+  const { setIsLoggedIn } = useAuthStore(
     (state) => ({
-      setUserDetails: state.setUserDetails,
       setIsLoggedIn: state.setIsLoggedIn,
     }),
     shallow
@@ -159,7 +158,6 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
         throw new Error(error);
       }
 
-      setUserDetails(user);
       setIsLoggedIn(true);
 
       const emailSent = await sendEmailConfirmation();

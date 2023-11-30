@@ -23,6 +23,8 @@ import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { TransactionResponse, ethers } from "ethers";
 import TokenLockerContract from "@/blockchain/tokenLockers";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export const RemoveFromLocker = ({
   selectedLocker,
@@ -43,9 +45,8 @@ export const RemoveFromLocker = ({
     count: steps.length,
   });
 
-  const { userDetails, setRecentActivity } = useAuthStore(
+  const { setRecentActivity } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setRecentActivity: state.setRecentActivity,
     }),
     shallow
@@ -82,8 +83,9 @@ export const RemoveFromLocker = ({
       status: "success",
     });
 
-    const address = userDetails.wallet;
-    const accountId = userDetails?.accountId;
+    const address = await getSignerAddress();
+    const user = await getUserByWalletAddress(address);
+    const accountId = user?.accountId;
 
     const newActivities: IActivity[] = [];
 

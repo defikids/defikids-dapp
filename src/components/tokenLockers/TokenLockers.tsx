@@ -12,10 +12,10 @@ import { useRouter } from "next/navigation";
 import { Locker, User } from "@/data-schema/types";
 
 export const TokenLockers = ({
-  userDetails,
+  user,
   lockersByUser,
 }: {
-  userDetails: User;
+  user: User;
   lockersByUser: Locker[];
 }) => {
   const router = useRouter();
@@ -35,7 +35,7 @@ export const TokenLockers = ({
             colorScheme="blue"
             variant="outline"
             onClick={() => {
-              router.push(`/token-lockers/${userDetails?.wallet}`);
+              router.push(`/token-lockers/${user.wallet}`);
             }}
           >
             View All
@@ -50,7 +50,7 @@ export const TokenLockers = ({
             colorScheme="blue"
             variant="outline"
             onClick={() => {
-              router.push(`/token-lockers/${userDetails?.wallet}`);
+              router.push(`/token-lockers/${user.wallet}`);
             }}
           >
             Create Locker

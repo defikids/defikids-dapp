@@ -24,6 +24,8 @@ import {
 } from "@/components/steppers/TransactionStepper";
 import { useAuthStore } from "@/store/auth/authStore";
 import TokenLockerContract from "@/blockchain/tokenLockers";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export const ApplyNewLock = ({
   selectedLocker,
@@ -45,9 +47,8 @@ export const ApplyNewLock = ({
     count: steps.length,
   });
 
-  const { userDetails, setRecentActivity } = useAuthStore(
+  const { setRecentActivity } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       setRecentActivity: state.setRecentActivity,
     }),
     shallow
@@ -108,8 +109,9 @@ export const ApplyNewLock = ({
       status: "success",
     });
 
-    const address = userDetails.wallet;
-    const accountId = userDetails?.accountId;
+    const address = await getSignerAddress();
+    const user = await getUserByWalletAddress(address);
+    const accountId = user?.accountId;
 
     const newActivities: IActivity[] = [];
 

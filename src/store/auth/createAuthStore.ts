@@ -12,27 +12,21 @@ import { IActivity } from "@/models/Activity";
 type State = {
   connectedWallet: string;
   isLoggedIn: boolean;
-  walletConnected: boolean;
   navigationSection: string;
   reset: () => void;
   logout: () => void;
-  userDetails: User;
   mobileMenuOpen: boolean;
   fetchedUserDetails: boolean;
-  familyMembers: User[];
   recentActivity: IActivity[];
 };
 
 type Actions = {
   setConnectedWallet: (connectedWallet: string) => void;
   setIsLoggedIn: (isLoggingIn: boolean) => void;
-  setWalletConnected: (walletConnected: boolean) => void;
   setNavigationSection: (section: string) => void;
   setLogout: () => void;
-  setUserDetails: (userDetails: User) => void;
   setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
   setFetchedUserDetails: (fetchedUserDetails: boolean) => void;
-  setFamilyMembers: (familyMembers: User[]) => void;
   reset: () => void;
   setRecentActivity: (recentActivity: IActivity[]) => void;
 };
@@ -42,28 +36,11 @@ type MyStore = State & Actions;
 export const initialState: State = {
   connectedWallet: "",
   isLoggedIn: false,
-  walletConnected: false,
   navigationSection: "DefiKids",
   mobileMenuOpen: false,
   fetchedUserDetails: false,
-  familyMembers: [],
   logout: () => {},
   reset: () => void {},
-  userDetails: {
-    _id: null,
-    accountId: null,
-    email: "",
-    wallet: "",
-    avatarURI: "",
-    defaultNetwork: TestnetNetworks.GOERLI,
-    defaultNetworkType: NetworkType.TESTNET,
-    username: "",
-    termsAgreed: false,
-    userType: UserType.UNREGISTERED,
-    sandboxMode: undefined,
-    permissions: [],
-    balance: "",
-  },
   recentActivity: [],
 };
 
@@ -83,11 +60,6 @@ const setters = (set: any) => ({
       state.isLoggedIn = isLoggedIn;
     }, shallow);
   },
-  setWalletConnected: (walletConnected: boolean) => {
-    set((state: { walletConnected: boolean }) => {
-      state.walletConnected = walletConnected;
-    }, shallow);
-  },
 
   setNavigationSection: (section: string) => {
     set((state: { navigationSection: string }) => {
@@ -96,11 +68,6 @@ const setters = (set: any) => ({
   },
   setLogout: () => {
     disconnect();
-  },
-  setUserDetails: (userDetails: User) => {
-    set((state: { userDetails: User }) => {
-      state.userDetails = userDetails;
-    }, shallow);
   },
 
   setMobileMenuOpen: (mobileMenuOpen: boolean) => {
@@ -113,11 +80,7 @@ const setters = (set: any) => ({
       state.fetchedUserDetails = fetchedUserDetails;
     }, shallow);
   },
-  setFamilyMembers: (familyMembers: User[]) => {
-    set((state: { familyMembers: User[] }) => {
-      state.familyMembers = familyMembers;
-    }, shallow);
-  },
+
   setRecentActivity: (recentActivity: IActivity[]) => {
     set((state: { recentActivity: IActivity[] }) => {
       state.recentActivity = recentActivity;

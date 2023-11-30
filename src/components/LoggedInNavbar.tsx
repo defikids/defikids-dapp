@@ -4,16 +4,30 @@ import { Box, Flex, Heading, Avatar, Text, Slide } from "@chakra-ui/react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { useWindowSize } from "usehooks-ts";
+import { useEffect, useState } from "react";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getSignerAddress } from "@/blockchain/utils";
+import { User } from "@/data-schema/types";
 
 export default function LoggedInNavBar() {
-  const { userDetails, mobileMenuOpen, setMobileMenuOpen } = useAuthStore(
+  const [user, setUser] = useState({} as User);
+
+  const { mobileMenuOpen, setMobileMenuOpen } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       mobileMenuOpen: state.mobileMenuOpen,
       setMobileMenuOpen: state.setMobileMenuOpen,
     }),
     shallow
   );
+
+  useEffect(() => {
+    const init = async () => {
+      // Get the user details
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setUser(user);
+    };
+    init();
+  }, []);
 
   const { width } = useWindowSize();
   const isMobileSize = width < 768;
@@ -37,16 +51,16 @@ export default function LoggedInNavBar() {
           mx={2}
         >
           <Flex direction="column" ml={3}>
-            <Heading fontSize="lg">{userDetails?.username}</Heading>
-            <Text fontSize="md">{userDetails?.userType}</Text>
+            <Heading fontSize="lg">{user?.username}</Heading>
+            <Text fontSize="md">{user?.userType}</Text>
           </Flex>
 
           <Avatar
             size="md"
-            name={userDetails?.username}
+            name={user?.username}
             src={
-              userDetails?.avatarURI
-                ? userDetails?.avatarURI
+              user?.avatarURI
+                ? user?.avatarURI
                 : "/images/placeholder-avatar.jpeg"
             }
             onClick={() => {

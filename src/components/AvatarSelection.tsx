@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
   useToast,
@@ -10,14 +9,21 @@ import {
   Button,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useRef, useState } from "react";
-import { shallow } from "zustand/shallow";
+import { useEffect, useRef, useState } from "react";
 import { TransactionStepper, steps } from "./steppers/TransactionStepper";
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
-import { editUser } from "@/services/mongo/routes/user";
+import { editUser, getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getSignerAddress } from "@/blockchain/utils";
+import { User } from "@/data-schema/types";
 
-export const AvatarSelection = () => {
+export const AvatarSelection = ({
+  user,
+  setUser,
+}: {
+  user: User;
+  setUser: (user: User) => void;
+}) => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
@@ -31,14 +37,6 @@ export const AvatarSelection = () => {
 
   const toast = useToast();
 
-  const { userDetails, setUserDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
-    }),
-    shallow
-  );
-
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
     count: steps(StepperContext.AVATAR).length,
@@ -49,7 +47,7 @@ export const AvatarSelection = () => {
   //=============================================================================
 
   const [selectedFile, setSelectedFile] = useState() as any;
-  const [avatar, setAvatar] = useState(userDetails?.avatarURI);
+  const [avatar, setAvatar] = useState(user?.avatarURI);
   const [loading, setIsLoading] = useState(false);
 
   //=============================================================================
@@ -103,13 +101,16 @@ export const AvatarSelection = () => {
       const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
       console.log(avatar);
 
+      console.log("user", user);
       const payload = {
-        ...userDetails,
+        ...user,
         avatarURI: avatar,
       };
 
-      await editUser(userDetails?.accountId!, payload);
-      setUserDetails(payload);
+      console.log("payload", payload);
+
+      await editUser(user?.accountId!, payload);
+      setUser(payload);
 
       toast({
         title: "Avatar successfully updated",
@@ -145,7 +146,7 @@ export const AvatarSelection = () => {
       >
         <Avatar
           size="2xl"
-          name={userDetails?.username ? userDetails?.username : "Avatar"}
+          name={user?.username ? user?.username : "Avatar"}
           src={avatar ? avatar : "/images/placeholder-avatar.jpeg"}
           _hover={{ cursor: "pointer", transform: "scale(1.1)" }}
           onClick={openFileInput}

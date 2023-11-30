@@ -36,9 +36,13 @@ import mongoose from "mongoose";
 export const MembersTableModal = ({
   isOpen,
   onClose,
+  user,
+  setUser,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  user: User;
+  setUser: (user: User) => void;
 }) => {
   //=============================================================================
   //                               STATE
@@ -59,23 +63,16 @@ export const MembersTableModal = ({
   //=============================================================================
   const toast = useToast();
 
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
-
   useEffect(() => {
     const fetchMembers = async () => {
       const members = (await getFamilyMembersByAccount(
-        userDetails.accountId!
+        user.accountId!
       )) as User[];
       setUsers(members);
     };
 
     const fetchInvitations = async () => {
-      const invitations = await getInvitationsByAccount(userDetails.accountId!);
+      const invitations = await getInvitationsByAccount(user.accountId!);
       setInvitations(invitations);
     };
 
@@ -127,7 +124,7 @@ export const MembersTableModal = ({
     setHasSubmitted(true);
 
     try {
-      const { wallet, accountId } = userDetails;
+      const { wallet, accountId } = user;
       const email = emailAddress.trim();
 
       if (userExists(email, users)) return;
@@ -155,7 +152,7 @@ export const MembersTableModal = ({
   const storeInvitation = async (email: string, token: any) => {
     try {
       const invitationPayload = {
-        accountId: userDetails.accountId,
+        accountId: user.accountId,
         date: convertTimestampToSeconds(Date.now()),
         email,
         token,
@@ -254,7 +251,7 @@ export const MembersTableModal = ({
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {userDetails.emailVerified ? (
+            {user.emailVerified ? (
               <>
                 {showRegisterMemberForm && (
                   <RegisterMemberForm
@@ -281,7 +278,11 @@ export const MembersTableModal = ({
                   !showInvitations &&
                   users &&
                   users.length > 0 && (
-                    <MemberAccordian users={users} setUsers={setUsers} />
+                    <MemberAccordian
+                      parent={user}
+                      users={users}
+                      setUsers={setUsers}
+                    />
                   )}
 
                 {!showRegisterMemberForm &&
@@ -293,11 +294,11 @@ export const MembersTableModal = ({
                   )}
               </>
             ) : (
-              <EmailVerificationRequired userDetails={userDetails} />
+              <EmailVerificationRequired user={user} />
             )}
           </ModalBody>
           <ModalFooter>
-            {userDetails?.emailVerified && (
+            {user?.emailVerified && (
               <Container>
                 <Flex direction="row" justify="flex-end" w="100%">
                   {!showRegisterMemberForm && (

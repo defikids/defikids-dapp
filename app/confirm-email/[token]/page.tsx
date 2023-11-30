@@ -17,8 +17,6 @@ import { useSignMessage, useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
-import { useAuthStore } from "@/store/auth/authStore";
-import { shallow } from "zustand/shallow";
 import { editUser, getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export default function ConfirmEmail() {
@@ -44,23 +42,12 @@ export default function ConfirmEmail() {
 
   const message = "Confirm Email Address";
 
-  const { setUserDetails } = useAuthStore(
-    (state) => ({
-      setUserDetails: state.setUserDetails,
-    }),
-    shallow
-  );
-
   const redirectUser = async () => {
     let count = 5;
 
     // Countdown function
     const countdown = async () => {
       if (count === 0) {
-        const updatedUserDetails = await getUserByWalletAddress(
-          user?.wallet || ""
-        );
-        setUserDetails(updatedUserDetails);
         router.push("/");
       } else {
         setTimeout(() => {

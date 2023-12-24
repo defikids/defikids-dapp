@@ -42,6 +42,13 @@ export const steps = (context: StepperContext) => {
     ];
   }
 
+  if (context === StepperContext.WITHDRAW_REQUEST) {
+    return [
+      { title: "Step 1", description: "Generate Withdraw Request" },
+      { title: "Step 2", description: "Submitting Request" },
+    ];
+  }
+
   return [];
 };
 

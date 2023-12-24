@@ -30,6 +30,7 @@ import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
+import { createWithdrawRequest } from "@/services/mongo/routes/withdraw-request";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -97,7 +98,7 @@ export const WithdrawDefiDollars = ({
     );
 
     const parent = await getParentDetails(user);
-    const permitDeadline = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30; // 30 days
+    const permitDeadline = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 days
 
     const result = (await createPermitMessage(
       signer,
@@ -112,38 +113,33 @@ export const WithdrawDefiDollars = ({
     return result;
   };
 
-  const handleTransaction = async (
+  const storeRequestInDB = async (
     deadline: number,
     v: number,
     r: string,
     s: string
   ) => {
-    setActiveStep(1); // set to approve transaction
+    setActiveStep(1); // saving to db
 
-    // @ts-ignore
-    const provider = new ethers.BrowserProvider(window.ethereum);
-
-    const DefiDollarsInstance = await DefiDollarsContract.fromProvider(
-      provider
-    );
-
-    const totalValue = ethers.parseEther(String(+amountToWithdraw.trim()));
     const parent = await getParentDetails(user);
+    const now = convertTimestampToSeconds(Date.now());
 
-    const tx = (await DefiDollarsInstance.withdrawByMember(
-      user?.wallet,
-      parent?.wallet,
-      totalValue,
+    const payload = {
+      accountId: user?.accountId!,
+      spender: parent?.wallet!,
+      owner: user?.wallet!,
+      value: amountToWithdraw,
       deadline,
       v,
       r,
-      s
-    )) as TransactionResponse;
+      s,
+      date: now,
+    };
 
-    return tx;
+    await createWithdrawRequest(payload);
   };
 
-  const postTransaction = async () => {
+  const postRequest = async () => {
     toast({
       title: "Withdraw request submitted.",
       status: "success",
@@ -179,9 +175,6 @@ export const WithdrawDefiDollars = ({
     try {
       setIsLoading(true); // show transaction stepper
 
-      console.log("handleWithdraw");
-      console.log("amountToWithdraw", amountToWithdraw);
-
       const result = (await handlePermit()) as PermitResult;
 
       if (result.error) {
@@ -195,12 +188,8 @@ export const WithdrawDefiDollars = ({
         v: number;
       };
 
-      const tx = await handleTransaction(deadline, v, r, s);
-
-      setActiveStep(2); // set to waiting for confirmation
-      await tx.wait();
-
-      await postTransaction();
+      await storeRequestInDB(deadline, v, r, s);
+      await postRequest();
     } catch (e) {
       const errorDetails = transactionErrors(e);
       toast(errorDetails);
@@ -214,7 +203,7 @@ export const WithdrawDefiDollars = ({
       {isLoading && (
         <TransactionStepper
           activeStep={activeStep}
-          context={StepperContext.PERMIT}
+          context={StepperContext.WITHDRAW_REQUEST}
         />
       )}
 

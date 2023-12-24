@@ -54,28 +54,22 @@ class DefiDollarsContract {
     );
   }
 
-  async withdrawByMember(
-    user: string,
-    parent: string,
+  async settlement(
+    memberAddress: string,
     amount: bigint,
     deadline: number,
     v: number,
     r: string,
     s: string
   ) {
-    return await this.contract.withdrawByMember(
-      user,
-      parent,
+    return await this.contract.settlement(
+      memberAddress,
       amount,
       deadline,
       v,
       r,
       s
     );
-  }
-
-  async settlement(memberAddress: string, amount: bigint) {
-    return await this.contract.settlement(memberAddress, amount);
   }
 
   async getStableTokenBalance(wallet: string) {

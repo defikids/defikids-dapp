@@ -55,13 +55,23 @@ class DefiDollarsContract {
   }
 
   async withdrawByMember(
+    user: string,
+    parent: string,
     amount: bigint,
     deadline: number,
     v: number,
     r: string,
     s: string
   ) {
-    return await this.contract.withdrawByMember(amount, deadline, v, r, s);
+    return await this.contract.withdrawByMember(
+      user,
+      parent,
+      amount,
+      deadline,
+      v,
+      r,
+      s
+    );
   }
 
   async settlement(memberAddress: string, amount: bigint) {

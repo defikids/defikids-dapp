@@ -20,7 +20,7 @@ import shallow from "zustand/shallow";
 
 import { StepperContext } from "@/data-schema/enums";
 import { transactionErrors } from "@/utils/errorHanding";
-import { createTokenLockersPermitMessage } from "@/utils/permit";
+import { createPermitMessage } from "@/utils/permit";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { IActivity } from "@/models/Activity";
@@ -82,7 +82,7 @@ export const AddToLocker = ({
       provider
     );
 
-    const result = (await createTokenLockersPermitMessage(
+    const result = (await createPermitMessage(
       signer,
       await tokenLockerInstance.contractAddress(),
       totalValueToPermit,

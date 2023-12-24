@@ -106,39 +106,30 @@ const MemberDashboardClientLayout = ({ user }: { user: User }) => {
     onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
 
-  useEffect(() => {
-    if (validChainId === chain?.id) {
-      setIsValidChain(true);
-    }
+  // useEffect(() => {
+  //   if (validChainId === chain?.id) {
+  //     setIsValidChain(true);
+  //   }
 
-    //@ts-ignore
-    const provider = new ethers.BrowserProvider(window.ethereum);
+  //   //@ts-ignore
+  //   const provider = new ethers.BrowserProvider(window.ethereum);
 
-    const defiDollarsBalance = async () => {
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
-        provider
-      );
+  //   const defiDollarsBalance = async () => {
+  //     const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+  //       provider
+  //     );
 
-      const balance = await defiDollarsInstance?.balanceOf(user?.wallet);
-      setTokenBalance(Number(ethers.formatEther(balance)));
-    };
+  //     const balance = await defiDollarsInstance?.balanceOf(user?.wallet);
+  //     setTokenBalance(Number(ethers.formatEther(balance)));
+  //     console.log("Member DefiDollar balance", balance);
+  //   };
 
-    defiDollarsBalance();
-  }, [isOpenWithdrawDefiDollarsModal]);
+  //   defiDollarsBalance();
+  // }, [isOpenWithdrawDefiDollarsModal]);
 
   const reloadUserData = useCallback(async () => {
     const member = await getUserByWalletAddress(user.wallet);
     setMember(member);
-  }, []);
-
-  const checkCurrentChain = useCallback(() => {
-    const { chain } = getNetwork();
-    if (chain?.id !== validChainId) {
-      setIsValidChain(false);
-      return false;
-    }
-    setIsValidChain(true);
-    return true;
   }, []);
 
   if (!isValidChain) {
@@ -164,7 +155,7 @@ const MemberDashboardClientLayout = ({ user }: { user: User }) => {
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
             onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
-            stableTokenBalance={tokenBalance}
+            defiDollarTokenBalance={tokenBalance}
             user={user}
           />
         </Box>
@@ -281,6 +272,7 @@ const MemberDashboardClientLayout = ({ user }: { user: User }) => {
       <WithdrawDefiDollarsModal
         isOpen={isOpenWithdrawDefiDollarsModal}
         onClose={onCloseWithdrawDefiDollarsModal}
+        user={user}
       />
     </Box>
   );

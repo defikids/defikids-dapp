@@ -18,7 +18,7 @@ import {
   steps,
 } from "@/components/steppers/TransactionStepper";
 import { SignatureLike, TransactionResponse, ethers } from "ethers";
-import { createTokenLockersPermitMessage } from "@/utils/permit";
+import { createPermitMessage } from "@/utils/permit";
 import { createActivity } from "@/services/mongo/routes/activity";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -91,7 +91,7 @@ export const CreateLocker = ({
       provider
     );
 
-    const result = (await createTokenLockersPermitMessage(
+    const result = (await createPermitMessage(
       signer,
       await tokenLockerInstance.contractAddress(),
       totalValueToPermit,

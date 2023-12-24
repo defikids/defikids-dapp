@@ -18,9 +18,11 @@ import { Explaination } from "@/data-schema/enums";
 export const WithdrawDefiDollarsModal = ({
   isOpen,
   onClose,
+  user,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  user: User;
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);
@@ -40,6 +42,7 @@ export const WithdrawDefiDollarsModal = ({
         onClose={onClose}
         setShowExplanation={setShowExplanation}
         setExplaination={setExplaination}
+        user={user}
       />
     );
   };

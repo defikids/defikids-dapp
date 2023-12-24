@@ -91,6 +91,12 @@ class DefiDollarsContract {
   async setStableTokenAddress(stableTokenAddress: string) {
     return await this.contract.setStableTokenAddress(stableTokenAddress);
   }
+
+  async allowance(owner: string, spender: string) {
+    const response = await this.contract.allowance(owner, spender);
+    const allowance = Number(ethers.formatEther(response));
+    return allowance;
+  }
 }
 
 export default DefiDollarsContract;

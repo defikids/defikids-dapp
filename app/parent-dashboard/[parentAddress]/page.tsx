@@ -2,12 +2,11 @@ import { Box } from "@chakra-ui/react";
 import ParentDashboardClientLayout from "@/components/dashboards/parentDashboard/ParentDashboardClientLayout";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 import { User } from "@/data-schema/types";
+import { ethers } from "ethers";
 
 const getProps = async (context: any) => {
   const { parentAddress } = context.params || {};
-
   const user = await getUserByWalletAddress(parentAddress);
-
   return {
     user,
   };

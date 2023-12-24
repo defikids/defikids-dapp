@@ -3,11 +3,9 @@
 
 import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAuthStore } from "@/store/auth/authStore";
-import { shallow } from "zustand/shallow";
 import { useWindowSize } from "usehooks-ts";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
-import { ethers } from "ethers";
+import { ethers, Contract } from "ethers";
 import { watchNetwork, getNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
@@ -44,6 +42,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   const [stableTokenBalance, setStableTokenBalance] = useState(0);
   const [familyMembers, setFamilyMembers] = useState([] as User[]);
   const [parent, setParent] = useState(user as User);
+  const [withdrawRequests, setWithdrawRequests] = useState(0);
 
   //=============================================================================
   //                               HOOKS
@@ -124,6 +123,22 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //                               FUNCTIONS
   //=============================================================================
 
+  const getMemberWithdrawRequests = useCallback(
+    async (members: User[], defiDollarsInstance: Contract) => {
+      let totalWithdrawRequests = 0;
+
+      for (let i = 0; i < members.length; i++) {
+        const value = await defiDollarsInstance?.allowance(
+          members[i].wallet,
+          parent.wallet
+        );
+        if (value) totalWithdrawRequests++;
+      }
+      setWithdrawRequests(totalWithdrawRequests);
+    },
+    []
+  );
+
   const getStableTokenBalance = useCallback(async () => {
     const valid = checkCurrentChain();
     if (!valid) return;
@@ -158,7 +173,13 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
 
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
+
+      // Get member withdraw requests
       const members = await getFamilyMembersByAccount(user?.accountId!);
+      await getMemberWithdrawRequests(members, defiDollarsInstance);
 
       if (members.length) {
         // Get balances for each member
@@ -166,10 +187,6 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
           account: string;
           balance: string;
         }[];
-
-        const defiDollarsInstance = await DefiDollarsContract.fromProvider(
-          provider
-        );
 
         for (let i = 0; i < members.length; i++) {
           const balance = await defiDollarsInstance?.balanceOf(
@@ -284,7 +301,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
             h={isMobileSize ? "auto" : "105"}
             mt={isMobileSize ? "1.2rem" : "12rem"}
           >
-            <MemberWithdrawRequest />
+            <MemberWithdrawRequest withdrawRequests={withdrawRequests} />
           </GridItem>
 
           <GridItem

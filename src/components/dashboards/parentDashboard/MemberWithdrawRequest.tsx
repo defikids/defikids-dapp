@@ -9,7 +9,11 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
-export const MemberWithdrawRequest = () => {
+export const MemberWithdrawRequest = ({
+  withdrawRequests,
+}: {
+  withdrawRequests: number;
+}) => {
   const router = useRouter();
 
   return (
@@ -38,7 +42,7 @@ export const MemberWithdrawRequest = () => {
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          0
+          {withdrawRequests}
         </Heading>
       </Flex>
     </Box>

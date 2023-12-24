@@ -10,7 +10,7 @@ import {
   Image,
   Button,
 } from "@chakra-ui/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { useEffect, useMemo, useState } from "react";
 import { useSignMessage, useAccount } from "wagmi";
@@ -18,17 +18,17 @@ import { ethers } from "ethers";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { User } from "@/data-schema/types";
 import { editUser, getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
 
 export default function ConfirmEmail() {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [countdown, setCountdown] = useState(5);
   const [decodedWalletAddress, setDecodedWalletAddress] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [initialUseCheck, setInitialUseCheck] = useState(false);
 
-  const router = useRouter();
   const pathname = usePathname();
 
   const token = useMemo(() => {
@@ -42,25 +42,6 @@ export default function ConfirmEmail() {
 
   const message = "Confirm Email Address";
 
-  const redirectUser = async () => {
-    let count = 5;
-
-    // Countdown function
-    const countdown = async () => {
-      if (count === 0) {
-        router.push("/");
-      } else {
-        setTimeout(() => {
-          count--;
-          setCountdown(count);
-          countdown();
-        }, 1000);
-      }
-    };
-
-    countdown(); // Start the countdown
-  };
-
   const updateUserEmailVerified = async (emailVerified: boolean) => {
     const body = {
       ...user,
@@ -68,9 +49,7 @@ export default function ConfirmEmail() {
     };
 
     await editUser(user?.accountId!, body);
-
     setEmailVerified(true);
-    redirectUser();
   };
 
   /*
@@ -155,7 +134,7 @@ export default function ConfirmEmail() {
               setUser(user);
 
               if (user.data?.emailVerified) {
-                redirectUser();
+                setEmailVerified(true);
               }
             }
           }
@@ -214,7 +193,7 @@ export default function ConfirmEmail() {
             Your email address was successfully authenticated.
           </Text>
           <Text my={5} color="gray" fontSize="lg">
-            {`Your will be redirected to the DefiKids app in ${countdown} seconds.`}
+            You may close this window.
           </Text>
         </Flex>
       </Box>

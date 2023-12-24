@@ -99,15 +99,11 @@ export const AvatarSelection = ({
       setActiveStep(1);
 
       const avatar = `https://ipfs.io/ipfs/${ifpsHash}`;
-      console.log(avatar);
 
-      console.log("user", user);
       const payload = {
         ...user,
         avatarURI: avatar,
       };
-
-      console.log("payload", payload);
 
       await editUser(user?.accountId!, payload);
       setUser(payload);

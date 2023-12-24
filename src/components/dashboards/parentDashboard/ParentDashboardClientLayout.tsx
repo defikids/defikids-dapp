@@ -8,7 +8,7 @@ import { shallow } from "zustand/shallow";
 import { useWindowSize } from "usehooks-ts";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { ethers } from "ethers";
-import { watchNetwork } from "@wagmi/core";
+import { watchNetwork, getNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
 import { useNetwork } from "wagmi";
@@ -34,6 +34,7 @@ import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollar
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 import { getSignerAddress } from "@/blockchain/utils";
 import { User } from "@/data-schema/types";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //=============================================================================
@@ -48,16 +49,20 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //                               HOOKS
   //=============================================================================
 
-  const { width } = useWindowSize();
-
-  const isMobileSize = width < 768;
   const { chain } = useNetwork();
+  const { width } = useWindowSize();
+  const isMobileSize = width < 768;
 
   watchNetwork((network) => {
-    if (validChainId === network.chain?.id) {
-      setIsValidChain(true);
-    }
+    validChainId === network.chain?.id
+      ? setIsValidChain(true)
+      : setIsValidChain(false);
   });
+
+  const reloadUserData = useCallback(async () => {
+    const parent = await getUserByWalletAddress(user.wallet);
+    setParent(parent);
+  }, []);
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
     useDisclosure();
@@ -120,6 +125,9 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //=============================================================================
 
   const getStableTokenBalance = useCallback(async () => {
+    const valid = checkCurrentChain();
+    if (!valid) return;
+
     //@ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -133,11 +141,24 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
     setStableTokenBalance(balance);
   }, []);
 
+  const checkCurrentChain = useCallback(() => {
+    const { chain } = getNetwork();
+    if (chain?.id !== validChainId) {
+      setIsValidChain(false);
+      return false;
+    }
+    setIsValidChain(true);
+    return true;
+  }, []);
+
   const fetchMembers = useCallback(async () => {
     const getMembers = async () => {
+      const valid = checkCurrentChain();
+      if (!valid) return;
+
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const members = await getFamilyMembersByAccount(user.accountId!);
+      const members = await getFamilyMembersByAccount(user?.accountId!);
 
       if (members.length) {
         // Get balances for each member
@@ -180,7 +201,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [familyMembers.length, user.wallet]);
 
-  if (!isValidChain || chain?.id !== validChainId) {
+  if (!isValidChain) {
     return <WrongNetwork />;
   }
 
@@ -330,6 +351,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
         onClose={onCloseMembersTableModal}
         user={parent}
         setUser={setParent}
+        reloadUserData={reloadUserData}
       />
 
       <DepositDefiDollarsModal

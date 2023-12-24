@@ -17,8 +17,6 @@ import {
 import { useWindowSize } from "usehooks-ts";
 import MemberAccordian from "@/components/dashboards/parentDashboard/MemberAccordian";
 import { RegisterMemberForm } from "../forms/RegisterMemberForm";
-import { useAuthStore } from "@/store/auth/authStore";
-import { shallow } from "zustand/shallow";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";
@@ -32,17 +30,21 @@ import jwt from "jsonwebtoken";
 import { IInvitation } from "@/models/Invitation";
 import { getInvitationsByAccount } from "@/BFF/mongo/getInvitationsByAccount";
 import mongoose from "mongoose";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export const MembersTableModal = ({
   isOpen,
   onClose,
   user,
   setUser,
+  reloadUserData,
 }: {
   isOpen: boolean;
   onClose: () => void;
   user: User;
   setUser: (user: User) => void;
+  reloadUserData: () => void;
 }) => {
   //=============================================================================
   //                               STATE
@@ -54,6 +56,7 @@ export const MembersTableModal = ({
   const [showInvitations, setShowInvitations] = useState(false);
   const [invitations, setInvitations] = useState<IInvitation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  // const [user, setUser] = useState({} as User);
 
   const { width } = useWindowSize();
   const isMobileSize = width < 900;
@@ -65,10 +68,12 @@ export const MembersTableModal = ({
 
   useEffect(() => {
     const fetchMembers = async () => {
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setUser(user);
+
       const members = (await getFamilyMembersByAccount(
         user.accountId!
       )) as User[];
-      console.log("members", members);
       setUsers(members);
     };
 
@@ -237,6 +242,7 @@ export const MembersTableModal = ({
           setEmailAddress("");
           setSandboxMode(false);
           setShowInvitations(false);
+          reloadUserData();
         }}
         isCentered
       >

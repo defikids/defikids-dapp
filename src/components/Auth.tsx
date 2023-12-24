@@ -5,10 +5,8 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { watchAccount } from "@wagmi/core";
-import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
-import { initialState } from "@/store/auth/createAuthStore";
 
 const Auth = () => {
   const router = useRouter();

@@ -118,25 +118,6 @@ const MemberInvite = () => {
     }
   };
 
-  const redirectUser = async () => {
-    let count = 5;
-
-    // Countdown function
-    const countdown = async () => {
-      if (count === 0) {
-        router.push("/");
-      } else {
-        setTimeout(() => {
-          count--;
-          setCountdown(count);
-          countdown();
-        }, 1000);
-      }
-    };
-
-    countdown(); // Start the countdown
-  };
-
   const handleToken = async () => {
     if (!username) {
       toast({
@@ -190,17 +171,6 @@ const MemberInvite = () => {
     );
   };
 
-  // Reset store on page load
-  useEffect(() => {
-    reset();
-
-    // const init = async () => {
-    //   //@ts-ignore
-    //   const provider = ethers.BrowserProvider(window.ethereum);
-    //   const user = await getUserByWalletAddress(await getSignerAddress());
-    //   set
-  }, []);
-
   // Check if wallet has already been registered and if invite has already been accepted
   useEffect(() => {
     if (!decodedData) return;
@@ -231,7 +201,6 @@ const MemberInvite = () => {
         await deleteInvitation(invitation._id);
 
         setInviteAccepted(true);
-        redirectUser();
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -250,8 +219,24 @@ const MemberInvite = () => {
             Your account was successfully created.
           </Text>
           <Text my={5} color="gray" fontSize="lg">
-            {`Your will be redirected to the DefiKids app in ${countdown} seconds.`}
+            You may close this window.
           </Text>
+          <Button
+            mt="3rem"
+            colorScheme="gray"
+            size="lg"
+            style={{
+              cursor: "pointer",
+              borderRadius: "10px",
+              padding: "15px",
+            }}
+            onClick={() => {
+              reset();
+              router.push(`/member-dashboard/${address}`);
+            }}
+          >
+            <Text fontSize={"lg"}>Go to Dashboard</Text>
+          </Button>
         </Flex>
       </Box>
     );

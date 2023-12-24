@@ -12,7 +12,6 @@ export const EmailVerificationRequired = ({
   user: User;
   isUpdated: boolean;
 }) => {
-  console.log("user", user);
   const [emailSent, setEmailSent] = useState(false);
   const toast = useToast();
 

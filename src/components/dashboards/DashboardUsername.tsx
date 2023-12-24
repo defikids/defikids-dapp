@@ -8,7 +8,7 @@ const Username = ({ user }: { user: User }) => {
     <Flex align="center" mt={2 || 0} ml={4}>
       <Avatar
         size="md"
-        name={user.username}
+        name={user?.username}
         sx={{
           fontFamily: "Slackey",
           bgColor: "purple.500",
@@ -16,9 +16,9 @@ const Username = ({ user }: { user: User }) => {
       />
       <Flex direction="column" ml={2}>
         <Heading fontSize="lg" display="flex">
-          {user.username}
+          {user?.username}
         </Heading>
-        <Text fontSize="md">{user.userType}</Text>
+        <Text fontSize="md">{user?.userType}</Text>
       </Flex>
     </Flex>
   );

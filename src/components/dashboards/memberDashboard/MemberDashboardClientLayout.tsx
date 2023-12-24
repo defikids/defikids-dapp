@@ -2,7 +2,7 @@
 "use client";
 
 import { Box, Flex, GridItem, useDisclosure, Grid } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -13,7 +13,7 @@ import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/Re
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
-import { watchNetwork } from "@wagmi/core";
+import { watchNetwork, getNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
 import { useNetwork } from "wagmi";
@@ -24,20 +24,15 @@ import { Locker, User } from "@/data-schema/types";
 import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { getSignerAddress } from "@/blockchain/utils";
 
-const MemberDashboardClientLayout = ({
-  memberAddress,
-}: {
-  memberAddress: string;
-}) => {
+const MemberDashboardClientLayout = ({ user }: { user: User }) => {
   //=============================================================================
   //                               STATE
   //=============================================================================
   const [isValidChain, setIsValidChain] = useState(false);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
-  const [user, setUser] = useState({} as User);
+  const [member, setMember] = useState(user as User);
 
   //=============================================================================
   //                               HOOKS
@@ -45,6 +40,10 @@ const MemberDashboardClientLayout = ({
 
   useEffect(() => {
     const init = async () => {
+      if (validChainId === chain?.id) {
+        setIsValidChain(true);
+      }
+
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -59,12 +58,8 @@ const MemberDashboardClientLayout = ({
       const defiDollarsInstance = await DefiDollarsContract.fromProvider(
         provider
       );
-      const balance = await defiDollarsInstance.balanceOf(memberAddress);
+      const balance = await defiDollarsInstance.balanceOf(user?.wallet);
       setTokenBalance(balance);
-
-      // Get the user details
-      const user = await getUserByWalletAddress(await getSignerAddress());
-      setUser(user);
     };
     init();
   }, []);
@@ -72,13 +67,13 @@ const MemberDashboardClientLayout = ({
   const { chain } = useNetwork();
 
   watchNetwork((network) => {
-    if (validChainId === network.chain?.id) {
-      setIsValidChain(true);
-    }
+    validChainId === network.chain?.id
+      ? setIsValidChain(true)
+      : setIsValidChain(false);
   });
 
   const { width } = useWindowSize();
-  4;
+
   const isMobileSize = width < 768;
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
@@ -112,6 +107,10 @@ const MemberDashboardClientLayout = ({
   } = useDisclosure();
 
   useEffect(() => {
+    if (validChainId === chain?.id) {
+      setIsValidChain(true);
+    }
+
     //@ts-ignore
     const provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -120,20 +119,29 @@ const MemberDashboardClientLayout = ({
         provider
       );
 
-      const balance = await defiDollarsInstance?.balanceOf(memberAddress);
+      const balance = await defiDollarsInstance?.balanceOf(user?.wallet);
       setTokenBalance(Number(ethers.formatEther(balance)));
     };
 
     defiDollarsBalance();
   }, [isOpenWithdrawDefiDollarsModal]);
 
-  useEffect(() => {
-    if (validChainId === chain?.id) {
-      setIsValidChain(true);
-    }
+  const reloadUserData = useCallback(async () => {
+    const member = await getUserByWalletAddress(user.wallet);
+    setMember(member);
   }, []);
 
-  if (!isValidChain || chain?.id !== validChainId) {
+  const checkCurrentChain = useCallback(() => {
+    const { chain } = getNetwork();
+    if (chain?.id !== validChainId) {
+      setIsValidChain(false);
+      return false;
+    }
+    setIsValidChain(true);
+    return true;
+  }, []);
+
+  if (!isValidChain) {
     return <WrongNetwork />;
   }
 
@@ -219,11 +227,15 @@ const MemberDashboardClientLayout = ({
             }
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
-            h={isMobileSize ? "auto" : "320"}
+            h={isMobileSize ? "125" : "320"}
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <TokenLockers user={user} lockersByUser={lockersByUser} />
+            <TokenLockers
+              user={user}
+              lockersByUser={lockersByUser}
+              isMobileSize={isMobileSize}
+            />
           </GridItem>
 
           <GridItem
@@ -234,10 +246,7 @@ const MemberDashboardClientLayout = ({
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity
-              memberAddress={memberAddress}
-              onlyMemberActivity
-            />
+            <RecentMemberActivity user={member} />
           </GridItem>
 
           <GridItem
@@ -264,7 +273,7 @@ const MemberDashboardClientLayout = ({
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
         user={user}
-        setUser={setUser}
+        setUser={setMember}
       />
 
       <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} />

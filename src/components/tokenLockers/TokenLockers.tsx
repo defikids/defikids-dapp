@@ -14,17 +14,15 @@ import { Locker, User } from "@/data-schema/types";
 export const TokenLockers = ({
   user,
   lockersByUser,
+  isMobileSize,
 }: {
   user: User;
   lockersByUser: Locker[];
+  isMobileSize: boolean;
 }) => {
   const router = useRouter();
   return (
-    <Container
-      maxW="5xl"
-      bg={useColorModeValue("gray.100", "gray.900")}
-      h="90%"
-    >
+    <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">
         <Heading as="h3" size="sm" color="white">
           Token Lockers
@@ -45,10 +43,11 @@ export const TokenLockers = ({
       {lockersByUser.length > 0 ? (
         <TokenLockersList lockers={lockersByUser} />
       ) : (
-        <Flex justify="center" my="1rem" align="center" h="80%">
+        <Flex justify="center" align="center">
           <Button
             colorScheme="blue"
             variant="outline"
+            size="sm"
             onClick={() => {
               router.push(`/token-lockers/${user.wallet}`);
             }}

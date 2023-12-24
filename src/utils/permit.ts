@@ -74,14 +74,6 @@ export const createTokenLockersPermitMessage = async (
     const contractName = await contract.name();
     const chainId = (await signer.provider?.getNetwork())?.chainId.toString();
 
-    console.log("owner", owner);
-    console.log("spender", spender);
-    console.log("value", value);
-    console.log("nonce", nonce);
-    console.log("contractName", contractName);
-    console.log("chainId", chainId);
-    console.log("transactionDeadline", transactionDeadline);
-
     const domain = {
       chainId,
       name: contractName,

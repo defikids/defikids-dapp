@@ -31,13 +31,7 @@ interface FormattedActivity {
   userAvatar: string;
 }
 
-export const RecentMemberActivity = ({
-  user,
-  setUser,
-}: {
-  user: User;
-  setUser: (user: User) => void;
-}) => {
+export const RecentMemberActivity = ({ user }: { user: User }) => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
 
   const { recentActivity, setRecentActivity } = useAuthStore(
@@ -51,10 +45,10 @@ export const RecentMemberActivity = ({
   /* This useEffect is used to get the recent activity for the user upon page load */
   useEffect(() => {
     const getData = async () => {
-      const activity = await getActivityByAccount(user.accountId!);
+      const activity = await getActivityByAccount(user?.accountId!);
       await normaliseActivity(activity);
     };
-    getData();
+    if (user?.accountId) getData();
   }, []);
 
   /* This useEffect is used to update the recent activity when a user deposits or mints */
@@ -71,8 +65,6 @@ export const RecentMemberActivity = ({
       user.accountId!,
       true
     )) as IUser[];
-
-    console.log("members", members);
 
     const formattedActivity = activities.map((activity: IActivity) => {
       const member = members.find((m) => m.wallet === activity?.wallet);

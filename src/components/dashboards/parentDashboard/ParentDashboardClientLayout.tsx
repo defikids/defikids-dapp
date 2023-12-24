@@ -33,6 +33,7 @@ import DefiDollarsContract from "@/blockchain/DefiDollars";
 import { getSignerAddress } from "@/blockchain/utils";
 import { User } from "@/data-schema/types";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getAllUsersByAccountId } from "@/services/mongo/routes/withdraw-request";
 
 const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //=============================================================================
@@ -123,21 +124,10 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //                               FUNCTIONS
   //=============================================================================
 
-  const getMemberWithdrawRequests = useCallback(
-    async (members: User[], defiDollarsInstance: Contract) => {
-      let totalWithdrawRequests = 0;
-
-      for (let i = 0; i < members.length; i++) {
-        const value = await defiDollarsInstance?.allowance(
-          members[i].wallet,
-          parent.wallet
-        );
-        if (value) totalWithdrawRequests++;
-      }
-      setWithdrawRequests(totalWithdrawRequests);
-    },
-    []
-  );
+  const getMemberWithdrawRequests = useCallback(async () => {
+    const requests = await getAllUsersByAccountId(parent.accountId!);
+    setWithdrawRequests(requests.length);
+  }, []);
 
   const getStableTokenBalance = useCallback(async () => {
     const valid = checkCurrentChain();

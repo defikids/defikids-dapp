@@ -31,11 +31,26 @@ import { createActivity } from "@/services/mongo/routes/activity";
 import { useAuthStore } from "@/store/auth/authStore";
 import shallow from "zustand/shallow";
 import { createWithdrawRequest } from "@/services/mongo/routes/withdraw-request";
+import mongoose from "mongoose";
+import axios from "axios";
+import jwt from "jsonwebtoken";
 
 type PermitResult = {
   data?: SignatureLike;
   deadline?: number;
   error?: string;
+};
+
+type WithdrawRequestPayload = {
+  accountId: mongoose.Schema.Types.ObjectId;
+  spender: string;
+  owner: string;
+  value: string;
+  deadline: number;
+  v: number;
+  r: string;
+  s: string;
+  date: number;
 };
 
 export const WithdrawDefiDollars = ({
@@ -47,7 +62,7 @@ export const WithdrawDefiDollars = ({
   onClose: () => void;
   setShowExplanation: (show: boolean) => void;
   setExplaination: (explaination: Explaination) => void;
-  user: User;
+  user?: User;
 }) => {
   //=============================================================================
   //                               STATE
@@ -83,6 +98,45 @@ export const WithdrawDefiDollars = ({
     return parent;
   };
 
+  const sendEmailNotification = async (
+    settlementDetails: WithdrawRequestPayload
+  ) => {
+    try {
+      const body = {
+        ...settlementDetails,
+        userName: user?.username,
+      };
+
+      console.log("body", body);
+
+      const token = jwt.sign(
+        {
+          ...body,
+        },
+        process.env.NEXT_PUBLIC_JWT_SECRET || "",
+        {
+          expiresIn: "7d",
+          jwtid: Date.now().toString(),
+        }
+      );
+
+      console.log("token", token);
+
+      const payload = {
+        token,
+        email: user?.email,
+        username: user?.username,
+        amount: settlementDetails.value,
+      };
+
+      console.log("email payload", payload);
+
+      await axios.post(`/api/emails/withdraw-request`, payload);
+    } catch (e) {
+      console.log("e", e);
+    }
+  };
+
   const handlePermit = async () => {
     setActiveStep(0); // set to signing message
 
@@ -97,7 +151,7 @@ export const WithdrawDefiDollars = ({
       provider
     );
 
-    const parent = await getParentDetails(user);
+    const parent = await getParentDetails(user!);
     const permitDeadline = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 days
 
     const result = (await createPermitMessage(
@@ -121,8 +175,10 @@ export const WithdrawDefiDollars = ({
   ) => {
     setActiveStep(1); // saving to db
 
-    const parent = await getParentDetails(user);
+    const parent = await getParentDetails(user!);
     const now = convertTimestampToSeconds(Date.now());
+
+    console.log("storeRequestInDB");
 
     const payload = {
       accountId: user?.accountId!,
@@ -136,7 +192,10 @@ export const WithdrawDefiDollars = ({
       date: now,
     };
 
+    console.log("payload", payload);
+
     await createWithdrawRequest(payload);
+    await sendEmailNotification(payload);
   };
 
   const postRequest = async () => {

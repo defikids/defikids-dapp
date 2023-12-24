@@ -14,6 +14,7 @@ import { useState } from "react";
 import { WithdrawDefiDollars } from "@/components/WithdrawDefiDollars";
 import { ExplainMemberWithdraws } from "@/components/explainations/ExplainMemberWithdraws";
 import { Explaination } from "@/data-schema/enums";
+import { User } from "@/data-schema/types";
 
 export const WithdrawDefiDollarsModal = ({
   isOpen,
@@ -22,7 +23,7 @@ export const WithdrawDefiDollarsModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  user: User;
+  user?: User;
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);

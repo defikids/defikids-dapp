@@ -227,7 +227,7 @@ const MemberDashboardClientLayout = ({ user }: { user: User }) => {
             }
             rowEnd={isMobileSize ? 2 : 0}
             colSpan={isMobileSize ? 1 : 4}
-            h={isMobileSize ? "125" : "320"}
+            h={isMobileSize ? "auto" : "320"}
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >

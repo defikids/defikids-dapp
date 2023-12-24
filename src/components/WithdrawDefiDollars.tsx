@@ -114,7 +114,7 @@ export const WithdrawDefiDollars = ({
                 color="blue.500"
                 href="#"
                 onClick={() => {
-                  setExplaination(Explaination.DEFI_DOLLARS);
+                  setExplaination(Explaination.MEMBER_WITHDRAW);
                   setShowExplanation(true);
                 }}
               >

@@ -1,5 +1,6 @@
 "use client";
 
+import { User } from "@/data-schema/types";
 import {
   Flex,
   useColorModeValue,
@@ -11,8 +12,10 @@ import { useRouter } from "next/navigation";
 
 export const MemberWithdrawRequest = ({
   withdrawRequests,
+  user,
 }: {
   withdrawRequests: number;
+  user: User;
 }) => {
   const router = useRouter();
 
@@ -28,7 +31,7 @@ export const MemberWithdrawRequest = ({
           variant="outline"
           cursor="pointer"
           onClick={() => {
-            router.push("/withdraw-requests");
+            router.push(`/withdraw-requests/${user.wallet}`);
           }}
         >
           Manage
@@ -42,7 +45,7 @@ export const MemberWithdrawRequest = ({
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          {withdrawRequests}
+          {withdrawRequests || 0}
         </Heading>
       </Flex>
     </Box>

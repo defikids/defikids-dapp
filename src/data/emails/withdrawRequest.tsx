@@ -1,9 +1,15 @@
 export default function withdrawRequestHTML(
-  token: string,
   user: string,
   deadlineInDays: string,
-  amount: string
+  amount: string,
+  parentAddress: string
 ) {
+  //! TODO: recipient email
+  console.log("user", user);
+  console.log("deadlineInDays", deadlineInDays);
+  console.log("amount", amount);
+  console.log("parentAddress", parentAddress);
+
   return `<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -139,8 +145,8 @@ export default function withdrawRequestHTML(
           <table border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 240px; min-width: 120px; border-collapse: collapse; border-spacing: 0; padding: 0;"><tr><td align="center" valign="middle" style="padding: 12px 24px; margin: 0; text-decoration: underline; border-collapse: collapse; border-spacing: 0; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px;"
             bgcolor="#E9703E"><a target="_blank" style="text-decoration: underline;
             color: #FFFFFF; font-family: sans-serif; font-size: 17px; font-weight: 400; line-height: 120%;"
-           href="${process.env.CLIENT}/perform-settlement/${token}">
-              Perform Settlement
+           href="${process.env.CLIENT}/withdraw-requests/${parentAddress}">
+             Perform Settlement
             </a>
         </td></tr></table></a>
       </td>

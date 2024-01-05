@@ -7,17 +7,12 @@ export default async function WithdrawRequest(
   res: NextApiResponse
 ) {
   try {
-    const { token, email, username, amount } = req.body as {
-      token: string;
+    const { email, username, amount, parentAddress } = req.body as {
       email: string;
       username: string;
       amount: string;
+      parentAddress: string;
     };
-
-    console.log("Sending withdraw request email to", email);
-    console.log("Token", token);
-    console.log("Username", username);
-    console.log("Amount", amount);
 
     sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
     const msg = {
@@ -25,7 +20,7 @@ export default async function WithdrawRequest(
       from: process.env.SENDGRID_TRANSPORTER_EMAIL_ADDRESS,
       subject: "DefiKids - Member withdrawal request",
       text: `${username} has requested to withdraw funds.`,
-      html: withdrawRequestHTML(token, username, "7", amount),
+      html: withdrawRequestHTML(username, "7", amount, parentAddress),
     } as MailDataRequired;
 
     sgMail

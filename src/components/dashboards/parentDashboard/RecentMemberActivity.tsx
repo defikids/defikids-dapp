@@ -23,6 +23,7 @@ import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getSignerAddress } from "@/blockchain/utils";
 
 interface FormattedActivity {
   activityText: string;
@@ -31,7 +32,7 @@ interface FormattedActivity {
   userAvatar: string;
 }
 
-export const RecentMemberActivity = ({ user }: { user: User }) => {
+export const RecentMemberActivity = () => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
 
   const { recentActivity, setRecentActivity } = useAuthStore(
@@ -45,24 +46,30 @@ export const RecentMemberActivity = ({ user }: { user: User }) => {
   /* This useEffect is used to get the recent activity for the user upon page load */
   useEffect(() => {
     const getData = async () => {
+      const user = await getUserByWalletAddress(await getSignerAddress());
       const activity = await getActivityByAccount(user?.accountId!);
-      await normaliseActivity(activity);
+
+      await normaliseActivity(activity, user);
     };
-    if (user?.accountId) getData();
+    getData();
   }, []);
 
   /* This useEffect is used to update the recent activity when a user deposits or mints */
   useEffect(() => {
     const getData = async () => {
-      await normaliseActivity(recentActivity);
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      await normaliseActivity(recentActivity, user);
       setRecentActivity([]);
     };
     if (recentActivity.length > 0) getData();
   }, [recentActivity]);
 
-  const normaliseActivity = async (activities: IActivity[]) => {
+  const normaliseActivity = async (
+    activities: IActivity[],
+    connectedUser: User
+  ) => {
     const members = (await getFamilyMembersByAccount(
-      user.accountId!,
+      connectedUser.accountId!,
       true
     )) as IUser[];
 

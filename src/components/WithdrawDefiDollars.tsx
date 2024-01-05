@@ -33,7 +33,7 @@ import shallow from "zustand/shallow";
 import { createWithdrawRequest } from "@/services/mongo/routes/withdraw-request";
 import mongoose from "mongoose";
 import axios from "axios";
-import jwt from "jsonwebtoken";
+import { WithdrawRequestStatus } from "@/src/models/WithdrawRequest";
 
 type PermitResult = {
   data?: SignatureLike;
@@ -50,7 +50,8 @@ type WithdrawRequestPayload = {
   v: number;
   r: string;
   s: string;
-  date: number;
+  requestDate: number;
+  status: WithdrawRequestStatus;
 };
 
 export const WithdrawDefiDollars = ({
@@ -102,31 +103,11 @@ export const WithdrawDefiDollars = ({
     settlementDetails: WithdrawRequestPayload
   ) => {
     try {
-      const body = {
-        ...settlementDetails,
-        userName: user?.username,
-      };
-
-      console.log("body", body);
-
-      const token = jwt.sign(
-        {
-          ...body,
-        },
-        process.env.NEXT_PUBLIC_JWT_SECRET || "",
-        {
-          expiresIn: "7d",
-          jwtid: Date.now().toString(),
-        }
-      );
-
-      console.log("token", token);
-
       const payload = {
-        token,
         email: user?.email,
         username: user?.username,
         amount: settlementDetails.value,
+        parentAddress: settlementDetails.spender,
       };
 
       console.log("email payload", payload);
@@ -178,8 +159,6 @@ export const WithdrawDefiDollars = ({
     const parent = await getParentDetails(user!);
     const now = convertTimestampToSeconds(Date.now());
 
-    console.log("storeRequestInDB");
-
     const payload = {
       accountId: user?.accountId!,
       spender: parent?.wallet!,
@@ -189,7 +168,8 @@ export const WithdrawDefiDollars = ({
       v,
       r,
       s,
-      date: now,
+      requestDate: now,
+      status: WithdrawRequestStatus.PENDING,
     };
 
     console.log("payload", payload);

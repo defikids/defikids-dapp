@@ -23,13 +23,15 @@ export const createWithdrawRequest = async (values: any) => {
   }
 };
 
-export const getAllUsersByAccountId = async (
+export const getAllWithdrawRequestsByAccountId = async (
   accountId: mongoose.Schema.Types.ObjectId
 ) => {
   try {
     const { data } = await axios.get(
       `${HOST}/api/mongo/withdraw-request/getAll`
     );
+
+    console.log("data", data);
 
     return data.filter((withdrawRequest: IWithdrawRequest) => {
       return withdrawRequest.accountId === accountId;

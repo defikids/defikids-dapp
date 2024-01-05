@@ -39,7 +39,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSendAllowanceModal,
   onOpenMembersTableModal,
   onOpenWithdrawDefiDollarsModal,
-  defiDollarTokenBalance,
+  tokenBalance,
   user,
 }: {
   onToggleCollapsedMenu: () => void;
@@ -52,7 +52,7 @@ export const ExpandedDashboardMenu = ({
   onOpenSendAllowanceModal?: () => void;
   onOpenMembersTableModal?: () => void;
   onOpenWithdrawDefiDollarsModal?: () => void;
-  defiDollarTokenBalance: number;
+  tokenBalance: number;
   user: User;
 }) => {
   const { setLogout, mobileMenuOpen, setMobileMenuOpen } = useAuthStore(
@@ -118,7 +118,7 @@ export const ExpandedDashboardMenu = ({
               <DashboardAvatar user={user} />
               <DashboardAccountBalance
                 walletAddress={user?.wallet}
-                tokenBalance={defiDollarTokenBalance}
+                tokenBalance={tokenBalance}
                 user={user}
               />
 

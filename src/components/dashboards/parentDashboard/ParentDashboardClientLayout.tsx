@@ -5,7 +5,7 @@ import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useWindowSize } from "usehooks-ts";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
-import { ethers, Contract } from "ethers";
+import { ethers } from "ethers";
 import { watchNetwork, getNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
@@ -33,16 +33,16 @@ import DefiDollarsContract from "@/blockchain/DefiDollars";
 import { getSignerAddress } from "@/blockchain/utils";
 import { User } from "@/data-schema/types";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
-import { getAllUsersByAccountId } from "@/services/mongo/routes/withdraw-request";
+import { getAllWithdrawRequestsByAccountId } from "@/services/mongo/routes/withdraw-request";
 
-const ParentDashboardClientLayout = ({ user }: { user: User }) => {
+const ParentDashboardClientLayout = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
   const [isValidChain, setIsValidChain] = useState(false);
   const [stableTokenBalance, setStableTokenBalance] = useState(0);
   const [familyMembers, setFamilyMembers] = useState([] as User[]);
-  const [parent, setParent] = useState(user as User);
+  const [parent, setParent] = useState({} as User);
   const [withdrawRequests, setWithdrawRequests] = useState(0);
 
   //=============================================================================
@@ -60,7 +60,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   });
 
   const reloadUserData = useCallback(async () => {
-    const parent = await getUserByWalletAddress(user.wallet);
+    const parent = await getUserByWalletAddress(await getSignerAddress());
     setParent(parent);
   }, []);
 
@@ -124,8 +124,8 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
   //                               FUNCTIONS
   //=============================================================================
 
-  const getMemberWithdrawRequests = useCallback(async () => {
-    const requests = await getAllUsersByAccountId(parent.accountId!);
+  const getMemberWithdrawRequests = useCallback(async (user: User) => {
+    const requests = await getAllWithdrawRequestsByAccountId(user.accountId!);
     setWithdrawRequests(requests.length);
   }, []);
 
@@ -161,6 +161,9 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
       const valid = checkCurrentChain();
       if (!valid) return;
 
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setParent(user);
+
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
       const defiDollarsInstance = await DefiDollarsContract.fromProvider(
@@ -169,7 +172,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
 
       // Get member withdraw requests
       const members = await getFamilyMembersByAccount(user?.accountId!);
-      await getMemberWithdrawRequests(members, defiDollarsInstance);
+      await getMemberWithdrawRequests(user);
 
       if (members.length) {
         // Get balances for each member
@@ -206,7 +209,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
 
     await getMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [familyMembers.length, user.wallet]);
+  }, []);
 
   if (!isValidChain) {
     return <WrongNetwork />;
@@ -233,7 +236,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
             onOpenInfoModal={onOpenInfoModal}
             onOpenSendAllowanceModal={onOpenSendAllowanceModal}
             onOpenMembersTableModal={onOpenMembersTableModal}
-            stableTokenBalance={stableTokenBalance}
+            tokenBalance={stableTokenBalance}
             user={parent}
           />
         </Box>
@@ -291,7 +294,10 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
             h={isMobileSize ? "auto" : "105"}
             mt={isMobileSize ? "1.2rem" : "12rem"}
           >
-            <MemberWithdrawRequest withdrawRequests={withdrawRequests} />
+            <MemberWithdrawRequest
+              withdrawRequests={withdrawRequests}
+              user={parent}
+            />
           </GridItem>
 
           <GridItem
@@ -314,7 +320,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity user={parent} setUser={setParent} />
+            <RecentMemberActivity />
           </GridItem>
           <GridItem
             rowStart={isMobileSize ? 3 : 0}
@@ -333,7 +339,7 @@ const ParentDashboardClientLayout = ({ user }: { user: User }) => {
       <EtherscanModal
         isOpen={isOpenEtherScan}
         onClose={onCloseEtherScan}
-        user={user}
+        user={parent}
       />
 
       <SettingsModal

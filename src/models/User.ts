@@ -1,4 +1,5 @@
-import mongoose, { Schema, Document, model, ObjectId } from "mongoose";
+import mongoose, { Schema, Document, model } from "mongoose";
+
 import {
   UserType,
   NetworkType,

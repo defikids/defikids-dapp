@@ -49,6 +49,13 @@ export const steps = (context: StepperContext) => {
     ];
   }
 
+  if (context === StepperContext.WITHDRAW_SETTLED) {
+    return [
+      { title: "Step 1", description: "Approve Request" },
+      { title: "Step 2", description: "Transferring Funds" },
+    ];
+  }
+
   return [];
 };
 

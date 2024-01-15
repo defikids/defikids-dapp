@@ -31,11 +31,23 @@ export const getAllWithdrawRequestsByAccountId = async (
       `${HOST}/api/mongo/withdraw-request/getAll`
     );
 
-    console.log("data", data);
-
     return data.filter((withdrawRequest: IWithdrawRequest) => {
       return withdrawRequest.accountId === accountId;
     });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const deleteRequest = async (id: mongoose.Schema.Types.ObjectId) => {
+  try {
+    const { data } = await axios.post(
+      `${HOST}/api/mongo/withdraw-request/delete`,
+      JSON.stringify({ id }),
+      config
+    );
+    return data;
   } catch (error) {
     console.log(error);
     return error;

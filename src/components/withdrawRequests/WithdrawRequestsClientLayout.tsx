@@ -18,62 +18,68 @@ import {
   Tr,
   Th,
   Td,
+  useSteps,
+  useToast,
 } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import { TokenLockerDrawer } from "@/components/tokenLockers/TokenLockerDrawer";
-import { TokenLockerFunctions } from "@/data-schema/enums";
-import { useCallback, useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { TokenLockerCard } from "@/components/tokenLockers/TokenLockerCard";
+import { useCallback, useState, useEffect } from "react";
+import { TransactionResponse, ethers } from "ethers";
 import { watchNetwork, getNetwork } from "@wagmi/core";
 
-import { Locker } from "@/data-schema/types";
-
-import TokenLockerContract from "@/blockchain/tokenLockers";
 import { getSignerAddress } from "@/blockchain/utils";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
-import { StableToken } from "../dashboards/parentDashboard/StableToken";
 import { validChainId } from "@/config";
-import { formatDateToIsoString } from "@/utils/dateTime";
+import {
+  convertTimestampToSeconds,
+  formatDateToIsoString,
+} from "@/utils/dateTime";
+import { WithdrawSettlementModal } from "@/components/modals/WithdrawSettlementModal";
+import { useAuthStore } from "@/store/auth/authStore";
+import shallow from "zustand/shallow";
+import {
+  deleteRequest,
+  getAllWithdrawRequestsByAccountId,
+} from "@/services/mongo/routes/withdraw-request";
+import { createActivity } from "@/services/mongo/routes/activity";
+import { transactionErrors } from "@/utils/errorHanding";
+import { IActivity } from "@/models/Activity";
+import { steps } from "@/components/steppers/TransactionStepper";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export const WithdrawRequestsClientLayout = ({
-  requests,
   memberAddress,
 }: {
-  requests: any;
   memberAddress: string;
 }) => {
-  // const [currentFunction, setCurrentFunction] = useState<TokenLockerFunctions>(
-  //   TokenLockerFunctions.NONE
-  // );
-  // const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
-  // const [fetchLockers, setFetchLockers] = useState<boolean>(false);
-  // const [selectedLocker, setSelectedLocker] = useState<Locker | null>(null);
-  // const [totalValueInLockers, setTotalValueInLockers] =
-  //   useState<number>(totalLockerValue);
-  // const [defiDollarsBalance, setDefiDollarsBalance] = useState<number>(0);
+  const [requests, setRequests] = useState([]);
   const [isValidChain, setIsValidChain] = useState(false);
-  const [stableTokenBalance, setStableTokenBalance] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getRequests = useCallback(async () => {
+    const user = await getUserByWalletAddress(memberAddress);
+    const dbRequests = await getAllWithdrawRequestsByAccountId(user.accountId);
+    setRequests(dbRequests);
+  }, [memberAddress]);
+
+  useEffect(() => {
+    getRequests();
+  }, [getRequests]);
 
   const { address: connectedAddress } = useAccount();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
-  const getStableTokenBalance = useCallback(async () => {
-    const valid = checkCurrentChain();
-    if (!valid) return;
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
 
-    //@ts-ignore
-    const provider = new ethers.BrowserProvider(window.ethereum);
-
-    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
-      provider
-    );
-    const userAddress = await getSignerAddress();
-    const balance = await defiDollarsInstance?.getStableTokenBalance(
-      userAddress
-    );
-    setStableTokenBalance(balance);
-  }, []);
+  const { setRecentActivity } = useAuthStore(
+    (state) => ({
+      setRecentActivity: state.setRecentActivity,
+    }),
+    shallow
+  );
 
   const checkCurrentChain = useCallback(() => {
     const { chain } = getNetwork();
@@ -91,13 +97,80 @@ export const WithdrawRequestsClientLayout = ({
       : setIsValidChain(false);
   });
 
-  //! TODO
-  const handleSettlement = async (request: any) => {};
+  const resetState = () => {
+    setIsLoading(false);
+  };
+
+  const postTransaction = async (request) => {
+    toast({
+      title: "Withdraw Settled.",
+      status: "success",
+    });
+
+    const address = await getSignerAddress();
+    await deleteRequest(request._id);
+    const accountId = request?.accountId;
+
+    const newActivities: IActivity[] = [];
+
+    const newActivity = await createActivity({
+      accountId,
+      wallet: address,
+      date: convertTimestampToSeconds(Date.now()),
+      type: `Settled ${request.value} USDC to ${request.owner}`,
+    });
+
+    newActivities.push(newActivity);
+
+    setRecentActivity(newActivities);
+    onClose(); // close drawer
+    resetState();
+  };
+
+  const handleTransaction = async (request) => {
+    setActiveStep(0); // set to approve transaction
+
+    const { owner, value, deadline, v, r, s } = request;
+
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+      provider
+    );
+
+    const amountToSettle = ethers.parseEther(String(+value.trim()));
+
+    const tx = (await defiDollarsInstance.settlement(
+      owner,
+      amountToSettle,
+      deadline,
+      v,
+      r,
+      s
+    )) as TransactionResponse;
+
+    return tx;
+  };
+
+  const handleSettlement = async (request: any) => {
+    try {
+      setIsLoading(true); // show transaction stepper
+      const tx = await handleTransaction(request);
+      setActiveStep(1); // set to waiting for confirmation
+      await tx.wait();
+
+      await postTransaction(request);
+    } catch (e) {
+      const errorDetails = transactionErrors(e);
+      toast(errorDetails);
+      onClose();
+      resetState();
+    }
+  };
 
   const getTotalRequestedValue = () => {
     let total = 0;
-    console.log(requests);
-    requests.forEach((request: any) => {
+    (requests || []).map((request: any) => {
       total += +request.value;
     });
     return total || 0;
@@ -105,6 +178,11 @@ export const WithdrawRequestsClientLayout = ({
 
   return (
     <Box>
+      <WithdrawSettlementModal
+        isOpen={isLoading}
+        onClose={onClose}
+        activeStep={activeStep}
+      />
       {connectedAddress === memberAddress ? (
         <>
           <Flex justifyContent="center" alignItems="center" mx={5}>
@@ -117,36 +195,21 @@ export const WithdrawRequestsClientLayout = ({
                 borderBottom={"1px"}
               >
                 <Heading size="md">Withdraw Requests</Heading>
-                {/* <Button
-                  colorScheme="blue"
-                  size="sm"
-                  onClick={() => {
-                    setCurrentFunction(TokenLockerFunctions.CREATE_LOCKER);
-                    onOpen();
-                  }}
-                >
-                  Create Locker
-                </Button> */}
               </Flex>
               <Flex justifyContent="space-between" alignItems="center">
                 <Stat>
                   <StatLabel textAlign="center">Requests</StatLabel>
                   <StatNumber textAlign="center">
-                    {requests.length || 0}
-                  </StatNumber>
-                </Stat>
-                <Stat>
-                  <StatLabel textAlign="center"> Total Value</StatLabel>
-                  <StatNumber textAlign="center">
-                    {getTotalRequestedValue() || 0} USDC
+                    {requests?.length || 0}
                   </StatNumber>
                 </Stat>
                 <Stat>
                   <StatLabel textAlign="center">
-                    DefiDollars available
+                    {" "}
+                    Total Withdraw Value
                   </StatLabel>
                   <StatNumber textAlign="center">
-                    {stableTokenBalance || 0} USDC
+                    {getTotalRequestedValue() || 0} USDC
                   </StatNumber>
                 </Stat>
               </Flex>
@@ -170,27 +233,49 @@ export const WithdrawRequestsClientLayout = ({
                 </Tr>
               </Thead>
               <Tbody>
-                {requests.map((request: any) => (
-                  <Tr key={request._id}>
-                    <Td>{request.value}</Td>
-                    <Td>{formatDateToIsoString(request.requestDate)}</Td>
-                    <Td>
-                      {request.deadline
-                        ? formatDateToIsoString(request.deadline)
-                        : "-"}
-                    </Td>
-                    <Td>{request.status}</Td>
-                    <Td>
-                      <Button
-                        size="xs"
-                        colorScheme="blue"
-                        onClick={() => handleSettlement(request)}
-                      >
-                        Settle
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
+                {requests
+                  .sort(
+                    (a: any, b: any) =>
+                      b.deadline - a.deadline || b.requestDate - a.requestDate
+                  )
+                  .map((request: any) => (
+                    <Tr key={request._id}>
+                      <Td>{request.value}</Td>
+                      <Td>{formatDateToIsoString(request.requestDate)}</Td>
+                      <Td>
+                        {request.deadline
+                          ? formatDateToIsoString(request.deadline)
+                          : "-"}
+                      </Td>
+                      <Td>{request.status}</Td>
+                      <Td>
+                        {request.deadline && request.deadline > Date.now() ? (
+                          <Button
+                            size="xs"
+                            colorScheme="blue"
+                            onClick={() => handleSettlement(request)}
+                          >
+                            Settle
+                          </Button>
+                        ) : (
+                          <Button
+                            size="xs"
+                            colorScheme="red"
+                            onClick={async () => {
+                              await deleteRequest(request._id);
+                              await getRequests();
+                              toast({
+                                title: "Withdraw Request Deleted.",
+                                status: "success",
+                              });
+                            }}
+                          >
+                            Expired / Delete
+                          </Button>
+                        )}
+                      </Td>
+                    </Tr>
+                  ))}
               </Tbody>
             </Table>
           </Container>
@@ -207,17 +292,6 @@ export const WithdrawRequestsClientLayout = ({
           </Center>
         </Container>
       )}
-
-      {/* Drawer */}
-      {/* <TokenLockerDrawer
-        isOpen={isOpen}
-        onClose={onClose}
-        placement={"left"}
-        currentFunction={currentFunction}
-        setFetchLockers={setFetchLockers}
-        selectedLocker={selectedLocker}
-        refreshBlockchainData={refreshBlockchainData}
-      /> */}
     </Box>
   );
 };

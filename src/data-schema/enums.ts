@@ -10,6 +10,7 @@ export enum StepperContext {
   DEFAULT = "DEFAULT",
   PERMIT = "PERMIT",
   WITHDRAW_REQUEST = "WITHDRAW_REQUEST",
+  WITHDRAW_SETTLED = "WITHDRAW_SETTLED",
 }
 
 export enum EtherscanContext {

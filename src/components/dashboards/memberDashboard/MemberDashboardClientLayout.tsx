@@ -155,7 +155,7 @@ const MemberDashboardClientLayout = ({ user }: { user: User }) => {
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
             onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
-            defiDollarTokenBalance={tokenBalance}
+            tokenBalance={tokenBalance}
             user={user}
           />
         </Box>
@@ -237,7 +237,7 @@ const MemberDashboardClientLayout = ({ user }: { user: User }) => {
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity user={member} />
+            <RecentMemberActivity />
           </GridItem>
 
           <GridItem

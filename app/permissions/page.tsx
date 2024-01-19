@@ -29,34 +29,37 @@ import { Restricted } from "@/components/Restricted";
 import { useAccount } from "wagmi";
 import { getFamilyMembersByAccount } from "@/BFF/mongo/getFamilyMembersByAccount";
 import { editPermissions } from "@/services/mongo/routes/permission";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getSignerAddress } from "@/blockchain/utils";
 
 const Permissions = () => {
   const [members, setMembers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
+  const [user, setUser] = useState<User>();
 
   const { address } = useAccount();
   const toast = useToast();
 
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
+  useEffect(() => {
+    const init = async () => {
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setUser(user);
+    };
+    init();
+  }, []);
 
   useEffect(() => {
-    if (!userDetails?.wallet) return;
+    if (!user?.wallet) return;
 
     const fetchMembers = async () => {
       const members = (await getFamilyMembersByAccount(
-        userDetails.accountId!
+        user.accountId!
       )) as User[];
-      console.log(members);
       setMembers(members);
     };
 
     fetchMembers();
-  }, [userDetails?.wallet]);
+  }, [user?.wallet]);
 
   const handleColor = (item: string) => {
     const status = selectedUser?.permissions?.find(
@@ -107,36 +110,6 @@ const Permissions = () => {
       >
         {item}
       </Button>
-      // <Menu key={index}>
-      //   {({ isOpen }) => (
-      //     <>
-      //       <MenuButton
-      //         isActive={isOpen}
-      //         as={Button}
-      //         colorScheme={handleColor(item)}
-      //         w="100%"
-      //       >
-      //         {item}
-      //       </MenuButton>
-      //       <MenuList>
-      //         <MenuItem
-      //           onClick={() => {
-      //             togglePermission(item);
-      //           }}
-      //         >
-      //           Enable
-      //         </MenuItem>
-      //         <MenuItem
-      //           onClick={() => {
-      //             togglePermission(item);
-      //           }}
-      //         >
-      //           Disable
-      //         </MenuItem>
-      //       </MenuList>
-      //     </>
-      //   )}
-      // </Menu>
     ));
   };
 
@@ -144,11 +117,11 @@ const Permissions = () => {
     return <WalletNotFound />;
   }
 
-  if (!userDetails?.wallet && !userDetails.username) {
+  if (!user?.wallet && !user?.username) {
     return <></>;
   }
 
-  if (userDetails?.wallet && userDetails.userType !== UserType.PARENT) {
+  if (user?.wallet && user.userType !== UserType.PARENT) {
     return <Restricted />;
   }
 

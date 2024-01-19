@@ -7,13 +7,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  useBreakpointValue,
-  CardHeader,
   Heading,
-  CardBody,
   Text,
-  Card,
-  Grid,
   Container,
   Flex,
   Accordion,
@@ -27,40 +22,17 @@ import {
 } from "@chakra-ui/react";
 import { menuCards } from "@/data/landingPage/menuCards";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export const InfoModal = ({
   isOpen,
   onClose,
-  isOpenExtendedMenu,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  isOpenExtendedMenu: boolean;
 }) => {
-  //=============================================================================
-  //                             STATE
-  //=============================================================================
-
-  const [showLearnMore, setShowLearnMore] = useState<{
-    [key: number]: boolean;
-  }>({
-    0: false,
-    1: false,
-    2: false,
-    3: false,
-  });
-
   //=============================================================================
   //                             HOOKS
   //=============================================================================
-
-  const isMobileSize = useBreakpointValue({
-    base: true,
-    sm: false,
-    md: false,
-    lg: false,
-  });
 
   const router = useRouter();
   return (

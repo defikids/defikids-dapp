@@ -8,10 +8,12 @@ const config = {
   },
 };
 
+const HOST = process.env.HOST || "";
+
 export const createUser = async (values: IUser) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/user/create`,
+      `${HOST}/api/mongo/user/create`,
       JSON.stringify(values),
       config
     );
@@ -25,7 +27,7 @@ export const createUser = async (values: IUser) => {
 export const getUserByWalletAddress = async (walletAddress: string) => {
   try {
     const { data } = await axios.get(
-      `/api/mongo/user/get?walletAddress=${walletAddress}`
+      `${HOST}/api/mongo/user/get?walletAddress=${walletAddress}`
     );
     return data;
   } catch (error) {
@@ -50,7 +52,7 @@ export const editUser = async (
 ) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/user/edit?_id=${id}`,
+      `${HOST}/api/mongo/user/edit?_id=${id}`,
       JSON.stringify(values),
       config
     );
@@ -64,7 +66,7 @@ export const editUser = async (
 export const deleteUser = async (id: mongoose.Schema.Types.ObjectId) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/user/delete`,
+      `${HOST}/api/mongo/user/delete`,
       JSON.stringify({ id }),
       config
     );

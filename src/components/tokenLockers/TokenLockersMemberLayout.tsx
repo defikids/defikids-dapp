@@ -56,7 +56,9 @@ export const TokenLockersMemberLayout = ({
         provider
       );
 
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
       const lockersByUser = await tokenLockerInstance.fetchAllLockersByUser();
 
@@ -72,7 +74,7 @@ export const TokenLockersMemberLayout = ({
     const getLockers = async () => {
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const wallet = await getSignerAddress(provider);
+      const wallet = await getSignerAddress();
 
       const tokenLockerInstance = await TokenLockerContract.fromProvider(
         provider
@@ -84,7 +86,9 @@ export const TokenLockersMemberLayout = ({
         wallet
       );
 
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
 
       const balance = await defiDollarsInstance.balanceOf(wallet);
       setDefiDollarsBalance(balance);

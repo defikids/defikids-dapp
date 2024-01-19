@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
   useToast,
@@ -10,20 +9,18 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { shallow } from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
 import { editUser } from "@/services/mongo/routes/user";
+import { User } from "@/data-schema/types";
 
-export const EditUsername = () => {
+export const EditUsername = ({
+  user,
+  setUser,
+}: {
+  user: User;
+  setUser: (user: User) => void;
+}) => {
   const [username, setUsername] = useState("");
-
-  const { userDetails, setUserDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
-    }),
-    shallow
-  );
 
   const toast = useToast();
 
@@ -39,12 +36,12 @@ export const EditUsername = () => {
       }
 
       const payload = {
-        ...userDetails,
+        ...user,
         username,
       };
 
-      await editUser(userDetails.accountId!, payload);
-      setUserDetails(payload);
+      await editUser(user.accountId!, payload);
+      setUser(payload);
       setUsername("");
 
       toast({
@@ -68,7 +65,7 @@ export const EditUsername = () => {
         <FormControl>
           <FormLabel>New Username</FormLabel>
           <Input
-            placeholder={userDetails?.username || ""}
+            placeholder={user?.username}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             style={{

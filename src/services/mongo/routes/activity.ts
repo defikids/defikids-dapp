@@ -5,11 +5,12 @@ const config = {
     "Content-Type": "application/json",
   },
 };
+const HOST = process.env.HOST || "";
 
 export const createActivity = async (values: any) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/activity/create`,
+      `${HOST}/api/mongo/activity/create`,
       JSON.stringify(values),
       config
     );
@@ -22,7 +23,7 @@ export const createActivity = async (values: any) => {
 
 export const getAllActivity = async () => {
   try {
-    const { data } = await axios.get(`/api/mongo/activity/getAll`);
+    const { data } = await axios.get(`${HOST}/api/mongo/activity/getAll`);
     return data;
   } catch (error) {
     console.log(error);

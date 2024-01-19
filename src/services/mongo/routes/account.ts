@@ -7,11 +7,12 @@ const config = {
     "Content-Type": "application/json",
   },
 };
+const HOST = process.env.HOST || "";
 
 export const createAccount = async (values: IAccount, wallet: string) => {
   try {
     const { data } = await axios.post(
-      `/api/mongo/account/create?wallet=${wallet}`,
+      `${HOST}/api/mongo/account/create?wallet=${wallet}`,
       JSON.stringify(values),
       config
     );
@@ -24,7 +25,7 @@ export const createAccount = async (values: IAccount, wallet: string) => {
 
 export const getAccount = async (id: mongoose.Schema.Types.ObjectId) => {
   try {
-    const { data } = await axios.get(`/api/mongo/account/get?_id=${id}`);
+    const { data } = await axios.get(`${HOST}/api/mongo/account/get?_id=${id}`);
     return data;
   } catch (error) {
     console.log(error);
@@ -38,7 +39,7 @@ export const getInvitation = async (
 ) => {
   try {
     const { data } = await axios.get(
-      `/api/mongo/invitation/get?accountId=${accountId}&email=${email}`
+      `${HOST}/api/mongo/invitation/get?accountId=${accountId}&email=${email}`
     );
     return data;
   } catch (error) {
@@ -49,7 +50,7 @@ export const getInvitation = async (
 
 export const getAllAccounts = async () => {
   try {
-    const { data } = await axios.get(`/api/mongo/account/getAll`);
+    const { data } = await axios.get(`${HOST}/api/mongo/account/getAll`);
     return data;
   } catch (error) {
     console.log(error);

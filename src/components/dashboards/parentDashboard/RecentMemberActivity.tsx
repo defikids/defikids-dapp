@@ -23,6 +23,7 @@ import { User } from "@/data-schema/types";
 import { useAuthStore } from "@/store/auth/authStore";
 import { shallow } from "zustand/shallow";
 import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { getSignerAddress } from "@/blockchain/utils";
 
 interface FormattedActivity {
   activityText: string;
@@ -31,15 +32,8 @@ interface FormattedActivity {
   userAvatar: string;
 }
 
-export const RecentMemberActivity = ({
-  memberAddress,
-  onlyMemberActivity,
-}: {
-  memberAddress: string;
-  onlyMemberActivity?: boolean;
-}) => {
+export const RecentMemberActivity = () => {
   const [memberActivity, setMemberActivity] = useState<FormattedActivity[]>([]);
-  const [user, setUser] = useState<User>({} as User);
 
   const { recentActivity, setRecentActivity } = useAuthStore(
     (state) => ({
@@ -52,14 +46,10 @@ export const RecentMemberActivity = ({
   /* This useEffect is used to get the recent activity for the user upon page load */
   useEffect(() => {
     const getData = async () => {
-      const user = (await getUserByWalletAddress(memberAddress)) as any;
-      setUser(user);
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      const activity = await getActivityByAccount(user?.accountId!);
 
-      console.log("user", user);
-
-      const activity = await getActivityByAccount(user.accountId!);
-      console.log("activity", activity);
-      await normaliseActivity(activity);
+      await normaliseActivity(activity, user);
     };
     getData();
   }, []);
@@ -67,19 +57,21 @@ export const RecentMemberActivity = ({
   /* This useEffect is used to update the recent activity when a user deposits or mints */
   useEffect(() => {
     const getData = async () => {
-      await normaliseActivity(recentActivity);
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      await normaliseActivity(recentActivity, user);
       setRecentActivity([]);
     };
     if (recentActivity.length > 0) getData();
   }, [recentActivity]);
 
-  const normaliseActivity = async (activities: IActivity[]) => {
+  const normaliseActivity = async (
+    activities: IActivity[],
+    connectedUser: User
+  ) => {
     const members = (await getFamilyMembersByAccount(
-      user.accountId!,
+      connectedUser.accountId!,
       true
     )) as IUser[];
-
-    console.log("members", members);
 
     const formattedActivity = activities.map((activity: IActivity) => {
       const member = members.find((m) => m.wallet === activity?.wallet);

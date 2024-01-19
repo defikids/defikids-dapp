@@ -15,8 +15,6 @@ import {
   Link,
   Heading,
 } from "@chakra-ui/react";
-import { shallow } from "zustand/shallow";
-import { useAuthStore } from "@/store/auth/authStore";
 import NextLink from "next/link";
 import { Explaination } from "@/data-schema/enums";
 import { useState } from "react";
@@ -24,24 +22,20 @@ import { ExplainBlockchain } from "@/components/explainations/ExplainBlockchain"
 import { useNetwork } from "wagmi";
 import { DEFIKIDS_PROXY_ADDRESS } from "@/blockchain/contract-addresses";
 import { validChainId } from "@/config";
+import { User } from "@/data-schema/types";
 
 export const EtherscanModal = ({
   isOpen,
   onClose,
+  user,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  user: User;
 }) => {
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
 
   const { chain } = useNetwork();
 
@@ -88,7 +82,7 @@ export const EtherscanModal = ({
             h="40px"
             onClick={() => {
               window.open(
-                `https://etherscan.io/address/${userDetails?.wallet}`,
+                `https://etherscan.io/address/${user?.wallet}`,
                 "_blank"
               );
             }}

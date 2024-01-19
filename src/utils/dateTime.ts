@@ -19,7 +19,6 @@ export const durationInSecondsRemaining = (
   const durationElapsed = nowInSeconds - lockedAtTime;
 
   if (durationElapsed >= durationInSeconds) {
-    console.log("no duration left");
     return 0;
   }
 

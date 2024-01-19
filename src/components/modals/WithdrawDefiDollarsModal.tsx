@@ -12,22 +12,25 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { WithdrawDefiDollars } from "@/components/WithdrawDefiDollars";
-import { ExplainDefiDollars } from "@/components/explainations/ExplainDefiDollars";
+import { ExplainMemberWithdraws } from "@/components/explainations/ExplainMemberWithdraws";
 import { Explaination } from "@/data-schema/enums";
+import { User } from "@/data-schema/types";
 
 export const WithdrawDefiDollarsModal = ({
   isOpen,
   onClose,
+  user,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  user?: User;
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [explaination, setExplaination] = useState(Explaination.NONE);
 
-  const showDefiDollarsExplaination = () => {
+  const showMemberWithdrawExplaination = () => {
     return (
-      <ExplainDefiDollars
+      <ExplainMemberWithdraws
         explaination={explaination}
         setShowExplanation={setShowExplanation}
       />
@@ -40,6 +43,7 @@ export const WithdrawDefiDollarsModal = ({
         onClose={onClose}
         setShowExplanation={setShowExplanation}
         setExplaination={setExplaination}
+        user={user}
       />
     );
   };
@@ -59,7 +63,7 @@ export const WithdrawDefiDollarsModal = ({
         <ModalCloseButton />
         <ModalBody>
           {showExplanation
-            ? showDefiDollarsExplaination()
+            ? showMemberWithdrawExplaination()
             : withdrawComponent()}
         </ModalBody>
 

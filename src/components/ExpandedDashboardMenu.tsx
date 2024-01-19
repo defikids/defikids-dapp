@@ -26,6 +26,7 @@ import { colors } from "@/services/chakra/theme";
 import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";
 import { UserType } from "@/data-schema/enums";
+import { User } from "@/data-schema/types";
 
 export const ExpandedDashboardMenu = ({
   onToggleCollapsedMenu,
@@ -38,7 +39,8 @@ export const ExpandedDashboardMenu = ({
   onOpenSendAllowanceModal,
   onOpenMembersTableModal,
   onOpenWithdrawDefiDollarsModal,
-  stableTokenBalance,
+  tokenBalance,
+  user,
 }: {
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
@@ -50,18 +52,17 @@ export const ExpandedDashboardMenu = ({
   onOpenSendAllowanceModal?: () => void;
   onOpenMembersTableModal?: () => void;
   onOpenWithdrawDefiDollarsModal?: () => void;
-  stableTokenBalance: number;
+  tokenBalance: number;
+  user: User;
 }) => {
-  const { setLogout, userDetails, mobileMenuOpen, setMobileMenuOpen } =
-    useAuthStore(
-      (state) => ({
-        setLogout: state.setLogout,
-        userDetails: state.userDetails,
-        mobileMenuOpen: state.mobileMenuOpen,
-        setMobileMenuOpen: state.setMobileMenuOpen,
-      }),
-      shallow
-    );
+  const { setLogout, mobileMenuOpen, setMobileMenuOpen } = useAuthStore(
+    (state) => ({
+      setLogout: state.setLogout,
+      mobileMenuOpen: state.mobileMenuOpen,
+      setMobileMenuOpen: state.setMobileMenuOpen,
+    }),
+    shallow
+  );
 
   const router = useRouter();
   const { chain } = useNetwork();
@@ -113,14 +114,15 @@ export const ExpandedDashboardMenu = ({
                   icon={<TriangleUpIcon />}
                 />
               </Flex>
-              <DashboardUsername />
-              <DashboardAvatar />
+              <DashboardUsername user={user} />
+              <DashboardAvatar user={user} />
               <DashboardAccountBalance
-                walletAddress={userDetails?.wallet}
-                tokenBalance={stableTokenBalance}
+                walletAddress={user?.wallet}
+                tokenBalance={tokenBalance}
+                user={user}
               />
 
-              {userDetails?.userType === UserType.PARENT ? (
+              {user?.userType === UserType.PARENT ? (
                 <ParentButtonMenu
                   onOpenSendAllowanceModal={onOpenSendAllowanceModal!}
                   onOpenMembersTableModal={onOpenMembersTableModal!}

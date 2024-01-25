@@ -57,7 +57,6 @@ export const EmailVerificationRequired = ({
   if (isUpdated) {
     return (
       <Flex direction="column">
-        <Text mb={3}>{`Your email has been updated to ${user?.email}.`}</Text>
         <Text
           mb={3}
         >{`You will first have to verify your email address.`}</Text>

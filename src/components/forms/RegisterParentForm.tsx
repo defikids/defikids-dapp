@@ -171,7 +171,7 @@ export const RegisterParentForm = ({ onClose }: { onClose: () => void }) => {
       });
 
       onClose();
-      router.push("/parent-dashboard");
+      router.push(`/parent-dashboard/${user.wallet}`);
     } catch (e) {
       const errorDetails = transactionErrors(e);
       toast(errorDetails);

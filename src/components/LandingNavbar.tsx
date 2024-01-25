@@ -56,6 +56,10 @@ export default function LandingNavbar() {
       const isConnected = await isWalletConnected();
       const user = await getUserByWalletAddress(await getSignerAddress());
 
+      if (user.error) {
+        onRegisterOpen();
+        return;
+      }
       setIsConnected(isConnected);
       setUser(user);
     };

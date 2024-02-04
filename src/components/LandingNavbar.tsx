@@ -54,13 +54,15 @@ export default function LandingNavbar() {
   useEffect(() => {
     const init = async () => {
       const isConnected = await isWalletConnected();
+      setWalletConnected(isConnected);
       const user = await getUserByWalletAddress(await getSignerAddress());
 
       if (user.error) {
-        onRegisterOpen();
+        setIsRegistered(false);
         return;
       }
-      setIsConnected(isConnected);
+
+      setIsRegistered(true);
       setUser(user);
     };
     init();
@@ -70,8 +72,9 @@ export default function LandingNavbar() {
   //                             STATE
   //=============================================================================
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState({} as User);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const iconToShow = menuOpen ? (
     <IoMdClose size={30} />
@@ -85,9 +88,6 @@ export default function LandingNavbar() {
 
   const navigateUser = () => {
     switch (user.userType) {
-      case UserType.UNREGISTERED:
-        onRegisterOpen();
-        break;
       case UserType.PARENT:
         router.push(`/parent-dashboard/${user.wallet}`);
         break;
@@ -121,9 +121,15 @@ export default function LandingNavbar() {
           <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
-            {!isConnected ? (
-              <CustomConnectButton />
-            ) : (
+            {!walletConnected && <CustomConnectButton />}
+
+            {walletConnected && !isRegistered && (
+              <Button mr={5} size="lg" onClick={() => onRegisterOpen()}>
+                <Heading size="sm">Register</Heading>
+              </Button>
+            )}
+
+            {walletConnected && isRegistered && (
               <Button mr={5} size="lg" onClick={navigateUser}>
                 <Heading size="sm">Dashboard</Heading>
               </Button>

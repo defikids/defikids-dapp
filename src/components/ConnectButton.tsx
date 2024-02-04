@@ -54,7 +54,12 @@ export const CustomConnectButton = () => {
               }
               if (chain.unsupported) {
                 return (
-                  <Button onClick={openChainModal} type="button">
+                  <Button
+                    onClick={openChainModal}
+                    type="button"
+                    size="lg"
+                    mr={5}
+                  >
                     Wrong network
                   </Button>
                 );

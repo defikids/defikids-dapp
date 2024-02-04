@@ -39,7 +39,7 @@ const ParentDashboardClientLayout = () => {
   //=============================================================================
   //                               STATE
   //=============================================================================
-  const [isValidChain, setIsValidChain] = useState(false);
+  const [isValidChain, setIsValidChain] = useState(true);
   const [stableTokenBalance, setStableTokenBalance] = useState(0);
   const [familyMembers, setFamilyMembers] = useState([] as User[]);
   const [parent, setParent] = useState({} as User);
@@ -54,9 +54,11 @@ const ParentDashboardClientLayout = () => {
   const isMobileSize = width < 768;
 
   watchNetwork((network) => {
-    validChainId === network.chain?.id
-      ? setIsValidChain(true)
-      : setIsValidChain(false);
+    if (network.chain?.id) {
+      validChainId === network.chain?.id
+        ? setIsValidChain(true)
+        : setIsValidChain(false);
+    }
   });
 
   const reloadUserData = useCallback(async () => {
@@ -146,9 +148,12 @@ const ParentDashboardClientLayout = () => {
     setStableTokenBalance(balance);
   }, []);
 
-  const checkCurrentChain = useCallback(() => {
-    const { chain } = getNetwork();
-    if (chain?.id !== validChainId) {
+  const checkCurrentChain = useCallback(async () => {
+    //@ts-ignore
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const chainId = (await provider.getNetwork()).chainId;
+
+    if (chainId !== BigInt(validChainId)) {
       setIsValidChain(false);
       return false;
     }

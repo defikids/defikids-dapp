@@ -70,15 +70,18 @@ export const MembersTableModal = ({
     const fetchMembers = async () => {
       const user = await getUserByWalletAddress(await getSignerAddress());
       setUser(user);
+      console.log("user", user);
 
       const members = (await getFamilyMembersByAccount(
         user.accountId!
       )) as User[];
+      console.log("members", members);
       setUsers(members);
     };
 
     const fetchInvitations = async () => {
       const invitations = await getInvitationsByAccount(user.accountId!);
+      console.log("invitations", invitations);
       setInvitations(invitations);
     };
 
@@ -302,7 +305,7 @@ export const MembersTableModal = ({
               </>
             )}
 
-            {!user.emailVerified && users.length && (
+            {!user.emailVerified && users.length === 0 && (
               <EmailVerificationRequired user={user} isUpdated />
             )}
           </ModalBody>

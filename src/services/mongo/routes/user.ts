@@ -8,7 +8,7 @@ const config = {
   },
 };
 
-const HOST = process.env.HOST || "";
+const HOST = process.env.NEXT_PUBLIC_HOST || "";
 
 export const createUser = async (values: IUser) => {
   try {

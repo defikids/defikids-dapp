@@ -6,7 +6,7 @@ const config = {
     "Content-Type": "application/json",
   },
 };
-const HOST = process.env.HOST || "";
+const HOST = process.env.NEXT_PUBLIC_HOST || "";
 
 export const createInvitation = async (values: any) => {
   try {

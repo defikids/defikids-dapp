@@ -5,7 +5,7 @@ const config = {
     "Content-Type": "application/json",
   },
 };
-const HOST = process.env.HOST || "";
+const HOST = process.env.NEXT_PUBLIC_HOST || "";
 
 export const createActivity = async (values: any) => {
   try {

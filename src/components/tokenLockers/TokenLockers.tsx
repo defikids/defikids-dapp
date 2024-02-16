@@ -33,7 +33,9 @@ export const TokenLockers = ({
             colorScheme="blue"
             variant="outline"
             onClick={() => {
-              router.push(`${process.env.HOST}/token-lockers/${user.wallet}`);
+              router.push(
+                `${process.env.NEXT_PUBLIC_HOST}/token-lockers/${user.wallet}`
+              );
             }}
           >
             View All

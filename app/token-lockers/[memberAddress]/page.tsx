@@ -27,7 +27,6 @@ export default async function MemberLockerPage(context: any) {
   const { memberAddress, totalLockerOwned, totalLockerValue } = await getProps(
     context
   );
-  console.log(memberAddress, totalLockerOwned);
 
   return (
     <Box height="100vh">

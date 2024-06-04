@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import sgMail from "@sendgrid/mail";
+import sgMail, { MailDataRequired } from "@sendgrid/mail";
 import confirmEmailAddressHTML from "@/data/emails/confirmEmailAddress";
 import jwt from "jsonwebtoken";
 
@@ -9,17 +9,17 @@ export default async function confirmEmail(
 ) {
   const { username, email, walletAddress } = req.body;
 
-  const token = jwt.sign({ walletAddress }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ walletAddress }, process.env.JWT_SECRET || "", {
     expiresIn: "48hr",
   });
 
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
   const msg = {
     to: email,
     from: process.env.SENDGRID_TRANSPORTER_EMAIL_ADDRESS,
     subject: "Email Confirmation Request",
     html: confirmEmailAddressHTML(username, token),
-  };
+  } as MailDataRequired;
   sgMail
     .send(msg)
     .then(() => {

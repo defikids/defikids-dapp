@@ -1,45 +1,26 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import inviteMemberHTML from "@/data/emails/inviteMember";
-import sgMail from "@sendgrid/mail";
-import jwt from "jsonwebtoken";
+import sgMail, { MailDataRequired } from "@sendgrid/mail";
 
 export default async function inviteMember(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const { parentAddress, sandboxMode, familyId, familyName, email } =
-      req.body as {
-        parentAddress: string;
-        sandboxMode: boolean;
-        familyId: string;
-        familyName: string;
-        email: string;
-      };
+    const { token, email, familyName } = req.body as {
+      token: string;
+      email: string;
+      familyName: string;
+    };
 
-    const token = jwt.sign(
-      {
-        parentAddress,
-        sandboxMode,
-        familyId,
-        familyName,
-        email,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "24hr",
-        jwtid: Date.now().toString(),
-      }
-    );
-
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
     const msg = {
       to: email,
       from: process.env.SENDGRID_TRANSPORTER_EMAIL_ADDRESS,
       subject: "New Member Invitaton",
       text: `${familyName} has invited you to DefiKids`,
       html: inviteMemberHTML(token, familyName),
-    };
+    } as MailDataRequired;
 
     sgMail
       .send(msg)

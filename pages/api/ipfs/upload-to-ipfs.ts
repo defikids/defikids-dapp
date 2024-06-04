@@ -89,13 +89,14 @@ export default async function uploadToIpfsRoute(
   // Image upload to IPFS
   //---------------------
 
-  let imageHash = undefined;
+  let imageHash = "" as string | undefined;
   if (fileReadStreams.imageReadStream) {
     // return the IPFS hash of the uploaded image
     const { mediaHash, mediaError: imageError } = await pinFileToIPFS({
       payload: fileReadStreams.imageReadStream,
       // @ts-ignore
       fileName: `DefiKids-${description}-${String(
+        // @ts-ignore
         uploadedFile.originalFilename.split(".")[0]
       )}`,
     });

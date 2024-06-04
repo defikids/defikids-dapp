@@ -12,19 +12,17 @@ import { useRouter } from "next/navigation";
 import { Locker, User } from "@/data-schema/types";
 
 export const TokenLockers = ({
-  userDetails,
+  user,
   lockersByUser,
+  isMobileSize,
 }: {
-  userDetails: User;
+  user: User;
   lockersByUser: Locker[];
+  isMobileSize: boolean;
 }) => {
   const router = useRouter();
   return (
-    <Container
-      maxW="5xl"
-      bg={useColorModeValue("gray.100", "gray.900")}
-      h="90%"
-    >
+    <Container maxW="5xl" bg={useColorModeValue("gray.100", "gray.900")}>
       <Flex justify="space-between" my="1rem" align="center">
         <Heading as="h3" size="sm" color="white">
           Token Lockers
@@ -35,7 +33,9 @@ export const TokenLockers = ({
             colorScheme="blue"
             variant="outline"
             onClick={() => {
-              router.push(`/token-lockers/${userDetails?.wallet}`);
+              router.push(
+                `${process.env.NEXT_PUBLIC_HOST}/token-lockers/${user.wallet}`
+              );
             }}
           >
             View All
@@ -45,12 +45,13 @@ export const TokenLockers = ({
       {lockersByUser.length > 0 ? (
         <TokenLockersList lockers={lockersByUser} />
       ) : (
-        <Flex justify="center" my="1rem" align="center" h="80%">
+        <Flex justify="center" align="center">
           <Button
             colorScheme="blue"
             variant="outline"
+            size="sm"
             onClick={() => {
-              router.push(`/token-lockers/${userDetails?.wallet}`);
+              router.push(`/token-lockers/${user.wallet}`);
             }}
           >
             Create Locker

@@ -17,11 +17,9 @@ export const ConditionalNavBars = () => {
     lg: false,
   });
 
-  const { navigationSection, isLoggedIn, userDetails } = useAuthStore(
+  const { navigationSection } = useAuthStore(
     (state) => ({
-      userDetails: state.userDetails,
       navigationSection: state.navigationSection,
-      isLoggedIn: state.isLoggedIn,
     }),
     shallow
   );

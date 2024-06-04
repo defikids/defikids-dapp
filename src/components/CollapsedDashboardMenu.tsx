@@ -8,27 +8,22 @@ import {
   Slide,
   Text,
 } from "@chakra-ui/react";
-import { useAuthStore } from "@/store/auth/authStore";
-import { shallow } from "zustand/shallow";
-import { TriangleDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon } from "@chakra-ui/icons";
+import { User } from "@/data-schema/types";
 
 export const CollapsedDashboardMenu = ({
   onToggleCollapsedMenu,
   onToggleExtendedMenu,
   isOpenCollapsedMenu,
   isMobileSize,
+  user,
 }: {
   onToggleCollapsedMenu: () => void;
   onToggleExtendedMenu: () => void;
   isOpenCollapsedMenu: boolean;
   isMobileSize: boolean;
+  user: User;
 }) => {
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
   return (
     <Slide
       in={!isOpenCollapsedMenu}
@@ -63,18 +58,16 @@ export const CollapsedDashboardMenu = ({
           <Flex align="center">
             <Avatar
               size="lg"
-              name={userDetails?.username}
+              name={user?.username}
               sx={{
                 fontFamily: "Slackey",
-                bgColor: `${
-                  userDetails?.avatarURI ? "transparent" : "purple.500"
-                }`,
+                bgColor: `${user?.avatarURI ? "transparent" : "purple.500"}`,
               }}
-              src={userDetails?.avatarURI || "/images/placeholder-avatar.jpeg"}
+              src={user?.avatarURI || "/images/placeholder-avatar.jpeg"}
             />
             <Flex direction="column" ml={3}>
-              <Heading fontSize="lg">{userDetails?.username}</Heading>
-              <Text fontSize="md">{userDetails?.userType}</Text>
+              <Heading fontSize="lg">{user?.username}</Heading>
+              <Text fontSize="md">{user?.userType}</Text>
             </Flex>
           </Flex>
           <IconButton

@@ -9,6 +9,8 @@ export enum StepperContext {
   AVATAR = "AVATAR",
   DEFAULT = "DEFAULT",
   PERMIT = "PERMIT",
+  WITHDRAW_REQUEST = "WITHDRAW_REQUEST",
+  WITHDRAW_SETTLED = "WITHDRAW_SETTLED",
 }
 
 export enum EtherscanContext {
@@ -45,6 +47,7 @@ export enum Explaination {
   BLOCKCHAIN = "BLOCKCHAIN",
   DEFI_DOLLARS = "DEFI_DOLLARS",
   ALLOWANCE = "ALLOWANCE",
+  MEMBER_WITHDRAW = "MEMBER_WITHDRAW",
 }
 
 export enum MainnetNetworks {

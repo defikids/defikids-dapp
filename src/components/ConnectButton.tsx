@@ -1,20 +1,12 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth/authStore";
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { usePathname } from "next/navigation";
-import { shallow } from "zustand/shallow";
 
 export const CustomConnectButton = () => {
   const pathname = usePathname();
 
-  const { fetchedUserDetails } = useAuthStore(
-    (state) => ({
-      fetchedUserDetails: state.fetchedUserDetails,
-    }),
-    shallow
-  );
   return (
     <ConnectButton.Custom>
       {({
@@ -62,52 +54,57 @@ export const CustomConnectButton = () => {
               }
               if (chain.unsupported) {
                 return (
-                  <Button onClick={openChainModal} type="button">
+                  <Button
+                    onClick={openChainModal}
+                    type="button"
+                    size="lg"
+                    mr={5}
+                  >
                     Wrong network
                   </Button>
                 );
               }
-              return fetchedUserDetails ? (
-                <Box style={{ display: "flex", gap: 12 }}>
-                  <>
-                    <Button
-                      onClick={openChainModal}
-                      style={{ display: "flex", alignItems: "center" }}
-                      type="button"
-                    >
-                      {chain.hasIcon && (
-                        <Box
-                          style={{
-                            background: chain.iconBackground,
-                            width: 12,
-                            height: 12,
-                            borderRadius: 999,
-                            overflow: "hidden",
-                            marginRight: 4,
-                          }}
-                        >
-                          {chain.iconUrl && (
-                            <img
-                              alt={chain.name ?? "Chain icon"}
-                              src={chain.iconUrl}
-                              style={{ width: 12, height: 12 }}
-                            />
-                          )}
-                        </Box>
-                      )}
-                      {chain.name}
-                    </Button>
-                    <Button onClick={openAccountModal} type="button">
-                      {account.displayName}
-                      {account.displayBalance
-                        ? ` (${account.displayBalance})`
-                        : ""}
-                    </Button>
-                  </>
-                </Box>
-              ) : (
-                <></>
-              );
+              // return fetchedUserDetails ? (
+              //   <Box style={{ display: "flex", gap: 12 }}>
+              //     <>
+              //       <Button
+              //         onClick={openChainModal}
+              //         style={{ display: "flex", alignItems: "center" }}
+              //         type="button"
+              //       >
+              //         {chain.hasIcon && (
+              //           <Box
+              //             style={{
+              //               background: chain.iconBackground,
+              //               width: 12,
+              //               height: 12,
+              //               borderRadius: 999,
+              //               overflow: "hidden",
+              //               marginRight: 4,
+              //             }}
+              //           >
+              //             {chain.iconUrl && (
+              //               <img
+              //                 alt={chain.name ?? "Chain icon"}
+              //                 src={chain.iconUrl}
+              //                 style={{ width: 12, height: 12 }}
+              //               />
+              //             )}
+              //           </Box>
+              //         )}
+              //         {chain.name}
+              //       </Button>
+              //       <Button onClick={openAccountModal} type="button">
+              //         {account.displayName}
+              //         {account.displayBalance
+              //           ? ` (${account.displayBalance})`
+              //           : ""}
+              //       </Button>
+              //     </>
+              //   </Box>
+              // ) : (
+              //   <></>
+              // );
             })()}
           </Box>
         );

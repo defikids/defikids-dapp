@@ -39,6 +39,8 @@ import {
 import { TestnetNetworks } from "@/data-schema/enums";
 import mongoose from "mongoose";
 import { convertTimestampToSeconds } from "@/utils/dateTime";
+import { ethers } from "ethers";
+import { getSignerAddress } from "@/blockchain/utils";
 
 interface DecodedToken {
   accountId: mongoose.Schema.Types.ObjectId;
@@ -68,10 +70,8 @@ const MemberInvite = () => {
   const [inviteNonExistent, setInviteNonExistent] = useState(false);
   const [username, setUsername] = useState("");
 
-  const { setUserDetails, userDetails, reset } = useAuthStore(
+  const { reset } = useAuthStore(
     (state) => ({
-      setUserDetails: state.setUserDetails,
-      userDetails: state.userDetails,
       reset: state.reset,
     }),
     shallow
@@ -81,7 +81,7 @@ const MemberInvite = () => {
     if (!decodedToken) return;
 
     const { email, accountId } = decodedToken;
-    console.log("createMember - userDetails", userDetails);
+
     try {
       let userPayload = {
         accountId,
@@ -116,27 +116,6 @@ const MemberInvite = () => {
     } catch (err) {
       console.error(err);
     }
-  };
-
-  const redirectUser = async () => {
-    let count = 5;
-
-    // Countdown function
-    const countdown = async () => {
-      if (count === 0) {
-        const updatedUserDetails = await getUserByWalletAddress(address);
-        setUserDetails(updatedUserDetails.data);
-        router.push("/");
-      } else {
-        setTimeout(() => {
-          count--;
-          setCountdown(count);
-          countdown();
-        }, 1000);
-      }
-    };
-
-    countdown(); // Start the countdown
   };
 
   const handleToken = async () => {
@@ -192,11 +171,6 @@ const MemberInvite = () => {
     );
   };
 
-  // Reset store on page load
-  useEffect(() => {
-    reset();
-  }, []);
-
   // Check if wallet has already been registered and if invite has already been accepted
   useEffect(() => {
     if (!decodedData) return;
@@ -227,7 +201,6 @@ const MemberInvite = () => {
         await deleteInvitation(invitation._id);
 
         setInviteAccepted(true);
-        redirectUser();
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -246,8 +219,24 @@ const MemberInvite = () => {
             Your account was successfully created.
           </Text>
           <Text my={5} color="gray" fontSize="lg">
-            {`Your will be redirected to the DefiKids app in ${countdown} seconds.`}
+            You may close this window.
           </Text>
+          <Button
+            mt="3rem"
+            colorScheme="gray"
+            size="lg"
+            style={{
+              cursor: "pointer",
+              borderRadius: "10px",
+              padding: "15px",
+            }}
+            onClick={() => {
+              reset();
+              router.push(`/member-dashboard/${address}`);
+            }}
+          >
+            <Text fontSize={"lg"}>Go to Dashboard</Text>
+          </Button>
         </Flex>
       </Box>
     );

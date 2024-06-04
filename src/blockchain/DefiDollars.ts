@@ -54,18 +54,22 @@ class DefiDollarsContract {
     );
   }
 
-  async withdrawByMember(
+  async settlement(
+    memberAddress: string,
     amount: bigint,
     deadline: number,
     v: number,
     r: string,
     s: string
   ) {
-    return await this.contract.withdrawByMember(amount, deadline, v, r, s);
-  }
-
-  async settlement(memberAddress: string, amount: bigint) {
-    return await this.contract.settlement(memberAddress, amount);
+    return await this.contract.settlement(
+      memberAddress,
+      amount,
+      deadline,
+      v,
+      r,
+      s
+    );
   }
 
   async getStableTokenBalance(wallet: string) {
@@ -80,6 +84,12 @@ class DefiDollarsContract {
 
   async setStableTokenAddress(stableTokenAddress: string) {
     return await this.contract.setStableTokenAddress(stableTokenAddress);
+  }
+
+  async allowance(owner: string, spender: string) {
+    const response = await this.contract.allowance(owner, spender);
+    const allowance = Number(ethers.formatEther(response));
+    return allowance;
   }
 }
 

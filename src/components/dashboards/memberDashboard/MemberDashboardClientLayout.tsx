@@ -1,17 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import {
-  Box,
-  Flex,
-  GridItem,
-  useDisclosure,
-  Grid,
-  Button,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import shallow from "zustand/shallow";
-import { useAuthStore } from "@/store/auth/authStore";
+import { Box, Flex, GridItem, useDisclosure, Grid } from "@chakra-ui/react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { InfoModal } from "@/components/modals/InfoModal";
 import { ExpandedDashboardMenu } from "@/components/ExpandedDashboardMenu";
@@ -22,74 +13,67 @@ import { RecentMemberActivity } from "@/components/dashboards/parentDashboard/Re
 import FamilyStatistics from "@/components/dashboards/parentDashboard/FamilyStatistics";
 import { DefiKidsHeading } from "@/components/DefiKidsHeading";
 import { WithdrawDefiDollarsModal } from "@/components/modals/WithdrawDefiDollarsModal";
-import { watchNetwork } from "@wagmi/core";
+import { watchNetwork, getNetwork } from "@wagmi/core";
 import { WrongNetwork } from "@/components/WrongNetwork";
 import { validChainId } from "@/config";
 import { useNetwork } from "wagmi";
 import { DefiDollars } from "@/components/dashboards/parentDashboard/DefiDollars";
 import { ethers } from "ethers";
 import { TokenLockers } from "@/components/tokenLockers/TokenLockers";
-import { useRouter } from "next/navigation";
-import { Locker } from "@/data-schema/types";
-import { formattedLocker } from "@/utils/formatLockers";
+import { Locker, User } from "@/data-schema/types";
 import TokenLockerContract from "@/blockchain/tokenLockers";
 import DefiDollarsContract from "@/blockchain/DefiDollars";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
-const MemberDashboardClientLayout = ({
-  memberAddress,
-}: {
-  memberAddress: string;
-}) => {
+const MemberDashboardClientLayout = ({ user }: { user: User }) => {
   //=============================================================================
   //                               STATE
   //=============================================================================
   const [isValidChain, setIsValidChain] = useState(false);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [lockersByUser, setLockersByUser] = useState<Locker[]>([]);
+  const [member, setMember] = useState(user as User);
 
   //=============================================================================
   //                               HOOKS
   //=============================================================================
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      familyMembers: state.familyMembers,
-      setFamilyMembers: state.setFamilyMembers,
-    }),
-    shallow
-  );
 
   useEffect(() => {
-    const getLockers = async () => {
+    const init = async () => {
+      if (validChainId === chain?.id) {
+        setIsValidChain(true);
+      }
+
       //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
 
+      // Get the lockers by user
       const TokenLockerInstance = await TokenLockerContract.fromProvider(
         provider
       );
-
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
-
       const lockersByUser = await TokenLockerInstance.fetchAllLockersByUser();
-
-      const balance = await defiDollarsInstance.balanceOf(memberAddress);
-
       setLockersByUser(lockersByUser);
+
+      // Get the token balance
+      const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+        provider
+      );
+      const balance = await defiDollarsInstance.balanceOf(user?.wallet);
       setTokenBalance(balance);
     };
-    getLockers();
+    init();
   }, []);
 
   const { chain } = useNetwork();
 
   watchNetwork((network) => {
-    if (validChainId === network.chain?.id) {
-      setIsValidChain(true);
-    }
+    validChainId === network.chain?.id
+      ? setIsValidChain(true)
+      : setIsValidChain(false);
   });
 
   const { width } = useWindowSize();
-  4;
+
   const isMobileSize = width < 768;
 
   const { isOpen: isOpenExtendedMenu, onToggle: onToggleExtendedMenu } =
@@ -122,24 +106,33 @@ const MemberDashboardClientLayout = ({
     onClose: onCloseWithdrawDefiDollarsModal,
   } = useDisclosure();
 
-  useEffect(() => {
-    const defiDollarsBalance = async () => {
-      const defiDollarsInstance = await DefiDollarsContract.fromProvider();
+  // useEffect(() => {
+  //   if (validChainId === chain?.id) {
+  //     setIsValidChain(true);
+  //   }
 
-      const balance = await defiDollarsInstance?.balanceOf(memberAddress);
-      setTokenBalance(Number(ethers.formatEther(balance)));
-    };
+  //   //@ts-ignore
+  //   const provider = new ethers.BrowserProvider(window.ethereum);
 
-    defiDollarsBalance();
-  }, [isOpenWithdrawDefiDollarsModal]);
+  //   const defiDollarsBalance = async () => {
+  //     const defiDollarsInstance = await DefiDollarsContract.fromProvider(
+  //       provider
+  //     );
 
-  useEffect(() => {
-    if (validChainId === chain?.id) {
-      setIsValidChain(true);
-    }
+  //     const balance = await defiDollarsInstance?.balanceOf(user?.wallet);
+  //     setTokenBalance(Number(ethers.formatEther(balance)));
+  //     console.log("Member DefiDollar balance", balance);
+  //   };
+
+  //   defiDollarsBalance();
+  // }, [isOpenWithdrawDefiDollarsModal]);
+
+  const reloadUserData = useCallback(async () => {
+    const member = await getUserByWalletAddress(user.wallet);
+    setMember(member);
   }, []);
 
-  if (!isValidChain || chain?.id !== validChainId) {
+  if (!isValidChain) {
     return <WrongNetwork />;
   }
 
@@ -162,7 +155,8 @@ const MemberDashboardClientLayout = ({
             onOpenSettingsModal={onOpenSettingsModal}
             onOpenInfoModal={onOpenInfoModal}
             onOpenWithdrawDefiDollarsModal={onOpenWithdrawDefiDollarsModal}
-            stableTokenBalance={tokenBalance}
+            tokenBalance={tokenBalance}
+            user={user}
           />
         </Box>
         {!isMobileSize && (
@@ -172,6 +166,7 @@ const MemberDashboardClientLayout = ({
               onToggleExtendedMenu={onToggleExtendedMenu}
               isOpenCollapsedMenu={isOpenCollapsedMenu}
               isMobileSize={isMobileSize}
+              user={user}
             />
           </Box>
         )}
@@ -228,8 +223,9 @@ const MemberDashboardClientLayout = ({
             borderRadius={isMobileSize ? "0" : "10px"}
           >
             <TokenLockers
-              userDetails={userDetails}
+              user={user}
               lockersByUser={lockersByUser}
+              isMobileSize={isMobileSize}
             />
           </GridItem>
 
@@ -241,10 +237,7 @@ const MemberDashboardClientLayout = ({
             bg="gray.900"
             borderRadius={isMobileSize ? "0" : "10px"}
           >
-            <RecentMemberActivity
-              memberAddress={memberAddress}
-              onlyMemberActivity
-            />
+            <RecentMemberActivity />
           </GridItem>
 
           <GridItem
@@ -261,22 +254,25 @@ const MemberDashboardClientLayout = ({
 
       {/* Modals and other components */}
 
-      <EtherscanModal isOpen={isOpenEtherScan} onClose={onCloseEtherScan} />
+      <EtherscanModal
+        isOpen={isOpenEtherScan}
+        onClose={onCloseEtherScan}
+        user={user}
+      />
 
       <SettingsModal
         isOpen={isOpenSettingsModal}
         onClose={onCloseSettingsModal}
+        user={user}
+        setUser={setMember}
       />
 
-      <InfoModal
-        isOpen={isOpenInfoModal}
-        onClose={onCloseInfoModal}
-        isOpenExtendedMenu={isOpenExtendedMenu}
-      />
+      <InfoModal isOpen={isOpenInfoModal} onClose={onCloseInfoModal} />
 
       <WithdrawDefiDollarsModal
         isOpen={isOpenWithdrawDefiDollarsModal}
         onClose={onCloseWithdrawDefiDollarsModal}
+        user={user}
       />
     </Box>
   );

@@ -17,8 +17,6 @@ import {
 import { useWindowSize } from "usehooks-ts";
 import MemberAccordian from "@/components/dashboards/parentDashboard/MemberAccordian";
 import { RegisterMemberForm } from "../forms/RegisterMemberForm";
-import { useAuthStore } from "@/store/auth/authStore";
-import { shallow } from "zustand/shallow";
 import axios from "axios";
 import { transactionErrors } from "@/utils/errorHanding";
 import { User } from "@/data-schema/types";
@@ -32,13 +30,21 @@ import jwt from "jsonwebtoken";
 import { IInvitation } from "@/models/Invitation";
 import { getInvitationsByAccount } from "@/BFF/mongo/getInvitationsByAccount";
 import mongoose from "mongoose";
+import { getSignerAddress } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
 
 export const MembersTableModal = ({
   isOpen,
   onClose,
+  user,
+  setUser,
+  reloadUserData,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  user: User;
+  setUser: (user: User) => void;
+  reloadUserData: () => void;
 }) => {
   //=============================================================================
   //                               STATE
@@ -50,6 +56,7 @@ export const MembersTableModal = ({
   const [showInvitations, setShowInvitations] = useState(false);
   const [invitations, setInvitations] = useState<IInvitation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  // const [user, setUser] = useState({} as User);
 
   const { width } = useWindowSize();
   const isMobileSize = width < 900;
@@ -59,23 +66,22 @@ export const MembersTableModal = ({
   //=============================================================================
   const toast = useToast();
 
-  const { userDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-    }),
-    shallow
-  );
-
   useEffect(() => {
     const fetchMembers = async () => {
+      const user = await getUserByWalletAddress(await getSignerAddress());
+      setUser(user);
+      console.log("user", user);
+
       const members = (await getFamilyMembersByAccount(
-        userDetails.accountId!
+        user.accountId!
       )) as User[];
+      console.log("members", members);
       setUsers(members);
     };
 
     const fetchInvitations = async () => {
-      const invitations = await getInvitationsByAccount(userDetails.accountId!);
+      const invitations = await getInvitationsByAccount(user.accountId!);
+      console.log("invitations", invitations);
       setInvitations(invitations);
     };
 
@@ -127,7 +133,7 @@ export const MembersTableModal = ({
     setHasSubmitted(true);
 
     try {
-      const { wallet, accountId } = userDetails;
+      const { wallet, accountId } = user;
       const email = emailAddress.trim();
 
       if (userExists(email, users)) return;
@@ -155,7 +161,7 @@ export const MembersTableModal = ({
   const storeInvitation = async (email: string, token: any) => {
     try {
       const invitationPayload = {
-        accountId: userDetails.accountId,
+        accountId: user.accountId,
         date: convertTimestampToSeconds(Date.now()),
         email,
         token,
@@ -239,6 +245,7 @@ export const MembersTableModal = ({
           setEmailAddress("");
           setSandboxMode(false);
           setShowInvitations(false);
+          reloadUserData();
         }}
         isCentered
       >
@@ -254,7 +261,7 @@ export const MembersTableModal = ({
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {userDetails.emailVerified ? (
+            {user.emailVerified && (
               <>
                 {showRegisterMemberForm && (
                   <RegisterMemberForm
@@ -281,7 +288,11 @@ export const MembersTableModal = ({
                   !showInvitations &&
                   users &&
                   users.length > 0 && (
-                    <MemberAccordian users={users} setUsers={setUsers} />
+                    <MemberAccordian
+                      parent={user}
+                      users={users}
+                      setUsers={setUsers}
+                    />
                   )}
 
                 {!showRegisterMemberForm &&
@@ -292,12 +303,14 @@ export const MembersTableModal = ({
                     </Heading>
                   )}
               </>
-            ) : (
-              <EmailVerificationRequired userDetails={userDetails} />
+            )}
+
+            {!user.emailVerified && users.length === 0 && (
+              <EmailVerificationRequired user={user} isUpdated />
             )}
           </ModalBody>
           <ModalFooter>
-            {userDetails?.emailVerified && (
+            {user?.emailVerified && (
               <Container>
                 <Flex direction="row" justify="flex-end" w="100%">
                   {!showRegisterMemberForm && (

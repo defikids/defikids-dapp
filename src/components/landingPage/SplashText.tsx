@@ -17,7 +17,7 @@ const SplashText = () => {
       direction="column"
       align="center"
       height="100vh"
-      bgImage="url('/images/Chains_Wallpaper.jpeg')"
+      // bgImage="url('/images/Chains_Wallpaper.jpeg')"
       bgPosition="center"
       bgRepeat="no-repeat"
       bgSize="cover"

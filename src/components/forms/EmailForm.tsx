@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth/authStore";
 import {
   Flex,
   useToast,
@@ -10,21 +9,19 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { shallow } from "zustand/shallow";
 import { transactionErrors } from "@/utils/errorHanding";
 import { editUser } from "@/services/mongo/routes/user";
 import axios from "axios";
+import { User } from "@/data-schema/types";
 
-export const EditEmail = () => {
+export const EditEmail = ({
+  user,
+  setUser,
+}: {
+  user: User;
+  setUser: (user: User) => void;
+}) => {
   const [email, setEmail] = useState("");
-
-  const { userDetails, setUserDetails } = useAuthStore(
-    (state) => ({
-      userDetails: state.userDetails,
-      setUserDetails: state.setUserDetails,
-    }),
-    shallow
-  );
 
   const toast = useToast();
 
@@ -40,16 +37,16 @@ export const EditEmail = () => {
       }
 
       const payload = {
-        ...userDetails,
+        ...user,
         email,
         emailVerified: false,
       };
 
-      await editUser(userDetails.accountId!, payload);
-      setUserDetails(payload);
+      await editUser(user.accountId!, payload);
+      setUser(payload);
       setEmail("");
 
-      const { username, wallet } = userDetails;
+      const { username, wallet } = user;
       const emailPayload = {
         username,
         email,
@@ -79,7 +76,7 @@ export const EditEmail = () => {
         <FormControl>
           <FormLabel>Edit email</FormLabel>
           <Input
-            placeholder={userDetails?.email}
+            placeholder={user?.email}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{

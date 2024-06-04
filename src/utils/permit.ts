@@ -1,6 +1,7 @@
 import { type Contract, Signer, Signature, BigNumberish } from "ethers";
 import { SignatureLike } from "@ethersproject/bytes";
 
+// uses version 2
 export const createStableTokenPermitMessage = async (
   signer: Signer,
   spender: string,
@@ -57,11 +58,13 @@ export const createStableTokenPermitMessage = async (
   }
 };
 
-export const createTokenLockersPermitMessage = async (
+// uses version 1
+export const createPermitMessage = async (
   signer: Signer,
   spender: string,
   value: BigNumberish,
-  contract: Contract
+  contract: Contract,
+  deadline?: number
 ): Promise<{
   data?: SignatureLike;
   deadline?: number;
@@ -73,14 +76,6 @@ export const createTokenLockersPermitMessage = async (
     const nonce = (await contract.nonces(owner)) as BigNumberish;
     const contractName = await contract.name();
     const chainId = (await signer.provider?.getNetwork())?.chainId.toString();
-
-    console.log("owner", owner);
-    console.log("spender", spender);
-    console.log("value", value);
-    console.log("nonce", nonce);
-    console.log("contractName", contractName);
-    console.log("chainId", chainId);
-    console.log("transactionDeadline", transactionDeadline);
 
     const domain = {
       chainId,
@@ -94,7 +89,7 @@ export const createTokenLockersPermitMessage = async (
       spender,
       value,
       nonce,
-      deadline: transactionDeadline,
+      deadline: deadline || transactionDeadline,
     };
 
     const types = {
@@ -111,7 +106,7 @@ export const createTokenLockersPermitMessage = async (
 
     return {
       data: Signature.from(signature),
-      deadline: transactionDeadline,
+      deadline: deadline || transactionDeadline,
     };
   } catch (err) {
     console.error(err);

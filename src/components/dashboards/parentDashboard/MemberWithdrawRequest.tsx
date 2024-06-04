@@ -1,5 +1,6 @@
 "use client";
 
+import { User } from "@/data-schema/types";
 import {
   Flex,
   useColorModeValue,
@@ -9,7 +10,13 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
-export const MemberWithdrawRequest = () => {
+export const MemberWithdrawRequest = ({
+  withdrawRequests,
+  user,
+}: {
+  withdrawRequests: number;
+  user: User;
+}) => {
   const router = useRouter();
 
   return (
@@ -24,7 +31,7 @@ export const MemberWithdrawRequest = () => {
           variant="outline"
           cursor="pointer"
           onClick={() => {
-            router.push("/withdraw-requests");
+            router.push(`/withdraw-requests/${user.wallet}`);
           }}
         >
           Manage
@@ -38,7 +45,7 @@ export const MemberWithdrawRequest = () => {
         alignItems="center"
       >
         <Heading size="2xl" display="flex">
-          0
+          {withdrawRequests || 0}
         </Heading>
       </Flex>
     </Box>

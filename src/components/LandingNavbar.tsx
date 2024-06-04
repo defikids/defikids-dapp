@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -21,6 +21,9 @@ import { IoMdClose } from "react-icons/io";
 import { UserType } from "@/data-schema/enums";
 import DefiKidsLogo from "@/components/logos/DefiKidsLogo";
 import RegisterModal from "@/components/modals/RegisterModal";
+import { getSignerAddress, isWalletConnected } from "@/blockchain/utils";
+import { getUserByWalletAddress } from "@/services/mongo/routes/user";
+import { User } from "@/data-schema/types";
 
 export default function LandingNavbar() {
   //=============================================================================
@@ -35,17 +38,12 @@ export default function LandingNavbar() {
     lg: false,
   });
 
-  const { walletConnected, navigationSection, userDetails, setIsLoggedIn } =
-    useAuthStore(
-      (state) => ({
-        isLoggedIn: state.isLoggedIn,
-        walletConnected: state.walletConnected,
-        navigationSection: state.navigationSection,
-        userDetails: state.userDetails,
-        setIsLoggedIn: state.setIsLoggedIn,
-      }),
-      shallow
-    );
+  const { navigationSection } = useAuthStore(
+    (state) => ({
+      navigationSection: state.navigationSection,
+    }),
+    shallow
+  );
 
   const {
     isOpen: isRegisterOpen,
@@ -53,10 +51,31 @@ export default function LandingNavbar() {
     onClose: onRegisterClose,
   } = useDisclosure();
 
+  useEffect(() => {
+    const init = async () => {
+      const isConnected = await isWalletConnected();
+      setWalletConnected(isConnected);
+      const user = await getUserByWalletAddress(await getSignerAddress());
+
+      if (user.error) {
+        setIsRegistered(false);
+        return;
+      }
+
+      setIsRegistered(true);
+      setUser(user);
+    };
+    init();
+  }, []);
+
   //=============================================================================
   //                             STATE
   //=============================================================================
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState({} as User);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+
   const iconToShow = menuOpen ? (
     <IoMdClose size={30} />
   ) : (
@@ -68,18 +87,12 @@ export default function LandingNavbar() {
   //=============================================================================
 
   const navigateUser = () => {
-    switch (userDetails?.userType) {
-      case UserType.UNREGISTERED:
-        // setIsLoggedIn(false);
-        onRegisterOpen();
-        break;
+    switch (user.userType) {
       case UserType.PARENT:
-        // setIsLoggedIn(true);
-        router.push("/parent-dashboard");
+        router.push(`/parent-dashboard/${user.wallet}`);
         break;
       case UserType.MEMBER:
-        // setIsLoggedIn(true);
-        router.push(`/member-dashboard/${userDetails?.wallet}`);
+        router.push(`/member-dashboard/${user.wallet}`);
         break;
       default:
         router.push("/");
@@ -108,9 +121,15 @@ export default function LandingNavbar() {
           <DefiKidsLogo />
 
           <Flex justifyContent="flex-end">
-            {!walletConnected ? (
-              <CustomConnectButton />
-            ) : (
+            {!walletConnected && <CustomConnectButton />}
+
+            {walletConnected && !isRegistered && (
+              <Button mr={5} size="lg" onClick={() => onRegisterOpen()}>
+                <Heading size="sm">Register</Heading>
+              </Button>
+            )}
+
+            {walletConnected && isRegistered && (
               <Button mr={5} size="lg" onClick={navigateUser}>
                 <Heading size="sm">Dashboard</Heading>
               </Button>

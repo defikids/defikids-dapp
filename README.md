@@ -1,9 +1,5 @@
 ![DefiKids-alt](https://github.com/defikids/defikids-dapp/assets/66887028/e7038138-8f8b-4d38-acc5-1caf6446a441)
 
-### ⭐️ Crypto for Kids, parent approved
-
-## Why DefiKids
-
 An empowering platform aimed at equipping the upcoming generation with De-Fi tools, tailored for youngsters and overseen by parents.
 
 ## ✨ Simplified Platform Overview
@@ -35,47 +31,8 @@ Parents can activate full-access mode, enabling children to withdraw funds for u
 - Contracts are deployed on the Polygon network for reduced gas fees.
 - Next.js powers the user-friendly frontend.
 - Solidity development using Forge.
-
-
-## 🚀 Local Development Setup
-
-Copy the `.env.example` to `.env` and populate the values.
-
-1. Fork the repo
-   ```sh
-   git clone https://github.com/<your username>/defikids-dapp.git
-   ```
-2. Install Yarn packages
-   ```sh
-   yarn install
-   ```
-3. Run Dev Server
-   ```sh
-   yarn run dev
    ```
 <hr />
-
-<details>
-<summary align="left"><h2>🐳 Docker Prerequisites</h2></summary>
-
-Install [Docker Desktop](https://docs.docker.com/get-docker/) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
-   
-- To see containers running `docker ps`
-   
-- To stop a container `docker stop your-container-id`
-- To stop all containers `docker stop $(docker ps -aq)`
-
-- To remove a container `docker rm your-container-kd`
-- To remove all containers `docker rm $(docker ps -aq)`
-</details>
-
-<hr />
-
-- Development - simply run this command to build the production container
-
-   ```sh
-   yarn docker
-   ```
 
 - Open `localhost:3000` in your browser
 
@@ -84,6 +41,8 @@ Install [Docker Desktop](https://docs.docker.com/get-docker/) for Mac, Windows, 
 ## ⚜️ Contributing
 
 Thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make will benefit everybody and are appreciated.
+
+Before contributing, please read the Code of Conduct [here](./CODE_OF_CONDUCT.md).
 
 Please try to create bug reports that are:
 
@@ -108,6 +67,3 @@ Join our [Discord Community](https://discord.gg/bDGMYNa8Ng) of engaged individua
 
 Follow us on [Twitter](https://twitter.com/defikids_)
 
-## 📬 Contact Us
-
-[Email](https://defikidsproject@gmail.com)
